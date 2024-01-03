@@ -27,7 +27,7 @@ export class TransactionModel<T> {
 
     protected updateKeyValue(key: string, value: unknown): void {
         if (!this.isTransactionActive) {
-            this.writeChanges({ [key]: value } as T);
+            this.writeChanges({ [key]: value } as unknown as T);
         } else {
             (this.changes as Record<string, unknown>)[key] = value;
         }

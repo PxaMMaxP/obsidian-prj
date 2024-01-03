@@ -1,5 +1,6 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import Global from 'src/classes/global';
+import FileCacheLib from 'src/classes/libs/FileCacheLib';
 import MarkdownBlockProcessor from 'src/classes/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/settingsTab';
 
@@ -20,6 +21,7 @@ export default class Prj extends Plugin {
 
 
 	async onload() {
+		console.log("Loading plugin 'PRJ'")
 		await this.loadSettings();
 
 		new Global(this.app, this.settings);
@@ -29,10 +31,13 @@ export default class Prj extends Plugin {
 
 		this.registerMarkdownCodeBlockProcessor('prj', MarkdownBlockProcessor.parseSource);
 
+		//Todo: Add Workspace.onLayoutReady and await this for Caches
 	}
 
-	onunload() {
 
+	onunload() {
+		console.log("Unloading plugin 'PRJ'")
+		FileCacheLib.deconstructor();
 	}
 
 	async loadSettings() {

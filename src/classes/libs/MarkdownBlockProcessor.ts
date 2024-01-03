@@ -6,23 +6,24 @@ import TagLib from "./TagLib";
 import Global from "../global";
 import { TaskModel } from "../models/TaskModel";
 import TaskData from "../TaskData";
+import FileCacheLib from "./FileCacheLib";
 
 export default class MarkdownBlockProcessor {
 
-    static parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
+    static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
         if (setting) {
-            const app = Global.getInstance().app;
+            const fileCache = FileCacheLib.getInstance();
+            //const app = Global.getInstance().app;
             setting.source = ctx.sourcePath;
-            const file = app?.vault?.getAbstractFileByPath(ctx.sourcePath) as TFile;
+            let file = await fileCache.findFileByPath(ctx.sourcePath);
             if (!file) {
                 throw new Error(`File ${ctx.sourcePath} not found`);
             }
+            if (Array.isArray(file)) {
+                file = file[0];
+            }
             const task = new TaskModel(file);
-            task.startTransaction();
-            const newTask = new TaskData({ description: "Test", title: null });
-            task.data = newTask;
-            task.finishTransaction();
             const tags = task.data.tags as string[];
             setting.container = el;
             const tagLib = new TagLib();
