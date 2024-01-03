@@ -2,6 +2,7 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 import Global from 'src/classes/global';
 import FileCacheLib from 'src/classes/libs/FileCacheLib';
 import MarkdownBlockProcessor from 'src/classes/libs/MarkdownBlockProcessor';
+import MetadataCache from 'src/classes/libs/MetadataCache';
 import { SettingTab } from 'src/classes/settingsTab';
 
 // Remember to rename these classes and interfaces!
@@ -38,6 +39,7 @@ export default class Prj extends Plugin {
 	onunload() {
 		console.log("Unloading plugin 'PRJ'")
 		FileCacheLib.deconstructor();
+		MetadataCache.deconstructor();
 	}
 
 	async loadSettings() {
