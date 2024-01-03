@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Plugin } from 'obsidian';
 import Global from 'src/classes/global';
 import FileCacheLib from 'src/classes/libs/FileCacheLib';
 import MarkdownBlockProcessor from 'src/classes/libs/MarkdownBlockProcessor';
@@ -20,26 +20,32 @@ const DEFAULT_SETTINGS: PrjSettings = {
 export default class Prj extends Plugin {
 	settings: PrjSettings;
 
-
 	async onload() {
 		console.log("Loading plugin 'PRJ'")
 		await this.loadSettings();
 
-		new Global(this.app, this.settings);
-
-		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingTab(this.app, this));
+
+		if (this.app.workspace.layoutReady) {
+			this.onLayoutReady();
+		} else {
+			this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
+		}
+	}
+
+	onLayoutReady(): void {
+		console.log("Layout ready");
+
+		new Global(this.app, this.settings);
 
 		this.registerMarkdownCodeBlockProcessor('prj', MarkdownBlockProcessor.parseSource);
 
-		//Todo: Add Workspace.onLayoutReady and await this for Caches
+		this.app.workspace.updateOptions();
 	}
-
 
 	onunload() {
 		console.log("Unloading plugin 'PRJ'")
-		FileCacheLib.deconstructor();
-		MetadataCache.deconstructor();
+		Global.deconstructor();
 	}
 
 	async loadSettings() {

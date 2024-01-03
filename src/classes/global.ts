@@ -1,12 +1,13 @@
 import { PrjSettings } from "main";
-import { App, Setting } from "obsidian";
-import { getAPI } from "obsidian-dataview";
-import { DvAPIInterface } from "obsidian-dataview/lib/typings/api";
+import { App } from "obsidian";
+import FileCacheLib from "./libs/FileCacheLib";
+import MetadataCache from "./libs/MetadataCache";
 
 export default class Global {
     static instance: Global;
     app: App;
-    dv: DvAPIInterface;
+    fileCache: FileCacheLib;
+    metadataCache: MetadataCache;
     settings: PrjSettings;
 
     constructor(app: App, settings: PrjSettings) {
@@ -15,19 +16,22 @@ export default class Global {
             return Global.instance;
         }
         this.app = app;
-
-        // Settings
         this.settings = settings;
-        
-        // Dataview
-        const dv = getAPI();
-        if (!dv) {
-            throw new Error("Dataview API not available");
-        } else {
-            this.dv = dv;
-        }
 
+        // Singleton; before creating the cache instances, because they need the app instance
         Global.instance = this;
+
+        // File cache
+        this.fileCache = FileCacheLib.getInstance();
+
+        // Metadata cache
+        this.metadataCache = MetadataCache.getInstance();
+
+    }
+
+    public static deconstructor() {
+        FileCacheLib.deconstructor();
+        MetadataCache.deconstructor();
     }
 
     static getInstance(app: App | null = null, settings: PrjSettings | null = null): Global {

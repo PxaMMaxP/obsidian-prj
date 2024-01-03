@@ -1,13 +1,13 @@
 // Note: MarkdownBlockProcessor Class
 
-import { FrontMatterCache, MarkdownPostProcessorContext, TFile } from "obsidian";
+import { FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
 import * as yaml from 'js-yaml';
 import TagLib from "./TagLib";
 import Global from "../global";
 import { TaskModel } from "../models/TaskModel";
 import TaskData from "../TaskData";
 import FileCacheLib from "./FileCacheLib";
-import { DataviewWrapper } from "./DataviewWrapper";
+import MetadataCache from "./MetadataCache";
 
 export default class MarkdownBlockProcessor {
 
@@ -15,8 +15,14 @@ export default class MarkdownBlockProcessor {
         const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
         if (setting) {
             const fileCache = FileCacheLib.getInstance();
+            const metadataCache = MetadataCache.getInstance();
+            await metadataCache.waitForCacheReady();
+            const cache = metadataCache.Cache;
+
+            const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Task" && file.file.path !== ctx.sourcePath);
+
             setting.source = ctx.sourcePath;
-            const allFile = await DataviewWrapper.getAllMetadataFiles(null, ['Task'], setting.source);
+            //const allFile = await DataviewWrapper.getAllMetadataFiles(null, ['Task'], setting.source);
 
             let file = await fileCache.findFileByPath(setting.source);
             if (!file) {
