@@ -7,6 +7,7 @@ import Global from "../global";
 import { TaskModel } from "../models/TaskModel";
 import TaskData from "../TaskData";
 import FileCacheLib from "./FileCacheLib";
+import { DataviewWrapper } from "./DataviewWrapper";
 
 export default class MarkdownBlockProcessor {
 
@@ -14,9 +15,10 @@ export default class MarkdownBlockProcessor {
         const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
         if (setting) {
             const fileCache = FileCacheLib.getInstance();
-            //const app = Global.getInstance().app;
             setting.source = ctx.sourcePath;
-            let file = await fileCache.findFileByPath(ctx.sourcePath);
+            const allFile = await DataviewWrapper.getAllMetadataFiles(null, ['Task'], setting.source);
+
+            let file = await fileCache.findFileByPath(setting.source);
             if (!file) {
                 throw new Error(`File ${ctx.sourcePath} not found`);
             }
