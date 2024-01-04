@@ -1,6 +1,8 @@
-import { Energy, Priority, Status } from "../types/PrjTypes";
+import { Energy, FileSubType, FileType, Priority, Status } from "../types/PrjTypes";
 
 export default interface IPrjTaskManagement {
+    type: FileType | null | undefined;
+    subType: FileSubType | null | undefined;
     title: string | null | undefined;
     description: string | null | undefined;
     status: Status | null | undefined;

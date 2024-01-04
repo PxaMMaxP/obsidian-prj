@@ -29,6 +29,11 @@ export default class Global {
 
     }
 
+    public async awaitCacheInitialization() {
+        await this.fileCache.waitForCacheReady();
+        await this.metadataCache.waitForCacheReady();
+    }
+
     public static deconstructor() {
         FileCacheLib.deconstructor();
         MetadataCache.deconstructor();

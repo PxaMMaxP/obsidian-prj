@@ -71,6 +71,17 @@ export default class FileCacheLib {
     }
 
     /**
+     * Wait for the file cache to be ready
+     * @returns {Promise<void>} Promise that resolves when the file cache is ready
+     * @description This method returns a promise that resolves when the file cache is ready.
+     */
+    public async waitForCacheReady(): Promise<void> {
+        while (!this.fileCacheReady) {
+            await new Promise(resolve => setTimeout(resolve, 5));
+        }
+    }
+
+    /**
      * Builds the file cache
      * @returns Promise that resolves when the file cache is built
      * @private
@@ -286,6 +297,18 @@ export default class FileCacheLib {
     }
 
     /**
+     * Returns the file name from the wikilink
+     * @param wikilink The wikilink to extract the file name from
+     * @returns The file name
+     * @private
+     */
+    private getFileNameFromWikilink(wikilink: string) {
+        const dismantledLinkMatch = wikilink.match(/\[\[(.+?)(?:\.(\w+))?(?:\|.*)?\]\]/);
+        if (!dismantledLinkMatch) { console.error(`Cannot extract file name from the wikilink ${wikilink}`); return; }
+        return `${dismantledLinkMatch[1]}.${dismantledLinkMatch[2]}`;
+    }
+
+    /**
      * Returns the file cache
      * @returns The file cache
      * @private
@@ -305,8 +328,7 @@ export default class FileCacheLib {
      * @param fileName The name of the file to find
      * @returns The file/s if found, undefined otherwise
      */
-    public async findFileByName(fileName: string): Promise<TFile | Array<TFile> | undefined> {
-        await this.getFileCache();
+    public findFileByName(fileName: string): TFile | Array<TFile> | undefined {
         const foundFile = this.fileCache?.get(fileName);
         if (foundFile) {
             return foundFile;
@@ -324,11 +346,21 @@ export default class FileCacheLib {
      * @param filePath The path of the file to find
      * @returns The file/s if found, undefined otherwise
      */
-    public async findFileByPath(filePath: string): Promise<TFile | Array<TFile> | undefined> {
-        await this.getFileCache();
-        const oldFileName = this.getFileNameFromPath(filePath);
-        if (!oldFileName) { console.error("Old file name not available"); return; }
-        return this.findFileByName(oldFileName);
+    public findFileByPath(filePath: string): TFile | Array<TFile> | undefined {
+        const fileName = this.getFileNameFromPath(filePath);
+        if (!fileName) { console.error("File name not available"); return undefined; }
+        return this.findFileByName(fileName);
+    }
+
+    /**
+     * Returns the file from the file cache
+     * @param wikilink The wikilink of the file to find
+     * @returns The file/s if found, undefined otherwise
+     */
+    public findFileByWikilink(wikilink: string): TFile | Array<TFile> | undefined {
+        const fileName = this.getFileNameFromWikilink(wikilink);
+        if (!fileName) { console.error("File name not available"); return undefined; }
+        return this.findFileByName(fileName);
     }
 
 }
