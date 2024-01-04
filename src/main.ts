@@ -3,14 +3,7 @@ import { Plugin } from 'obsidian';
 import Global from 'src/classes/global';
 import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/settingsTab';
-
-const DEFAULT_SETTINGS: PrjSettings = {
-	user: {
-		"name": ""
-	},
-	baseTag: 'PRJ',
-	templateFolder: 'Vorlagen/'
-}
+import { DEFAULT_SETTINGS } from './types/PrjSettings';
 
 export default class Prj extends Plugin {
 	settings: PrjSettings;
