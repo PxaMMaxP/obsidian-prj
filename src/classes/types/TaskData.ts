@@ -1,8 +1,10 @@
-import IPrjData from "./interfaces/IPrjData";
-import IPrjTaskManagement from "./interfaces/IPrjTaskManagement";
-import { Status, Priority, Energy } from "./types/PrjTypes";
+import IPrjData from "../interfaces/IPrjData";
+import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
+import { Status, Priority, Energy, FileType, FileSubType } from "./PrjTypes";
 
 export default class TaskData implements IPrjData, IPrjTaskManagement {
+    type: FileType | null | undefined;
+    subType: FileSubType | null | undefined;
     title: string | null | undefined;
     description: string | null | undefined;
     status: Status | null | undefined;
@@ -19,5 +21,8 @@ export default class TaskData implements IPrjData, IPrjTaskManagement {
         this.energy = data.energy !== undefined ? data.energy : undefined;
         this.due = data.due !== undefined ? data.due : undefined;
         this.tags = data.tags !== undefined ? data.tags : undefined;
+        this.type = data.type !== undefined ? data.type : undefined;
+        this.subType = data.subType !== undefined ? data.subType : undefined;
     }
+
 }

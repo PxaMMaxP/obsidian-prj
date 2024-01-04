@@ -1,8 +1,6 @@
 import { Plugin } from 'obsidian';
 import Global from 'src/classes/global';
-import FileCacheLib from 'src/classes/libs/FileCacheLib';
 import MarkdownBlockProcessor from 'src/classes/libs/MarkdownBlockProcessor';
-import MetadataCache from 'src/classes/libs/MetadataCache';
 import { SettingTab } from 'src/classes/settingsTab';
 
 // Remember to rename these classes and interfaces!
@@ -27,16 +25,17 @@ export default class Prj extends Plugin {
 		this.addSettingTab(new SettingTab(this.app, this));
 
 		if (this.app.workspace.layoutReady) {
-			this.onLayoutReady();
+			await this.onLayoutReady();
 		} else {
 			this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
 		}
 	}
 
-	onLayoutReady(): void {
+	async onLayoutReady(): Promise<void> {
 		console.log("Layout ready");
 
 		new Global(this.app, this.settings);
+		await Global.getInstance().awaitCacheInitialization();
 
 		this.registerMarkdownCodeBlockProcessor('prj', MarkdownBlockProcessor.parseSource);
 

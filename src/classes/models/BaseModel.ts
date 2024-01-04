@@ -1,15 +1,17 @@
 import { TFile } from "obsidian";
 import Global from "../global";
 import { TransactionModel } from "./TransactionModel";
+import { YamlKeyMap } from "../types/YamlKeyMap";
 
 export class BaseModel<T extends object> extends TransactionModel<T> {
-    private app = Global.getInstance().app;
+    protected app = Global.getInstance().app;
     private _file: TFile;
     public get file(): TFile {
         return this._file;
     }
     private ctor: new (data?: Partial<T>) => T;
     private dataProxy: T;
+    private yamlKeyMap: YamlKeyMap | undefined;
 
     protected get _data(): Partial<T> {
         if (this.dataProxy) {
@@ -18,7 +20,17 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         const frontmatter = this.getMetadata();
         if (!frontmatter) {
             console.error('Frontmatter not found');
-            return new this.ctor();
+            const emptyObject = new this.ctor();
+            return emptyObject;
+        }
+
+        if (this.yamlKeyMap) {
+            for (const key in this.yamlKeyMap) {
+                if (frontmatter[this.yamlKeyMap[key]]) {
+                    frontmatter[key] = frontmatter[this.yamlKeyMap[key]];
+                    delete frontmatter[this.yamlKeyMap[key]];
+                }
+            }
         }
 
         this.initProxy(frontmatter as Partial<T>);
@@ -30,6 +42,12 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         const dataObject: T = new this.ctor(values);
         for (const key in dataObject) {
             this._data[key] = values[key];
+        }
+    }
+
+    private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
+        if (yamlKeyMap) {
+            this.yamlKeyMap = yamlKeyMap;
         }
     }
 
@@ -70,12 +88,13 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         })();
     }
 
-    constructor(file: TFile, ctor: new (data?: Partial<T>) => T) {
+    constructor(file: TFile, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
         super((update) => {
             this.frontmatter = update as Record<string, unknown>;
         });
         this._file = file;
         this.ctor = ctor;
+        this.initYamlKeyMap(yamlKeyMap);
     }
 
     private getMetadata(): Record<string, unknown> | null {
@@ -91,6 +110,9 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
 
     private updateNestedFrontmatterObjects(frontmatter: Record<string, unknown>, updates: object) {
         Object.entries(updates).forEach(([key, value]) => {
+            if (this.yamlKeyMap && this.yamlKeyMap[key]) {
+                key = this.yamlKeyMap[key];
+            }
             if (typeof value === 'object' && value !== undefined && value !== null && frontmatter[key]) {
                 this.updateNestedFrontmatterObjects(frontmatter[key] as Record<string, unknown>, value);
             } else if (value !== undefined) {
