@@ -1,8 +1,38 @@
-/*
+.prj-table {
+        width: 100%;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.prj-table .prj-table-header .prj-table-header-row, .prj-table > .prj-table-body > .prj-table-row {
+    margin: 1em 0 0 1em;
+    text-align: left;
+}
 
-If your plugin does not need CSS, delete this file.
+.prj-table .prj-table-header .prj-table-header-row .prj-table-header-cell {
+    max-width: 100%;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: solid;
+    font-weight: 550;
+    font-size: large;
+}
 
-*/
+.prj-table .prj-table-body .prj-table-row .prj-table-cell {
+    max-width: 100%;
+    border: none;
+    text-align: left;
+    font-weight: 380;
+    font-size: normal;
+}
+
+.prj-table .prj-table-body .prj-table-row:hover {
+    background-color: var(--table-row-background-hover) !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.odd-row {
+    background-color: var(--table-row-background);
+}
+
+.prj-table>.prj-table-body>.prj-table-row.even-row {
+    background-color: var(--table-row-alt-background);
+}
