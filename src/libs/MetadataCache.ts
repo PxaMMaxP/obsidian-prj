@@ -1,6 +1,6 @@
 // Note: MetadataCache class
 
-import Global from "../global";
+import Global from "../classes/global";
 import { App, CachedMetadata, TFile } from "obsidian";
 
 /**

@@ -1,16 +1,13 @@
+import { PrjSettings } from 'src/types/PrjSettings';
 import { Plugin } from 'obsidian';
 import Global from 'src/classes/global';
-import MarkdownBlockProcessor from 'src/classes/libs/MarkdownBlockProcessor';
+import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/settingsTab';
 
-// Remember to rename these classes and interfaces!
-
-export interface PrjSettings {
-	baseTag: string;
-	templateFolder: string;
-}
-
 const DEFAULT_SETTINGS: PrjSettings = {
+	user: {
+		"name": ""
+	},
 	baseTag: 'PRJ',
 	templateFolder: 'Vorlagen/'
 }

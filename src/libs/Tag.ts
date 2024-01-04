@@ -1,12 +1,12 @@
 // Note: TagLib class
 
-import { DvAPIInterface } from "obsidian-dataview/lib/typings/api";
 import Global from 'src/classes/global';
 import { App } from 'obsidian';
+import MetadataCache from './MetadataCache';
 
-export default class TagLib {
-    dv: DvAPIInterface = Global.getInstance().dv;
+export default class Tag {
     app: App = Global.getInstance().app;
+    metadataCache: MetadataCache = Global.getInstance().metadataCache;
 
     /**
      * Checks if the tag is a valid tag array
@@ -99,7 +99,15 @@ export default class TagLib {
             tag = `#${tag}`;
         }
 
-        const existFile = this.dv.pages(tag, '').first();
+        const existFile = this.metadataCache.Cache.find(file => {
+            const tags = file.metadata?.frontmatter?.tags;
+            if (typeof tags === 'string') {
+                return tags === tag;
+            } else if (Array.isArray(tags)) {
+                return tags.includes(tag);
+            }
+            return false;
+        });
 
         return existFile ? true : false;
     }

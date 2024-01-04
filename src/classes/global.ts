@@ -1,12 +1,12 @@
-import { PrjSettings } from "main";
+import { PrjSettings } from 'src/types/PrjSettings';
 import { App } from "obsidian";
-import FileCacheLib from "./libs/FileCacheLib";
-import MetadataCache from "./libs/MetadataCache";
+import FileCache from "../libs/FileCache";
+import MetadataCache from "../libs/MetadataCache";
 
 export default class Global {
     static instance: Global;
     app: App;
-    fileCache: FileCacheLib;
+    fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
 
@@ -22,7 +22,7 @@ export default class Global {
         Global.instance = this;
 
         // File cache
-        this.fileCache = FileCacheLib.getInstance();
+        this.fileCache = FileCache.getInstance();
 
         // Metadata cache
         this.metadataCache = MetadataCache.getInstance();
@@ -35,7 +35,7 @@ export default class Global {
     }
 
     public static deconstructor() {
-        FileCacheLib.deconstructor();
+        FileCache.deconstructor();
         MetadataCache.deconstructor();
     }
 

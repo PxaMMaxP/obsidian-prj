@@ -1,13 +1,13 @@
-// Note: FileCacheLib class
+// Note: FileCache class
 
-import Global from "../global";
+import Global from "../classes/global";
 import { App, TAbstractFile, TFile } from "obsidian";
 
 /**
- * FileCacheLib class
+ * FileCache class
  * @description Caches the files in the vault with file name as the key
  */
-export default class FileCacheLib {
+export default class FileCache {
     private app: App = Global.getInstance().app;
     private fileCachePromise: Promise<void> | null = null;
     private fileCache: Map<string, TFile | null> | null = null;
@@ -15,21 +15,21 @@ export default class FileCacheLib {
     private fileCacheReady = false;
     private eventsRegistered = false;
 
-    static instance: FileCacheLib;
+    static instance: FileCache;
 
     /**
-     * Returns the FileCacheLib instance if it exists, otherwise creates a new instance
-     * @returns The FileCacheLib instance
+     * Returns the FileCache instance if it exists, otherwise creates a new instance
+     * @returns The FileCache instance
      */
     static getInstance() {
-        if (!FileCacheLib.instance) {
-            FileCacheLib.instance = new FileCacheLib();
+        if (!FileCache.instance) {
+            FileCache.instance = new FileCache();
         }
-        return FileCacheLib.instance;
+        return FileCache.instance;
     }
 
     /**
-     * Creates a new FileCacheLib instance
+     * Creates a new FileCache instance
      * @constructor
      */
     constructor() {
@@ -45,16 +45,16 @@ export default class FileCacheLib {
     }
 
     /**
-     * Deconstructs the FileCacheLib instance
+     * Deconstructs the FileCache instance
      * unregisters all events
      */
     static deconstructor() {
-        if (!FileCacheLib.instance) {
-            console.log("FileCacheLib instance not loaded");
+        if (!FileCache.instance) {
+            console.log("FileCache instance not loaded");
             return;
         }
 
-        const instance = FileCacheLib.instance;
+        const instance = FileCache.instance;
 
         if (instance.eventsRegistered) {
             instance.app.vault.off('rename', instance.renameEventHandler);
@@ -297,33 +297,6 @@ export default class FileCacheLib {
     }
 
     /**
-     * Returns the file name from the wikilink
-     * @param wikilink The wikilink to extract the file name from
-     * @returns The file name
-     * @private
-     */
-    private getFileNameFromWikilink(wikilink: string) {
-        const dismantledLinkMatch = wikilink.match(/\[\[(.+?)(?:\.(\w+))?(?:\|.*)?\]\]/);
-        if (!dismantledLinkMatch) { console.error(`Cannot extract file name from the wikilink ${wikilink}`); return; }
-        return `${dismantledLinkMatch[1]}.${dismantledLinkMatch[2]}`;
-    }
-
-    /**
-     * Returns the file cache
-     * @returns The file cache
-     * @private
-     */
-    private async getFileCache() {
-        if (this.fileCacheReady) {
-            return;
-        }
-        if (this.fileCachePromise === null) {
-            this.fileCachePromise = this.buildFileCache();
-        }
-        await this.fileCachePromise;
-    }
-
-    /**
      * Returns the file from the file cache
      * @param fileName The name of the file to find
      * @returns The file/s if found, undefined otherwise
@@ -348,17 +321,6 @@ export default class FileCacheLib {
      */
     public findFileByPath(filePath: string): TFile | Array<TFile> | undefined {
         const fileName = this.getFileNameFromPath(filePath);
-        if (!fileName) { console.error("File name not available"); return undefined; }
-        return this.findFileByName(fileName);
-    }
-
-    /**
-     * Returns the file from the file cache
-     * @param wikilink The wikilink of the file to find
-     * @returns The file/s if found, undefined otherwise
-     */
-    public findFileByWikilink(wikilink: string): TFile | Array<TFile> | undefined {
-        const fileName = this.getFileNameFromWikilink(wikilink);
         if (!fileName) { console.error("File name not available"); return undefined; }
         return this.findFileByName(fileName);
     }

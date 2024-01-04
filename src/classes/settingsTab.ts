@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import Prj from 'main';
+import Prj from 'src/main';
+
 
 export class SettingTab extends PluginSettingTab {
     plugin: Prj;
@@ -14,6 +15,7 @@ export class SettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
+        // Base tag for all related files
         new Setting(containerEl)
             .setName('Base Tag')
             .setDesc('The Base Tag for all Elements')
@@ -24,15 +26,28 @@ export class SettingTab extends PluginSettingTab {
                     this.plugin.settings.baseTag = value;
                     await this.plugin.saveSettings();
                 }));
-        
+
+        // Template Folder
         new Setting(containerEl)
             .setName('Template Folder')
             .setDesc('The Folder where all Templates are stored')
             .addText(text => text
-                .setPlaceholder('#YourTemplateFolder')
+                .setPlaceholder('YourTemplateFolder')
                 .setValue(this.plugin.settings.templateFolder)
                 .onChange(async (value) => {
                     this.plugin.settings.templateFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // User information
+        new Setting(containerEl)
+            .setName('User Information')
+            .setDesc('The User Information for the Project')
+            .addText(text => text
+                .setPlaceholder('Your name')
+                .setValue(this.plugin.settings.user.name)
+                .onChange(async (value) => {
+                    this.plugin.settings.user.name = value;
                     await this.plugin.saveSettings();
                 }));
     }

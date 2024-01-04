@@ -2,39 +2,38 @@
 
 import { FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
 import * as yaml from 'js-yaml';
-import TagLib from "./TagLib";
-import Global from "../global";
-import { TaskModel } from "../models/TaskModel";
-import TaskData from "../TaskData";
-import FileCacheLib from "./FileCacheLib";
-import MetadataCache from "./MetadataCache";
+import Tag from "./Tag";
+import Global from "../classes/global";
+import { DocumentModel } from "../models/DocumentModel";
 
 export default class MarkdownBlockProcessor {
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
+        const startTime = Date.now();
         const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
         if (setting) {
-            const fileCache = FileCacheLib.getInstance();
-            const metadataCache = MetadataCache.getInstance();
-            await metadataCache.waitForCacheReady();
-            const cache = metadataCache.Cache;
+            const global = Global.getInstance();
+            await global.metadataCache.waitForCacheReady();
+            const cache = global.metadataCache.Cache;
 
-            const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Task" && file.file.path !== ctx.sourcePath);
-
+            const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Metadata" && file.file.path !== ctx.sourcePath);
+            const documents = allTaskFiles.map(file => new DocumentModel(file.file));
             setting.source = ctx.sourcePath;
             //const allFile = await DataviewWrapper.getAllMetadataFiles(null, ['Task'], setting.source);
 
-            let file = await fileCache.findFileByPath(setting.source);
+            let file = await global.fileCache.findFileByPath(setting.source);
             if (!file) {
                 throw new Error(`File ${ctx.sourcePath} not found`);
             }
             if (Array.isArray(file)) {
                 file = file[0];
             }
-            const task = new TaskModel(file);
+            const task = new DocumentModel(file);
+            console.log(task.relatedFiles);
+            task.data.annotationTarget = "Super Lustiger...";
             const tags = task.data.tags as string[];
             setting.container = el;
-            const tagLib = new TagLib();
+            const tagLib = new Tag();
             switch (setting.type) {
                 case "Documents":
                     if (tags) {
@@ -49,6 +48,9 @@ export default class MarkdownBlockProcessor {
                 default:
                     break;
             }
+
+            const endTime = Date.now();
+            console.log(`MarkdownBlockProcessor (${documents.length} Documents) runs for ${endTime - startTime}ms`);
         }
 
     }

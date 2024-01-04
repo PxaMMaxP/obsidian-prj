@@ -1,6 +1,6 @@
 // Note: SearchLib class
 
-export default class SearchLib {
+export default class Search {
 
     /**
      * Parses the search text into an array of objects that represent the search terms

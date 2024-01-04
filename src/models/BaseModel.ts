@@ -1,5 +1,5 @@
 import { TFile } from "obsidian";
-import Global from "../global";
+import Global from "../classes/global";
 import { TransactionModel } from "./TransactionModel";
 import { YamlKeyMap } from "../types/YamlKeyMap";
 

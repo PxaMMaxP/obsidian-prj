@@ -4,7 +4,8 @@ import { TFile } from "obsidian";
 import { BaseModel } from "./BaseModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
-import Global from "../global";
+import Global from "../classes/global";
+import Helper from "../libs/Helper";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
     private fileCache = Global.getInstance().fileCache;
@@ -28,7 +29,9 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
             const relatedFiles = this.data.relatedFiles;
             if (relatedFiles) {
                 relatedFiles.map((relatedFile) => {
-                    const file = this.fileCache.findFileByWikilink(relatedFile);
+                    const wikilinkData = Helper.extractDataFromWikilink(relatedFile);
+                    const mdFilename = wikilinkData.basename ? `${wikilinkData.basename}.md` : "";
+                    const file = this.fileCache.findFileByName(mdFilename);
                     if (file instanceof TFile && file.path !== this.file.path) {
                         this._relatedFiles?.push(new DocumentModel(file));
                     }
