@@ -33,7 +33,8 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
             }
         }
 
-        this.initProxy(frontmatter as Partial<T>);
+        const dataObject: T = new this.ctor(frontmatter as Partial<T>);
+        this.dataProxy = this.createProxy(dataObject) as T;
 
         return this.dataProxy;
     }
@@ -45,29 +46,35 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
     }
 
+    private createProxy(obj: Partial<T>, path = ""): unknown {
+        return new Proxy(obj, {
+            get: (target, property, receiver) => {
+                const propertyKey = this.getPropertyKey(property);
+                const value = Reflect.get(target, property, receiver);
+                const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
+                if (value && typeof value === 'object') {
+                    return this.createProxy(value, newPath);
+                }
+                return value;
+            },
+            set: (target, property, value, receiver) => {
+                const propertyKey = this.getPropertyKey(property);
+                const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
+                Reflect.set(target, property, value, receiver);
+                this.updateKeyValue(newPath, value);
+                return true;
+            },
+        });
+    }
+
     private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
         if (yamlKeyMap) {
             this.yamlKeyMap = yamlKeyMap;
         }
     }
 
-    private initProxy(values?: Partial<T>) {
-        const dataObject: T = new this.ctor(values);
-        this.dataProxy = new Proxy(dataObject, {
-            get: (target, property) => {
-                return target[property as keyof T];
-            },
-            set: (target, property, value) => {
-                target[property as keyof T] = value;
-                this.updateKeyValue(property as string, value)
-                return true;
-            },
-            deleteProperty: (target, property) => {
-                delete target[property as keyof T];
-                this.updateKeyValue(property as string, null)
-                return true;
-            }
-        });
+    private getPropertyKey(property: string | symbol): string {
+        return typeof property === 'symbol' ? property.toString() : property;
     }
 
     public get frontmatter(): Record<string, unknown> {
