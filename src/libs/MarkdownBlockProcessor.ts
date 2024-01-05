@@ -37,6 +37,7 @@ export default class MarkdownBlockProcessor {
             const docDate = task.data.date ?? "";
             const desc = task.data.description ?? "";
             const tags = task.data.tags as string[];
+            const status = task.data.sender ?? "";
             let firstFile = task.relatedFiles?.length ? task.relatedFiles[0] : undefined;
             setting.container = el;
             const tagLib = new Tag();
@@ -133,6 +134,20 @@ export default class MarkdownBlockProcessor {
                                                 })
                                             );
                                     }
+                                } else if (i === 4) {
+                                    new EditableDataView(cellData)
+                                        .addDropdown(dropdown => dropdown
+                                            .setOptions([
+                                                { value: "Task", text: "Task" },
+                                                { value: "Document", text: "Document" },
+                                                { value: "Note", text: "Note" },
+                                                { value: "Metadata", text: "Metadata" }
+                                            ])
+                                            .setValue(status)
+                                            .onSave(async (value) => {
+                                                task.data.sender = value;
+                                            })
+                                        );
                                 } else {
                                     const cellContent = document.createElement("span");
                                     cellContent.textContent = cell;

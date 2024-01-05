@@ -1,4 +1,5 @@
 import DateComponent from "./Components/DateComponent";
+import DropdownComponent from "./Components/DropdownComponent";
 import LinkComponent from "./Components/LinkComponent";
 import TextComponent from "./Components/TextComponent";
 
@@ -50,6 +51,19 @@ export default class EditableDataView {
         }
 
         this._container.appendChild(dateComponent.container);
+
+        return this;
+    }
+
+    public addDropdown(configure: (component: DropdownComponent) => void): EditableDataView {
+        const dropdownComponent = new DropdownComponent();
+        configure(dropdownComponent);
+
+        if (this.attributesList['title']) {
+            dropdownComponent.container.setAttribute('title', this.attributesList['title']);
+        }
+
+        this._container.appendChild(dropdownComponent.container);
 
         return this;
     }

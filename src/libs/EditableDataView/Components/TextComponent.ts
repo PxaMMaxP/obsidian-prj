@@ -66,8 +66,8 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
     protected async saveChanges() {
         if (this.setOnSave) {
             await this.setOnSave(this.input.value);
-            this.disableEdit();
         }
+        this.disableEdit();
     }
 
     protected enableEdit() {
