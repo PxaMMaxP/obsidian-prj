@@ -3,7 +3,7 @@
 import { FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
 import * as yaml from 'js-yaml';
 import Tag from "./Tag";
-import Global from "../classes/global";
+import Global from "../classes/Global";
 import { DocumentModel } from "../models/DocumentModel";
 
 export default class MarkdownBlockProcessor {
@@ -15,6 +15,7 @@ export default class MarkdownBlockProcessor {
             const global = Global.getInstance();
             await global.metadataCache.waitForCacheReady();
             const cache = global.metadataCache.Cache;
+            const logger = global.logger;
 
             const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Metadata" && file.file.path !== ctx.sourcePath);
             const documents = allTaskFiles.map(file => new DocumentModel(file.file));
@@ -29,7 +30,7 @@ export default class MarkdownBlockProcessor {
                 file = file[0];
             }
             const task = new DocumentModel(file);
-            console.log(task.relatedFiles);
+            logger.debug("task.relatedFiles", task.relatedFiles);
             task.data.annotationTarget = "Super Lustiger...";
             const tags = task.data.tags as string[];
             setting.container = el;
@@ -50,7 +51,7 @@ export default class MarkdownBlockProcessor {
             }
 
             const endTime = Date.now();
-            console.log(`MarkdownBlockProcessor (${documents.length} Documents) runs for ${endTime - startTime}ms`);
+            logger.debug(`MarkdownBlockProcessor (${documents.length} Documents) runs for ${endTime - startTime}ms`);
         }
 
     }

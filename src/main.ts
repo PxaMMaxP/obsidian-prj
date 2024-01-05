@@ -1,9 +1,9 @@
 import { PrjSettings } from 'src/types/PrjSettings';
 import { Plugin } from 'obsidian';
-import Global from 'src/classes/global';
 import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/settingsTab';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
+import Global from './classes/Global';
 
 export default class Prj extends Plugin {
 	settings: PrjSettings;

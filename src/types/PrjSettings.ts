@@ -1,4 +1,5 @@
 export interface PrjSettings {
+    logLevel: string;
     user: Record<string, string>;
     documentSettings: Record<string, string>;
     baseTag: string;
@@ -6,6 +7,7 @@ export interface PrjSettings {
 }
 
 export const DEFAULT_SETTINGS: PrjSettings = {
+    logLevel: "none",
     user: {
         "name": "",
         "email": "",

@@ -1,6 +1,7 @@
 // Note: MetadataCache class
 
-import Global from "../classes/global";
+import Logging from "src/classes/Logging";
+import Global from "../classes/Global";
 import { App, CachedMetadata, TFile } from "obsidian";
 
 /**
@@ -17,6 +18,7 @@ export class FileMetadata { file: TFile; metadata: CachedMetadata }
  */
 export default class MetadataCache {
     private app: App = Global.getInstance().app;
+    private logger: Logging = Global.getInstance().logger;
     private metadataCachePromise: Promise<void> | null = null;
     private metadataCache: Map<string, FileMetadata> | null = null;
     private metadataCacheReady = false;
@@ -33,7 +35,7 @@ export default class MetadataCache {
         if (this.metadataCacheReady && this.metadataCache) {
             return Array.from(this.metadataCache.values());
         } else {
-            console.error("Metadata cache not initialized");
+            this.logger.error("Metadata cache not initialized");
             return [];
         }
     }
@@ -60,7 +62,7 @@ export default class MetadataCache {
 
         if (!this.metadataCache) {
             this.buildMetadataCache().then(() => {
-                console.log("Metadata cache built");
+                this.logger.debug("Metadata cache built");
                 this.registerEvents();
             });
         }
@@ -72,7 +74,7 @@ export default class MetadataCache {
      */
     static deconstructor() {
         if (!MetadataCache.instance) {
-            console.log("Metadata cache instance not loaded");
+            Global.getInstance().logger.error("Metadata cache instance not loaded");
             return;
         }
 
@@ -85,11 +87,11 @@ export default class MetadataCache {
 
             instance.eventsRegistered = false;
 
-            console.log("Metadata cache events unregistered");
+            Global.getInstance().logger.debug("Metadata cache events unregistered");
             return;
         }
 
-        console.log("Metadata cache events not registered");
+        Global.getInstance().logger.debug("Metadata cache events not registered");
     }
 
     /**
@@ -128,7 +130,7 @@ export default class MetadataCache {
         this.metadataCacheReady = true;
 
         const endTime = Date.now();
-        console.log(`Metadata cache for ${allFiles.length} files built in ${endTime - startTime}ms`);
+        this.logger.debug(`Metadata cache for ${allFiles.length} files built in ${endTime - startTime}ms`);
     }
 
     /**
@@ -141,10 +143,10 @@ export default class MetadataCache {
             if (metadata) {
                 this.metadataCache.set(file.path, { file, metadata });
             } else {
-                console.error(`No metadata found for file ${file.path}`);
+                this.logger.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            console.error("Metadata cache not initialized");
+            this.logger.error("Metadata cache not initialized");
         }
     }
 
@@ -156,9 +158,9 @@ export default class MetadataCache {
         if (this.metadataCache) {
             this.metadataCache.delete(file.path);
         } else {
-            console.error("Metadata cache not initialized");
+            this.logger.error("Metadata cache not initialized");
         }
-        console.log(`Metadata cache entry for file ${file.path} deleted`);
+        this.logger.debug(`Metadata cache entry for file ${file.path} deleted`);
     }
 
     /**
@@ -172,14 +174,14 @@ export default class MetadataCache {
             if (entry && metadata) {
                 entry.metadata = metadata;
             } else if (!entry) {
-                console.error(`No metadata cache entry found for file ${file.path}`);
+                this.logger.warn(`No metadata cache entry found for file ${file.path}`);
             } else {
-                console.error(`No metadata found for file ${file.path}`);
+                this.logger.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            console.error("Metadata cache not initialized");
+            this.logger.error("Metadata cache not initialized");
         }
-        console.log(`Metadata cache entry for file ${file.path} updated`);
+        this.logger.debug(`Metadata cache entry for file ${file.path} updated`);
     }
 
     /**
@@ -193,12 +195,12 @@ export default class MetadataCache {
             if (entry) {
                 entry.file = newFile;
             } else {
-                console.error(`No metadata cache entry found for file ${oldPath}`);
+                this.logger.warn(`No metadata cache entry found for file ${oldPath}`);
             }
         } else {
-            console.error("Metadata cache not initialized");
+            this.logger.error("Metadata cache not initialized");
         }
-        console.log(`Metadata cache entry for file ${oldPath} renamed to ${newFile.path}`);
+        this.logger.debug(`Metadata cache entry for file ${oldPath} renamed to ${newFile.path}`);
     }
 
     /**
@@ -207,7 +209,7 @@ export default class MetadataCache {
      * @param oldPath Old path of the file
      */
     private renameEventHandler(file: TFile, oldPath: string) {
-        console.log(`File ${file.path} renamed to ${oldPath}`);
+        this.logger.debug(`File ${file.path} renamed to ${oldPath}`);
         this.renameEntry(file, oldPath);
     }
 
@@ -216,7 +218,7 @@ export default class MetadataCache {
      * @param file Deleted file object
      */
     private deleteEventHandler(file: TFile) {
-        console.log(`File ${file.path} deleted`);
+        this.logger.debug(`File ${file.path} deleted`);
         this.deleteEntry(file);
     }
 
@@ -247,7 +249,7 @@ export default class MetadataCache {
 
             this.eventsRegistered = true;
 
-            console.log("Metadata cache events registered");
+            this.logger.debug("Metadata cache events registered");
         }
     }
 

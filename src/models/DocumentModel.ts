@@ -4,7 +4,7 @@ import { TFile } from "obsidian";
 import { BaseModel } from "./BaseModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
-import Global from "../classes/global";
+import Global from "../classes/Global";
 import Helper from "../libs/Helper";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
