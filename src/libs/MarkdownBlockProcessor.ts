@@ -153,7 +153,7 @@ export default class MarkdownBlockProcessor {
             }
 
             const endTime = Date.now();
-            logger.debug(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
+            console.log(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
         }
 
     }
