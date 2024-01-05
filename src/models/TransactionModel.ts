@@ -26,10 +26,21 @@ export class TransactionModel<T> {
     }
 
     protected updateKeyValue(key: string, value: unknown): void {
+        const keys = key.split('.');
+        let current = this.changes as Record<string, unknown>;
+
+        keys.forEach((k, index) => {
+            if (index === keys.length - 1) {
+                current[k] = value;
+            } else {
+                current[k] = current[k] || {};
+                current = current[k] as Record<string, unknown>;
+            }
+        });
+
         if (!this.isTransactionActive) {
-            this.writeChanges({ [key]: value } as unknown as T);
-        } else {
-            (this.changes as Record<string, unknown>)[key] = value;
+            this.writeChanges(this.changes as T);
+            this.changes = {};
         }
     }
 
