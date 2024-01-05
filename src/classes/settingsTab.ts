@@ -15,6 +15,18 @@ export class SettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
+        // Log Level
+        new Setting(containerEl)
+            .setName('Log Level')
+            .setDesc('The log level to use')
+            .addText(text => text
+                .setPlaceholder('none | debug | info | warn | error')
+                .setValue(this.plugin.settings.logLevel)
+                .onChange(async (value) => {
+                    this.plugin.settings.logLevel = value;
+                    await this.plugin.saveSettings();
+                }));
+
         // Base tag for all related files
         new Setting(containerEl)
             .setName('Base Tag')

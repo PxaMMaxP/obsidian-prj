@@ -2,6 +2,7 @@ import { PrjSettings } from 'src/types/PrjSettings';
 import { App } from "obsidian";
 import FileCache from "../libs/FileCache";
 import MetadataCache from "../libs/MetadataCache";
+import Logging, { LoggingLevel } from './Logging';
 
 export default class Global {
     static instance: Global;
@@ -9,6 +10,7 @@ export default class Global {
     fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
+    logger: Logging;
 
     constructor(app: App, settings: PrjSettings) {
         // Obsidian App
@@ -17,6 +19,8 @@ export default class Global {
         }
         this.app = app;
         this.settings = settings;
+
+        this.logger = new Logging(this.settings.logLevel as LoggingLevel, "Prj");
 
         // Singleton; before creating the cache instances, because they need the app instance
         Global.instance = this;
@@ -30,8 +34,10 @@ export default class Global {
     }
 
     public async awaitCacheInitialization() {
+        this.logger.debug("Waiting for cache initialization");
         await this.fileCache.waitForCacheReady();
         await this.metadataCache.waitForCacheReady();
+        this.logger.debug("Cache initialized");
     }
 
     public static deconstructor() {

@@ -1,10 +1,12 @@
 import { TFile } from "obsidian";
-import Global from "../classes/global";
+import Global from "../classes/Global";
 import { TransactionModel } from "./TransactionModel";
 import { YamlKeyMap } from "../types/YamlKeyMap";
+import Logging from "src/classes/Logging";
 
 export class BaseModel<T extends object> extends TransactionModel<T> {
     protected app = Global.getInstance().app;
+    private logger: Logging = Global.getInstance().logger;
     private _file: TFile;
     public get file(): TFile {
         return this._file;
@@ -19,7 +21,7 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
         const frontmatter = this.getMetadata();
         if (!frontmatter) {
-            console.error('Frontmatter not found');
+            this.logger.error('Frontmatter not found');
             const emptyObject = new this.ctor();
             return emptyObject;
         }
@@ -88,9 +90,9 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
                     this.updateNestedFrontmatterObjects(frontmatter, value);
                     return frontmatter;
                 });
-                console.info(`Frontmatter for file ${this._file.path} successfully updated.`);
+                this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
             } catch (error) {
-                console.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
+                this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
             }
         })();
     }
@@ -110,7 +112,7 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         if (cachedMetadata && cachedMetadata.frontmatter) {
             return cachedMetadata.frontmatter as Record<string, unknown>;
         } else {
-            console.warn(`No Metadata found for ${this._file.path}`);
+            this.logger.warn(`No Metadata found for ${this._file.path}`);
             return null;
         }
     }

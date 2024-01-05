@@ -1,6 +1,6 @@
 // Note: TagLib class
 
-import Global from 'src/classes/global';
+import Global from 'src/classes/Global';
 import { App } from 'obsidian';
 import MetadataCache from './MetadataCache';
 
