@@ -1,20 +1,21 @@
 import { setIcon } from "obsidian";
+import BaseComponent from "./BaseComponent";
 
-export default class TextComponent {
-    public get container(): HTMLElement {
-        return this._container;
-    }
-    private _container: HTMLElement;
-    private label: HTMLElement;
-    private input: HTMLInputElement;
-    private editButton: HTMLButtonElement;
-    private cancelButton: HTMLButtonElement;
-    private saveButton: HTMLButtonElement;
-    private _value: string;
-    private setOnSave: ((value: string) => Promise<void>) | undefined;
+export default class TextComponent<T extends TextComponent<any>> extends BaseComponent {
+    protected _container: HTMLElement;
+    protected label: HTMLElement;
+    protected input: HTMLInputElement;
+    protected suggestionDataList: HTMLDataListElement;
+    protected editButton: HTMLButtonElement;
+    protected cancelButton: HTMLButtonElement;
+    protected saveButton: HTMLButtonElement;
+    protected _value: string;
+    protected setOnSave: ((value: string) => Promise<void | { href: string, text: string }>) | undefined;
 
     constructor() {
+        super();
         this._container = document.createElement('div');
+        this.container.appendChild(this._container);
         this._container.classList.add('editable-data-view');
         this._container.classList.add('editable-text-input');
 
@@ -37,8 +38,7 @@ export default class TextComponent {
         this.editButton.classList.add('editable-data-view');
         this.editButton.classList.add('button');
         setIcon(this.editButton, 'pencil');
-        const editCallback = this.onEdit.bind(this);
-        this.editButton.addEventListener('click', editCallback);
+        this.editButton.addEventListener('click', () => this.enableEdit());
 
         this.cancelButton = document.createElement('button');
         this._container.appendChild(this.cancelButton);
@@ -46,8 +46,7 @@ export default class TextComponent {
         this.cancelButton.classList.add('button');
         this.cancelButton.classList.add('hidden');
         setIcon(this.cancelButton, 'x');
-        const cancelCalback = this.onCancel.bind(this);
-        this.cancelButton.addEventListener('click', cancelCalback);
+        this.cancelButton.addEventListener('click', () => this.cancelChanges());
 
         this.saveButton = document.createElement('button');
         this._container.appendChild(this.saveButton);
@@ -55,24 +54,23 @@ export default class TextComponent {
         this.saveButton.classList.add('button');
         this.saveButton.classList.add('hidden');
         setIcon(this.saveButton, 'check');
-        const saveCallback = this._onSave.bind(this);
-        this.saveButton.addEventListener('click', saveCallback);
+        this.saveButton.addEventListener('click', () => this.saveChanges());
     }
 
-    private onCancel() {
+    protected cancelChanges() {
         this.label.dataset.value = this._value;
         this.input.value = this._value;
-        this.offEdit();
+        this.disableEdit();
     }
 
-    private async _onSave() {
+    protected async saveChanges() {
         if (this.setOnSave) {
             await this.setOnSave(this.input.value);
-            this.offEdit();
+            this.disableEdit();
         }
     }
 
-    private onEdit() {
+    protected enableEdit() {
         console.log('edit');
         this.input.readOnly = false;
         this.editButton.classList.add('hidden');
@@ -82,27 +80,60 @@ export default class TextComponent {
         this.input.focus();
     }
 
-    private offEdit() {
+    protected disableEdit() {
         this.input.readOnly = true;
+        this.input.blur();
         this.editButton.classList.remove('hidden');
         this.cancelButton.classList.add('hidden');
         this.saveButton.classList.add('hidden');
     }
 
-    public setPlaceholder(placeholder: string): TextComponent {
+    public setPlaceholder(placeholder: string): T {
         this.label.dataset.value = placeholder;
         this.input.placeholder = placeholder;
-        return this;
+        return this as unknown as T;
     }
 
-    public setValue(value: string): TextComponent {
+    public setSuggestions(suggestions: string[]): T {
+        const id = Math.random().toString(36).substring(2, 10);
+        this.input.setAttribute('list', id);
+        this.suggestionDataList = document.createElement('datalist');
+        this.label.appendChild(this.suggestionDataList);
+        this.suggestionDataList.id = id;
+        suggestions.forEach(suggestion => {
+            const option = document.createElement('option');
+            option.value = suggestion;
+            this.suggestionDataList.appendChild(option);
+        });
+        return this as unknown as T;
+    }
+
+    private overwriteSuggestions(suggestions: string[]): T {
+        this.suggestionDataList.innerHTML = '';
+        suggestions.forEach(suggestion => {
+            const option = document.createElement('option');
+            option.value = suggestion;
+            this.suggestionDataList.appendChild(option);
+        });
+        return this as unknown as T;
+    }
+
+    public setOnChange(callback: (value: string) => Promise<string[]>): T {
+        this.input.addEventListener('input', async () => {
+            const suggestions = await callback(this.input.value);
+            this.overwriteSuggestions(suggestions);
+        });
+        return this as unknown as T;
+    }
+
+    public setValue(value: string): T {
         this.input.value = value;
         this.label.dataset.value = value;
-        return this;
+        return this as unknown as T;
     }
 
-    public onSave(callback: (value: string) => Promise<void>): TextComponent {
+    public onSave(callback: (value: string) => Promise<void | { href: string, text: string }>): T {
         this.setOnSave = callback;
-        return this;
+        return this as unknown as T;
     }
 }
