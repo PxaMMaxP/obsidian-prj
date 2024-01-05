@@ -4,6 +4,7 @@ export default interface IPrjDocument {
     type: FileType | null | undefined;
     subType: FileSubType | null | undefined;
     title: string | null | undefined;
+    date: string | null | undefined;
     description: string | null | undefined;
     sender: string | null | undefined;
     recipient: string | null | undefined;

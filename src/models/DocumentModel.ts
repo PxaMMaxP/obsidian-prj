@@ -6,6 +6,7 @@ import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
 import Global from "../classes/global";
 import Helper from "../libs/Helper";
+import { UUID } from "crypto";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
     private fileCache = Global.getInstance().fileCache;
@@ -40,6 +41,14 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
             } else { this._relatedFiles = null; }
         }
         return this._relatedFiles;
+    }
+
+    public getWikilink(text: string | undefined): string {
+        if (text) {
+            return `[[${this.file.name}|${text}]]`;
+        } else {
+            return `[[${this.file.name}]]`;
+        }
     }
 }
 

@@ -7,6 +7,7 @@ export default class DocumentData implements IPrjData, IPrjDocument {
     type: FileType | null | undefined;
     subType: FileSubType | undefined;
     title: string | null | undefined;
+    date: string | null | undefined;
     description: string | null | undefined;
     sender: string | null | undefined;
     recipient: string | null | undefined;
@@ -23,6 +24,7 @@ export default class DocumentData implements IPrjData, IPrjDocument {
 
     constructor(data: Partial<DocumentData>) {
         this.title = data.title !== undefined ? data.title : undefined;
+        this.date = data.date !== undefined ? data.date : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
         this.sender = data.sender !== undefined ? data.sender : undefined;
         this.recipient = data.recipient !== undefined ? data.recipient : undefined;
