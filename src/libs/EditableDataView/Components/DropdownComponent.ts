@@ -5,6 +5,7 @@ export default class DropdownComponent extends BaseComponent {
     //#region HTML Elements
     private _container: HTMLElement;
     private select: HTMLSelectElement;
+    private placeholderSpan: HTMLElement;
     private editButton: HTMLButtonElement;
     private cancelButton: HTMLButtonElement;
     private saveButton: HTMLButtonElement;
@@ -12,6 +13,8 @@ export default class DropdownComponent extends BaseComponent {
     //#region Properties
     private _value: string;
     private options: { value: string, text: string }[] = [];
+    private _editabilityEnabled = true;
+    private _isFirstEdit = true;
     //#endregion
     //#region Callbacks
     private onSaveCallback: ((value: string) => Promise<void>) | undefined;
@@ -35,7 +38,10 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     private enableEdit() {
-        console.log('edit');
+        if (this._isFirstEdit) {
+            this.onFirstEdit();
+        }
+
         this.enableOptions();
         this.select.value = this._value;
         this.select.disabled = false;
@@ -107,14 +113,42 @@ export default class DropdownComponent extends BaseComponent {
         return this;
     }
 
+    public disableEditability() {
+        this._editabilityEnabled = false;
+        return this;
+    }
+
     public finalize(): void {
         this._container = document.createElement('div');
         this._baseContainer.appendChild(this._container);
         this._container.classList.add('editable-data-view');
         this._container.classList.add('editable-select-input');
 
+        this.placeholderSpan = document.createElement('span');
+        this._container.appendChild(this.placeholderSpan);
+        this.placeholderSpan.classList.add('editable-data-view');
+        this.placeholderSpan.classList.add('dropdown-placeholder');
+        this.options.forEach(option => {
+            if (option.value === this._value) {
+                this.placeholderSpan.textContent = option.text;
+            }
+        });
+
+        if (this._editabilityEnabled) {
+            this.editButton = document.createElement('button');
+            this._container.appendChild(this.editButton);
+            this.editButton.classList.add('editable-data-view');
+            this.editButton.classList.add('button');
+            setIcon(this.editButton, 'pencil');
+            this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
+        }
+    }
+
+    private onFirstEdit() {
+        this._container.removeChild(this.placeholderSpan);
+
         this.select = document.createElement('select');
-        this._container.appendChild(this.select);
+        this._container.insertBefore(this.select, this.editButton);
         this.select.classList.add('editable-data-view');
         this.select.classList.add('select-input');
         this.select.disabled = true;
@@ -122,15 +156,8 @@ export default class DropdownComponent extends BaseComponent {
         this._setOptions();
         this._setValue();
 
-        this.editButton = document.createElement('button');
-        this._container.appendChild(this.editButton);
-        this.editButton.classList.add('editable-data-view');
-        this.editButton.classList.add('button');
-        setIcon(this.editButton, 'pencil');
-        this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
-
         this.cancelButton = document.createElement('button');
-        this._container.appendChild(this.cancelButton);
+        this._container.insertAfter(this.cancelButton, this.editButton);
         this.cancelButton.classList.add('editable-data-view');
         this.cancelButton.classList.add('button');
         this.cancelButton.classList.add('hidden');
@@ -138,11 +165,13 @@ export default class DropdownComponent extends BaseComponent {
         this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
 
         this.saveButton = document.createElement('button');
-        this._container.appendChild(this.saveButton);
+        this._container.insertAfter(this.saveButton, this.cancelButton);
         this.saveButton.classList.add('editable-data-view');
         this.saveButton.classList.add('button');
         this.saveButton.classList.add('hidden');
         setIcon(this.saveButton, 'check');
         this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
+
+        this._isFirstEdit = false;
     }
 }

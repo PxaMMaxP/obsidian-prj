@@ -1,6 +1,8 @@
 export interface PrjSettings {
     logLevel: string;
     user: Record<string, string>;
+    dateFormat: string;
+    dateFormatShort: string;
     documentSettings: Record<string, string>;
     baseTag: string;
     templateFolder: string;
@@ -8,6 +10,8 @@ export interface PrjSettings {
 
 export const DEFAULT_SETTINGS: PrjSettings = {
     logLevel: "none",
+    dateFormat: "DD.MM.YYYY",
+    dateFormatShort: "DD.MM.YY",
     user: {
         "name": "",
         "email": "",

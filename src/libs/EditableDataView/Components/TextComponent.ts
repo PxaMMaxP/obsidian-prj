@@ -1,45 +1,51 @@
 import { Component, setIcon } from "obsidian";
 import BaseComponent from "./BaseComponent";
 
-export default class TextComponent<T extends TextComponent<any>> extends BaseComponent {
+export default class TextComponent extends BaseComponent {
     //#region HTML Elements
-    protected _container: HTMLElement;
-    protected label: HTMLElement;
-    protected input: HTMLInputElement;
-    protected suggestionDataList: HTMLDataListElement;
-    protected editButton: HTMLButtonElement;
-    protected cancelButton: HTMLButtonElement;
-    protected saveButton: HTMLButtonElement;
+    private _container: HTMLElement;
+    private label: HTMLElement;
+    private input: HTMLInputElement;
+    private suggestionDataList: HTMLDataListElement;
+    private placeholderSpan: HTMLElement;
+    private editButton: HTMLButtonElement;
+    private cancelButton: HTMLButtonElement;
+    private saveButton: HTMLButtonElement;
     //#endregion
     //#region Properties
-    protected _value: string;
-    protected _placeholder: string;
-    protected _suggestions: string[];
+    private _value: string;
+    private _placeholder: string;
+    private _suggestions: string[];
+    private _editabilityEnabled = true;
+    private _isFirstEdit = true;
     //#endregion
     //#region Callbacks
-    protected onSaveCallback: ((value: string) => Promise<void | { href: string, text: string }>) | undefined;
-    protected onChangeCallback: ((value: string) => Promise<string[]>) | undefined;
+    private onSaveCallback: ((value: string) => Promise<void>) | undefined;
+    private onChangeCallback: ((value: string) => Promise<string[]>) | undefined;
     //#endregion
 
     constructor(component: Component) {
         super(component);
     }
 
-    protected cancelChanges() {
+    private cancelChanges() {
         this.label.dataset.value = this._value;
         this.input.value = this._value;
         this.disableEdit();
     }
 
-    protected async saveChanges() {
+    private async saveChanges() {
         if (this.onSaveCallback) {
             await this.onSaveCallback(this.input.value);
         }
         this.disableEdit();
     }
 
-    protected enableEdit() {
-        console.log('edit');
+    private enableEdit() {
+        if (this._isFirstEdit) {
+            this.onFirstEdit();
+        }
+
         this.input.readOnly = false;
         this.editButton.classList.add('hidden');
         this.cancelButton.classList.remove('hidden');
@@ -48,7 +54,7 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this.input.focus();
     }
 
-    protected disableEdit() {
+    private disableEdit() {
         this.input.readOnly = true;
         this.input.blur();
         this.editButton.classList.remove('hidden');
@@ -56,9 +62,9 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this.saveButton.classList.add('hidden');
     }
 
-    public setPlaceholder(placeholder: string): T {
+    public setPlaceholder(placeholder: string) {
         this._placeholder = placeholder;
-        return this as unknown as T;
+        return this;
     }
 
     private _setPlaceholder() {
@@ -68,9 +74,9 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this.input.placeholder = this._placeholder;
     }
 
-    public setSuggestions(suggestions: string[]): T {
+    public setSuggestions(suggestions: string[]) {
         this._suggestions = suggestions;
-        return this as unknown as T;
+        return this;
     }
 
     private _setSuggestions() {
@@ -89,19 +95,19 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         });
     }
 
-    private overwriteSuggestions(suggestions: string[]): T {
+    private overwriteSuggestions(suggestions: string[]) {
         this.suggestionDataList.innerHTML = '';
         suggestions.forEach(suggestion => {
             const option = document.createElement('option');
             option.value = suggestion;
             this.suggestionDataList.appendChild(option);
         });
-        return this as unknown as T;
+        return this;
     }
 
-    public setOnChange(callback: (value: string) => Promise<string[]>): T {
+    public setOnChange(callback: (value: string) => Promise<string[]>) {
         this.onChangeCallback = callback;
-        return this as unknown as T;
+        return this;
     }
 
     private _setOnChange() {
@@ -115,9 +121,9 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         });
     }
 
-    public setValue(value: string): T {
+    public setValue(value: string) {
         this._value = value;
-        return this as unknown as T;
+        return this;
     }
 
     private _setValue() {
@@ -127,9 +133,14 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this.input.value = this._value;
     }
 
-    public onSave(callback: (value: string) => Promise<void | { href: string, text: string }>): T {
+    public onSave(callback: (value: string) => Promise<void>) {
         this.onSaveCallback = callback;
-        return this as unknown as T;
+        return this;
+    }
+
+    public disableEditability() {
+        this._editabilityEnabled = false;
+        return this;
     }
 
     public finalize(): void {
@@ -138,8 +149,27 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this._container.classList.add('editable-data-view');
         this._container.classList.add('editable-text-input');
 
+        this.placeholderSpan = document.createElement('span');
+        this._container.appendChild(this.placeholderSpan);
+        this.placeholderSpan.classList.add('editable-data-view');
+        this.placeholderSpan.classList.add('text-placeholder');
+        this.placeholderSpan.textContent = this._value;
+
+        if (this._editabilityEnabled) {
+            this.editButton = document.createElement('button');
+            this._container.appendChild(this.editButton);
+            this.editButton.classList.add('editable-data-view');
+            this.editButton.classList.add('button');
+            setIcon(this.editButton, 'pencil');
+            this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
+        }
+    }
+
+    private onFirstEdit() {
+        this._container.removeChild(this.placeholderSpan);
+
         this.label = document.createElement('label');
-        this._container.appendChild(this.label);
+        this._container.insertBefore(this.label, this.editButton);
         this.label.classList.add('editable-data-view');
         this.label.classList.add('text-input-sizer');
 
@@ -157,15 +187,8 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this._setSuggestions();
         this._setOnChange();
 
-        this.editButton = document.createElement('button');
-        this._container.appendChild(this.editButton);
-        this.editButton.classList.add('editable-data-view');
-        this.editButton.classList.add('button');
-        setIcon(this.editButton, 'pencil');
-        this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
-
         this.cancelButton = document.createElement('button');
-        this._container.appendChild(this.cancelButton);
+        this._container.insertAfter(this.cancelButton, this.editButton);
         this.cancelButton.classList.add('editable-data-view');
         this.cancelButton.classList.add('button');
         this.cancelButton.classList.add('hidden');
@@ -173,11 +196,13 @@ export default class TextComponent<T extends TextComponent<any>> extends BaseCom
         this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
 
         this.saveButton = document.createElement('button');
-        this._container.appendChild(this.saveButton);
+        this._container.insertAfter(this.saveButton, this.cancelButton);
         this.saveButton.classList.add('editable-data-view');
         this.saveButton.classList.add('button');
         this.saveButton.classList.add('hidden');
         setIcon(this.saveButton, 'check');
         this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
+
+        this._isFirstEdit = false;
     }
 }

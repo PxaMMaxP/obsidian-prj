@@ -51,7 +51,8 @@
 }
 
 .editable-data-view.text-input-sizer,
-.editable-data-view.text-input {
+.editable-data-view.text-input,
+.editable-data-view.text-placeholder {
     font-size: small;
     font-family: inherit;
 }
@@ -68,6 +69,13 @@
     content: attr(data-value) ' ';
     visibility: hidden;
     white-space: pre;
+}
+
+.editable-data-view.text-placeholder {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    white-space: nowrap
 }
 
 .editable-data-view.text-input {
@@ -171,6 +179,15 @@
     border: none;
     padding: 2px 0 0 0;
     width: 100%;
+}
+
+.editable-data-view.date-placeholder {
+    font-size: small;
+    font-family: inherit;
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    white-space: nowrap
 }
 
 .editable-data-view.date-input {

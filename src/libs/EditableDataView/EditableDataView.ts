@@ -19,13 +19,14 @@ export default class EditableDataView {
         return this;
     }
 
-    public addText(configure: (component: TextComponent<any>) => void): EditableDataView {
+    public addText(configure: (component: TextComponent) => void): EditableDataView {
         const textComponent = new TextComponent(this.component);
         configure(textComponent);
         textComponent.finalize();
 
         if (this.attributesList['title']) {
-            textComponent.container.setAttribute('title', this.attributesList['title']);
+            const innerContainer = textComponent.container.getRootNode() as HTMLElement;
+            innerContainer.setAttribute('title', this.attributesList['title']);
         }
 
         this._container.append(textComponent.container);
@@ -39,7 +40,8 @@ export default class EditableDataView {
         linkComponent.finalize();
 
         if (this.attributesList['title']) {
-            linkComponent.container.setAttribute('title', this.attributesList['title']);
+            const innerContainer = linkComponent.container.getRootNode() as HTMLElement;
+            innerContainer.setAttribute('title', this.attributesList['title']);
         }
 
         this._container.appendChild(linkComponent.container);
@@ -53,7 +55,8 @@ export default class EditableDataView {
         dateComponent.finalize();
 
         if (this.attributesList['title']) {
-            dateComponent.container.setAttribute('title', this.attributesList['title']);
+            const innerContainer = dateComponent.container.getRootNode() as HTMLElement;
+            innerContainer.setAttribute('title', this.attributesList['title']);
         }
 
         this._container.append(dateComponent.container);
@@ -67,7 +70,8 @@ export default class EditableDataView {
         dropdownComponent.finalize();
 
         if (this.attributesList['title']) {
-            dropdownComponent.container.setAttribute('title', this.attributesList['title']);
+            const innerContainer = dropdownComponent.container.getRootNode() as HTMLElement;
+            innerContainer.setAttribute('title', this.attributesList['title']);
         }
 
         this._container.appendChild(dropdownComponent.container);
