@@ -1,19 +1,20 @@
 /* eslint-disable no-case-declarations */
 // Note: MarkdownBlockProcessor Class
 
-import { FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
+import { Component, FrontMatterCache, MarkdownPostProcessorContext, MarkdownRenderChild } from "obsidian";
 import * as yaml from 'js-yaml';
 import Tag from "./Tag";
 import Global from "../classes/Global";
 import { DocumentModel } from "../models/DocumentModel";
 import Table, { TableHeader } from "./Table";
 import EditableDataView from "./EditableDataView/EditableDataView";
-import Helper from "./Helper";
 
 export default class MarkdownBlockProcessor {
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const startTime = Date.now();
+        const cmp = new MarkdownRenderChild(el);
+        ctx.addChild(cmp);
         const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
         setting.source = ctx.sourcePath;
         if (setting) {
@@ -22,8 +23,8 @@ export default class MarkdownBlockProcessor {
             const cache = global.metadataCache.Cache;
             const logger = global.logger;
 
-            //const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Metadata" && file.file.path !== ctx.sourcePath);
-            //const documents = allTaskFiles.map(file => new DocumentModel(file.file));
+            const allTaskFiles = cache.filter(file => file.metadata.frontmatter?.type === "Metadata" && file.file.path !== ctx.sourcePath);
+            const documents = allTaskFiles.map(file => new DocumentModel(file.file));
             //const allFile = await DataviewWrapper.getAllMetadataFiles(null, ['Task'], setting.source);
 
             let file = await global.fileCache.findFileByPath(setting.source);
@@ -39,6 +40,7 @@ export default class MarkdownBlockProcessor {
             const desc = task.data.description ?? "";
             const tags = task.data.tags as string[];
             const status = task.data.sender ?? "";
+            const run = false;
             let firstFile = task.relatedFiles?.length ? task.relatedFiles[0] : undefined;
             setting.container = el;
             const tagLib = new Tag();
@@ -66,10 +68,43 @@ export default class MarkdownBlockProcessor {
                     }
 
                     const table = new Table(headers, "TableDebug", ["prj-table"]);
+                    const tableData: { rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean }[] = [];
                     el.appendChild(table.data.table);
-
+                    documents.forEach(documentModel => {
+                        const rowData: DocumentFragment[] = [];
+                        headers.forEach(header => {
+                            const cellData = document.createDocumentFragment();
+                            const cellContent = document.createElement("span");
+                            if (documentModel.data.hasOwnProperty(header.text)) {
+                                if (header.text === "title") {
+                                    new EditableDataView(cellData, cmp)
+                                        .addText(text => text
+                                            .setPlaceholder("Title")
+                                            .setValue(documentModel.data[header.text as keyof typeof documentModel.data]?.toString() ?? "")
+                                            .onSave(async (value: string) => {
+                                                //task.data.title = value;
+                                            })
+                                        );
+                                } else if (header.text === "date") {
+                                    new EditableDataView(cellData, cmp)
+                                        .addDate(date => date
+                                            .setValue(documentModel.data[header.text as keyof typeof documentModel.data]?.toString() ?? "")
+                                            .onSave(async (value) => {
+                                                //task.data.date = value;
+                                            })
+                                        );
+                                } else {
+                                    cellContent.textContent = documentModel.data[header.text as keyof typeof documentModel.data]?.toString() ?? "";
+                                    cellData.appendChild(cellContent);
+                                }
+                            }
+                            rowData.push(cellData);
+                        });
+                        tableData.push({ rowUid: documentModel.data.title ?? "", rowData: rowData, rowClassList: undefined, hidden: false });
+                    });
+                    table.addRows(tableData);
                     const content = setting.options.find(option => option.label === "Content")?.value;
-                    if (content) {
+                    /**if (content && run) {
                         let index = 0;
                         let i = 0;
                         content.forEach((item: any) => {
@@ -77,7 +112,7 @@ export default class MarkdownBlockProcessor {
                             item.forEach((cell: any) => {
                                 const cellData = document.createDocumentFragment();
                                 if (i === 0) {
-                                    new EditableDataView(cellData)
+                                    new EditableDataView(cellData, cmp)
                                         .addText(text => text
                                             .setPlaceholder("Title")
                                             .setValue(title)
@@ -87,7 +122,7 @@ export default class MarkdownBlockProcessor {
                                             })
                                         );
                                 } else if (i === 1) {
-                                    new EditableDataView(cellData)
+                                    new EditableDataView(cellData, cmp)
                                         .addDate(date => date
                                             .setPlaceholder("0000-00-00")
                                             .setValue(docDate)
@@ -96,8 +131,8 @@ export default class MarkdownBlockProcessor {
                                             })
                                         );
                                 } else if (i === 2) {
-                                    new EditableDataView(cellData)
-                                        .addLink(date => date
+                                    new EditableDataView(cellData, cmp)
+                                        .addLink(link => link
                                             .setAsTagLink()
                                             .setValue(`${desc}`)
                                             .setLinkValue(`#${desc}`, `#${desc}`)
@@ -109,13 +144,13 @@ export default class MarkdownBlockProcessor {
                                         );
                                 } else if (i === 3) {
                                     if (firstFile && firstFile.file) {
-                                        new EditableDataView(cellData)
-                                            .addLink(date => date
+                                        new EditableDataView(cellData, cmp)
+                                            .addLink(link => link
                                                 .setAsFileLink()
                                                 .setValue(firstFile?.file.name ?? "")
                                                 .setLinkValue(firstFile?.file.path ?? "", firstFile?.file.basename ?? "")
                                                 .setSuggestions(tags)
-                                                .setOnChange(async (value: string): Promise<string[]> => {
+                                                .onChangeCallback(async (value: string): Promise<string[]> => {
                                                     const files = cache.filter(file => file.file.basename.includes(value)).map(file => file.file.name).splice(0, 10);
                                                     return files;
                                                 })
@@ -136,7 +171,7 @@ export default class MarkdownBlockProcessor {
                                             );
                                     }
                                 } else if (i === 4) {
-                                    new EditableDataView(cellData)
+                                    new EditableDataView(cellData, cmp)
                                         .addDropdown(dropdown => dropdown
                                             .setOptions([
                                                 { value: "Task", text: "Task" },
@@ -161,14 +196,15 @@ export default class MarkdownBlockProcessor {
                             index++;
                         });
 
-                    }
+                    }**/
                     break;
                 default:
                     break;
             }
 
             const endTime = Date.now();
-            console.log(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
+            cmp.load();
+            logger.debug(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
         }
 
     }

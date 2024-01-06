@@ -24,7 +24,7 @@ export default class Prj extends Plugin {
 	async onLayoutReady(): Promise<void> {
 		console.log("Layout ready");
 
-		new Global(this.app, this.settings);
+		new Global(this, this.app, this.settings);
 		await Global.getInstance().awaitCacheInitialization();
 
 		this.registerMarkdownCodeBlockProcessor('prj', MarkdownBlockProcessor.parseSource);

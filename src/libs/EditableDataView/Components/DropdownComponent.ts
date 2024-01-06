@@ -1,51 +1,24 @@
-import { setIcon } from "obsidian";
+import { Component, setIcon } from "obsidian";
 import BaseComponent from "./BaseComponent";
 
 export default class DropdownComponent extends BaseComponent {
+    //#region HTML Elements
     private _container: HTMLElement;
     private select: HTMLSelectElement;
     private editButton: HTMLButtonElement;
     private cancelButton: HTMLButtonElement;
     private saveButton: HTMLButtonElement;
-    private options: { value: string, text: string }[] = [];
+    //#endregion
+    //#region Properties
     private _value: string;
-    private setOnSave: ((value: string) => Promise<void>) | undefined;
+    private options: { value: string, text: string }[] = [];
+    //#endregion
+    //#region Callbacks
+    private onSaveCallback: ((value: string) => Promise<void>) | undefined;
+    //#endregion
 
-    constructor() {
-        super();
-        this._container = document.createElement('div');
-        this.container.appendChild(this._container);
-        this._container.classList.add('editable-data-view');
-        this._container.classList.add('editable-select-input');
-
-        this.select = document.createElement('select');
-        this._container.appendChild(this.select);
-        this.select.classList.add('editable-data-view');
-        this.select.classList.add('select-input');
-        this.select.disabled = true;
-
-        this.editButton = document.createElement('button');
-        this._container.appendChild(this.editButton);
-        this.editButton.classList.add('editable-data-view');
-        this.editButton.classList.add('button');
-        setIcon(this.editButton, 'pencil');
-        this.editButton.addEventListener('click', () => this.enableEdit());
-
-        this.cancelButton = document.createElement('button');
-        this._container.appendChild(this.cancelButton);
-        this.cancelButton.classList.add('editable-data-view');
-        this.cancelButton.classList.add('button');
-        this.cancelButton.classList.add('hidden');
-        setIcon(this.cancelButton, 'x');
-        this.cancelButton.addEventListener('click', () => this.cancelChanges());
-
-        this.saveButton = document.createElement('button');
-        this._container.appendChild(this.saveButton);
-        this.saveButton.classList.add('editable-data-view');
-        this.saveButton.classList.add('button');
-        this.saveButton.classList.add('hidden');
-        setIcon(this.saveButton, 'check');
-        this.saveButton.addEventListener('click', () => this.saveChanges());
+    constructor(component: Component) {
+        super(component);
     }
 
     private cancelChanges() {
@@ -55,8 +28,8 @@ export default class DropdownComponent extends BaseComponent {
 
     private async saveChanges() {
         this._value = this.select.value;
-        if (this.setOnSave) {
-            await this.setOnSave(this._value);
+        if (this.onSaveCallback) {
+            await this.onSaveCallback(this._value);
         }
         this.disableEdit();
     }
@@ -82,10 +55,11 @@ export default class DropdownComponent extends BaseComponent {
 
     public setOptions(options: { value: string, text: string }[]): DropdownComponent {
         this.options = options;
-        if (this._value) {
-            this.disableOptions(this._value);
-        }
         return this;
+    }
+
+    private _setOptions() {
+        this.disableOptions();
     }
 
     private enableOptions() {
@@ -121,12 +95,54 @@ export default class DropdownComponent extends BaseComponent {
 
     public setValue(value: string): DropdownComponent {
         this._value = value;
-        this.disableOptions();
         return this;
     }
 
+    private _setValue() {
+        this.select.value = this._value;
+    }
+
     public onSave(callback: (value: string) => Promise<void>): DropdownComponent {
-        this.setOnSave = callback;
+        this.onSaveCallback = callback;
         return this;
+    }
+
+    public finalize(): void {
+        this._container = document.createElement('div');
+        this._baseContainer.appendChild(this._container);
+        this._container.classList.add('editable-data-view');
+        this._container.classList.add('editable-select-input');
+
+        this.select = document.createElement('select');
+        this._container.appendChild(this.select);
+        this.select.classList.add('editable-data-view');
+        this.select.classList.add('select-input');
+        this.select.disabled = true;
+
+        this._setOptions();
+        this._setValue();
+
+        this.editButton = document.createElement('button');
+        this._container.appendChild(this.editButton);
+        this.editButton.classList.add('editable-data-view');
+        this.editButton.classList.add('button');
+        setIcon(this.editButton, 'pencil');
+        this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
+
+        this.cancelButton = document.createElement('button');
+        this._container.appendChild(this.cancelButton);
+        this.cancelButton.classList.add('editable-data-view');
+        this.cancelButton.classList.add('button');
+        this.cancelButton.classList.add('hidden');
+        setIcon(this.cancelButton, 'x');
+        this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
+
+        this.saveButton = document.createElement('button');
+        this._container.appendChild(this.saveButton);
+        this.saveButton.classList.add('editable-data-view');
+        this.saveButton.classList.add('button');
+        this.saveButton.classList.add('hidden');
+        setIcon(this.saveButton, 'check');
+        this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
     }
 }
