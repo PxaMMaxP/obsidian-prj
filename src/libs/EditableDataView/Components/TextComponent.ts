@@ -1,175 +1,115 @@
-import { Component, setIcon } from "obsidian";
+import { Component } from "obsidian";
 import BaseComponent from "./BaseComponent";
 
 export default class TextComponent extends BaseComponent {
-    //#region HTML Elements
-    private _container: HTMLElement;
-    private label: HTMLElement;
-    private input: HTMLInputElement;
-    private suggestionDataList: HTMLDataListElement;
-    private placeholderSpan: HTMLElement;
-    private editButton: HTMLButtonElement;
-    private cancelButton: HTMLButtonElement;
-    private saveButton: HTMLButtonElement;
+    //#region base properties
+    protected editabilityEnabled = false;
+    onEnableEditCallback: () => void;
+    onDisableEditCallback: () => void;
+    onSaveCallback: () => Promise<void>;
+    onFirstEdit: () => void;
+    onFinalize: () => void;
     //#endregion
-    //#region Properties
+    //#region extended properties
+    private _onPresentation: (value: string) => string;
+    private _onSave: ((value: string) => Promise<void>);
     private _value: string;
     private _placeholder: string;
-    private _suggestions: string[];
-    private _editabilityEnabled = true;
-    private _isFirstEdit = true;
+    private _title: string;
     //#endregion
-    //#region Callbacks
-    private onSaveCallback: ((value: string) => Promise<void>) | undefined;
-    private onChangeCallback: ((value: string) => Promise<string[]>) | undefined;
+    //#region HTML Elements
+    private presentationSpan: HTMLElement;
+    private label: HTMLElement;
+    private input: HTMLInputElement;
     //#endregion
 
     constructor(component: Component) {
         super(component);
+        this.onFinalize = this.build
+        this.onFirstEdit = this.buildInput;
+        this.onEnableEditCallback = this.enableEdit;
+        this.onSaveCallback = this.save;
+        this.onDisableEditCallback = this.disableEdit;
     }
 
-    private cancelChanges() {
-        this.label.dataset.value = this._value;
-        this.input.value = this._value;
-        this.disableEdit();
+    //#region Configuration methods
+    /**
+     * Enables the editability of the component.
+     * @returns The component itself.
+     */
+    public enableEditability(): TextComponent {
+        this.editabilityEnabled = true;
+        return this;
     }
 
-    private async saveChanges() {
-        if (this.onSaveCallback) {
-            await this.onSaveCallback(this.input.value);
-        }
-        this.disableEdit();
+    /**
+     * Sets the value of the component.
+     * @param value The value to set.
+     * @returns The component itself.
+     */
+    public setValue(value: string): TextComponent {
+        this._value = value;
+        return this;
     }
 
-    private enableEdit() {
-        if (this._isFirstEdit) {
-            this.onFirstEdit();
-        }
-
-        this.input.readOnly = false;
-        this.editButton.classList.add('hidden');
-        this.cancelButton.classList.remove('hidden');
-        this.saveButton.classList.remove('hidden');
-        this._value = this.input.value;
-        this.input.focus();
-    }
-
-    private disableEdit() {
-        this.input.readOnly = true;
-        this.input.blur();
-        this.editButton.classList.remove('hidden');
-        this.cancelButton.classList.add('hidden');
-        this.saveButton.classList.add('hidden');
-    }
-
+    /**
+     * Sets the placeholder of the input element.
+     * @param placeholder The placeholder to set.
+     * @returns The component itself.
+     */
     public setPlaceholder(placeholder: string) {
         this._placeholder = placeholder;
         return this;
     }
 
-    private _setPlaceholder() {
-        if (!this._placeholder)
-            return;
-        this.label.dataset.value = this._placeholder;
-        this.input.placeholder = this._placeholder;
-    }
-
-    public setSuggestions(suggestions: string[]) {
-        this._suggestions = suggestions;
+    /**
+     * Sets the title of the component.
+     * @param title The title to set.
+     * @returns The component itself.
+     */
+    public setTitle(title: string): TextComponent {
+        this._title = title;
         return this;
     }
 
-    private _setSuggestions() {
-        if (!this._suggestions)
-            return;
-        const suggestions = this._suggestions;
-        const id = Math.random().toString(36).substring(2, 10);
-        this.input.setAttribute('list', id);
-        this.suggestionDataList = document.createElement('datalist');
-        this.label.appendChild(this.suggestionDataList);
-        this.suggestionDataList.id = id;
-        suggestions.forEach(suggestion => {
-            const option = document.createElement('option');
-            option.value = suggestion;
-            this.suggestionDataList.appendChild(option);
-        });
-    }
-
-    private overwriteSuggestions(suggestions: string[]) {
-        this.suggestionDataList.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const option = document.createElement('option');
-            option.value = suggestion;
-            this.suggestionDataList.appendChild(option);
-        });
+    /**
+     * Sets the formator of the component.
+     * @param formator The formator to set.
+     * @returns The component itself.
+     * @remarks The formator is called when the component change in `not-edit` mode.
+     */
+    public setFormator(formator: (value: string) => string): TextComponent {
+        this._onPresentation = formator;
         return this;
     }
 
-    public setOnChange(callback: (value: string) => Promise<string[]>) {
-        this.onChangeCallback = callback;
-        return this;
-    }
-
-    private _setOnChange() {
-        if (!this.onChangeCallback)
-            return;
-        this.component.registerDomEvent(this.input, 'input', async () => {
-            if (!this.onChangeCallback)
-                return;
-            const suggestions = await this.onChangeCallback(this.input.value);
-            this.overwriteSuggestions(suggestions);
-        });
-    }
-
-    public setValue(value: string) {
-        this._value = value;
-        return this;
-    }
-
-    private _setValue() {
-        if (!this._value)
-            return;
-        this.label.dataset.value = this._value;
-        this.input.value = this._value;
-    }
-
+    /**
+     * Sets the saver of the component.
+     * @param callback The saver to set.
+     * @returns The component itself.
+     * @remarks The saver is called when the component save button is clicked.
+     */
     public onSave(callback: (value: string) => Promise<void>) {
-        this.onSaveCallback = callback;
+        this._onSave = callback;
         return this;
     }
+    //#endregion
 
-    public disableEditability() {
-        this._editabilityEnabled = false;
-        return this;
+    //#region Base Callbacks
+    private build() {
+        this.presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this.presentationSpan);
+
+        this.presentationSpan.title = this._title;
+        this.presentationSpan.classList.add('editable-data-view');
+        this.presentationSpan.classList.add('text-presentation');
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
     }
 
-    public finalize(): void {
-        this._container = document.createElement('div');
-        this._baseContainer.appendChild(this._container);
-        this._container.classList.add('editable-data-view');
-        this._container.classList.add('editable-text-input');
-
-        this.placeholderSpan = document.createElement('span');
-        this._container.appendChild(this.placeholderSpan);
-        this.placeholderSpan.classList.add('editable-data-view');
-        this.placeholderSpan.classList.add('text-placeholder');
-        this.placeholderSpan.textContent = this._value;
-
-        if (this._editabilityEnabled) {
-            this.editButton = document.createElement('button');
-            this._container.appendChild(this.editButton);
-            this.editButton.classList.add('editable-data-view');
-            this.editButton.classList.add('button');
-            setIcon(this.editButton, 'pencil');
-            this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
-        }
-    }
-
-    private onFirstEdit() {
-        this._container.removeChild(this.placeholderSpan);
-
+    private buildInput() {
         this.label = document.createElement('label');
-        this._container.insertBefore(this.label, this.editButton);
+        this.label.title = this._title;
+        this.dataInputContainer.appendChild(this.label);
         this.label.classList.add('editable-data-view');
         this.label.classList.add('text-input-sizer');
 
@@ -177,32 +117,26 @@ export default class TextComponent extends BaseComponent {
         this.label.appendChild(this.input);
         this.input.classList.add('editable-data-view');
         this.input.classList.add('text-input');
+        this.input.placeholder = this._placeholder ? this._placeholder : '';
         this.component.registerDomEvent(this.input, 'input', () => {
-            this.label.dataset.value = this.input.value;
+            this.label.dataset.value = this.input.value ? this.input.value : this._placeholder ? this._placeholder : '';
         });
-        this.input.readOnly = true;
-
-        this._setPlaceholder();
-        this._setValue();
-        this._setSuggestions();
-        this._setOnChange();
-
-        this.cancelButton = document.createElement('button');
-        this._container.insertAfter(this.cancelButton, this.editButton);
-        this.cancelButton.classList.add('editable-data-view');
-        this.cancelButton.classList.add('button');
-        this.cancelButton.classList.add('hidden');
-        setIcon(this.cancelButton, 'x');
-        this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
-
-        this.saveButton = document.createElement('button');
-        this._container.insertAfter(this.saveButton, this.cancelButton);
-        this.saveButton.classList.add('editable-data-view');
-        this.saveButton.classList.add('button');
-        this.saveButton.classList.add('hidden');
-        setIcon(this.saveButton, 'check');
-        this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
-
-        this._isFirstEdit = false;
     }
+
+    private enableEdit() {
+        this.input.value = this._value ? this._value : '';
+        this.label.dataset.value = this._value ? this._value : this._placeholder ? this._placeholder : '';
+        this.input.focus();
+        this.input.select();
+    }
+
+    private disableEdit() {
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+    }
+
+    private async save(): Promise<void> {
+        this._value = this.input.value;
+        await this._onSave?.(this._value);
+    }
+    //#endregion
 }

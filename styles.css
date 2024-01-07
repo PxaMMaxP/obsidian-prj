@@ -39,9 +39,7 @@
 
 
 /* Editable DataView */
-
-/* Text input */
-.editable-data-view.editable-text-input {
+.editable-data-view.container {
     display: inline-flex;
     align-items: center;
     background: transparent;
@@ -50,9 +48,40 @@
     max-width: 100%;
 }
 
+.editable-data-view.presentation-container,
+.editable-data-view.data-input-container,
+.editable-data-view.button-container {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+}
+
+.editable-data-view.button {
+    display: flex;
+    align-items: flex-start;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-right: 0px;
+    padding: 0;
+    box-shadow: none;
+    --icon-size: var(--icon-xs);
+}
+
+.editable-data-view .hidden {
+    display: none;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Text input */
 .editable-data-view.text-input-sizer,
 .editable-data-view.text-input,
-.editable-data-view.text-placeholder {
+.editable-data-view.text-presentation {
     font-size: small;
     font-family: inherit;
 }
@@ -63,19 +92,13 @@
     max-width: 100%;
     overflow: hidden;
     border: none;
+    box-shadow: 0px 0px 1px 0px #999;
 }
 
 .editable-data-view.text-input-sizer::after {
     content: attr(data-value) ' ';
     visibility: hidden;
     white-space: pre;
-}
-
-.editable-data-view.text-placeholder {
-    display: flex;
-    position: relative;
-    max-width: 100%;
-    white-space: nowrap
 }
 
 .editable-data-view.text-input {
@@ -91,10 +114,6 @@
 
 .editable-data-view.text-input::-webkit-calendar-picker-indicator {
     display: none !important;
-}
-
-.editable-data-view.text-input[readonly] {
-    pointer-events: none;
 }
 
 .editable-data-view.text-input:-webkit-autofill,
@@ -241,25 +260,4 @@
 
 .editable-data-view.select-input option {
     background: var(--interactive-normal);
-}
-
-/* General */
-.editable-data-view.button {
-    display: flex;
-    align-items: flex-start;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    margin-left: 4px;
-    margin-right: 0px;
-    padding: 0;
-    box-shadow: none;
-    --icon-size: var(--icon-xs);
-}
-
-.editable-data-view .hidden {
-    display: none;
-    visibility: hidden;
-    margin: 0;
-    padding: 0;
 }

@@ -14,20 +14,11 @@ export default class EditableDataView {
         this.component = component;
     }
 
-    public setTitle(title: string): EditableDataView {
-        this.attributesList['title'] = title;
-        return this;
-    }
 
     public addText(configure: (component: TextComponent) => void): EditableDataView {
         const textComponent = new TextComponent(this.component);
         configure(textComponent);
         textComponent.finalize();
-
-        if (this.attributesList['title']) {
-            const innerContainer = textComponent.container.getRootNode() as HTMLElement;
-            innerContainer.setAttribute('title', this.attributesList['title']);
-        }
 
         this._container.append(textComponent.container);
 
