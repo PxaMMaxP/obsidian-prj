@@ -46,7 +46,7 @@
     border: none;
     padding: 2px 0 0 0;
     max-width: 100%;
-    width: min-content;
+    width: fit-content;
     min-width: fit-content;
 }
 
