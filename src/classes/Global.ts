@@ -3,21 +3,27 @@ import { App } from "obsidian";
 import FileCache from "../libs/FileCache";
 import MetadataCache from "../libs/MetadataCache";
 import Logging, { LoggingLevel } from './Logging';
+import Prj from 'src/main';
 
 export default class Global {
     static instance: Global;
+    plugin: Prj;
     app: App;
     fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
     logger: Logging;
 
-    constructor(app: App, settings: PrjSettings) {
-        // Obsidian App
+    constructor(prj: Prj, app: App, settings: PrjSettings) {
         if (Global.instance) {
             return Global.instance;
         }
+        this.plugin = prj;
+
+        // Obsidian App
         this.app = app;
+
+        // Settings
         this.settings = settings;
 
         this.logger = new Logging(this.settings.logLevel as LoggingLevel, "Prj");
@@ -45,12 +51,12 @@ export default class Global {
         MetadataCache.deconstructor();
     }
 
-    static getInstance(app: App | null = null, settings: PrjSettings | null = null): Global {
+    static getInstance(prj: Prj | null = null, app: App | null = null, settings: PrjSettings | null = null): Global {
         if (!Global.instance) {
-            if (!app || !settings) {
+            if (!prj || !app || !settings) {
                 throw new Error("Global instance not initialized and no app provided");
             }
-            Global.instance = new Global(app, settings);
+            Global.instance = new Global(prj, app, settings);
         }
         return Global.instance;
     }

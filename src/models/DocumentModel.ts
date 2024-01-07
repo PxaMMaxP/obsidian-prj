@@ -41,5 +41,13 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         }
         return this._relatedFiles;
     }
+
+    public getWikilink(text: string | undefined): string {
+        if (text) {
+            return `[[${this.file.name}|${text}]]`;
+        } else {
+            return `[[${this.file.name}]]`;
+        }
+    }
 }
 

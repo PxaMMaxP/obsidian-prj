@@ -1,5 +1,7 @@
 .prj-table {
-        width: 100%;
+    width: 100%;
+    max-width: 100%;;
+    table-layout: auto;
 }
 
 .prj-table .prj-table-header .prj-table-header-row, .prj-table > .prj-table-body > .prj-table-row {
@@ -8,20 +10,18 @@
 }
 
 .prj-table .prj-table-header .prj-table-header-row .prj-table-header-cell {
-    max-width: 100%;
     border-top: none;
     border-left: none;
     border-right: none;
     border-bottom: solid;
-    font-weight: 550;
+    font-weight: var(--font-medium);
     font-size: large;
 }
 
 .prj-table .prj-table-body .prj-table-row .prj-table-cell {
-    max-width: 100%;
     border: none;
     text-align: left;
-    font-weight: 380;
+    font-weight: var(--font-normal);
     font-size: normal;
 }
 
@@ -35,4 +35,170 @@
 
 .prj-table>.prj-table-body>.prj-table-row.even-row {
     background-color: var(--table-row-alt-background);
+}
+
+
+/* Editable DataView */
+.editable-data-view.container {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 2px 0 0 0;
+    max-width: 100%;
+    width: fit-content;
+    min-width: fit-content;
+}
+
+.editable-data-view.presentation-container,
+.editable-data-view.data-input-container,
+.editable-data-view.button-container {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+}
+
+.editable-data-view.button {
+    display: flex;
+    align-items: flex-start;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-right: 0px;
+    padding: 0;
+    box-shadow: none;
+    --icon-size: var(--icon-xs);
+}
+
+.editable-data-view .hidden {
+    display: none;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Text input */
+.editable-data-view.text-input-sizer,
+.editable-data-view.text-input,
+.editable-data-view.text-presentation {
+    font-size: small;
+    font-family: inherit;
+}
+
+.editable-data-view.text-input-sizer {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0px 0px 1px 0px #999;
+}
+
+.editable-data-view.text-input-sizer::after {
+    content: attr(data-value) ' ';
+    visibility: hidden;
+    white-space: pre;
+}
+
+.editable-data-view.text-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+}
+
+.editable-data-view.text-input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+.editable-data-view.text-input:-webkit-autofill,
+.editable-data-view.text-input:-webkit-autofill:focus {
+      transition: background-color 0s 600000s, color 0s 600000s;
+}
+
+/* Date input */
+.editable-data-view.date-presentation {
+    font-size: small;
+    font-family: inherit;
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    white-space: nowrap
+}
+
+.editable-data-view.date-input {
+    display: flex;
+    position: relative;
+    max-width: 14ch;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    padding-left: var(--size-4-6);
+    font-size: small;
+    font-family: inherit;
+}
+
+/* Select input */
+.editable-data-view.select-input {
+    font-size: small !important;
+    font-family: inherit;
+    display: flex;
+    max-width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    font-weight: var(--font-normal);
+    box-shadow: 0px 0px 1px 0px #999;
+}
+
+.editable-data-view.select-input option {
+    background: var(--interactive-normal);
+}
+
+/* Textarea input */
+.editable-data-view.textarea-input-sizer,
+.editable-data-view.textarea-input,
+.editable-data-view.textarea-presentation {
+    font-size: small;
+    font-family: inherit;
+}
+
+.editable-data-view.textarea-input-sizer {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0px 0px 1px 0px #999;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    align-items: stretch;
+}
+
+.editable-data-view.textarea-input-sizer::after {
+    content: attr(data-value) ' ';
+    visibility: hidden;
+    white-space: pre;
+}
+
+.editable-data-view.textarea-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    resize: none;
 }
