@@ -138,8 +138,9 @@ export default abstract class BaseComponent {
      * This method is called when the user clicks on the `edit` button.
      * It should switch the component to edit mode and 
      * create the `save` and `cancel` buttons if not already created.
+     * @remarks You can call this methode to simulate a click on the `edit` button.
      */
-    private enableEditMode(): void {
+    protected enableEditMode(): void {
         // If the `save` or the `cancel` button is not created, create them.
         if (!this.cancelButton || !this.saveButton) {
             this.createComponentsForEdit();
@@ -159,8 +160,9 @@ export default abstract class BaseComponent {
     /**
      * This method is called when the user clicks on the `cancel` button or 
      * after the `saveChanges`-methode is clicked.
+     * @remarks You can call this methode to simulate a click on the `cancel` button.
      */
-    private disableEditMode(): void {
+    protected disableEditMode(): void {
         // Switch mode to View: hide the `save` and `cancel` buttons and show the `edit` button.
         if (this.cancelButton && this.saveButton) {
             this.presentationContainer.classList.remove('hidden');
@@ -174,8 +176,9 @@ export default abstract class BaseComponent {
 
     /**
      * This method is called when the user clicks on the `save` button.
+     * @remarks You can call this methode to simulate a click on the `save` button.
      */
-    private async saveChanges(): Promise<void> {
+    protected async saveChanges(): Promise<void> {
         // Run the callback and disable edit mode.
         if (this.cancelButton && this.saveButton) {
             await this.onSaveCallback?.();

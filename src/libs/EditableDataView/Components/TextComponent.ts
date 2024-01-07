@@ -11,16 +11,19 @@ export default class TextComponent extends BaseComponent {
     onFinalize: () => void;
     //#endregion
     //#region extended properties
-    private _onPresentation: (value: string) => string;
-    private _onSave: ((value: string) => Promise<void>);
+    private _onPresentation: ((value: string) => string) | undefined;
+    private _onSave: ((value: string) => Promise<void>) | undefined;
+    private _suggester: ((value: string) => string[]) | undefined;
     private _value: string;
     private _placeholder: string;
+    private _suggestions: string[];
     private _title: string;
     //#endregion
     //#region HTML Elements
     private presentationSpan: HTMLElement;
     private label: HTMLElement;
     private input: HTMLInputElement;
+    private datalist: HTMLDataListElement;
     //#endregion
 
     constructor(component: Component) {
@@ -37,7 +40,7 @@ export default class TextComponent extends BaseComponent {
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public enableEditability(): TextComponent {
+    public enableEditability() {
         this.editabilityEnabled = true;
         return this;
     }
@@ -47,7 +50,7 @@ export default class TextComponent extends BaseComponent {
      * @param value The value to set.
      * @returns The component itself.
      */
-    public setValue(value: string): TextComponent {
+    public setValue(value: string) {
         this._value = value;
         return this;
     }
@@ -63,12 +66,33 @@ export default class TextComponent extends BaseComponent {
     }
 
     /**
+     * Sets suggestions for the input element.
+     * @param suggestions The suggestions to set.
+     * @returns The component itself.
+     */
+    public setSuggestions(suggestions: string[]) {
+        this._suggestions = suggestions;
+        return this;
+    }
+
+    /**
      * Sets the title of the component.
      * @param title The title to set.
      * @returns The component itself.
      */
-    public setTitle(title: string): TextComponent {
+    public setTitle(title: string) {
         this._title = title;
+        return this;
+    }
+
+    /**
+     * Sets the suggester of the component.
+     * @param suggester The suggester to set.
+     * @returns The component itself.
+     * @remarks The suggester is called when the user types in the input element.
+     */
+    public setSuggester(suggester: (value: string) => string[]) {
+        this._suggester = suggester;
         return this;
     }
 
@@ -78,7 +102,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component change in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => string): TextComponent {
+    public setFormator(formator: (value: string) => string) {
         this._onPresentation = formator;
         return this;
     }
@@ -94,6 +118,16 @@ export default class TextComponent extends BaseComponent {
         return this;
     }
     //#endregion
+
+    private setSuggestionsList(suggestions: string[]) {
+        if (!this.datalist) return;
+        this.datalist.innerHTML = '';
+        suggestions.forEach(suggestion => {
+            const option = document.createElement('option');
+            option.value = suggestion;
+            this.datalist.appendChild(option);
+        });
+    }
 
     //#region Base Callbacks
     private build() {
@@ -120,7 +154,25 @@ export default class TextComponent extends BaseComponent {
         this.input.placeholder = this._placeholder ? this._placeholder : '';
         this.component.registerDomEvent(this.input, 'input', () => {
             this.label.dataset.value = this.input.value ? this.input.value : this._placeholder ? this._placeholder : '';
+            if (this._suggester && this.label.dataset.value !== this._placeholder && this.label.dataset.value !== "")
+                this.setSuggestionsList(this._suggester(this.input.value));
         });
+        this.component.registerDomEvent(this.input, 'keydown', (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                this.saveChanges();
+            } else if (event.key === 'Escape') {
+                this.disableEditMode();
+            }
+        });
+
+        if ((this._suggestions && this._suggestions.length > 0) || this._suggester) {
+            const id = Math.random().toString(36).substring(2, 10);
+            this.input.setAttribute('list', id);
+            this.datalist = document.createElement('datalist');
+            this.datalist.id = id;
+            this.input.appendChild(this.datalist);
+            this.setSuggestionsList(this._suggestions);
+        }
     }
 
     private enableEdit() {

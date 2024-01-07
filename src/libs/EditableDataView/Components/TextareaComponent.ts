@@ -1,7 +1,7 @@
 import { Component } from "obsidian";
 import BaseComponent from "./BaseComponent";
 
-export default class DropdownComponent extends BaseComponent {
+export default class TextareaComponent extends BaseComponent {
     //#region base properties
     protected editabilityEnabled = false;
     onEnableEditCallback: () => void;
@@ -11,21 +11,16 @@ export default class DropdownComponent extends BaseComponent {
     onFinalize: () => void;
     //#endregion
     //#region extended properties
-    private _onPresentation: (value: string) => string;
-    private _onSave: ((value: string) => Promise<void>);
+    private _onPresentation: ((value: string) => string) | undefined;
+    private _onSave: ((value: string) => Promise<void>) | undefined;
     private _value: string;
-    private _options: { value: string; text: string; }[];
-    private get _selectedOption(): { value: string; text: string; } {
-        const selectedOption = this._options.find(o => o.value === this._value);
-        if (selectedOption)
-            return selectedOption;
-        return { value: this._value, text: this._value };
-    }
+    private _placeholder: string;
     private _title: string;
     //#endregion
     //#region HTML Elements
     private presentationSpan: HTMLElement;
-    private select: HTMLSelectElement;
+    private label: HTMLElement;
+    private textarea: HTMLTextAreaElement;
     //#endregion
 
     constructor(component: Component) {
@@ -58,12 +53,12 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     * Sets the options of the component.
-     * @param options The options to set.
+     * Sets the placeholder of the input element.
+     * @param placeholder The placeholder to set.
      * @returns The component itself.
      */
-    public setOptions(options: { value: string, text: string }[]) {
-        this._options = options;
+    public setPlaceholder(placeholder: string) {
+        this._placeholder = placeholder;
         return this;
     }
 
@@ -81,8 +76,7 @@ export default class DropdownComponent extends BaseComponent {
      * Sets the formator of the component.
      * @param formator The formator to set.
      * @returns The component itself.
-     * @remarks - The formator is called when the component change in `not-edit` mode.
-     * - `value` is the value of the selected option. (Not the text!)
+     * @remarks The formator is called when the component change in `not-edit` mode.
      */
     public setFormator(formator: (value: string) => string) {
         this._onPresentation = formator;
@@ -93,34 +87,13 @@ export default class DropdownComponent extends BaseComponent {
      * Sets the saver of the component.
      * @param callback The saver to set.
      * @returns The component itself.
-     * @remarks - The saver is called when the component save button is clicked.
-     * - `value` is the value of the selected option. (Not the text!)
+     * @remarks The saver is called when the component save button is clicked.
      */
     public onSave(callback: (value: string) => Promise<void>) {
         this._onSave = callback;
         return this;
     }
     //#endregion
-
-    private enableOptions() {
-        const optionFound = this._options.find(o => o.value === this._value);
-        if (!optionFound) {
-            const optionElement = document.createElement('option');
-            optionElement.value = this._value;
-            optionElement.textContent = `${this._value} (not in options)`;
-            this.select.appendChild(optionElement);
-        }
-        this._options.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.text;
-            this.select.appendChild(optionElement);
-        });
-    }
-
-    private disableOptions() {
-        this.select.innerHTML = '';
-    }
 
     //#region Base Callbacks
     private build() {
@@ -129,31 +102,45 @@ export default class DropdownComponent extends BaseComponent {
 
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
-        this.presentationSpan.classList.add('text-presentation');
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
+        this.presentationSpan.classList.add('textarea-presentation');
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
     }
 
     private buildInput() {
-        this.select = document.createElement('select');
-        this.dataInputContainer.appendChild(this.select);
-        this.select.title = this._title;
-        this.select.classList.add('editable-data-view');
-        this.select.classList.add('select-input');
+        this.label = document.createElement('label');
+        this.label.title = this._title;
+        this.dataInputContainer.appendChild(this.label);
+        this.label.classList.add('editable-data-view');
+        this.label.classList.add('textarea-input-sizer');
+
+        this.textarea = document.createElement('textarea');
+        this.label.appendChild(this.textarea);
+        this.textarea.classList.add('editable-data-view');
+        this.textarea.classList.add('textarea-input');
+        this.textarea.placeholder = this._placeholder ? this._placeholder : '';
+        this.component.registerDomEvent(this.textarea, 'input', () => {
+            this.label.dataset.value = this.textarea.value ? this.textarea.value : this._placeholder ? this._placeholder : '';
+        });
+        this.component.registerDomEvent(this.textarea, 'keydown', (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                this.disableEditMode();
+            }
+        });
     }
 
     private enableEdit() {
-        this.enableOptions();
-        this.select.value = this._value ? this._value : '';
-        this.select.focus();
+        this.textarea.value = this._value ? this._value : '';
+        this.label.dataset.value = this._value ? this._value : this._placeholder ? this._placeholder : '';
+        this.textarea.focus();
+        this.textarea.select();
     }
 
     private disableEdit() {
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
-        this.disableOptions();
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
     }
 
     private async save(): Promise<void> {
-        this._value = this.select.value;
+        this._value = this.textarea.value;
         await this._onSave?.(this._value);
     }
     //#endregion

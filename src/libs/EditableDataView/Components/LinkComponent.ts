@@ -1,241 +1,228 @@
-import { Component, setIcon } from "obsidian";
+import { Component } from "obsidian";
 import BaseComponent from "./BaseComponent";
 
 export default class LinkComponent extends BaseComponent {
-    //#region HTML Elements
-    private _container: HTMLElement;
-    private label: HTMLElement;
-    private input: HTMLInputElement;
-    private link: HTMLAnchorElement;
-    private suggestionDataList: HTMLDataListElement;
-    private editButton: HTMLButtonElement;
-    private cancelButton: HTMLButtonElement;
-    private saveButton: HTMLButtonElement;
+    //#region base properties
+    protected editabilityEnabled = false;
+    onEnableEditCallback: () => void;
+    onDisableEditCallback: () => void;
+    onSaveCallback: () => Promise<void>;
+    onFirstEdit: () => void;
+    onFinalize: () => void;
     //#endregion
-    //#region Properties
+    //#region extended properties
+    private _onPresentation: ((value: string) => { href: string, text: string });
+    private _onSave: ((value: string) => Promise<void>) | undefined;
+    private _suggester: ((value: string) => string[]) | undefined;
     private _value: string;
-    private _linkValue: { href: string, text: string };
-    private linkType: 'tag' | 'file' | 'external' = 'external';
     private _placeholder: string;
     private _suggestions: string[];
-    private _editabilityEnabled = true;
-    private _isFirstEdit = true;
+    private _title: string;
+    private linkType: 'tag' | 'file' | 'external' = 'external';
     //#endregion
-    //#region Callbacks
-    protected onSaveCallback: ((value: string) => Promise<{ href: string, text: string }>) | undefined;
-    private onChangeCallback: ((value: string) => Promise<string[]>) | undefined;
+    //#region HTML Elements
+    private link: HTMLAnchorElement;
+    private label: HTMLElement;
+    private input: HTMLInputElement;
+    private datalist: HTMLDataListElement;
     //#endregion
 
     constructor(component: Component) {
         super(component);
+        this.onFinalize = this.build
+        this.onFirstEdit = this.buildInput;
+        this.onEnableEditCallback = this.enableEdit;
+        this.onSaveCallback = this.save;
+        this.onDisableEditCallback = this.disableEdit;
     }
 
-    private cancelChanges() {
-        this.label.dataset.value = this._linkValue.text;
-        this.input.value = this._linkValue.text;
-        this.disableEdit();
-    }
-
-    private async saveChanges() {
-        if (this.onSaveCallback) {
-            const newLink = await this.onSaveCallback(this.input.value);
-            this._linkValue = newLink;
-        }
-        this.disableEdit();
-    }
-
-    private enableEdit() {
-        if (this._isFirstEdit) {
-            this.onFirstEdit();
-        }
-
-        this.input.readOnly = false;
-        this.link.classList.add('hidden');
-        this.editButton.classList.add('hidden');
-        this.cancelButton.classList.remove('hidden');
-        this.saveButton.classList.remove('hidden');
-        this._value = this.input.value;
-        this.input.focus();
-    }
-
-    private disableEdit() {
-        this.input.readOnly = true;
-        this.input.blur();
-        this.link.classList.remove('hidden');
-        this.label.classList.add('hidden');
-        this.editButton.classList.remove('hidden');
-        this.cancelButton.classList.add('hidden');
-        this.saveButton.classList.add('hidden');
-    }
-
-    public setAsTagLink(): LinkComponent {
-        this.linkType = 'tag';
+    //#region Configuration methods
+    /**
+     * Enables the editability of the component.
+     * @returns The component itself.
+     */
+    public enableEditability() {
+        this.editabilityEnabled = true;
         return this;
     }
 
-    public setAsFileLink(): LinkComponent {
-        this.linkType = 'file';
+    /**
+     * Sets the value of the component.
+     * @param value The value to set.
+     * @returns The component itself.
+     */
+    public setValue(value: string) {
+        this._value = value;
         return this;
     }
 
+    /**
+     * Sets the placeholder of the input element.
+     * @param placeholder The placeholder to set.
+     * @returns The component itself.
+     */
     public setPlaceholder(placeholder: string) {
         this._placeholder = placeholder;
         return this;
     }
 
-    private _setPlaceholder() {
-        if (!this._placeholder)
-            return;
-        this.label.dataset.value = this._placeholder;
-        this.input.placeholder = this._placeholder;
-    }
-
+    /**
+     * Sets suggestions for the input element.
+     * @param suggestions The suggestions to set.
+     * @returns The component itself.
+     */
     public setSuggestions(suggestions: string[]) {
         this._suggestions = suggestions;
         return this;
     }
 
-    private _setSuggestions() {
-        if (!this._suggestions)
-            return;
-        const suggestions = this._suggestions;
-        const id = Math.random().toString(36).substring(2, 10);
-        this.input.setAttribute('list', id);
-        this.suggestionDataList = document.createElement('datalist');
-        this.label.appendChild(this.suggestionDataList);
-        this.suggestionDataList.id = id;
+    /**
+     * Sets the title of the component.
+     * @param title The title to set.
+     * @returns The component itself.
+     */
+    public setTitle(title: string) {
+        this._title = title;
+        return this;
+    }
+
+    /**
+     * Sets the type of the link.
+     * @param type The type to set. Can be `tag`, `file` or `external`.
+     * @returns The component itself.
+     */
+    public setLinkType(type: 'tag' | 'file' | 'external') {
+        this.linkType = type;
+        return this;
+    }
+
+    /**
+     * Sets the suggester of the component.
+     * @param suggester The suggester to set.
+     * @returns The component itself.
+     * @remarks The suggester is called when the user types in the input element.
+     */
+    public setSuggester(suggester: (value: string) => string[]) {
+        this._suggester = suggester;
+        return this;
+    }
+
+    /**
+     * Sets the formator of the component.
+     * @param formator The formator to set.
+     * @returns The component itself.
+     * @remarks The formator is called when the component change in `not-edit` mode.
+     */
+    public setFormator(formator: (value: string) => { href: string, text: string }) {
+        this._onPresentation = formator;
+        return this;
+    }
+
+    /**
+     * Sets the saver of the component.
+     * @param callback The saver to set.
+     * @returns The component itself.
+     * @remarks The saver is called when the component save button is clicked.
+     */
+    public onSave(callback: (value: string) => Promise<void>) {
+        this._onSave = callback;
+        return this;
+    }
+    //#endregion
+
+    private setSuggestionsList(suggestions: string[]) {
+        if (!this.datalist) return;
+        this.datalist.innerHTML = '';
         suggestions.forEach(suggestion => {
             const option = document.createElement('option');
             option.value = suggestion;
-            this.suggestionDataList.appendChild(option);
+            this.datalist.appendChild(option);
         });
     }
 
-    private overwriteSuggestions(suggestions: string[]) {
-        this.suggestionDataList.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const option = document.createElement('option');
-            option.value = suggestion;
-            this.suggestionDataList.appendChild(option);
-        });
-        return this;
-    }
-
-    public setOnChange(callback: (value: string) => Promise<string[]>) {
-        this.onChangeCallback = callback;
-        return this;
-    }
-
-    private _setOnChange() {
-        if (!this.onChangeCallback)
-            return;
-        this.component.registerDomEvent(this.input, 'input', async () => {
-            if (!this.onChangeCallback)
-                return;
-            const suggestions = await this.onChangeCallback(this.input.value);
-            this.overwriteSuggestions(suggestions);
-        });
-    }
-
-    public setValue(href: string, text: string) {
-        this._linkValue = { href, text };
-        return this;
-    }
-
-    private _setValue() {
-        if (!this._value)
-            return;
-        this.label.dataset.value = this._linkValue.text;
-        this.input.value = this._linkValue.text;
-    }
-
-    public onSave(callback: (value: string) => Promise<{ href: string, text: string }>): LinkComponent {
-        this.onSaveCallback = callback;
-        return this;
-    }
-
-    public disableEditability() {
-        this._editabilityEnabled = false;
-        return this;
-    }
-
-    public finalize(): void {
-        this._container = document.createElement('div');
-        this._baseContainer.appendChild(this._container);
-        this._container.classList.add('editable-data-view');
-        this._container.classList.add('editable-link-input');
-
+    //#region Base Callbacks
+    private build() {
         this.link = document.createElement('a');
-        this._container.appendChild(this.link);
+        this.presentationContainer.appendChild(this.link);
+
+        this.link.title = this._title;
         this.link.classList.add('editable-data-view');
-        this.link.classList.add('link');
-        this.link.href = this._linkValue.href;
-        this.link.text = this._linkValue.text;
+        this.link.classList.add('link-presentation');
+        const linkContent = this._onPresentation(this._value);
+        this.link.href = linkContent.href;
+        this.link.textContent = linkContent.text;
 
         switch (this.linkType) {
-            case 'external':
-                break;
-            case 'file':
-                this.link.setAttribute('data-tooltip-position', 'top');
-                this.link.setAttribute('aria-label', `${this._linkValue.href}`);
-                this.link.setAttribute('data-href', `${this._linkValue.href}`);
-                this.link.classList.add('internal-link');
-                this.link.target = '_blank';
-                this.link.rel = 'noopener';
-                break;
             case 'tag':
                 this.link.classList.add('tag');
                 this.link.target = '_blank';
                 this.link.rel = 'noopener';
                 break;
-        }
-
-        if (this._editabilityEnabled) {
-            this.editButton = document.createElement('button');
-            this._container.appendChild(this.editButton);
-            this.editButton.classList.add('editable-data-view');
-            this.editButton.classList.add('button');
-            setIcon(this.editButton, 'pencil');
-            this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
+            case 'file':
+                this.link.setAttribute('data-tooltip-position', 'top');
+                this.link.setAttribute('aria-label', linkContent.href);
+                this.link.setAttribute('data-href', linkContent.href);
+                this.link.classList.add('internal-link');
+                this.link.target = '_blank';
+                this.link.rel = 'noopener';
+                break;
+            case 'external':
+                break;
         }
     }
 
-    private onFirstEdit() {
+    private buildInput() {
         this.label = document.createElement('label');
-        this._container.insertBefore(this.label, this.editButton);
+        this.label.title = this._title;
+        this.dataInputContainer.appendChild(this.label);
         this.label.classList.add('editable-data-view');
-        this.label.classList.add('link-input-sizer');
+        this.label.classList.add('text-input-sizer');
 
         this.input = document.createElement('input');
         this.label.appendChild(this.input);
         this.input.classList.add('editable-data-view');
-        this.input.classList.add('link-input');
+        this.input.classList.add('text-input');
+        this.input.placeholder = this._placeholder ? this._placeholder : '';
         this.component.registerDomEvent(this.input, 'input', () => {
-            this.label.dataset.value = this.input.value;
+            this.label.dataset.value = this.input.value ? this.input.value : this._placeholder ? this._placeholder : '';
+            if (this._suggester && this.label.dataset.value !== this._placeholder && this.label.dataset.value !== "")
+                this.setSuggestionsList(this._suggester(this.input.value));
         });
-        this.input.readOnly = true;
+        this.component.registerDomEvent(this.input, 'keydown', (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                this.saveChanges();
+            } else if (event.key === 'Escape') {
+                this.disableEditMode();
+            }
+        });
 
-        this._setPlaceholder();
-        this._setValue();
-        this._setSuggestions();
-        this._setOnChange();
-
-        this.cancelButton = document.createElement('button');
-        this._container.insertAfter(this.cancelButton, this.editButton);
-        this.cancelButton.classList.add('editable-data-view');
-        this.cancelButton.classList.add('button');
-        this.cancelButton.classList.add('hidden');
-        setIcon(this.cancelButton, 'x');
-        this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
-
-        this.saveButton = document.createElement('button');
-        this._container.insertAfter(this.saveButton, this.cancelButton);
-        this.saveButton.classList.add('editable-data-view');
-        this.saveButton.classList.add('button');
-        this.saveButton.classList.add('hidden');
-        setIcon(this.saveButton, 'check');
-        this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
-
-        this._isFirstEdit = false;
+        if ((this._suggestions && this._suggestions.length > 0) || this._suggester) {
+            const id = Math.random().toString(36).substring(2, 10);
+            this.input.setAttribute('list', id);
+            this.datalist = document.createElement('datalist');
+            this.datalist.id = id;
+            this.input.appendChild(this.datalist);
+            this.setSuggestionsList(this._suggestions);
+        }
     }
+
+    private enableEdit() {
+        const linkContent = this._onPresentation(this._value);
+        this.input.value = linkContent.text ? linkContent.text : '';
+        this.label.dataset.value = linkContent.text ? linkContent.text : this._placeholder ? this._placeholder : '';
+        this.input.focus();
+        this.input.select();
+    }
+
+    private disableEdit() {
+        const linkContent = this._onPresentation(this._value);
+        this.link.href = linkContent.href;
+        this.link.textContent = linkContent.text;
+    }
+
+    private async save(): Promise<void> {
+        this._value = this.input.value;
+        await this._onSave?.(this._value);
+    }
+    //#endregion
 }

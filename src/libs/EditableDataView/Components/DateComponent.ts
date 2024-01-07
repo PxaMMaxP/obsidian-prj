@@ -1,151 +1,121 @@
-import { Component, setIcon } from "obsidian";
+import { Component } from "obsidian";
 import BaseComponent from "./BaseComponent";
-import Global from "src/classes/Global";
 
 export default class DateComponent extends BaseComponent {
-    private moment = require('moment');
-    //#region HTML Elements
-    private _container: HTMLElement;
-    private input: HTMLInputElement;
-    private placeholderSpan: HTMLElement;
-    private editButton: HTMLButtonElement;
-    private cancelButton: HTMLButtonElement;
-    private saveButton: HTMLButtonElement;
+    //#region base properties
+    protected editabilityEnabled = false;
+    onEnableEditCallback: () => void;
+    onDisableEditCallback: () => void;
+    onSaveCallback: () => Promise<void>;
+    onFirstEdit: () => void;
+    onFinalize: () => void;
     //#endregion
-    //#region Properties
+    //#region extended properties
+    private _onPresentation: (value: string) => string;
+    private _onSave: ((value: string) => Promise<void>);
     private _value: string;
-    private _placeholder: string;
-    private _DateFormat: string;
-    private _editabilityEnabled = true;
-    private _isFirstEdit = true;
+    private _title: string;
     //#endregion
-    //#region Callbacks
-    private onSaveCallback: ((value: string) => Promise<void>) | undefined;
+    //#region HTML Elements
+    private presentationSpan: HTMLElement;
+    private input: HTMLInputElement;
     //#endregion
 
     constructor(component: Component) {
         super(component);
+        this.onFinalize = this.build
+        this.onFirstEdit = this.buildInput;
+        this.onEnableEditCallback = this.enableEdit;
+        this.onSaveCallback = this.save;
+        this.onDisableEditCallback = this.disableEdit;
     }
 
-    private cancelChanges() {
-        this.input.value = this._value;
-        this.disableEdit();
-    }
-
-    private async saveChanges() {
-        if (this.onSaveCallback) {
-            await this.onSaveCallback(this.input.value);
-        }
-        this.disableEdit();
-    }
-
-    private enableEdit() {
-        if (this._isFirstEdit) {
-            this.onFirstEdit();
-        }
-
-        this.input.readOnly = false;
-        this.editButton.classList.add('hidden');
-        this.cancelButton.classList.remove('hidden');
-        this.saveButton.classList.remove('hidden');
-        this._value = this.input.value;
-        this.input.focus();
-    }
-
-    private disableEdit() {
-        this.input.readOnly = true;
-        this.editButton.classList.remove('hidden');
-        this.cancelButton.classList.add('hidden');
-        this.saveButton.classList.add('hidden');
-    }
-
-    public setPlaceholder(placeholder: string): DateComponent {
-        this._placeholder = placeholder;
+    //#region Configuration methods
+    /**
+     * Enables the editability of the component.
+     * @returns The component itself.
+     */
+    public enableEditability(): DateComponent {
+        this.editabilityEnabled = true;
         return this;
     }
 
-    private _setPlaceholder() {
-        this.input.placeholder = this._placeholder;
-    }
-
+    /**
+     * Sets the value of the component.
+     * @param value The value to set.
+     * @returns The component itself.
+     */
     public setValue(value: string): DateComponent {
         this._value = value;
         return this;
     }
 
-    private _setValue() {
-        this.input.value = this._value;
-    }
-
-    public onSave(callback: (value: string) => Promise<void>): DateComponent {
-        this.onSaveCallback = callback;
+    /**
+     * Sets the title of the component.
+     * @param title The title to set.
+     * @returns The component itself.
+     */
+    public setTitle(title: string): DateComponent {
+        this._title = title;
         return this;
     }
 
-    public disableEditability() {
-        this._editabilityEnabled = false;
+    /**
+     * Sets the formator of the component.
+     * @param formator The formator to set.
+     * @returns The component itself.
+     * @remarks The formator is called when the component change in `not-edit` mode.
+     */
+    public setFormator(formator: (value: string) => string): DateComponent {
+        this._onPresentation = formator;
         return this;
     }
 
-    public setDateFormat(format: string): DateComponent {
-        this._DateFormat = format;
+    /**
+     * Sets the saver of the component.
+     * @param callback The saver to set.
+     * @returns The component itself.
+     * @remarks The saver is called when the component save button is clicked.
+     */
+    public onSave(callback: (value: string) => Promise<void>) {
+        this._onSave = callback;
         return this;
     }
+    //#endregion
 
-    public finalize(): void {
-        this._container = document.createElement('div');
-        this._baseContainer.appendChild(this._container);
-        this._container.classList.add('editable-data-view');
-        this._container.classList.add('editable-date-input');
+    //#region Base Callbacks
+    private build() {
+        this.presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this.presentationSpan);
 
-        this.placeholderSpan = document.createElement('span');
-        this._container.appendChild(this.placeholderSpan);
-        this.placeholderSpan.classList.add('editable-data-view');
-        this.placeholderSpan.classList.add('date-placeholder');
-        if (!this._DateFormat) {
-            this._DateFormat = Global.getInstance().settings.dateFormat;
-        }
-        this.placeholderSpan.textContent = this.moment(this._value).format(this._DateFormat);
-
-        if (this._editabilityEnabled) {
-            this.editButton = document.createElement('button');
-            this._container.appendChild(this.editButton);
-            this.editButton.classList.add('editable-data-view');
-            this.editButton.classList.add('button');
-            setIcon(this.editButton, 'pencil');
-            this.component.registerDomEvent(this.editButton, 'click', () => this.enableEdit());
-        }
+        this.presentationSpan.title = this._title;
+        this.presentationSpan.classList.add('editable-data-view');
+        this.presentationSpan.classList.add('date-presentation');
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
     }
 
-    private onFirstEdit() {
-        this._container.removeChild(this.placeholderSpan);
-
+    private buildInput() {
         this.input = document.createElement('input');
-        this._container.insertBefore(this.input, this.editButton);
+        this.dataInputContainer.appendChild(this.input);
         this.input.type = 'date';
+        this.input.title = this._title;
         this.input.classList.add('editable-data-view');
         this.input.classList.add('date-input');
-        this.input.readOnly = true;
-
-        this._setValue();
-        this._setPlaceholder();
-
-        this.cancelButton = document.createElement('button');
-        this._container.insertAfter(this.cancelButton, this.editButton);
-        this.cancelButton.classList.add('editable-data-view');
-        this.cancelButton.classList.add('button');
-        this.cancelButton.classList.add('hidden');
-        setIcon(this.cancelButton, 'x');
-        this.component.registerDomEvent(this.cancelButton, 'click', () => this.cancelChanges());
-
-        this.saveButton = document.createElement('button');
-        this._container.insertAfter(this.saveButton, this.cancelButton);
-        this.saveButton.classList.add('editable-data-view');
-        this.saveButton.classList.add('button');
-        this.saveButton.classList.add('hidden');
-        setIcon(this.saveButton, 'check');
-        this.component.registerDomEvent(this.saveButton, 'click', () => this.saveChanges());
-
-        this._isFirstEdit = false;
     }
+
+    private enableEdit() {
+        this.input.value = this._value ? this._value : '';
+        this.input.focus();
+        this.input.select();
+    }
+
+    private disableEdit() {
+        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+    }
+
+    private async save(): Promise<void> {
+        this._value = this.input.value;
+        await this._onSave?.(this._value);
+    }
+    //#endregion
 }
