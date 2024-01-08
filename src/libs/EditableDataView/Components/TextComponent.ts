@@ -1,5 +1,6 @@
-import { Component } from "obsidian";
+import { Component, MarkdownRenderer } from "obsidian";
 import BaseComponent from "./BaseComponent";
+import Global from "src/classes/Global";
 
 export default class TextComponent extends BaseComponent {
     //#region base properties
@@ -12,6 +13,7 @@ export default class TextComponent extends BaseComponent {
     //#endregion
     //#region extended properties
     private _onPresentation: ((value: string) => string) | undefined;
+    private _onMarkdownPresentation: ((value: string) => Promise<void>) | undefined;
     private _onSave: ((value: string) => Promise<void>) | undefined;
     private _suggester: ((value: string) => string[]) | undefined;
     private _value: string;
@@ -108,6 +110,21 @@ export default class TextComponent extends BaseComponent {
     }
 
     /**
+     * Sets the markdown formator of the component.
+     * @param path The path of the file to resolve internal links.
+     * @returns The component itself.
+     * @remarks The formator is called when the component change in `not-edit` mode.
+     * - The custom formator is ignored if this method is called!
+     */
+    public setRenderMarkdown(path = "") {
+        this._onMarkdownPresentation = (value: string): Promise<void> => {
+            const app = Global.getInstance().app;
+            return MarkdownRenderer.render(app, value, this.presentationSpan, path, this.component);
+        }
+        return this;
+    }
+
+    /**
      * Sets the saver of the component.
      * @param callback The saver to set.
      * @returns The component itself.
@@ -137,7 +154,14 @@ export default class TextComponent extends BaseComponent {
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('text-presentation');
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+        if (this._onMarkdownPresentation) {
+            this.presentationSpan.textContent = null;
+            this._onMarkdownPresentation(this._value);
+        } else if (this._onPresentation) {
+            this.presentationSpan.textContent = this._onPresentation(this._value);
+        } else {
+            this.presentationSpan.textContent = this._value;
+        }
     }
 
     private buildInput() {
@@ -183,7 +207,14 @@ export default class TextComponent extends BaseComponent {
     }
 
     private disableEdit() {
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+        if (this._onMarkdownPresentation) {
+            this.presentationSpan.textContent = null;
+            this._onMarkdownPresentation(this._value);
+        } else if (this._onPresentation) {
+            this.presentationSpan.textContent = this._onPresentation(this._value);
+        } else {
+            this.presentationSpan.textContent = this._value;
+        }
     }
 
     private async save(): Promise<void> {

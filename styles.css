@@ -50,6 +50,22 @@
     min-width: fit-content;
 }
 
+/** To display rendered Markdown correkt **/
+.editable-data-view.container p {
+    white-space: normal;
+    line-height: var(--line-height-normal);
+    margin-top: auto;
+    margin-bottom: auto;
+    display: inline;
+}
+/** To display rendered Markdown correkt **/
+.editable-data-view.container ul {
+    white-space: normal;
+    line-height: var(--line-height-normal);
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .editable-data-view.presentation-container,
 .editable-data-view.data-input-container,
 .editable-data-view.button-container {
@@ -181,7 +197,7 @@
     overflow: hidden;
     border: none;
     box-shadow: 0px 0px 1px 0px #999;
-    padding: 0.5em 0.5em 0.5em 0.5em;
+    padding: 0.5em 0.5em 0.6em 0.5em;
     align-items: stretch;
 }
 
