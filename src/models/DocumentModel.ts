@@ -50,56 +50,44 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         }
     }
 
+    /**
+     * Returns the file contents of the document
+     * @returns String containing the file contents
+     */
     public async getFileContents(): Promise<string> {
         return this.app.vault.read(this.file);
 
     }
 
+    /**
+     * Returns the description of the document
+     * @returns String containing the description
+     */
     public getDescription(): string {
-        /**if (this.data.description || this.data.description === null) {
-            return this.data.description ?? "";
-        } else {
-            const content = await this.getFileContents();
-            const summary = this.extractSummary(content);
-            if (!summary || summary === "") {
-                console.warn("No summary found for File " + this.file.name);
-                this.data.description = null;
-                console.info("Set empty description for File " + this.file.name);
-            } else {
-                console.warn("Summary in *File-Data* found for File " + this.file.name);
-                console.info(summary);
-                // Versuche die Daten aus der Datei zu entfernen:
-                const content = await this.app.vault.read(this.file);
-                const newContent = content.replace(summary, "");
-                const dataWriteOptions = {
-                    ctime: this.file.stat.ctime,
-                    mtime: this.file.stat.mtime + 1
-                };
-                await this.app.vault.modify(this.file, newContent, dataWriteOptions);
-                await Helper.sleep(500);
-                this.data.description = summary;
-                console.warn("Copy summary to description field and delete in *File-Data* for File" + this.file.name);
-            }
-            return summary;
-        }**/
         return this.data.description ?? "";
     }
 
-    /**private extractSummary(content: string): string {
-        let summary = "";
-        let match = content.match(/#\s*\[\[[^\]]+\]\](?:\n|\s)*([\s\S]*?)(\n#|$)/);
-        if (!match || match[1].trim() === "") {
-            match = content.match(/---\s*([\s\S]*?)\s*---[\s]*([\s\S]*?)(?=#|$)/);
-            if (match && match[2]) {
-                summary = match[2].trim();
-            }
+    /**
+     * Returns the linked file of the document
+     * @returns TFile of the linked file
+     */
+    public getFile(): TFile {
+        const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
+        const file = this.fileCache.findFileByName(fileLinkData.filename ?? "");
+        if (file instanceof TFile) {
+            return file;
+        } else if (Array.isArray(file)) {
+            this.logger.warn(`Multiple files found for ${fileLinkData.filename}`);
+            return file.first() ?? this.file;
         }
-        else {
-            summary = match[1].trim();
-        }
-        return summary.trim();
-    }**/
+        this.logger.warn(`No files found for ${fileLinkData.filename}`);
+        return this.file;
+    }
 
+    /**
+     * Returns the tags of the document as an array of strings
+     * @returns Array of strings containing the tags
+     */
     public getTags(): string[] {
         const tags = this.data.tags;
         let formattedTags: string[] = [];
@@ -112,6 +100,48 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         }
 
         return formattedTags;
+    }
+
+    /**
+     * Sorts the documents by date descending
+     * @param documents Array of DocumentModels to sort
+     * @remarks This function sorts the array in place
+     */
+    public static sortDocumentsByDateDesc(documents: DocumentModel[]): void {
+        documents.sort((a, b) => {
+            if (a.data.date && b.data.date) {
+                const dateA = new Date(a.data.date);
+                const dateB = new Date(b.data.date);
+                return dateB.getTime() - dateA.getTime();
+            } else if (a.data.date) {
+                return -1;
+            } else if (b.data.date) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
+
+    /**
+     * Sorts the documents by date ascending
+     * @param documents Array of DocumentModels to sort
+     * @remarks This function sorts the array in place
+     */
+    public static sortDocumentsByDateAsc(documents: DocumentModel[]): void {
+        documents.sort((a, b) => {
+            if (a.data.date && b.data.date) {
+                const dateA = new Date(a.data.date);
+                const dateB = new Date(b.data.date);
+                return dateA.getTime() - dateB.getTime();
+            } else if (a.data.date) {
+                return 1;
+            } else if (b.data.date) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
     }
 }
 

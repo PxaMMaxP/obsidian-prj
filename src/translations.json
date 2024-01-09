@@ -1,0 +1,34 @@
+[
+    {
+        "lang": "en",
+        "translations": {
+            "DocumentType": "Type",
+            "Date": "Date",
+            "Subject": "Subject",
+            "Sender": "Sender",
+            "Recipient": "Recipient",
+            "SendRecip": "Snd./Rcp.",
+            "Content": "Content",
+            "DeliveryDate": "Delivery date",
+            "Tags": "Tags",
+            "From": "from:",
+            "To": "to:"
+        }
+    },
+    {
+        "lang": "de",
+        "translations": {
+            "DocumentType": "Typ",
+            "Date": "Datum",
+            "Subject": "Betreff",
+            "Sender": "Absender",
+            "Recipient": "Empfänger",
+            "SendRecip": "Abs./Empf.",
+            "Content": "Inhalt",
+            "DeliveryDate": "Zustelldatum",
+            "Tags": "Tags",
+            "From": "von:",
+            "To": "an:"
+        }
+    }
+]

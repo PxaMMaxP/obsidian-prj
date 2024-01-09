@@ -1,6 +1,7 @@
-
+import { moment } from "obsidian";
 
 export default class Helper {
+    private static md5 = require('crypto-js/md5');
 
     /**
      * Extracts the date, filename, file extension and display text from a wikilink
@@ -8,7 +9,7 @@ export default class Helper {
      * @returns {WikilinkData} Object containing the date, filename, file extension and display text
      * 
      */
-    static extractDataFromWikilink(wikilink: string): WikilinkData {
+    static extractDataFromWikilink(wikilink: string | null | undefined): WikilinkData {
         if (wikilink && typeof wikilink === 'string') {
             const dismantledLinkMatch = wikilink.match(/\[\[(.+?)(?:\.(\w+))?(?:\|(.*))?\]\]/);
             let date = undefined;
@@ -44,6 +45,49 @@ export default class Helper {
                 displayText: undefined
             };
         }
+    }
+
+    static generateUID(input: string, length = 8): string {
+        const hash = 'U' + this.md5(input).toString();
+        return hash.substring(0, length);
+    }
+
+    static formatDate(date: string, format: string): string {
+        const regexDate = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regexDate.test(date)) {
+            return date;
+        }
+        const formatedDate = moment(date).format(format);
+        if (formatedDate === 'Invalid date') {
+            return date;
+        }
+        return formatedDate;
+    }
+
+    static async sleep(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Checks if the given text is possibly markdown
+     * @param text The text to check
+     * @returns Whether the text is possibly markdown (true or false)
+     * @remarks - This method checks if the text contains any of the following symbols:
+     * - `*`, `_`, `[`, `]`, `=` and `-` if there is a line break
+     */
+    static isPossiblyMarkdown(text: string): boolean {
+        let regexMarkdownSymbols;
+        const regexLineBreak = /\r?\n/;
+        const lineBreak = regexLineBreak.test(text);
+        if (lineBreak) {
+            // If there is a line break, we need to check for the list symbol
+            regexMarkdownSymbols = /[*_\-[\]=]/;
+        } else {
+            // If there is no line break, we do not need to check for the list symbol
+            regexMarkdownSymbols = /[*_[\]=]/;
+
+        }
+        return regexMarkdownSymbols.test(text);
     }
 }
 

@@ -1,15 +1,28 @@
 export interface PrjSettings {
     logLevel: string;
-    user: Record<string, string>;
+    language: string;
+    user: {
+        name: string;
+        email: string;
+        street: string;
+        city: string;
+        zip: string;
+        country: string;
+    };
     dateFormat: string;
     dateFormatShort: string;
-    documentSettings: Record<string, string>;
+    documentSettings: {
+        symbol: string;
+        hideSymbol: string;
+        clusterSymbol: string;
+    };
     baseTag: string;
     templateFolder: string;
 }
 
 export const DEFAULT_SETTINGS: PrjSettings = {
     logLevel: "none",
+    language: "en",
     dateFormat: "DD.MM.YYYY",
     dateFormatShort: "DD.MM.YY",
     user: {
@@ -23,9 +36,7 @@ export const DEFAULT_SETTINGS: PrjSettings = {
     documentSettings: {
         "symbol": "📄",
         "hideSymbol": "🗞️",
-        "clusterSymbol": "🗂️",
-        "from": "from:",
-        "to": "to:",
+        "clusterSymbol": "🗂️"
     },
     baseTag: 'PRJ',
     templateFolder: 'Vorlagen/'

@@ -16,25 +16,70 @@
     border-bottom: solid;
     font-weight: var(--font-medium);
     font-size: large;
+    white-space: nowrap;
 }
 
 .prj-table .prj-table-body .prj-table-row .prj-table-cell {
     border: none;
     text-align: left;
     font-weight: var(--font-normal);
-    font-size: normal;
+    font-size: small;
 }
 
-.prj-table .prj-table-body .prj-table-row:hover {
+.prj-table .prj-table-body  {
+    background-color: transparent !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.hidden-row {
+    display: none !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.prj-table-row-hover:hover {
     background-color: var(--table-row-background-hover) !important;
 }
 
 .prj-table>.prj-table-body>.prj-table-row.odd-row {
-    background-color: var(--table-row-background);
+    background-color: var(--table-row-background) !important;
 }
 
 .prj-table>.prj-table-body>.prj-table-row.even-row {
-    background-color: var(--table-row-alt-background);
+    background-color: var(--table-row-alt-background) !important;
+}
+
+/* DocumentBlockRenderComponent */
+.prj-table-body div.senderRecipient {
+    display: flex;
+    flex-direction: column;
+}
+
+.prj-table-body div.senderRecipient div.container {
+    display: flex;
+    align-items: center;
+}
+
+.prj-table-body div.senderRecipient div.container span.fromTo {
+    margin-right: 5px;
+    color: inherit;
+    opacity: 0.5;
+    white-space: nowrap;
+}
+
+.prj-table-body div.senderRecipient div.container span.name {
+    color: inherit;
+}
+
+.prj-table-body .prj-table-cell.tags div {
+    margin: 1px;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.font-xsmall {
+    font-size: x-small !important;
+    font-family: inherit;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.font-xxsmall {
+    font-size: xx-small !important;
+    font-family: inherit;
 }
 
 
@@ -100,7 +145,7 @@
 .editable-data-view.text-input-sizer,
 .editable-data-view.text-input,
 .editable-data-view.text-presentation {
-    font-size: small;
+    font-size: inherit;
     font-family: inherit;
 }
 
@@ -141,7 +186,7 @@
 
 /* Date input */
 .editable-data-view.date-presentation {
-    font-size: small;
+    font-size: inherit;
     font-family: inherit;
     display: flex;
     position: relative;
@@ -158,13 +203,13 @@
     border: none;
     background: transparent;
     padding-left: var(--size-4-6);
-    font-size: small;
+    font-size: inherit;
     font-family: inherit;
 }
 
 /* Select input */
 .editable-data-view.select-input {
-    font-size: small !important;
+    font-size: inherit !important;
     font-family: inherit;
     display: flex;
     max-width: 100%;
@@ -186,7 +231,7 @@
 .editable-data-view.textarea-input-sizer,
 .editable-data-view.textarea-input,
 .editable-data-view.textarea-presentation {
-    font-size: small;
+    font-size: inherit;
     font-family: inherit;
 }
 

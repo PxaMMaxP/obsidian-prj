@@ -8,8 +8,10 @@
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
 	"strictNullChecks": true,
     "lib": [
       "DOM",

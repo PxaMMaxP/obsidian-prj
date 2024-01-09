@@ -11,7 +11,7 @@ export default class LinkComponent extends BaseComponent {
     onFinalize: () => void;
     //#endregion
     //#region extended properties
-    private _onPresentation: ((value: string) => { href: string, text: string });
+    private _onPresentation: ((value: string) => Promise<void>) | undefined;
     private _onSave: ((value: string) => Promise<void>) | undefined;
     private _suggester: ((value: string) => string[]) | undefined;
     private _value: string;
@@ -113,8 +113,29 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component change in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => { href: string, text: string }) {
-        this._onPresentation = formator;
+    public setFormator(formator: (value: string) => { href: string, text: string, html?: DocumentFragment }) {
+        this._onPresentation = async (value: string): Promise<void> => {
+            const linkContent = formator(value);
+            this.link.href = linkContent.href;
+            if (linkContent.html) this.link.appendChild(linkContent.html);
+            else this.link.textContent = linkContent.text;
+
+            switch (this.linkType) {
+                case 'tag':
+                    break;
+                case 'file':
+                    this.link.setAttribute('aria-label', linkContent.href);
+                    this.link.setAttribute('data-href', linkContent.href);
+                    break;
+                case 'external':
+                    break;
+            }
+
+            if (this.input && this.label) {
+                this.input.value = linkContent.text ? linkContent.text : '';
+                this.label.dataset.value = linkContent.text ? linkContent.text : this._placeholder ? this._placeholder : '';
+            }
+        };
         return this;
     }
 
@@ -148,9 +169,6 @@ export default class LinkComponent extends BaseComponent {
         this.link.title = this._title;
         this.link.classList.add('editable-data-view');
         this.link.classList.add('link-presentation');
-        const linkContent = this._onPresentation(this._value);
-        this.link.href = linkContent.href;
-        this.link.textContent = linkContent.text;
 
         switch (this.linkType) {
             case 'tag':
@@ -160,8 +178,6 @@ export default class LinkComponent extends BaseComponent {
                 break;
             case 'file':
                 this.link.setAttribute('data-tooltip-position', 'top');
-                this.link.setAttribute('aria-label', linkContent.href);
-                this.link.setAttribute('data-href', linkContent.href);
                 this.link.classList.add('internal-link');
                 this.link.target = '_blank';
                 this.link.rel = 'noopener';
@@ -169,6 +185,8 @@ export default class LinkComponent extends BaseComponent {
             case 'external':
                 break;
         }
+
+        this._onPresentation?.(this._value);
     }
 
     private buildInput() {
@@ -207,17 +225,13 @@ export default class LinkComponent extends BaseComponent {
     }
 
     private enableEdit() {
-        const linkContent = this._onPresentation(this._value);
-        this.input.value = linkContent.text ? linkContent.text : '';
-        this.label.dataset.value = linkContent.text ? linkContent.text : this._placeholder ? this._placeholder : '';
+        this._onPresentation?.(this._value);
         this.input.focus();
         this.input.select();
     }
 
     private disableEdit() {
-        const linkContent = this._onPresentation(this._value);
-        this.link.href = linkContent.href;
-        this.link.textContent = linkContent.text;
+        this._onPresentation?.(this._value);
     }
 
     private async save(): Promise<void> {

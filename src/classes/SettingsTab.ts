@@ -27,6 +27,18 @@ export class SettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
+        // Language
+        new Setting(containerEl)
+            .setName('Language')
+            .setDesc('The language to use')
+            .addText(text => text
+                .setPlaceholder('en | de')
+                .setValue(this.plugin.settings.language)
+                .onChange(async (value) => {
+                    this.plugin.settings.language = value;
+                    await this.plugin.saveSettings();
+                }));
+
         // Base tag for all related files
         new Setting(containerEl)
             .setName('Base Tag')
@@ -166,30 +178,6 @@ export class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.documentSettings.clusterSymbol)
                 .onChange(async (value) => {
                     this.plugin.settings.documentSettings.clusterSymbol = value;
-                    await this.plugin.saveSettings();
-                }));
-
-        // From
-        new Setting(containerEl)
-            .setName('From')
-            .setDesc('The prefix for the from data')
-            .addText(text => text
-                .setPlaceholder('from:')
-                .setValue(this.plugin.settings.documentSettings.from)
-                .onChange(async (value) => {
-                    this.plugin.settings.documentSettings.from = value;
-                    await this.plugin.saveSettings();
-                }));
-
-        // To
-        new Setting(containerEl)
-            .setName('To')
-            .setDesc('The prefix for the to data')
-            .addText(text => text
-                .setPlaceholder('to:')
-                .setValue(this.plugin.settings.documentSettings.to)
-                .onChange(async (value) => {
-                    this.plugin.settings.documentSettings.to = value;
                     await this.plugin.saveSettings();
                 }));
     }

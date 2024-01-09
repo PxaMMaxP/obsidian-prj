@@ -6,7 +6,7 @@ import Logging from "src/classes/Logging";
 
 export class BaseModel<T extends object> extends TransactionModel<T> {
     protected app = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
+    protected logger: Logging = Global.getInstance().logger;
     private _file: TFile;
     public get file(): TFile {
         return this._file;
@@ -69,6 +69,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         });
     }
 
+    /**
+     * Updates the `yamlKeyMap` with the given value.
+     * @param yamlKeyMap The new `yamlKeyMap` to set.
+     */
     private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
         if (yamlKeyMap) {
             this.yamlKeyMap = yamlKeyMap;
