@@ -64,7 +64,7 @@ export default class Helper {
         return formatedDate;
     }
 
-    static async sleep(ms: number) {
+    static async sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 

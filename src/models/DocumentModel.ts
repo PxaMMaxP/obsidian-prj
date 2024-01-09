@@ -42,6 +42,19 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         return this._relatedFiles;
     }
 
+    public override toString(): string {
+        let allText = this.data.title ?? "";
+        allText += this.data.description ?? "";
+        allText += this.data.date ?? "";
+        allText += this.data.dateOfDelivery ?? "";
+        allText += this.data.file ?? "";
+        allText += this.data.tags ?? "";
+        allText += this.data.sender ?? "";
+        allText += this.data.recipient ?? "";
+        allText += this.data.relatedFiles ?? "";
+        return allText;
+    }
+
     public getWikilink(text: string | undefined): string {
         if (text) {
             return `[[${this.file.name}|${text}]]`;
@@ -65,6 +78,28 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
      */
     public getDescription(): string {
         return this.data.description ?? "";
+    }
+
+    /**
+     * Returns `Input` if the document is addressed to the user or `Output` if it comes from the user. Otherwise `null`.
+     * @returns State of the document.
+     * E.g. `Input` if the document is addressed to the user or `Output` if it comes from the user. Otherwise `null`.
+     */
+    public getInputOutputState(): null | "Input" | "Output" {
+        const username = this.global.settings.user.name;
+        const shortUsername = this.global.settings.user.shortName;
+        if (this.data && (this.data.sender || this.data.recipient)) {
+            if (this.data.sender === username || this.data.sender === shortUsername) {
+                return "Output";
+            } else if (this.data.recipient === username || this.data.recipient === shortUsername) {
+                return "Input";
+            }
+            else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     /**

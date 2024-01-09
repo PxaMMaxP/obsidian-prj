@@ -82,29 +82,19 @@ export default class Search {
     static applySearchLogic(terms: SearchTermsArray, textContent: string): boolean {
         textContent = textContent.toLowerCase();
 
-        let result = true;
+        // If only one term is present..
+        let result = terms[0].negate ? !textContent.includes(terms[0].term) : textContent.includes(terms[0].term);
 
-        // If only one term is present, return the result of the term
-        if (terms.length === 1) {
-            const termObj = terms[0];
-            result = termObj.negate ? !textContent.includes(termObj.term) : textContent.includes(termObj.term);
-        } else {
-            for (let i = 0; i < terms.length; i += 3) {
-                const termObj1 = terms[i];
-                const operatorObj = terms[i + 1];
-                const termObj2 = terms[i + 2];
+        for (let i = 1; i < terms.length; i += 2) {
+            const operatorObj = terms[i];
+            const nextTermObj = terms[i + 1];
 
-                const term1Match = termObj1.negate ? !textContent.includes(termObj1.term) : textContent.includes(termObj1.term);
-                const term2Match = termObj2 ? (termObj2.negate ? !textContent.includes(termObj2.term) : textContent.includes(termObj2.term)) : true;
+            const nextTermMatch = nextTermObj.negate ? !textContent.includes(nextTermObj.term) : textContent.includes(nextTermObj.term);
 
-                if (operatorObj.term === '&') {
-                    result = result && term1Match && term2Match;
-                } else if (operatorObj.term === '|') {
-                    result = result && (term1Match || term2Match);
-                }
-
-                // If there is no left term, break the loop
-                if (!termObj2) break;
+            if (operatorObj.term === '&') {
+                result = result && nextTermMatch;
+            } else if (operatorObj.term === '|') {
+                result = result || nextTermMatch;
             }
         }
 

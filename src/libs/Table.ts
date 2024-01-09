@@ -6,6 +6,8 @@ export default class Table {
     private _headers: TableHeader[];
     private _tableId: string;
     private _tableClassList: string[] | undefined;
+    private _visibleRows = 0;
+    private _hiddenRows = 0;
     //   Default classes  //
     private defaultClasses = {
         table: ['prj-table'],
@@ -106,16 +108,14 @@ export default class Table {
      * @param rows.hidden Whether the new row should be hidden
      */
     public addRows(rows: Row[]): void {
-        let oneRowVisible = false;
         rows.forEach(row => {
             this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
-            oneRowVisible = oneRowVisible || !row.hidden;
         });
     }
 
     private _addRow(rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean): void {
         const tableRow = this._table.body.insertRow();
-        this.setRowOddOrEven(tableRow);
+
         tableRow.classList.add(...this.defaultClasses.row);
         tableRow.setAttribute('row-uid', rowUid);
         if (rowClassList) {
@@ -125,6 +125,10 @@ export default class Table {
         }
         if (hidden) {
             tableRow.classList.add(this.defaultClasses.hiddenRow);
+            this._hiddenRows++;
+        } else {
+            this.setRowOddOrEven(tableRow);
+            this._visibleRows++;
         }
         rowData.forEach((data, index) => {
             const tableCell = tableRow.insertCell();
@@ -155,6 +159,16 @@ export default class Table {
     }
 
     /**
+     * Returns the number of visible and hidden rows
+     * @returns The number of visible and hidden rows
+     * @returns visibleRows The number of visible rows
+     * @returns hiddenRows The number of hidden rows
+     */
+    public getRowStats(): { visibleRows: number, hiddenRows: number } {
+        return { visibleRows: this._visibleRows, hiddenRows: this._hiddenRows };
+    }
+
+    /**
      * Deletes the row with the given UID
      * @param rowUid The UID of the row
      */
@@ -165,7 +179,10 @@ export default class Table {
             this._table.body.removeChild(rowToDelete);
         }
         if (rowVisible) {
+            this._visibleRows--;
             this.refreshRowEvenOddClass();
+        } else {
+            this._hiddenRows--;
         }
     }
 
@@ -174,10 +191,15 @@ export default class Table {
      * @param rowUid The UID of the row
      */
     public hideRow(rowUid: string): void {
-        const rowToHide = this._table.rows.find(row => row.getAttribute('row-uid') === rowUid);
-        if (rowToHide) {
-            rowToHide.classList.add(this.defaultClasses.hiddenRow);
-            this.refreshRowEvenOddClass();
+        this._hideRow(rowUid);
+        this.refreshRowEvenOddClass();
+    }
+
+    private _hideRow(rowUid: string): void {
+        const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], true);
+        if (changes) {
+            this._visibleRows--;
+            this._hiddenRows++;
         }
     }
 
@@ -186,11 +208,32 @@ export default class Table {
      * @param rowUid The UID of the row
      */
     public showRow(rowUid: string): void {
-        const rowToShow = this._table.rows.find(row => row.getAttribute('row-uid') === rowUid);
-        if (rowToShow) {
-            rowToShow.classList.remove(this.defaultClasses.hiddenRow);
-            this.refreshRowEvenOddClass();
+        this._showRow(rowUid);
+        this.refreshRowEvenOddClass();
+    }
+
+    private _showRow(rowUid: string): void {
+        const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], false);
+        if (changes) {
+            this._visibleRows++;
+            this._hiddenRows--;
         }
+    }
+
+    /**
+     * Set the state of multiple rows to hidden or visible
+     * @param rows The rows to change
+     * @param rows.rowUid The UID of the row
+     * @param rows.hidden Whether to hide or show the row
+     */
+    public async changeShowHideStateRows(rows: RowsState[]): Promise<void> {
+        rows.forEach(row => {
+            if (row.hidden)
+                this._hideRow(row.rowUid);
+            else
+                this._showRow(row.rowUid);
+        });
+        this.refreshRowEvenOddClass();
     }
 
     /**
@@ -208,11 +251,13 @@ export default class Table {
      * @param classList The class list to toggle
      * @param add Whether to add or remove the class
      */
-    public togleRowClass(rowUid: string, classList: string[], add: boolean): void {
+    public togleRowClass(rowUid: string, classList: string[], add: boolean): boolean {
+        let changes = false;
         const row = this.getRow(rowUid);
         if (row) {
-            this.toggleClass(row, classList, add);
+            changes = this.toggleClass(row, classList, add);
         }
+        return changes;
     }
 
     private refreshRowEvenOddClass(): void {
@@ -228,21 +273,25 @@ export default class Table {
         });
     }
 
-    private toggleClass(element: HTMLElement, classList: string[], add: boolean): void {
+    private toggleClass(element: HTMLElement, classList: string[], add: boolean): boolean {
+        let changes = false;
         const presentClasses = element.classList;
         if (add) {
             classList.forEach(classItem => {
                 if (!presentClasses.contains(classItem)) {
                     element.classList.add(classItem);
+                    changes = true;
                 }
             });
         } else {
             classList.forEach(classItem => {
                 if (presentClasses.contains(classItem)) {
                     element.classList.remove(classItem);
+                    changes = true;
                 }
             });
         }
+        return changes;
     }
 
     /**
@@ -328,5 +377,10 @@ export type Row = {
     rowUid: string;
     rowData: DocumentFragment[];
     rowClassList: string[] | undefined;
+    hidden: boolean;
+}
+
+export type RowsState = {
+    rowUid: string;
     hidden: boolean;
 }
