@@ -3,6 +3,7 @@ export interface PrjSettings {
     language: string;
     user: {
         name: string;
+        shortName: string;
         email: string;
         street: string;
         city: string;
@@ -11,6 +12,7 @@ export interface PrjSettings {
     };
     dateFormat: string;
     dateFormatShort: string;
+    defaultMaxShow: number;
     documentSettings: {
         symbol: string;
         hideSymbol: string;
@@ -27,12 +29,14 @@ export const DEFAULT_SETTINGS: PrjSettings = {
     dateFormatShort: "DD.MM.YY",
     user: {
         "name": "",
+        "shortName": "",
         "email": "",
         "street": "",
         "city": "",
         "zip": "",
         "country": "",
     },
+    "defaultMaxShow": 200,
     documentSettings: {
         "symbol": "📄",
         "hideSymbol": "🗞️",
