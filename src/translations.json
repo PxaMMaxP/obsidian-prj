@@ -12,7 +12,17 @@
             "DeliveryDate": "Delivery date",
             "Tags": "Tags",
             "From": "from:",
-            "To": "to:"
+            "To": "to:",
+            "Refresh": "Refresh",
+            "Documents": "Documents",
+            "HideDocuments": "Hide documents",
+            "Cluster": "Document Cluster",
+            "Filter": "Filter:",
+            "MaxShownEntrys": "Max. shown entries",
+            "Search": "Search",
+            "DocumentDate": "Document date",
+            "MetadataFile": "Metadata file",
+            "PDFFile": "PDF file"
         }
     },
     {
@@ -28,7 +38,17 @@
             "DeliveryDate": "Zustelldatum",
             "Tags": "Tags",
             "From": "von:",
-            "To": "an:"
+            "To": "an:",
+            "Refresh": "Aktualisieren",
+            "Documents": "Dokumente",
+            "HideDocuments": "Ausgeblendete Dokumente",
+            "Cluster": "Dokumenten Cluster",
+            "Filter": "Filter:",
+            "MaxShownEntrys": "Max. angezeigte Einträge",
+            "Search": "Suche",
+            "DocumentDate": "Dokumenten Datum",
+            "MetadataFile": "Metadaten Datei",
+            "PDFFile": "PDF Datei"
         }
     }
 ]

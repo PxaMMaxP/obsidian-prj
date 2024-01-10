@@ -7,14 +7,18 @@ import Global from "../classes/Global";
 import DocumentBlockRenderComponent from "./BlockRenderComponents/DocumentBlockRenderComponent";
 
 export default class MarkdownBlockProcessor {
-    private static moment = require('moment');
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const startTime = Date.now();
 
-        const div = el.closest('div.cm-preview-code-block.cm-embed-block.markdown-rendered');
-        if (div) {
-            div.classList.remove('cm-embed-block');
+        // Remove the cm-embed-block class from the parent element
+        // and add the prj-block class.
+        // This remove the Block-Hover-Effekt from the block
+        // and with CSS we remove the Block-Edit-Button
+        const parent = el.closest('div.cm-preview-code-block.cm-embed-block.markdown-rendered');
+        if (parent) {
+            parent.classList.remove('cm-embed-block');
+            parent.addClass('prj-block');
         }
 
         const global = Global.getInstance();

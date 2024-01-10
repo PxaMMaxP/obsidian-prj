@@ -1,46 +1,40 @@
-import { MarkdownRenderChild, MarkdownRenderer, TFile, setIcon } from "obsidian";
-import { ProcessorSettings } from "../MarkdownBlockProcessor";
 import { DocumentModel } from "src/models/DocumentModel";
-import Global from "src/classes/Global";
-import Table, { Row, RowsState, TableHeader } from "../Table";
-import Helper from "../Helper";
-import EditableDataView from "../EditableDataView/EditableDataView";
-import Lng from "src/classes/Lng";
-import RedrawableBlockRenderComponent from "./RedrawableBlockRenderComponent";
+import TableBlockRenderComponent from "./TableBlockRenderComponent";
+import { ProcessorSettings } from "../MarkdownBlockProcessor";
 import Search, { SearchTermsArray } from "../Search";
+import Table, { Row, RowsState, TableHeader } from "../Table";
+import Lng from "src/classes/Lng";
+import FilterButton from "./InnerComponents/FilterButton";
+import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
+import SearchInput from "./InnerComponents/SearchInput";
+import Helper from "../Helper";
+import GeneralDocumentBlockRenderComponents from "./InnerComponents/GeneralDocumentBlockRenderComponents";
 
-export default class DocumentBlockRenderComponent implements RedrawableBlockRenderComponent {
-    private global = Global.getInstance();
-    private logger = this.global.logger;
-    private metadataCache = this.global.metadataCache.Cache;
-    private fileCache = this.global.fileCache;
-    private processorSettings: ProcessorSettings;
-    private component: MarkdownRenderChild;
-    private settings: {
-        tags: string | string[],
-        docSymbol: string,
-        hideDocSymbol: string,
-        clusterSymbol: string,
-        noneDocSymbol: string,
-        filter: FilteredDocument[],
-        maxDocuments: number,
-        search: SearchTermsArray | undefined
-    }
-        = {
-            tags: "",
-            docSymbol: this.global.settings.documentSettings.symbol,
-            hideDocSymbol: this.global.settings.documentSettings.hideSymbol,
-            clusterSymbol: this.global.settings.documentSettings.clusterSymbol,
-            noneDocSymbol: "diamond",
-            filter: ["Documents"],
-            maxDocuments: this.global.settings.defaultMaxShow,
-            search: undefined
-        };
-    private documents: DocumentModel[];
-    private headerContainer: HTMLElement;
-    private tableContainer: HTMLElement;
-    private table: Table;
-    private tableHeaders: TableHeader[] = [
+/**
+ * Document block render component class for `TableBlockRenderComponent`.
+ * @remarks This class provides methods to create and manage a document block render component.
+ * @see {@link create} for details about creating a document block render component.
+ */
+export default class DocumentBlockRenderComponent extends TableBlockRenderComponent<DocumentModel> {
+    protected settings: DocumentBlockRenderSettings = {
+        tags: [],
+        docSymbol: this.global.settings.documentSettings.symbol,
+        hideDocSymbol: this.global.settings.documentSettings.hideSymbol,
+        clusterSymbol: this.global.settings.documentSettings.clusterSymbol,
+        noneDocSymbol: "diamond",
+        filter: ["Documents"],
+        maxDocuments: this.global.settings.defaultMaxShow,
+        search: undefined,
+        batchSize: 8,
+        sleepBetweenBatches: 10
+    };
+
+    /**
+     * The table headers.
+     * @remarks The table headers are used to create the table.
+     * 
+     */
+    protected tableHeaders: TableHeader[] = [
         { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["main-document-symbol", "font-medium"] },
         { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Subject"), headerClass: [], columnClass: [] },
@@ -51,218 +45,173 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
     ];
 
     constructor(settings: ProcessorSettings) {
-        this.processorSettings = settings;
-        this.component = new MarkdownRenderChild(this.processorSettings.container);
+        super(settings);
         this.parseSettings();
     }
 
-    public async build(): Promise<void> {
-        const startTime = Date.now();
-
-        await this.draw();
-
-        const endTime = Date.now();
-        this.logger.debug(`Build Documents (for ${this.documents.length} Docs.) runs for ${endTime - startTime}ms`);
+    public build(): Promise<void> {
+        return super.build();
     }
 
-    public async redraw(): Promise<void> {
+    /**
+     * Draws the component and adds the documents to the table.
+     * @returns A promise which is resolved when the documents are added to the table.
+     * @remarks - Calls the `super.draw` method.
+     * - Calls the `buildTable` method.
+     * - Calls the `buildHeader` method.
+     * - Calls the `addDocumentsToTable` method.
+     */
+    protected async draw(): Promise<void> {
         const startTime = Date.now();
-        this.processorSettings.container.innerHTML = "";
-        await this.draw();
-        const endTime = Date.now();
-        this.logger.debug(`Redraw Documents (for ${this.documents.length} Docs.) runs for ${endTime - startTime}ms`);
-    }
 
-    private async draw(): Promise<void> {
-        const documentsPromise = this.getDocuments();
-        this.documents = (await documentsPromise);
-
-        this.headerContainer = document.createElement('div');
-        this.processorSettings.container.appendChild(this.headerContainer);
-        this.headerContainer.classList.add('header-container');
-        this.buildHeader();
-
-        this.tableContainer = document.createElement('div');
-        this.processorSettings.container.appendChild(this.tableContainer);
-        this.tableContainer.classList.add('table-container');
+        const documentsPromise = this.getModels();
+        await super.draw();
         await this.buildTable();
+        await this.buildHeader();
+        this.grayOutHeader();
+        this.models = (await documentsPromise);
 
-        this.logger.debug(`${this.documents.length} Documents found.`);
-        //this.documents = this.documents.splice(0, 200);
-        DocumentModel.sortDocumentsByDateDesc(this.documents);
-
-        await this.addDocumentsToTable(50, 50);
+        DocumentModel.sortDocumentsByDateDesc(this.models);
+        await this.addDocumentsToTable();
+        this.normalizeHeader();
+        const endTime = Date.now();
+        this.logger.debug(`Redraw Documents (for ${this.models.length} Docs.) runs for ${endTime - startTime}ms`);
     }
 
+    /**
+     * Builds the header.
+     * @remarks - The header is saved in the `headerContainer` property.
+     * - Creates the `filter container`.
+     * - Creates the `filter label`.
+     * - Creates the `filter buttons`: `Documents`, `HideDocuments` and `Cluster`.
+     * - Creates the `max documents input`.
+     * - Creates the `search box`.
+     */
     private async buildHeader(): Promise<void> {
-        const blockControle = document.createElement('div');
-        this.headerContainer.appendChild(blockControle);
-        blockControle.classList.add('block-controle');
+        // Filter container
+        const headerFilterButtons = document.createElement('div');
+        this.headerContainer.appendChild(headerFilterButtons);
+        headerFilterButtons.classList.add('header-item');
+        headerFilterButtons.classList.add('filter-symbols');
 
-        // Refresh Button
-        const refreshButton = document.createElement('a');
-        blockControle.appendChild(refreshButton);
-        refreshButton.classList.add('refresh-button');
-        refreshButton.title = Lng.gt("Refresh");
-        refreshButton.href = "#";
-        setIcon(refreshButton, "refresh-cw");
-        this.component.registerDomEvent(refreshButton, 'click', async (event: MouseEvent) => {
-            event.preventDefault();
-            this.redraw();
-        });
-
-        // Other Header Items
-        const headerFilterDocs = document.createElement('div');
-        this.headerContainer.appendChild(headerFilterDocs);
-        headerFilterDocs.classList.add('header-item');
-        headerFilterDocs.classList.add('filter-symbols');
+        // Filter label
         const filterLabelContainer = document.createElement('div');
-        headerFilterDocs.appendChild(filterLabelContainer);
+        headerFilterButtons.appendChild(filterLabelContainer);
         const filterLabel = document.createElement('span');
         filterLabelContainer.appendChild(filterLabel);
         filterLabel.classList.add('filter-symbol');
         filterLabel.textContent = Lng.gt("Filter");
-        this.createFilterButton(headerFilterDocs, "Documents", this.settings.docSymbol);
-        this.createFilterButton(headerFilterDocs, "HideDocuments", this.settings.hideDocSymbol);
-        this.createFilterButton(headerFilterDocs, "Cluster", this.settings.clusterSymbol);
-        this.createMaxDocumentsInput(headerFilterDocs);
-        this.createSearchInput(headerFilterDocs);
+
+        const documentFilterButton = FilterButton.create(
+            this.component,
+            "Documents",
+            this.settings.docSymbol,
+            this.settings.filter.includes("Documents"),
+            this.onFilterButton.bind(this));
+        headerFilterButtons.appendChild(documentFilterButton);
+
+        const hideDocumentFilterButton = FilterButton.create(
+            this.component,
+            "HideDocuments",
+            this.settings.hideDocSymbol,
+            this.settings.filter.includes("HideDocuments"),
+            this.onFilterButton.bind(this));
+        headerFilterButtons.appendChild(hideDocumentFilterButton);
+
+        const clusterFilterButton = FilterButton.create(
+            this.component,
+            "Cluster",
+            this.settings.clusterSymbol,
+            this.settings.filter.includes("Cluster"),
+            this.onFilterButton.bind(this));
+        headerFilterButtons.appendChild(clusterFilterButton);
+
+        const maxDocuments = MaxShownModelsInput.create(
+            this.component,
+            this.settings.maxDocuments,
+            50,
+            this.onMaxDocumentsChange.bind(this));
+        headerFilterButtons.appendChild(maxDocuments);
+
+        const searchBox = SearchInput.create(
+            this.component,
+            this.onSearch.bind(this));
+        headerFilterButtons.appendChild(searchBox);
     }
 
-    private createSearchInput(container: HTMLDivElement) {
-        const searchLabelContainer = document.createElement('div');
-        container.appendChild(searchLabelContainer);
-        searchLabelContainer.classList.add('filter-search');
-        const filterLabel = document.createElement('span');
-        searchLabelContainer.appendChild(filterLabel);
-        filterLabel.classList.add('filter-symbol');
-        filterLabel.textContent = Lng.gt("Search") + ":";
+    /**
+     * This method is called when the filter button is clicked.
+     * @param type The type of the filter button.
+     * @param status The new status of the filter button.
+     * @remarks Runs the `onFilter` method.
+     */
+    private async onFilterButton(type: string, status: boolean): Promise<void> {
+        if (this.settings.filter.includes(type as FilteredDocument)) {
+            this.settings.filter = this.settings.filter.filter(v => v !== type);
+        } else {
+            this.settings.filter.push(type as FilteredDocument);
+        }
+        this.onFilter();
+    }
 
-        //create SearchBox sizer
-        const searchBoxSizer = document.createElement('label');
-        searchLabelContainer.appendChild(searchBoxSizer);
-        searchBoxSizer.classList.add('search-box-sizer');
+    /**
+     * This method is called when the max documents input is changed.
+     * @param maxDocuments The new max documents value.
+     * @returns A promise which is resolved when the documents are filtered.
+     * @remarks Runs the `onFilter` method.
+     */
+    private async onMaxDocumentsChange(maxDocuments: number): Promise<undefined> {
+        this.settings.maxDocuments = maxDocuments;
+        this.onFilter();
+        return undefined;
+    }
 
-        //create searchBox
-        const searchBox = document.createElement('input');
-        searchBoxSizer.appendChild(searchBox);
-        searchBox.classList.add('search-box');
-        searchBox.type = "text";
-        searchBox.placeholder = Lng.gt("Search");
-        searchBox.value = "";
-
-        //Register input event
-        this.component.registerDomEvent(searchBox, 'input', async (event: InputEvent) => {
-            searchBoxSizer.dataset.value = "_" + searchBox.value + "_";
-        });
-
-        //Register Keydown Event
-        this.component.registerDomEvent(searchBox, 'keydown', async (event: KeyboardEvent) => {
-            if (event.key === "Enter") {
-                if (searchBox.value !== "") {
-                    this.settings.search = Search.parseSearchText(searchBox.value);
-                    this.onFilter();
-                } else {
-                    this.settings.search = undefined;
-                    this.onFilter();
-                }
-            } else if (event.key === "Escape") {
-                searchBox.value = "";
-                searchBoxSizer.dataset.value = "";
+    /**
+     * This method is called when the search box is used.
+     * @param search The search text.
+     * @param key The key that was pressed.
+     * @returns The search text.
+     * @remarks - If the `Enter` key was pressed, the search is applied.
+     * - If the `Escape` key was pressed, the search is reset.
+     * - After the search is applied, the `onFilter` method is called.
+     */
+    private async onSearch(search: string, key: string): Promise<string> {
+        if (key === "Enter") {
+            if (search !== "") {
+                this.settings.search = Search.parseSearchText(search);
+                this.onFilter();
+            } else {
                 this.settings.search = undefined;
                 this.onFilter();
             }
-        });
-    }
-
-    private createMaxDocumentsInput(container: HTMLDivElement) {
-        const batchSize = 50;
-
-        const filterDocumentsSymbol = document.createElement('div');
-        container.appendChild(filterDocumentsSymbol);
-        filterDocumentsSymbol.classList.add('filter-max-symbols');
-        const maxShownDocMinus = document.createElement('a');
-        filterDocumentsSymbol.appendChild(maxShownDocMinus);
-        maxShownDocMinus.classList.add('filter-max-symbol');
-        maxShownDocMinus.title = Lng.gt("MaxShownEntrys");
-        maxShownDocMinus.href = "#";
-        setIcon(maxShownDocMinus, "minus");
-
-        this.component.registerDomEvent(maxShownDocMinus, 'click', async (event: MouseEvent) => {
-            if (this.settings.maxDocuments >= batchSize) {
-                this.settings.maxDocuments -= batchSize;
-            } else {
-                this.settings.maxDocuments = 0;
-            }
-            maxShownNumber.textContent = this.settings.maxDocuments?.toString() ?? "999999";
+        } else if (key === "Escape") {
+            this.settings.search = undefined;
             this.onFilter();
-        });
-
-        const maxShownNumber = document.createElement('span');
-        filterDocumentsSymbol.appendChild(maxShownNumber);
-        maxShownNumber.classList.add('filter-max-symbol');
-        maxShownNumber.title = Lng.gt("MaxShownEntrys");
-        maxShownNumber.textContent = this.settings.maxDocuments?.toString() ?? "999999";
-
-        const maxShownDocPlus = document.createElement('a');
-        filterDocumentsSymbol.appendChild(maxShownDocPlus);
-        maxShownDocPlus.classList.add('filter-max-symbol');
-        maxShownDocPlus.title = Lng.gt("MaxShownEntrys");
-        maxShownDocPlus.href = "#";
-        setIcon(maxShownDocPlus, "plus");
-
-        this.component.registerDomEvent(maxShownDocPlus, 'click', async (event: MouseEvent) => {
-            this.settings.maxDocuments += batchSize;
-            maxShownNumber.textContent = this.settings.maxDocuments?.toString() ?? "999999";
-            this.onFilter();
-        });
-    }
-
-    private createFilterButton(container: HTMLDivElement, type: FilteredDocument, symbol: string) {
-        const filterDocumentsSymbol = document.createElement('div');
-        container.appendChild(filterDocumentsSymbol);
-        const filterDoc = document.createElement('a');
-        filterDocumentsSymbol.appendChild(filterDoc);
-        filterDoc.classList.add('filter-symbol');
-        filterDoc.title = Lng.gt(type);
-        filterDoc.href = "#";
-        setIcon(filterDoc, symbol);
-
-        if (this.settings.filter.includes(type)) {
-            filterDoc.classList.remove('filter-symbol-hide');
-        } else {
-            filterDoc.classList.add('filter-symbol-hide');
+            return "";
         }
-
-        this.component.registerDomEvent(filterDoc, 'click', async (event: MouseEvent) => {
-            event.preventDefault();
-            if (this.settings.filter.includes(type)) {
-                this.settings.filter = this.settings.filter.filter(v => v !== type);
-                filterDoc.classList.add('filter-symbol-hide');
-            } else {
-                this.settings.filter.push(type);
-                filterDoc.classList.remove('filter-symbol-hide');
-            }
-            this.onFilter();
-        });
+        return search;
     }
 
+    /**
+     * Filters the documents and shows/hides them in the table.
+     * @remarks - The documents are filtered by the `filter` setting,
+     * searched by the `search` setting 
+     * and the number of documents is limited by the `maxDocuments` if no search is applied.
+     */
     private async onFilter() {
-        const startTime = Date.now();
-
-        this.headerContainer.addClass('disable');
-        const batchSize = 50;
-        const sleepBetweenBatches = 50;
+        this.grayOutHeader();
+        const batchSize = this.settings.batchSize;
+        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
         let sleepPromise = Promise.resolve();
-        const documentsLength = this.documents.length;
+        const documentsLength = this.models.length;
         const rows: RowsState[] = [];
         let visibleRows = 0;
 
         for (let i = 0; i < documentsLength; i++) {
-            const document = this.documents[i];
+            const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, 99999);
+            let hide = this.getHideState(document, 9999999);
             if (visibleRows >= this.settings.maxDocuments) {
                 hide = true
             }
@@ -282,62 +231,56 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
             }
         }
 
+        this.normalizeHeader();
+    }
+
+    /**
+     * Normalizes the header.
+     * @remarks - Removes the `disable` class from the header.
+     * - The header is not grayed out anymore.
+     */
+    private normalizeHeader() {
         this.headerContainer.removeClass('disable');
-
-        const endTime = Date.now();
-        this.logger.debug(`Filter Documents (for ${this.documents.length} Docs.) runs for ${endTime - startTime}ms`);
-
     }
 
-    private getHideState(document: DocumentModel, maxVisibleRows: number | undefined): boolean {
-        let hide = true;
-
-        if (this.settings.search) {
-            const text = document.toString();
-            const searchResult = Search.applySearchLogic(this.settings.search, text);
-            return !searchResult;
-        }
-
-        if (maxVisibleRows && maxVisibleRows > 0) {
-            const rowStats = this.table.getRowStats();
-            if (rowStats.visibleRows >= maxVisibleRows) {
-                return true;
-            }
-        }
-
-        if (hide && this.settings.filter.includes("Documents")) {
-            if (document.data.hide !== true && document.data.subType !== "Cluster") {
-                hide = false
-            }
-        }
-        if (hide && this.settings.filter.includes("Cluster")) {
-            if (document.data.subType === "Cluster") {
-                hide = false
-            }
-        }
-        if (hide && this.settings.filter.includes("HideDocuments")) {
-            if (document.data.hide === true) {
-                hide = false
-            }
-        }
-
-        return hide;
+    /**
+     * Grays out the header.
+     * @remarks - Adds the `disable` class to the header.
+     * - The header is grayed out.
+     */
+    private grayOutHeader() {
+        this.headerContainer.addClass('disable');
     }
 
-    private async buildTable(): Promise<void> {
-        this.table = new Table(this.tableHeaders, "document-table", undefined);
-        this.tableContainer.appendChild(this.table.data.table);
-    }
-
-    private async addDocumentsToTable(batchSize = 50, sleepBetweenBatches = 50): Promise<void> {
+    /**
+     * Adds the documents to the table.
+     * @param batchSize The batch size.
+     * @param sleepBetweenBatches The sleep time between the batches.
+     * @returns A promise which is resolved when the documents are added to the table.
+     * @remarks - The documents are added to the table in batches.
+     * - The batch size is defined in the `batchSize` parameter. Default is `settings.batchSize`.
+     * - The sleep time between the batches is defined in the `sleepBetweenBatches` parameter. Default is `settings.sleepBetweenBatches`.
+     */
+    private async addDocumentsToTable(batchSize = this.settings.batchSize, sleepBetweenBatches = this.settings.sleepBetweenBatches): Promise<void> {
         let sleepPromise = Promise.resolve();
-        const documentsLength = this.documents.length;
+        const documentsLength = this.models.length;
         const rows: Row[] = [];
+        let rowPromise: Promise<Row> | undefined = undefined;
+
+        if (documentsLength > 0) {
+            rowPromise = this.generateTableRow(this.models[0]);
+        } else {
+            return;
+        }
 
         for (let i = 0; i < documentsLength; i++) {
-            const document = this.documents[i];
-            const row = await this.generateTableRow(document);
-            rows.push(row);
+            const document = i + 1 < documentsLength ? this.models[i + 1] : null;
+
+            const row = await rowPromise;
+            rowPromise = document ? this.generateTableRow(document) : undefined;
+
+            if (row)
+                rows.push(row);
 
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
@@ -348,6 +291,11 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
         }
     }
 
+    /**
+     * Generates a table row for the given document.
+     * @param documentModel The document to generate the table row for.
+     * @returns The generated table row.
+     */
     private async generateTableRow(documentModel: DocumentModel): Promise<Row> {
         const rowClassList: string[] = [];
         const rowData: DocumentFragment[] = [];
@@ -356,37 +304,69 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
         // Row 0 -- Metadata Link
         const metadataLink = document.createDocumentFragment();
         rowData.push(metadataLink);
-        this.createCellMetadatalink(metadataLink, documentModel);
+        GeneralDocumentBlockRenderComponents.createCellMetadatalink(
+            metadataLink,
+            this.component,
+            documentModel);
 
         // Row 1 -- Date
         const date = document.createDocumentFragment();
         rowData.push(date);
-        this.createCellDate(date, documentModel);
+        GeneralDocumentBlockRenderComponents.createCellDate(
+            date,
+            this.component,
+            Lng.gt("DocumentDate"),
+            this.global.settings.dateFormat,
+            () => documentModel.data.date ?? "na",
+            async (value: string) => documentModel.data.date = value);
 
         // Row 2 -- File Link
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
-        this.createCellFileLink(fileLink, documentModel);
+        GeneralDocumentBlockRenderComponents.createCellFileLink(
+            fileLink,
+            this.component,
+            documentModel);
 
         // Row 3 -- Sender Recipient
-        const senderRecipient = this.createCellSenderRecipient(documentModel);
+        const senderRecipient = GeneralDocumentBlockRenderComponents.createCellSenderRecipient(
+            documentModel,
+            this.component,
+            this.models);
         rowData.push(senderRecipient);
 
         // Row 4 -- Summary & Related Files
         const summaryRelatedFiles = document.createDocumentFragment();
         rowData.push(summaryRelatedFiles);
-        this.createCellSummary(documentModel, summaryRelatedFiles);
-        this.createRelatedFilesList(documentModel, summaryRelatedFiles);
+        GeneralDocumentBlockRenderComponents.createCellSummary(
+            documentModel,
+            this.component,
+            summaryRelatedFiles);
+        GeneralDocumentBlockRenderComponents.createRelatedFilesList(
+            summaryRelatedFiles,
+            this.component,
+            documentModel,
+            this.settings.noneDocSymbol,
+            this.global.settings.dateFormatShort);
 
         // Row 5 -- Date of delivery
         const deliveryDate = document.createDocumentFragment();
         rowData.push(deliveryDate);
-        this.createCellDeliveryDate(deliveryDate, documentModel);
+        GeneralDocumentBlockRenderComponents.createCellDate(
+            deliveryDate,
+            this.component,
+            Lng.gt("DeliveryDate"),
+            this.global.settings.dateFormat,
+            () => documentModel.data.dateOfDelivery ?? "na",
+            async (value: string) => documentModel.data.dateOfDelivery = value);
 
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        this.createCellTags(documentModel, tags);
+        GeneralDocumentBlockRenderComponents.createCellTags(
+            tags,
+            this.component,
+            documentModel.getTags());
 
         const hide = this.getHideState(documentModel, this.settings.maxDocuments);
 
@@ -399,265 +379,101 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
         return row;
     }
 
+    private getHideState(document: DocumentModel, maxVisibleRows: number | undefined): boolean {
+        let searchResult = false;
+        let maxRows = false;
 
-    private createCellDeliveryDate(deliveryDate: DocumentFragment, documentModel: DocumentModel, documentBlock: DocumentBlockRenderComponent = this) {
-        new EditableDataView(deliveryDate, documentBlock.component)
-            .addDate(date => date
-                .setValue(documentModel.data.dateOfDelivery ?? "na")
-                .setTitle("Date of delivery")
-                .enableEditability()
-                .setFormator((value: string) => Helper.formatDate(value, documentBlock.global.settings.dateFormat))
-                .onSave((value: string) => {
-                    documentModel.data.dateOfDelivery = value;
-                    return Promise.resolve();
-                })
-            );
-    }
-
-    private createCellMetadatalink(metadataLink: DocumentFragment, documentModel: DocumentModel, documentBlock: DocumentBlockRenderComponent = this) {
-        new EditableDataView(metadataLink, documentBlock.component)
-            .addLink(link => link
-                .setValue(documentModel.file.path)
-                .setTitle("Open metadata file")
-                .setLinkType("file")
-                .setFormator((value: string) => {
-                    const icon = document.createDocumentFragment();
-                    let iconString = "x-circle";
-                    if (documentModel.data.hide === true) {
-                        iconString = documentBlock.settings.hideDocSymbol;
-                    } else {
-                        if (documentModel.data.subType === "Cluster") {
-                            iconString = documentBlock.settings.clusterSymbol;
-                        } else {
-                            iconString = documentBlock.settings.docSymbol;
-                        }
-                    }
-                    setIcon(icon as unknown as HTMLDivElement, iconString);
-                    return { href: `${value}`, text: `${value}`, html: icon };
-                }
-                ));
-    }
-
-    private createCellDate(date: DocumentFragment, documentModel: DocumentModel, documentBlock: DocumentBlockRenderComponent = this) {
-        new EditableDataView(date, documentBlock.component)
-            .addDate(date => date
-                .setValue(documentModel.data.date ?? "na")
-                .setTitle("Document Date")
-                .enableEditability()
-                .setFormator((value: string) => Helper.formatDate(value, documentBlock.global.settings.dateFormat))
-                .onSave((value: string) => {
-                    documentModel.data.date = value;
-                    return Promise.resolve();
-                })
-            );
-    }
-
-    private createCellFileLink(fileLink: DocumentFragment, documentModel: DocumentModel, editability = true, documentBlock: DocumentBlockRenderComponent = this) {
-        new EditableDataView(fileLink, documentBlock.component)
-            .addLink(link => {
-                link.setValue(documentModel.data.title ?? "")
-                    .setTitle("Open metadata file")
-                    .setLinkType("file")
-                    .setFormator((value: string) => {
-                        const baseFileData = Helper.extractDataFromWikilink(documentModel.data.file);
-                        const baseFile = documentBlock.fileCache.findFileByName(baseFileData.filename ?? "");
-                        let baseFilePath = baseFileData.filename ?? "";
-                        if (baseFile && baseFile instanceof TFile) {
-                            baseFilePath = baseFile.path;
-                        }
-                        let docFragment: DocumentFragment | undefined = undefined;
-                        if (Helper.isPossiblyMarkdown(value)) {
-                            docFragment = document.createDocumentFragment();
-                            const div = document.createElement('div');
-                            MarkdownRenderer.render(documentBlock.global.app, value ?? "", div, "", documentBlock.component);
-                            docFragment.appendChild(div);
-                        }
-                        return { href: `${baseFilePath}`, text: `${value}`, html: docFragment };
-                    });
-                if (editability) {
-                    link.enableEditability()
-                        .onSave((value: string) => {
-                            documentModel.data.title = value;
-                            return Promise.resolve();
-                        });
-                }
-            });
-    }
-
-    private createCellSummary(documentModel: DocumentModel, summaryRelatedFiles: DocumentFragment, documentBlock: DocumentBlockRenderComponent = this) {
-        const description = documentModel.getDescription();
-        new EditableDataView(summaryRelatedFiles, documentBlock.component)
-            .addTextarea(textarea => textarea
-                .setValue(description)
-                .setTitle("Summary")
-                .enableEditability()
-                .setRenderMarkdown()
-                .onSave((value: string) => {
-                    documentModel.data.description = value;
-                    return Promise.resolve();
-                })
-            );
-    }
-
-    private createRelatedFilesList(documentModel: DocumentModel, relatedFilesList: DocumentFragment, documentBlock: DocumentBlockRenderComponent = this) {
-        const relatedFiles = documentModel.relatedFiles;
-        if (!relatedFiles || relatedFiles.length === 0) return;
-        const container = document.createElement('div');
-        relatedFilesList.appendChild(container);
-        container.classList.add('related-files-container');
-
-        const breakLine = document.createElement('hr');
-        container.appendChild(breakLine);
-        breakLine.classList.add('related-files-breakline');
-
-        const list = document.createElement('ul');
-        container.appendChild(list);
-        list.classList.add('related-files-list');
-
-        relatedFiles.forEach(relatedFile => {
-            const listEntry = document.createElement('li');
-            list.append(listEntry);
-
-            const gridContainer = document.createElement('div');
-            listEntry.appendChild(gridContainer);
-            gridContainer.classList.add('grid-container');
-
-            const iconContainer = document.createElement('span');
-            gridContainer.append(iconContainer)
-            iconContainer.classList.add('icon-container');
-            const inputOutputState = relatedFile.getInputOutputState();
-            //Input, Output or default icon
-            let listIconString = documentBlock.settings.noneDocSymbol;
-            if (inputOutputState === "Input") {
-                listIconString = "corner-left-down";
-            } else if (inputOutputState === "Output") {
-                listIconString = "corner-right-up";
-            }
-            setIcon(iconContainer, listIconString);
-
-            //Metadata File Link
-            const metadataContainer = document.createElement('span');
-            gridContainer.append(metadataContainer)
-            metadataContainer.classList.add('metadata-file-container');
-            const metadataFragment = document.createDocumentFragment();
-            documentBlock.createCellMetadatalink(metadataFragment, relatedFile);
-            metadataContainer.appendChild(metadataFragment);
-
-            //Date
-            const dateContainer = document.createElement('span');
-            gridContainer.append(dateContainer)
-            dateContainer.classList.add('date-container');
-            new EditableDataView(dateContainer, documentBlock.component)
-                .addDate(date => date
-                    .setValue(relatedFile.data.date ?? "na")
-                    .setTitle("Document Date")
-                    .setFormator((value: string) => Helper.formatDate(value, documentBlock.global.settings.dateFormatShort))
-                );
-
-            const textContainer = document.createElement('span');
-            gridContainer.append(textContainer)
-            textContainer.classList.add('data-container');
-            const linkFragment = document.createDocumentFragment();
-            //Title and Link
-            documentBlock.createCellFileLink(linkFragment, relatedFile, false);
-            textContainer.append(linkFragment);
-        });
-    }
-
-    private createCellTags(documentModel: DocumentModel, tags: DocumentFragment, documentBlock: DocumentBlockRenderComponent = this) {
-        documentModel.getTags().forEach(tag => {
-            new EditableDataView(tags, documentBlock.component)
-                .addLink(link => link
-                    .setValue(tag)
-                    .setTitle("Tag")
-                    .setLinkType("tag")
-                    .setFormator((value: string) => {
-                        return { href: `#${value}`, text: `#${value}` };
-                    })
-                );
-        });
-    }
-
-    private createCellSenderRecipient(documentModel: DocumentModel, documentBlock: DocumentBlockRenderComponent = this): DocumentFragment {
-        const senderRecipient = document.createDocumentFragment();
-        const container = document.createElement('div');
-        senderRecipient.appendChild(container);
-        container.classList.add('senderRecipient');
-
-        const inputOutputState = documentModel.getInputOutputState();
-        const sender = documentModel.data.sender ?? null;
-        const recipient = documentModel.data.recipient ?? null;
-
-        if (sender && inputOutputState !== "Output") {
-            const senderContainer = document.createElement('div');
-            senderContainer.classList.add('container');
-
-            const fromTo = document.createElement('span');
-            fromTo.classList.add('fromTo');
-            fromTo.textContent = Lng.gt("From");
-            senderContainer.appendChild(fromTo);
-
-            const name = document.createElement('span');
-            name.classList.add('name');
-            senderContainer.appendChild(name);
-            documentBlock.createEDVSenderRecipient(name, sender, "Sender", (value: string) => {
-                documentModel.data.sender = value;
-                return Promise.resolve();
-            });
-
-            container.appendChild(senderContainer);
+        if (this.settings.search) {
+            const text = document.toString();
+            searchResult = Search.applySearchLogic(this.settings.search, text);
         }
-        if (recipient && inputOutputState !== "Input") {
-            const recipientContainer = document.createElement('div');
-            recipientContainer.classList.add('container');
 
-            const fromTo = document.createElement('span');
-            fromTo.classList.add('fromTo');
-            fromTo.textContent = Lng.gt("To");
-            recipientContainer.appendChild(fromTo);
-
-            const name = document.createElement('span');
-            name.classList.add('name');
-            recipientContainer.appendChild(name);
-            documentBlock.createEDVSenderRecipient(name, recipient, "Recipient", (value: string) => {
-                documentModel.data.recipient = value;
-                return Promise.resolve();
-            });
-
-            container.appendChild(recipientContainer);
+        if (maxVisibleRows && maxVisibleRows > 0) {
+            const rowStats = this.table.getRowStats();
+            maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
-        return senderRecipient;
+
+        const hide = this.determineHideState(document);
+
+        if (searchResult && !hide) {
+            return false; // Shows the document, if it is not hidden and the search was successful
+        } else if (this.settings.search) {
+            return true; // Hide the document, if the search was not successful and aplicable
+        } else if (!searchResult) {
+            return maxRows || hide; // Else the document is hidden, if the max rows are reached or the document type is hidden
+        }
+
+        return hide; // Standard-Verhalten
     }
 
-    private createEDVSenderRecipient(name: HTMLElement | DocumentFragment, value: string, title: string, onSaveCallback: (value: string) => Promise<void>, documentBlock: DocumentBlockRenderComponent = this) {
-        return new EditableDataView(name, documentBlock.component)
-            .addText(text => text
-                .setValue(value)
-                .setTitle(title)
-                .enableEditability()
-                .setSuggester((inputValue: string) => {
-                    const suggestions = documentBlock.documents
-                        .flatMap(document => [document.data.sender, document.data.recipient])
-                        .filter((v): v is string => v != null)
-                        .filter((v, index, self) => self.indexOf(v) === index)
-                        .filter(v => v.includes(inputValue))
-                        .sort()
-                        .splice(0, 10);
-                    return suggestions;
-                })
-                .onSave((newValue: string) => onSaveCallback(newValue))
-            );
+    /**
+     * Determines if the document should be hidden.
+     * @param document The document to check.
+     * @returns If the document should be hidden returns `true`, else `false`.
+     * @remarks - The document is hidden if the `filter` setting not includes the document type.
+     */
+    private determineHideState(document: DocumentModel): boolean {
+        if (this.settings.filter.includes("Documents") && document.data.hide !== true && document.data.subType !== "Cluster") {
+            return false;
+        }
+        if (this.settings.filter.includes("Cluster") && document.data.subType === "Cluster") {
+            return false;
+        }
+        if (this.settings.filter.includes("HideDocuments") && document.data.hide === true) {
+            return false;
+        }
+        return true;
     }
 
-    private parseSettings(): void {
+    /**
+     * Builds the table.
+     * @remarks - The table is saved in the `table` property.
+     * - The table is appended to the `tableContainer`.
+     * - The table has the CSS class `document-table`.
+     * - The table has the headers from the `tableHeaders` property.
+     */
+    private async buildTable(): Promise<void> {
+        this.table = new Table(this.tableHeaders, "document-table", undefined);
+        this.tableContainer.appendChild(this.table.data.table);
+    }
+
+    public redraw(): Promise<void> {
+        return super.redraw();
+    }
+
+    /**
+     * Parses the settings given by the user per YAML in code block.
+     * @remarks The settings are parsed and saved in the `settings` property.
+     * @remarks Settings:
+     * - `tags`: Can be `all`, `this` or a list of tags.
+     * `this` means the tags of the current document.
+     * - `maxDocuments`: The maximum number of documents to show on same time.
+     * - `filter`: Must be an array. You can add the following values:
+     * `Documents`, `HideDocuments` or `Cluster`. The values present the document types.
+     * All values that are in the array are shown.
+     */
+    protected parseSettings(): void {
         this.processorSettings.options.forEach(option => {
             switch (option.label) {
                 case "tags":
                     if (option.value === "all") {
-                        this.settings.tags = "";
+                        this.settings.tags = [];
                     } else if (option.value === "this") {
-                        this.settings.tags = this.processorSettings?.frontmatter?.tags;
+                        const tags = this.processorSettings?.frontmatter?.tags;
+                        if (Array.isArray(tags)) {
+                            this.settings.tags.push(...tags);
+                        } else if (tags) {
+                            this.settings.tags.push(tags);
+                        }
+                    } else {
+                        this.settings.tags = option.value;
                     }
+                    break;
+                case "maxDocuments":
+                    this.settings.maxDocuments = option.value;
+                    break;
+                case "filter":
+                    this.settings.filter = option.value;
                     break;
                 default:
                     break;
@@ -665,18 +481,22 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
         });
     }
 
-    private getUID(document: DocumentModel): string {
-        return Helper.generateUID(document.file.path);
-    }
-
-    private async getDocuments(): Promise<DocumentModel[]> {
+    /**
+     * Returns the models for the table.
+     * @returns The models for the table.
+     * @remarks - The models are the documents.
+     * - The documents are filtered by the `tags` setting. 
+     * If tags are empty, all documents are returned, 
+     * else only the documents with the tags are returned.
+     */
+    protected async getModels(): Promise<DocumentModel[]> {
         const templateFolder = this.global.settings.templateFolder;
         const allDocumentFiles = this.metadataCache.filter(file => {
             const defaultFilter = file.metadata.frontmatter?.type === "Metadata" &&
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
-            if (this.settings.tags !== "") {
-                const tagFilter = file.metadata.frontmatter?.tags?.includes(this.settings.tags);
+            if (this.settings.tags.length > 0) {
+                const tagFilter = this.isTagIncluded(file.metadata.frontmatter?.tags, this.settings.tags);
                 return defaultFilter && tagFilter;
             }
             return defaultFilter;
@@ -684,6 +504,92 @@ export default class DocumentBlockRenderComponent implements RedrawableBlockRend
         const documents = allDocumentFiles.map(file => new DocumentModel(file.file));
         return documents;
     }
+
+    /**
+     * Returns if the file tags are included in the setting tags.
+     * @param fileTags The tags of the file.
+     * @param settingTags The tags of the settings.
+     * @returns If the file tags are included in the setting tags.
+     * @remarks - If the file tags are an array, one tag must be included.
+     * - If the file tags are a string, the string must be included.
+     */
+    private isTagIncluded(fileTags: string | string[], settingTags: string[]): boolean {
+        if (Array.isArray(fileTags)) {
+            return fileTags.some(tag => settingTags.includes(tag));
+        } else {
+            return settingTags.includes(fileTags);
+        }
+    }
+
 }
 
+/**
+ * The types of documents to show.
+ * @remarks - `Documents` - Show documents.
+ * - `HideDocuments` - Show hidden documents.
+ * - `Cluster` - Show clusters.
+ */
 type FilteredDocument = "Documents" | "HideDocuments" | "Cluster";
+
+/**
+ * The settings for the document block render component.
+ * @remarks The settings are parsed from the YAML options in the code block.
+ */
+type DocumentBlockRenderSettings = {
+    /**
+     * The tags associated with the documents.
+     * Can be `all`, `this` or a list of specific tags.
+     * `all` includes all documents regardless of their tags.
+     * `this` includes documents that have the same tags as the current document.
+     */
+    tags: string[],
+
+    /**
+     * Symbol representing a document.
+     */
+    docSymbol: string,
+
+    /**
+     * Symbol used to indicate hidden documents.
+     */
+    hideDocSymbol: string,
+
+    /**
+     * Symbol representing a cluster of documents.
+     */
+    clusterSymbol: string,
+
+    /**
+     * Symbol used for documents that don't fit any other category.
+     */
+    noneDocSymbol: string,
+
+    /**
+     * Filter for the document types to display.
+     * Must be an array containing any of the following values:
+     * `Documents`, `HideDocuments`, `Cluster`.
+     * Only the document types listed in the array will be shown.
+     */
+    filter: FilteredDocument[],
+
+    /**
+     * The maximum number of documents to show at the same time.
+     */
+    maxDocuments: number,
+
+    /**
+     * Search terms array used to filter the documents.
+     * If undefined, no search filter is applied.
+     */
+    search: SearchTermsArray | undefined,
+
+    /**
+     * The number of documents to process in one batch.
+     */
+    batchSize: number,
+
+    /**
+     * The time to wait (in milliseconds) between processing batches of documents.
+     */
+    sleepBetweenBatches: number
+};

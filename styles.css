@@ -1,7 +1,125 @@
+:root {
+    --icon-xxs: 12px !important;
+}
+
+.prj-block .edit-block-button {
+    display: none !important;
+}
+
+/* General Block Header */
+.prj-block-container .header-container {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    margin-bottom: 7px;
+    padding-bottom: 5px;
+    border-bottom: #FFF 1px solid;
+}
+
+/** Gray out the header block **/
+.prj-block-container .header-container.disable {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/** The block controles **/
+.prj-block-container .header-container .block-controle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.prj-block-container .header-container .block-controle a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+/** The regular block header items **/
+.prj-block-container .header-container .header-item {
+    flex: 1;
+}
+
+/** The block header items for the filter symbols **/
+.prj-block-container .header-container .header-item.filter-symbols {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-symbol {
+    padding: 5px;
+    flex: 1;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+/** The block header items for the search elements **/
+.prj-block-container .header-container .header-item.filter-symbols .filter-search {
+    display: flex;
+    padding-left: 15px;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-search .filter-text {
+    padding-right: 5px;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-search .search-box-sizer {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    min-width: 15ch;
+    overflow: hidden;
+    border: none;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-search .search-box-sizer::after {
+    content: attr(data-value) ' ';
+    visibility: hidden;
+    white-space: pre;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-search .search-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-search .search-box:focus {
+    box-shadow: none !important;
+}
+
+/** The block header items for the max shown objects symbols **/
+.prj-block-container .header-container .header-item.filter-symbols .filter-max-symbols {
+    padding-left: 15px;
+    display: flex;
+    align-items: inherit;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-max-symbol {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    flex: 1;
+    color: inherit !important;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+
+/** The filter symbols are grayed out if they are not active **/
+.prj-block-container .header-container .header-item.filter-symbols .filter-symbol.filter-symbol-hide {
+    opacity: 0.5;
+}
+
+/* General Table */
 .prj-table {
     width: 100%;
     max-width: 100%;;
     table-layout: auto;
+    border-bottom: 1px solid #ffffff0a;
 }
 
 .prj-table .prj-table-header .prj-table-header-row, .prj-table > .prj-table-body > .prj-table-row {
@@ -24,6 +142,14 @@
     text-align: left;
     font-weight: var(--font-normal);
     font-size: small;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell {
+    border-right: 0.1px solid #ffffff05;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell:last-child {
+    border-right: none;
 }
 
 .prj-table .prj-table-body  {
@@ -52,6 +178,7 @@
     flex-direction: column;
 }
 
+/** Sender Recipient container and elements **/
 .prj-table-body div.senderRecipient div.container {
     display: flex;
     align-items: center;
@@ -66,27 +193,102 @@
 
 .prj-table-body div.senderRecipient div.container span.name {
     color: inherit;
+    white-space: nowrap;
 }
 
+/** Tags **/
 .prj-table-body .prj-table-cell.tags div {
     margin: 1px;
 }
 
+/** Maind Document Symbol **/
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.main-document-symbol a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+/** Different font sizes **/
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.font-medium {
+    --icon-size: var(--icon-m);
+    font-size: medium !important;
+    font-family: inherit;
+}
+
 .prj-table .prj-table-body .prj-table-row .prj-table-cell.font-xsmall {
+    --icon-size: var(--icon-xs);
     font-size: x-small !important;
     font-family: inherit;
 }
 
 .prj-table .prj-table-body .prj-table-row .prj-table-cell.font-xxsmall {
+    --icon-size: var(--icon-xs);
     font-size: xx-small !important;
     font-family: inherit;
+}
+
+/** Related Files List **/
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul {
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container .related-files-breakline {
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li {
+    display: flex;
+    align-items: start;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    padding-bottom: 3px;
+    margin-bottom: 3px;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .icon-container>svg {
+    --icon-size: var(--icon-xs);
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto 1fr;
+    grid-gap: 8px;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .icon-container,
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .metadata-file-container,
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .date-container {
+    white-space: nowrap;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .icon-container a,
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .metadata-file-container a,
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .date-container a {
+    color: inherit !important;
+    text-decoration: none !important;
+    --icon-size: var(--icon-xs);
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell .related-files-container ul li .grid-container .text-container {
+    white-space: normal;
+    text-indent: -3px;
+    margin-left: -4px;
 }
 
 
 /* Editable DataView */
 .editable-data-view.container {
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     background: transparent;
     border: none;
     padding: 2px 0 0 0;
@@ -95,7 +297,7 @@
     min-width: fit-content;
 }
 
-/** To display rendered Markdown correkt **/
+/** To display rendered Markdown correct **/
 .editable-data-view.container p {
     white-space: normal;
     line-height: var(--line-height-normal);
@@ -132,6 +334,11 @@
     padding: 0;
     box-shadow: none;
     --icon-size: var(--icon-xs);
+    height: auto;
+}
+
+.editable-data-view.button svg {
+    --icon-size: var(--icon-xxs) !important;
 }
 
 .editable-data-view .hidden {
@@ -242,7 +449,7 @@
     overflow: hidden;
     border: none;
     box-shadow: 0px 0px 1px 0px #999;
-    padding: 0.5em 0.5em 0.6em 0.5em;
+    padding: 1em 1em 1em 1em;
     align-items: stretch;
 }
 
@@ -262,4 +469,5 @@
     border: none;
     background: transparent;
     resize: none;
+    padding: 0.5em 0em 0.5em 0.5em;
 }
