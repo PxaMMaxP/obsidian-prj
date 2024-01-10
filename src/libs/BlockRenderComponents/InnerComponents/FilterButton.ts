@@ -1,4 +1,5 @@
 import { Component, setIcon } from "obsidian";
+import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 
 /**
@@ -18,7 +19,7 @@ export default class FilterButton {
      * @param type The type of the filter button.
      * @param symbol The symbol of the filter button.
      * @param status The initial status of the filter button.
-     * @param filterCallback The callback to call when the filter button is clicked. Passes the type of the filter button and the status of the filter button.
+     * @param onFilter The callback to call when the filter button is clicked. Passes the type of the filter button and the status of the filter button.
      * @returns The created filter button as `DocumentFragment`.
      * @remarks - The filter button consists of a filter button container and a filter button.
      * - CSS classes:
@@ -30,13 +31,13 @@ export default class FilterButton {
         type: string,
         symbol: string,
         status: boolean,
-        filterCallback: FilterCallback): DocumentFragment {
+        onFilter: FilterCallback): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
 
         const filterButtonContainer = document.createElement('div');
         headerItemContainer.appendChild(filterButtonContainer);
 
-        const filter = FilterButton.createFilterButton(status, type, symbol, component, filterCallback);
+        const filter = FilterButton.createFilterButton(status, type, symbol, component, onFilter);
         filterButtonContainer.appendChild(filter);
 
         return headerItemContainer;
@@ -61,6 +62,7 @@ export default class FilterButton {
         symbol: string,
         component: Component,
         filterCallback: FilterCallback): DocumentFragment {
+        const logger = Global.getInstance().logger;
         const filterButtonContainer = document.createDocumentFragment();
 
         const filter = document.createElement('a');
@@ -75,7 +77,11 @@ export default class FilterButton {
 
         component.registerDomEvent(filter, 'click', async (event: MouseEvent) => {
             filter.classList.toggle('filter-symbol-hide');
-            await filterCallback(type, filter.classList.contains('filter-symbol-hide'));
+            try {
+                await filterCallback(type, filter.classList.contains('filter-symbol-hide'));
+            } catch (error) {
+                logger.error("The `onFilter` callback threw an error!", error);
+            }
         });
 
         return filterButtonContainer;

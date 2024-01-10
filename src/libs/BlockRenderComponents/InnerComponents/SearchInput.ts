@@ -1,4 +1,5 @@
 import { Component } from "obsidian";
+import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 
 /**
@@ -24,6 +25,7 @@ export default class SearchInput {
      *  - `search-box` - The search box of the search input component.
      */
     public static create(component: Component, onSearch: SearchCallback): DocumentFragment {
+        const logger = Global.getInstance().logger;
         const headerItemContainer = document.createDocumentFragment();
 
         const searchLabelContainer = document.createElement('div');
@@ -46,9 +48,15 @@ export default class SearchInput {
          * @remarks - The return value of the callback is used to set the search box value and the search box sizer value.
          */
         component.registerDomEvent(searchBoxInput, 'keydown', async (event: KeyboardEvent) => {
-            const value = await onSearch(searchBoxInput.value, event.key);
-            this.setSearchBoxSizerValue(searchBoxSizer, value);
-            this.setSearchBoxInputValue(searchBoxInput, value);
+            let value = searchBoxInput.value;
+            try {
+                value = await onSearch(searchBoxInput.value, event.key);
+            } catch (error) {
+                logger.error("The `onSearch` callback threw an error!", error);
+            } finally {
+                this.setSearchBoxSizerValue(searchBoxSizer, value);
+                this.setSearchBoxInputValue(searchBoxInput, value);
+            }
         });
 
         return headerItemContainer;

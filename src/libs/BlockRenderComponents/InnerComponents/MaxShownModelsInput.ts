@@ -1,4 +1,5 @@
 import { Component, setIcon } from "obsidian";
+import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 
 /**
@@ -17,7 +18,7 @@ export default class MaxShownModelsInput {
      * @param component The component to register the events to.
      * @param defaultValue The default value of the max shown models number.
      * @param batchSize The batch size to add or subtract.
-     * @param onMaxShownModelsChange The callback to call when the max shown models number changes. Passes the max shown models number. You can return a new max shown models number.
+     * @param onChange The callback to call when the max shown models number changes. Passes the max shown models number. You can return a new max shown models number.
      * @returns The created max shown models input component as `DocumentFragment`.
      * @remarks - The max shown models input component consists of a container, a minus symbol, a presentation span and a plus symbol.
      * - CSS classes:
@@ -26,7 +27,7 @@ export default class MaxShownModelsInput {
      * - `minus-batch-button` - The minus symbol of the max shown models input component.
      * - `plus-batch-button` - The plus symbol of the max shown models input component.
      */
-    public static create(component: Component, defaultValue: number, batchSize: number, onMaxShownModelsChange: MaxShownModelsCallback): DocumentFragment {
+    public static create(component: Component, defaultValue: number, batchSize: number, onChange: MaxShownModelsCallback): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
 
         const maxShownModels: MaxShownModelNumber = { maxShownModels: defaultValue };
@@ -42,14 +43,14 @@ export default class MaxShownModelsInput {
             component,
             maxShownModels,
             batchSize,
-            onMaxShownModelsChange);
+            onChange);
         const plus = this.createSymbol(
             "plus",
             number.number,
             component,
             maxShownModels,
             batchSize,
-            onMaxShownModelsChange);
+            onChange);
 
         filterMaxModelsContainer.appendChild(minus);
         filterMaxModelsContainer.appendChild(number.container);
@@ -96,6 +97,7 @@ export default class MaxShownModelsInput {
         maxShownModels: MaxShownModelNumber,
         batchSize: number,
         onMaxShownModelsChange: MaxShownModelsCallback): DocumentFragment {
+        const logger = Global.getInstance().logger;
         const filterMaxModelsContainer = document.createDocumentFragment();
 
         const maxShownDocMinus = document.createElement('a');
@@ -115,8 +117,13 @@ export default class MaxShownModelsInput {
             } else {
                 maxShownModels.maxShownModels += batchSize;
             }
-            maxShownModels.maxShownModels = (await onMaxShownModelsChange(maxShownModels.maxShownModels)) ?? maxShownModels.maxShownModels;
-            maxShownNumber.textContent = maxShownModels.maxShownModels.toString();
+            try {
+                maxShownModels.maxShownModels = (await onMaxShownModelsChange(maxShownModels.maxShownModels)) ?? maxShownModels.maxShownModels;
+            } catch (error) {
+                logger.error("The `onChange` callback threw an error!", error);
+            } finally {
+                maxShownNumber.textContent = maxShownModels.maxShownModels.toString();
+            }
         });
 
         return filterMaxModelsContainer;
