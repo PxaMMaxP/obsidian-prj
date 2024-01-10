@@ -27,6 +27,47 @@ export class SettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
+        // Localisation
+        new Setting(containerEl)
+            .setHeading()
+            .setName('Localisation');
+
+        // Language
+        new Setting(containerEl)
+            .setName('Language')
+            .setDesc('The language to use')
+            .addText(text => text
+                .setPlaceholder('en | de')
+                .setValue(this.plugin.settings.language)
+                .onChange(async (value) => {
+                    this.plugin.settings.language = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Date format
+        new Setting(containerEl)
+            .setName('Date Format')
+            .setDesc('The Date format to use')
+            .addText(text => text
+                .setPlaceholder('DD.MM.YYYY')
+                .setValue(this.plugin.settings.dateFormat)
+                .onChange(async (value) => {
+                    this.plugin.settings.dateFormat = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Date format short
+        new Setting(containerEl)
+            .setName('Short date format')
+            .setDesc('The short Date format to use')
+            .addText(text => text
+                .setPlaceholder('DD.MM.YY')
+                .setValue(this.plugin.settings.dateFormatShort)
+                .onChange(async (value) => {
+                    this.plugin.settings.dateFormatShort = value;
+                    await this.plugin.saveSettings();
+                }));
+
         // Base tag for all related files
         new Setting(containerEl)
             .setName('Base Tag')
@@ -56,7 +97,7 @@ export class SettingTab extends PluginSettingTab {
             .setHeading()
             .setName('User Information');
 
-        // Unser Name
+        // User Name
         new Setting(containerEl)
             .setName('User: Name')
             .setDesc('Your name')
@@ -65,6 +106,18 @@ export class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.user.name)
                 .onChange(async (value) => {
                     this.plugin.settings.user.name = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // User Name Short
+        new Setting(containerEl)
+            .setName('User: Short name')
+            .setDesc('Your name short name')
+            .addText(text => text
+                .setPlaceholder('Your name shortened')
+                .setValue(this.plugin.settings.user.shortName)
+                .onChange(async (value) => {
+                    this.plugin.settings.user.shortName = value;
                     await this.plugin.saveSettings();
                 }));
 
@@ -133,12 +186,24 @@ export class SettingTab extends PluginSettingTab {
             .setHeading()
             .setName('Document Settings');
 
+        // Default Max Show
+        new Setting(containerEl)
+            .setName('Default Max Show')
+            .setDesc('The default max show for Table Entrys')
+            .addText(text => text
+                .setPlaceholder('200')
+                .setValue(this.plugin.settings.defaultMaxShow.toString())
+                .onChange(async (value) => {
+                    this.plugin.settings.defaultMaxShow = value as unknown as number;
+                    await this.plugin.saveSettings();
+                }));
+
         // Symbol
         new Setting(containerEl)
             .setName('Document Symbol')
             .setDesc('The Symbol for regular Documents')
             .addText(text => text
-                .setPlaceholder('📄')
+                .setPlaceholder('file-text')
                 .setValue(this.plugin.settings.documentSettings.symbol)
                 .onChange(async (value) => {
                     this.plugin.settings.documentSettings.symbol = value;
@@ -150,7 +215,7 @@ export class SettingTab extends PluginSettingTab {
             .setName('Hide Symbol')
             .setDesc('The Symbol for hidden Documents')
             .addText(text => text
-                .setPlaceholder('🗞️')
+                .setPlaceholder('file-minus-2')
                 .setValue(this.plugin.settings.documentSettings.hideSymbol)
                 .onChange(async (value) => {
                     this.plugin.settings.documentSettings.hideSymbol = value;
@@ -162,34 +227,10 @@ export class SettingTab extends PluginSettingTab {
             .setName('Cluster Symbol')
             .setDesc('The Symbol for Cluster Documents')
             .addText(text => text
-                .setPlaceholder('🗂️')
+                .setPlaceholder('library')
                 .setValue(this.plugin.settings.documentSettings.clusterSymbol)
                 .onChange(async (value) => {
                     this.plugin.settings.documentSettings.clusterSymbol = value;
-                    await this.plugin.saveSettings();
-                }));
-
-        // From
-        new Setting(containerEl)
-            .setName('From')
-            .setDesc('The prefix for the from data')
-            .addText(text => text
-                .setPlaceholder('from:')
-                .setValue(this.plugin.settings.documentSettings.from)
-                .onChange(async (value) => {
-                    this.plugin.settings.documentSettings.from = value;
-                    await this.plugin.saveSettings();
-                }));
-
-        // To
-        new Setting(containerEl)
-            .setName('To')
-            .setDesc('The prefix for the to data')
-            .addText(text => text
-                .setPlaceholder('to:')
-                .setValue(this.plugin.settings.documentSettings.to)
-                .onChange(async (value) => {
-                    this.plugin.settings.documentSettings.to = value;
                     await this.plugin.saveSettings();
                 }));
     }

@@ -5,8 +5,9 @@ import { YamlKeyMap } from "../types/YamlKeyMap";
 import Logging from "src/classes/Logging";
 
 export class BaseModel<T extends object> extends TransactionModel<T> {
+    protected global = Global.getInstance();
     protected app = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
+    protected logger: Logging = Global.getInstance().logger;
     private _file: TFile;
     public get file(): TFile {
         return this._file;
@@ -15,6 +16,25 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
     private dataProxy: T;
     private yamlKeyMap: YamlKeyMap | undefined;
 
+    /**
+     * Creates a new BaseModel instance.
+     * @param file The file to create the model for.
+     * @param ctor The constructor of the data object.
+     * @param yamlKeyMap The yaml key map to use.
+     */
+    constructor(file: TFile, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
+        super((update) => {
+            this.frontmatter = update as Record<string, unknown>;
+        });
+        this._file = file;
+        this.ctor = ctor;
+        this.initYamlKeyMap(yamlKeyMap);
+    }
+
+    /**
+     * Returns the data object as a proxy.
+     * @returns The data object as a proxy.
+     */
     protected get _data(): Partial<T> {
         if (this.dataProxy) {
             return this.dataProxy;
@@ -48,6 +68,30 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
     }
 
+    public get frontmatter(): Record<string, unknown> {
+        return this.getMetadata() ?? {};
+    }
+
+    public set frontmatter(value: Record<string, unknown>) {
+        (async () => {
+            try {
+                await this.app.fileManager.processFrontMatter(this._file, (frontmatter) => {
+                    this.updateNestedFrontmatterObjects(frontmatter, value);
+                    return frontmatter;
+                });
+                this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
+            } catch (error) {
+                this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
+            }
+        })();
+    }
+
+    /**
+     * Creates a proxy for the given object.
+     * @param obj The object to create a proxy for.
+     * @param path The path of the object. e.g. `data.title`
+     * @returns The proxy object.
+     */
     private createProxy(obj: Partial<T>, path = ""): unknown {
         return new Proxy(obj, {
             get: (target, property, receiver) => {
@@ -69,6 +113,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         });
     }
 
+    /**
+     * Updates the `yamlKeyMap` with the given value.
+     * @param yamlKeyMap The new `yamlKeyMap` to set.
+     */
     private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
         if (yamlKeyMap) {
             this.yamlKeyMap = yamlKeyMap;
@@ -77,33 +125,6 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
 
     private getPropertyKey(property: string | symbol): string {
         return typeof property === 'symbol' ? property.toString() : property;
-    }
-
-    public get frontmatter(): Record<string, unknown> {
-        return this.getMetadata() ?? {};
-    }
-
-    public set frontmatter(value: Record<string, unknown>) {
-        (async () => {
-            try {
-                await this.app.fileManager.processFrontMatter(this._file, (frontmatter) => {
-                    this.updateNestedFrontmatterObjects(frontmatter, value);
-                    return frontmatter;
-                });
-                this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
-            } catch (error) {
-                this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
-            }
-        })();
-    }
-
-    constructor(file: TFile, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
-        super((update) => {
-            this.frontmatter = update as Record<string, unknown>;
-        });
-        this._file = file;
-        this.ctor = ctor;
-        this.initYamlKeyMap(yamlKeyMap);
     }
 
     private getMetadata(): Record<string, unknown> | null {

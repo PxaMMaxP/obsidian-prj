@@ -1,6 +1,7 @@
 import { Component, MarkdownRenderer } from "obsidian";
 import BaseComponent from "./BaseComponent";
 import Global from "src/classes/Global";
+import Helper from "src/libs/Helper";
 
 export default class TextComponent extends BaseComponent {
     //#region base properties
@@ -12,7 +13,7 @@ export default class TextComponent extends BaseComponent {
     onFinalize: () => void;
     //#endregion
     //#region extended properties
-    private _onPresentation: ((value: string) => string) | undefined;
+    private _onPresentation: ((value: string) => Promise<void>) | undefined;
     private _onMarkdownPresentation: ((value: string) => Promise<void>) | undefined;
     private _onSave: ((value: string) => Promise<void>) | undefined;
     private _suggester: ((value: string) => string[]) | undefined;
@@ -104,8 +105,10 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component change in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => string) {
-        this._onPresentation = formator;
+    public setFormator(formator: (value: string) => Promise<string>) {
+        this._onPresentation = async (value: string): Promise<void> => {
+            this.presentationSpan.textContent = await formator(this._value);
+        };
         return this;
     }
 
@@ -118,8 +121,14 @@ export default class TextComponent extends BaseComponent {
      */
     public setRenderMarkdown(path = "") {
         this._onMarkdownPresentation = (value: string): Promise<void> => {
-            const app = Global.getInstance().app;
-            return MarkdownRenderer.render(app, value, this.presentationSpan, path, this.component);
+            if (Helper.isPossiblyMarkdown(value)) {
+                const app = Global.getInstance().app;
+                return MarkdownRenderer.render(app, value, this.presentationSpan, path, this.component);
+            } else {
+                this.presentationSpan.innerHTML = "";
+                this.presentationSpan.textContent = value;
+                return Promise.resolve();
+            }
         }
         return this;
     }
@@ -139,6 +148,7 @@ export default class TextComponent extends BaseComponent {
     private setSuggestionsList(suggestions: string[]) {
         if (!this.datalist) return;
         this.datalist.innerHTML = '';
+        if (!suggestions) return;
         suggestions.forEach(suggestion => {
             const option = document.createElement('option');
             option.value = suggestion;
@@ -158,7 +168,7 @@ export default class TextComponent extends BaseComponent {
             this.presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
-            this.presentationSpan.textContent = this._onPresentation(this._value);
+            this._onPresentation(this._value);
         } else {
             this.presentationSpan.textContent = this._value;
         }
@@ -211,7 +221,7 @@ export default class TextComponent extends BaseComponent {
             this.presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
-            this.presentationSpan.textContent = this._onPresentation(this._value);
+            this._onPresentation(this._value);
         } else {
             this.presentationSpan.textContent = this._value;
         }

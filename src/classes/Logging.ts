@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Logging class; encapsulates console.log, console.debug, console.warn and console.error
  */

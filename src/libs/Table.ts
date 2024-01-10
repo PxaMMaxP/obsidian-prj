@@ -6,15 +6,17 @@ export default class Table {
     private _headers: TableHeader[];
     private _tableId: string;
     private _tableClassList: string[] | undefined;
+    private _visibleRows = 0;
+    private _hiddenRows = 0;
     //   Default classes  //
     private defaultClasses = {
-        table: 'prj-table',
-        header: 'prj-table-header',
-        headerRow: 'prj-table-header-row',
-        headerCell: 'prj-table-header-cell',
-        body: 'prj-table-body',
-        row: 'prj-table-row',
-        cell: 'prj-table-cell',
+        table: ['prj-table'],
+        header: ['prj-table-header'],
+        headerRow: ['prj-table-header-row'],
+        headerCell: ['prj-table-header-cell'],
+        body: ['prj-table-body'],
+        row: ['prj-table-row', 'prj-table-row-hover'],
+        cell: ['prj-table-cell'],
 
         hiddenRow: 'hidden-row',
         evenRow: 'even-row',
@@ -45,7 +47,7 @@ export default class Table {
     private createTable(): StructedTable {
         const table = document.createElement('table');
         table.id = this._tableId;
-        table.classList.add(this.defaultClasses.table);
+        table.classList.add(...this.defaultClasses.table);
         if (this._tableClassList) {
             this._tableClassList.forEach(classItem => {
                 table.classList.add(classItem);
@@ -53,14 +55,14 @@ export default class Table {
         }
 
         const tableHeader = table.createTHead();
-        tableHeader.classList.add(this.defaultClasses.header);
+        tableHeader.classList.add(...this.defaultClasses.header);
         const tableHeaderRow = tableHeader.insertRow();
-        tableHeaderRow.classList.add(this.defaultClasses.headerRow);
+        tableHeaderRow.classList.add(...this.defaultClasses.headerRow);
 
         const tableHeaderCells: HTMLTableCellElement[] = [];
         this._headers.forEach(header => {
             const tableHeaderCell = document.createElement('th');
-            tableHeaderCell.classList.add(this.defaultClasses.headerCell);
+            tableHeaderCell.classList.add(...this.defaultClasses.headerCell);
             tableHeaderCell.id = this.makeSafeForId(header.text);
             tableHeaderCell.textContent = header.text;
             if (header.headerClass) {
@@ -72,7 +74,7 @@ export default class Table {
             tableHeaderRow.appendChild(tableHeaderCell);
         });
         const tableBody = table.createTBody();
-        tableBody.classList.add(this.defaultClasses.body);
+        tableBody.classList.add(...this.defaultClasses.body);
 
         const structedTable = {
             table: table,
@@ -93,11 +95,8 @@ export default class Table {
      * @param rowClassList The class list of the new row
      * @param hidden Whether the new row should be hidden
      */
-    public addRow(rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden = false): void {
-        this._addRow(rowUid, rowData, rowClassList, false);
-        if (!hidden) {
-            this.refreshRowEvenOddClass();
-        }
+    public addRow(row: Row): void {
+        this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
     }
 
     /**
@@ -108,20 +107,16 @@ export default class Table {
      * @param rows.rowClassList The class list of the new row
      * @param rows.hidden Whether the new row should be hidden
      */
-    public addRows(rows: { rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean }[]): void {
-        let oneRowVisible = false;
+    public addRows(rows: Row[]): void {
         rows.forEach(row => {
             this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
-            oneRowVisible = oneRowVisible || !row.hidden;
         });
-        if (oneRowVisible) {
-            this.refreshRowEvenOddClass();
-        }
     }
 
     private _addRow(rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean): void {
         const tableRow = this._table.body.insertRow();
-        tableRow.classList.add(this.defaultClasses.row);
+
+        tableRow.classList.add(...this.defaultClasses.row);
         tableRow.setAttribute('row-uid', rowUid);
         if (rowClassList) {
             rowClassList.forEach(classItem => {
@@ -130,10 +125,14 @@ export default class Table {
         }
         if (hidden) {
             tableRow.classList.add(this.defaultClasses.hiddenRow);
+            this._hiddenRows++;
+        } else {
+            this.setRowOddOrEven(tableRow);
+            this._visibleRows++;
         }
         rowData.forEach((data, index) => {
             const tableCell = tableRow.insertCell();
-            tableCell.classList.add(this.defaultClasses.cell);
+            tableCell.classList.add(...this.defaultClasses.cell);
             if (this._headers[index] !== undefined && this._headers[index].columnClass) {
                 this._headers[index].columnClass?.forEach(classItem => {
                     tableCell.classList.add(classItem);
@@ -142,6 +141,31 @@ export default class Table {
             tableCell.appendChild(data);
         });
         this._table.rows.push(tableRow);
+    }
+
+    private setRowOddOrEven(tableRow: HTMLTableRowElement) {
+        let lastVisibleRow;
+        for (let i = this._table.rows.length - 1; i >= 0; i--) {
+            if (!this._table.rows[i].classList.contains(this.defaultClasses.hiddenRow)) {
+                lastVisibleRow = this._table.rows[i];
+                break;
+            }
+        }
+        if (lastVisibleRow) {
+            tableRow.classList.add(lastVisibleRow.classList.contains(this.defaultClasses.evenRow) ? this.defaultClasses.oddRow : this.defaultClasses.evenRow);
+        } else {
+            tableRow.classList.add(this.defaultClasses.evenRow);
+        }
+    }
+
+    /**
+     * Returns the number of visible and hidden rows
+     * @returns The number of visible and hidden rows
+     * @returns visibleRows The number of visible rows
+     * @returns hiddenRows The number of hidden rows
+     */
+    public getRowStats(): { visibleRows: number, hiddenRows: number } {
+        return { visibleRows: this._visibleRows, hiddenRows: this._hiddenRows };
     }
 
     /**
@@ -155,7 +179,10 @@ export default class Table {
             this._table.body.removeChild(rowToDelete);
         }
         if (rowVisible) {
+            this._visibleRows--;
             this.refreshRowEvenOddClass();
+        } else {
+            this._hiddenRows--;
         }
     }
 
@@ -164,10 +191,15 @@ export default class Table {
      * @param rowUid The UID of the row
      */
     public hideRow(rowUid: string): void {
-        const rowToHide = this._table.rows.find(row => row.getAttribute('row-uid') === rowUid);
-        if (rowToHide) {
-            rowToHide.classList.add(this.defaultClasses.hiddenRow);
-            this.refreshRowEvenOddClass();
+        this._hideRow(rowUid);
+        this.refreshRowEvenOddClass();
+    }
+
+    private _hideRow(rowUid: string): void {
+        const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], true);
+        if (changes) {
+            this._visibleRows--;
+            this._hiddenRows++;
         }
     }
 
@@ -176,11 +208,32 @@ export default class Table {
      * @param rowUid The UID of the row
      */
     public showRow(rowUid: string): void {
-        const rowToShow = this._table.rows.find(row => row.getAttribute('row-uid') === rowUid);
-        if (rowToShow) {
-            rowToShow.classList.remove(this.defaultClasses.hiddenRow);
-            this.refreshRowEvenOddClass();
+        this._showRow(rowUid);
+        this.refreshRowEvenOddClass();
+    }
+
+    private _showRow(rowUid: string): void {
+        const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], false);
+        if (changes) {
+            this._visibleRows++;
+            this._hiddenRows--;
         }
+    }
+
+    /**
+     * Set the state of multiple rows to hidden or visible
+     * @param rows The rows to change
+     * @param rows.rowUid The UID of the row
+     * @param rows.hidden Whether to hide or show the row
+     */
+    public async changeShowHideStateRows(rows: RowsState[]): Promise<void> {
+        rows.forEach(row => {
+            if (row.hidden)
+                this._hideRow(row.rowUid);
+            else
+                this._showRow(row.rowUid);
+        });
+        this.refreshRowEvenOddClass();
     }
 
     /**
@@ -198,11 +251,13 @@ export default class Table {
      * @param classList The class list to toggle
      * @param add Whether to add or remove the class
      */
-    public togleRowClass(rowUid: string, classList: string[], add: boolean): void {
+    public togleRowClass(rowUid: string, classList: string[], add: boolean): boolean {
+        let changes = false;
         const row = this.getRow(rowUid);
         if (row) {
-            this.toggleClass(row, classList, add);
+            changes = this.toggleClass(row, classList, add);
         }
+        return changes;
     }
 
     private refreshRowEvenOddClass(): void {
@@ -218,16 +273,25 @@ export default class Table {
         });
     }
 
-    private toggleClass(element: HTMLElement, classList: string[], add: boolean): void {
+    private toggleClass(element: HTMLElement, classList: string[], add: boolean): boolean {
+        let changes = false;
+        const presentClasses = element.classList;
         if (add) {
             classList.forEach(classItem => {
-                element.classList.add(classItem);
+                if (!presentClasses.contains(classItem)) {
+                    element.classList.add(classItem);
+                    changes = true;
+                }
             });
         } else {
             classList.forEach(classItem => {
-                element.classList.remove(classItem);
+                if (presentClasses.contains(classItem)) {
+                    element.classList.remove(classItem);
+                    changes = true;
+                }
             });
         }
+        return changes;
     }
 
     /**
@@ -307,4 +371,16 @@ export type StructedTable = {
     headerCells: HTMLTableCellElement[];
     body: HTMLTableSectionElement;
     rows: HTMLTableRowElement[];
+}
+
+export type Row = {
+    rowUid: string;
+    rowData: DocumentFragment[];
+    rowClassList: string[] | undefined;
+    hidden: boolean;
+}
+
+export type RowsState = {
+    rowUid: string;
+    hidden: boolean;
 }

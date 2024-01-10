@@ -237,6 +237,11 @@ export default class MetadataCache {
         }
     }
 
+    private redrawMarkdownView() {
+        this.logger.debug(`Redrawing markdown view`);
+        this.app.workspace.updateOptions();
+    }
+
     /**
      * Register event handlers for the metadata cache
      */
