@@ -193,6 +193,8 @@ export default class Table {
                     tableCell.classList.add(classItem);
                 });
             }
+            // Add Label attribute to the cell
+            tableCell.setAttribute('data-label', this._headers[index].text);
             tableCell.appendChild(data);
         });
         return tableRow;
