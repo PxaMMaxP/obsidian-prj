@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sample-plugin",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "version:patch": "\"node bump-version.mjs patch\" && npm run postversion",
     "version:minor": "\"node bump-version.mjs minor\" && npm run postversion",
     "version:major": "\"node bump-version.mjs major\" && npm run postversion",
-    "postversion": "npm run build && node copy-plugin-files.mjs release && git add manifest.json versions.json package.json ./build/main.js ./build/manifest.json ./build/styles.css"
+    "postversion": "npm run build && node copy-plugin-files.mjs release && git add manifest.json versions.json package.json"
   },
   "keywords": [],
   "author": "",

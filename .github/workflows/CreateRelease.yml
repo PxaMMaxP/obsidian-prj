@@ -13,6 +13,17 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "20.8.0"
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Build the Project
+              run: tsc -noEmit -skipLibCheck && node esbuild.config.mjs production
+
             - name: Get the version
               id: get_version
               run: echo "::set-output name=VERSION::$(jq -r .version manifest.json)"
@@ -45,7 +56,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/styles.css
+                  asset_path: ./src/styles.css
                   asset_name: styles.css
                   asset_content_type: text/css
 
@@ -55,6 +66,6 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/manifest.json
+                  asset_path: ./manifest.json
                   asset_name: manifest.json
                   asset_content_type: application/json
