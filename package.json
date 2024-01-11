@@ -4,8 +4,8 @@
 	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"dev": "concurrently \"node esbuild.config.mjs\" \"node watch-and-copy.js\"",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node copy-plugin-files.js",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
