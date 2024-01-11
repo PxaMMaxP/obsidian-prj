@@ -1,4 +1,5 @@
-import { Component, setIcon } from "obsidian";
+import { Component, Platform, setIcon } from "obsidian";
+import Global from "src/classes/Global";
 
 
 export default abstract class BaseComponent {
@@ -80,7 +81,7 @@ export default abstract class BaseComponent {
         this.presentationContainer = document.createElement('div');
         this.presentationContainer.classList.add('editable-data-view', 'presentation-container');
         this.shippingContainer.appendChild(this.presentationContainer);
-        if (editabilityEnabled) {
+        if (editabilityEnabled && (Platform.isMobile ? Global.getInstance().settings.mobile : true)) {
             this.buttonContainer = document.createElement('div');
             this.buttonContainer.classList.add('editable-data-view', 'button-container');
             this.createEditButton();

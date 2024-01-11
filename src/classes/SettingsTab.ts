@@ -27,6 +27,17 @@ export class SettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
+        // Editability
+        new Setting(containerEl)
+            .setName('Performance Mode (only Mobile)')
+            .setDesc('The performance of the plugin is affected by this setting. If disabled, the editability of the blocks is disabled. No effect on Desktop!')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.mobile)
+                .onChange(async (value) => {
+                    this.plugin.settings.mobile = value;
+                    await this.plugin.saveSettings();
+                }));
+
         // Localisation
         new Setting(containerEl)
             .setHeading()
