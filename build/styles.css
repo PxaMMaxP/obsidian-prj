@@ -217,6 +217,7 @@
 
     .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell.emoji-cell:before {
         font-size: x-small !important;
+        padding-bottom: 10px;
         opacity: 0.8 !important;
     }
 }
