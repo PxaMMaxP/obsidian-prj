@@ -32,3 +32,6 @@ packageJson.version = versionParts.join('.');
 // Zurückschreiben der package.json
 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 console.log(`Version updated to ${packageJson.version}`);
+
+console.info('Commit message:');
+console.info('"Version bump to V' + packageJson.version + '"');
