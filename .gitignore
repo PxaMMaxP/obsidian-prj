@@ -9,7 +9,7 @@
 node_modules
 
 # main.js in root
-main.js
+/main.js
 
 # Exclude sourcemaps
 *.map

@@ -7,8 +7,7 @@ const __dirname = dirname(__filename);
 
 // Configuration for file paths and destinations
 const filesToCopy = [
-    { name: 'main.js', sourceDir: __dirname, destDir: '../' },
-    { name: 'styles.css', sourceDir: __dirname, destDir: '../' },
+    { name: 'styles.css', sourceDir: join(__dirname, 'src'), destDir: '../' },
     { name: 'manifest.json', sourceDir: __dirname, destDir: '../' }
 ];
 const releaseDir = './build'; // Directory for release mode
@@ -27,21 +26,21 @@ function copyFiles(files) {
 // Watch mode - Watches for changes and copies files
 function watchMode() {
     console.log('Watching for changes...');
-    const watcher = watch(__dirname, (eventType, filename) => {
-        const file = filesToCopy.find(f => f.name === filename);
-        if (file) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                console.log(`${filename} changed.`);
-                copyFiles([file]);
-            }, 250);
-        }
+
+    filesToCopy.forEach(file => {
+        watch(file.sourceDir, (eventType, filename) => {
+            if (filename === file.name) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    console.log(`${filename} changed.`);
+                    copyFiles([file]);
+                }, 250);
+            }
+        });
     });
 
-    // Clean up and exit gracefully on Ctrl+C
     process.on('SIGINT', () => {
         console.log('Stopping watch mode...');
-        watcher.close(); // Stop the fs.watch
         process.exit(0);
     });
 }
