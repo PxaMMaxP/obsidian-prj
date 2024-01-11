@@ -42,7 +42,8 @@
             "Done": "Done",
             "Topic": "Topic",
             "Project": "Project",
-            "Task": "Task"
+            "Task": "Task",
+            "ShowMetadataFile": "Show metadata file"
         }
     },
     {
@@ -88,7 +89,8 @@
             "Done": "Erledigt",
             "Topic": "Thema",
             "Project": "Projekt",
-            "Task": "Aufgabe"
+            "Task": "Aufgabe",
+            "ShowMetadataFile": "Metadaten Datei anzeigen"
         }
     }
 ]
