@@ -8,7 +8,8 @@ import FilterButton from "./InnerComponents/FilterButton";
 import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
 import SearchInput from "./InnerComponents/SearchInput";
 import Helper from "../Helper";
-import GeneralDocumentBlockRenderComponents from "./InnerComponents/GeneralDocumentBlockRenderComponents";
+import DocumentComponents from "./InnerComponents/DocumentComponents";
+import GeneralComponents from "./InnerComponents/GeneralComponents";
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -226,7 +227,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                 rows.push({ rowUid, hidden: false });
             }
 
-            if ((i % batchSize === 0) || i === documentsLength - 1) {
+            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
                 this.logger.trace(`Batchsize reached. Change rows: ${rows.length}`);
                 await this.table.changeShowHideStateRows(rows);
@@ -300,7 +301,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 0 -- Metadata Link
         const metadataLink = document.createDocumentFragment();
         rowData.push(metadataLink);
-        GeneralDocumentBlockRenderComponents.createCellMetadatalink(
+        DocumentComponents.createCellMetadatalink(
             metadataLink,
             this.component,
             documentModel);
@@ -308,7 +309,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 1 -- Date
         const date = document.createDocumentFragment();
         rowData.push(date);
-        GeneralDocumentBlockRenderComponents.createCellDate(
+        GeneralComponents.createCellDate(
             date,
             this.component,
             Lng.gt("DocumentDate"),
@@ -319,13 +320,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 2 -- File Link
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
-        GeneralDocumentBlockRenderComponents.createCellFileLink(
+        DocumentComponents.createCellFileLink(
             fileLink,
             this.component,
             documentModel);
 
         // Row 3 -- Sender Recipient
-        const senderRecipient = GeneralDocumentBlockRenderComponents.createCellSenderRecipient(
+        const senderRecipient = DocumentComponents.createCellSenderRecipient(
             documentModel,
             this.component,
             this.models);
@@ -334,11 +335,11 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 4 -- Summary & Related Files
         const summaryRelatedFiles = document.createDocumentFragment();
         rowData.push(summaryRelatedFiles);
-        GeneralDocumentBlockRenderComponents.createCellSummary(
+        DocumentComponents.createCellSummary(
             documentModel,
             this.component,
             summaryRelatedFiles);
-        GeneralDocumentBlockRenderComponents.createRelatedFilesList(
+        DocumentComponents.createRelatedFilesList(
             summaryRelatedFiles,
             this.component,
             documentModel,
@@ -348,7 +349,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 5 -- Date of delivery
         const deliveryDate = document.createDocumentFragment();
         rowData.push(deliveryDate);
-        GeneralDocumentBlockRenderComponents.createCellDate(
+        GeneralComponents.createCellDate(
             deliveryDate,
             this.component,
             Lng.gt("DeliveryDate"),
@@ -359,7 +360,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        GeneralDocumentBlockRenderComponents.createCellTags(
+        DocumentComponents.createCellTags(
             tags,
             this.component,
             documentModel.getTags());
@@ -492,7 +493,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
             if (this.settings.tags.length > 0) {
-                const tagFilter = this.isTagIncluded(file.metadata.frontmatter?.tags, this.settings.tags);
+                const tagFilter = Helper.isTagIncluded(this.settings.tags, file.metadata.frontmatter?.tags);
                 return defaultFilter && tagFilter;
             }
             return defaultFilter;

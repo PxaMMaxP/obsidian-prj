@@ -122,7 +122,7 @@ export default class MaxShownModelsInput {
             } else {
                 this.changeValue("plus", maxShownModels, batchSize, maxShownNumber, onMaxShownModelsChange);
             }
-        });
+        }, { passive: false });
     }
 
     /**
@@ -156,7 +156,6 @@ export default class MaxShownModelsInput {
         component.registerDomEvent(maxShownDocMinus, 'click', async (event: MouseEvent) => {
             this.changeValue(type, maxShownModels, batchSize, maxShownNumber, onMaxShownModelsChange);
         });
-
         return filterMaxModelsContainer;
     }
 

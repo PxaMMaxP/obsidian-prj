@@ -14,10 +14,10 @@ import Helper from "../Helper";
 import { TopicModel } from "src/models/TopicModel";
 import { ProjectModel } from "src/models/ProjectModel";
 import { TaskModel } from "src/models/TaskModel";
-import EditableDataView from "../EditableDataView/EditableDataView";
-import { MarkdownRenderer, setIcon } from "obsidian";
-import { Priority, Status, UrgencySymbols } from "src/types/PrjTypes";
-import GeneralDocumentBlockRenderComponents from "./InnerComponents/GeneralDocumentBlockRenderComponents";
+import { Priority, Status } from "src/types/PrjTypes";
+import DocumentComponents from "./InnerComponents/DocumentComponents";
+import ProjectComponents from "./InnerComponents/ProjectComponents";
+import GeneralComponents from "./InnerComponents/GeneralComponents";
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<PrjTaskManagementModel<TaskData | TopicData | ProjectData>> {
     protected settings: ProjectBlockRenderSettings = {
@@ -94,29 +94,29 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         filterLabel.classList.add('filter-symbol');
         filterLabel.textContent = Lng.gt("Filter");
 
-        const documentFilterButton = FilterButton.create(
+        const topicFilterButton = FilterButton.create(
             this.component,
             "Topic",
             this.settings.topicSymbol,
             this.settings.filter.includes("Topic"),
             this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(documentFilterButton);
+        headerFilterButtons.appendChild(topicFilterButton);
 
-        const hideDocumentFilterButton = FilterButton.create(
+        const projectFilterButton = FilterButton.create(
             this.component,
             "Project",
             this.settings.projectSymbol,
             this.settings.filter.includes("Project"),
             this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(hideDocumentFilterButton);
+        headerFilterButtons.appendChild(projectFilterButton);
 
-        const clusterFilterButton = FilterButton.create(
+        const taskFilterButton = FilterButton.create(
             this.component,
             "Task",
             this.settings.taskSymbol,
             this.settings.filter.includes("Task"),
             this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(clusterFilterButton);
+        headerFilterButtons.appendChild(taskFilterButton);
 
         const doneFilterButton = FilterButton.create(
             this.component,
@@ -151,11 +151,21 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             return;
         }
 
+        let visibleRows = 0;
+
         for (let i = 0; i < modelsLength; i++) {
             const model = i + 1 < modelsLength ? this.models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = model ? this.generateTableRow(model) : undefined;
+
+            if (row && !row.hidden) {
+                if (visibleRows < this.settings.maxDocuments) {
+                    visibleRows++;
+                } else {
+                    row.hidden = true;
+                }
+            }
 
             if (row)
                 rows.push(row);
@@ -177,140 +187,50 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 0 -- Metadata Link
         const metadataLink = document.createDocumentFragment();
         rowData.push(metadataLink);
-        new EditableDataView(metadataLink, this.component)
-            .addLink(link => link
-                .setValue(model.file.path)
-                .setTitle(Lng.gt(model.data.type ?? "File"))
-                .setLinkType("file")
-                .setFormator((value: string) => {
-                    const icon = document.createDocumentFragment();
-                    const iconString = model.getCorospondingSymbol();
-                    setIcon(icon as unknown as HTMLDivElement, iconString);
-                    return { href: `${value}`, text: `${value}`, html: icon };
-                }
-                ));
+        GeneralComponents.createMetadataLink(
+            metadataLink,
+            this.component,
+            model.file.path,
+            model.data.type,
+            model.getCorospondingSymbol());
 
         // Row 1 -- Trafic Light
         const traficLight = document.createDocumentFragment();
         rowData.push(traficLight);
-        const traficLightSpan = document.createElement('span');
-        traficLight.appendChild(traficLightSpan);
-        let iconString: UrgencySymbols;
-        switch (model.getUrgency()) {
-            case 3:
-                iconString = "🔴";
-                break;
-            case 2:
-                iconString = "🟠";
-                break;
-            case 1:
-                iconString = "🟡";
-                break;
-            case 0:
-                iconString = "🟢";
-                break;
-            case -1:
-                iconString = "🟢";
-                break;
-            case -2:
-                iconString = "🔵";
-                break;
-            default:
-                iconString = "🔴";
-                break;
-        }
-        traficLightSpan.textContent = iconString;
+        ProjectComponents.createTraficLight(traficLight, model.getUrgency());
 
         // Row 2 -- Title & Description
         const titleAndSummary = document.createDocumentFragment();
         rowData.push(titleAndSummary);
-        new EditableDataView(titleAndSummary, this.component)
-            .addLink(link => {
-                link.setValue(model.data.title ?? "")
-                    .setTitle(Lng.gt("Title"))
-                    .setPlaceholder(Lng.gt("Title"))
-                    .setLinkType("file")
-                    .setFormator((value: string) => {
-                        let title: DocumentFragment | undefined = document.createDocumentFragment();
-                        if (value === "") {
-                            //const iconString = model.getCorospondingSymbol();
-                            setIcon(title as unknown as HTMLDivElement, "paperclip");
-                        } else if (Helper.isPossiblyMarkdown(value)) {
-                            const div = document.createElement('div');
-                            MarkdownRenderer.render(this.global.app, value ?? "", div, "", this.component);
-                            title.appendChild(div);
-                        } else {
-                            title = undefined
-                        }
-                        return { href: `${model.file.path}`, text: `${value}`, html: title };
-                    })
-                    .enableEditability()
-                    .onSave((value: string) => {
-                        model.data.title = value;
-                        return Promise.resolve();
-                    });
-            });
+        ProjectComponents.createTitle(
+            titleAndSummary,
+            this.component,
+            model.file.path,
+            () => model.data.title ?? "",
+            async (value: string) => model.data.title = value);
+
         const lineBreak = document.createElement('br');
         titleAndSummary.appendChild(lineBreak);
-        new EditableDataView(titleAndSummary, this.component)
-            .addText(text => text
-                .setValue(model.data.description ?? "")
-                .setTitle(Lng.gt("Description"))
-                .setPlaceholder(Lng.gt("Description"))
-                .enableEditability()
-                .setRenderMarkdown()
-                .onSave((value: string) => {
-                    model.data.description = value;
-                    return Promise.resolve();
-                })
-            );
+
+        ProjectComponents.createSummary(
+            titleAndSummary,
+            this.component,
+            model.data.description ?? "",
+            (value: string) => model.data.description = value);
 
         // Row 3 -- Priority
         const priority = document.createDocumentFragment();
         rowData.push(priority);
-        new EditableDataView(priority, this.component)
-            .addDropdown(dropdown => dropdown
-                .setOptions([
-                    { value: "3", text: Lng.gt("HighPriority") },
-                    { value: "2", text: Lng.gt("MediumPriority") },
-                    { value: "1", text: Lng.gt("LowPriority") },
-                    { value: "0", text: Lng.gt("NoPriority") }
-                ])
-                .setTitle(Lng.gt("PriorityText"))
-                .setValue(model.data.priority?.toString() ?? "0")
-                .onSave(async (value) => {
-                    model.data.priority = value as unknown as Priority;
-                })
-                .enableEditability()
-                .setFormator((value: string) => {
-                    const icon = document.createDocumentFragment();
-                    let iconString: string;
-                    switch (value) {
-                        case "3":
-                            iconString = "signal";
-                            break;
-                        case "2":
-                            iconString = "signal-medium";
-                            break;
-                        case "1":
-                            iconString = "signal-low";
-                            break;
-                        case "0":
-                            iconString = "signal-zero";
-                            break;
-                        default:
-                            iconString = "signal-zero";
-                            break;
-                    }
-                    setIcon(icon as unknown as HTMLDivElement, iconString);
-                    return { text: `${value}`, html: icon };
-                }
-                ));
+        ProjectComponents.createPriority(
+            priority,
+            this.component,
+            () => model.data.priority?.toString() ?? "0",
+            async (value: string) => model.data.priority = value as unknown as Priority);
 
         // Row 4 -- Due Date
         const dueDate = document.createDocumentFragment();
         rowData.push(dueDate);
-        GeneralDocumentBlockRenderComponents.createCellDate(
+        GeneralComponents.createCellDate(
             dueDate,
             this.component,
             Lng.gt("DueDate"),
@@ -321,52 +241,16 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 5 -- Status
         const status = document.createDocumentFragment();
         rowData.push(status);
-        new EditableDataView(status, this.component)
-            .addDropdown(dropdown => dropdown
-                .setOptions([
-                    { value: "Active", text: Lng.gt("StatusActive") },
-                    { value: "Waiting", text: Lng.gt("StatusWaiting") },
-                    { value: "Later", text: Lng.gt("StatusLater") },
-                    { value: "Someday", text: Lng.gt("StatusSomeday") },
-                    { value: "Done", text: Lng.gt("StatusDone") }
-                ])
-                .setTitle(Lng.gt("Status"))
-                .setValue(model.data.status ?? "Active")
-                .onSave(async (value) => {
-                    model.data.status = value as Status;
-                })
-                .enableEditability()
-                .setFormator((value: string) => {
-                    const status = value as Status;
-                    let iconString: string;
-                    switch (status) {
-                        case "Active":
-                            iconString = "⚡";
-                            break;
-                        case "Waiting":
-                            iconString = "⏳";
-                            break;
-                        case "Later":
-                            iconString = "🔜";
-                            break;
-                        case "Someday":
-                            iconString = "📆";
-                            break;
-                        case "Done":
-                            iconString = "✔️";
-                            break;
-                        default:
-                            iconString = "⚡";
-                            break;
-                    }
-                    return { text: `${iconString}`, html: undefined };
-                }
-                ));
+        ProjectComponents.createStatus(
+            status,
+            this.component,
+            () => model.data.status ?? "Active",
+            async (value: string) => model.data.status = value as unknown as Status);
 
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        GeneralDocumentBlockRenderComponents.createCellTags(
+        DocumentComponents.createCellTags(
             tags,
             this.component,
             model.getTags());
@@ -428,7 +312,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, 9999999);
+            let hide = this.getHideState(document, undefined);
             if (visibleRows >= this.settings.maxDocuments) {
                 hide = true
             }
@@ -531,7 +415,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
             if (this.settings.tags.length > 0) {
-                const tagFilter = this.isTagIncluded(file.metadata.frontmatter?.tags, this.settings.tags);
+                const tagFilter = Helper.isTagIncluded(this.settings.tags, file.metadata.frontmatter?.tags);
                 return defaultFilter && tagFilter;
             }
             return defaultFilter;
@@ -554,15 +438,6 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         });
         return models;
     }
-
-    private isTagIncluded(fileTags: string | string[], settingTags: string[]): boolean {
-        if (Array.isArray(fileTags)) {
-            return fileTags.some(tag => settingTags.includes(tag));
-        } else {
-            return settingTags.includes(fileTags);
-        }
-    }
-
 }
 
 /**
