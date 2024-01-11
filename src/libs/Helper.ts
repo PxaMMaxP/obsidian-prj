@@ -47,6 +47,14 @@ export default class Helper {
         }
     }
 
+    /**
+     * Generates a UID from the given input
+     * @param input The input to generate the UID from
+     * @param length The length of the UID
+     * @returns The generated UID with the given length
+     * @remarks - This method uses the MD5 hash algorithm to generate the UID
+     * - The UID is prefixed with a "U" to prevent the UID from starting with a number. The "U" counts to the length of the UID
+     */
     static generateUID(input: string, length = 8): string {
         const hash = 'U' + this.md5(input).toString();
         return hash.substring(0, length);
@@ -64,6 +72,11 @@ export default class Helper {
         return formatedDate;
     }
 
+    /**
+     * Sleeps for the given amount of milliseconds
+     * @param ms The amount of milliseconds to sleep
+     * @returns A promise that resolves after the given amount of milliseconds
+     */
     static async sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -89,6 +102,27 @@ export default class Helper {
         }
         return regexMarkdownSymbols.test(text);
     }
+
+    /**
+     * Checks if any of the tags in `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
+     * @param tagsToCheck The tags to check as substrings
+     * @param tagsToBeChecked The tags to be checked against
+     * @returns Whether any tag from `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
+     */
+    static isTagIncluded(tagsToCheck: string | string[], tagsToBeChecked: string | string[]): boolean {
+        const _tagsToCheck: string[] = Array.isArray(tagsToCheck) ?
+            tagsToCheck : (tagsToCheck ? [tagsToCheck] : []);
+        const _tagsToBeChecked: string[] = Array.isArray(tagsToBeChecked) ?
+            tagsToBeChecked : (tagsToBeChecked ? [tagsToBeChecked] : []);
+
+        return _tagsToCheck.some(tagToCheck =>
+            _tagsToBeChecked.some(tagToBeChecked =>
+                tagToBeChecked?.includes(tagToCheck)
+            )
+        );
+    }
+
+
 }
 
 export type WikilinkData = {
