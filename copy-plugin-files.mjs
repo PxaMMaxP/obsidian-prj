@@ -27,7 +27,7 @@ function copyFiles(files) {
 // Watch mode - Watches for changes and copies files
 function watchMode() {
     console.log('Watching for changes...');
-    watch(__dirname, (eventType, filename) => {
+    const watcher = watch(__dirname, (eventType, filename) => {
         const file = filesToCopy.find(f => f.name === filename);
         if (file) {
             clearTimeout(debounceTimer);
@@ -36,6 +36,13 @@ function watchMode() {
                 copyFiles([file]);
             }, 250);
         }
+    });
+
+    // Clean up and exit gracefully on Ctrl+C
+    process.on('SIGINT', () => {
+        console.log('Stopping watch mode...');
+        watcher.close(); // Stop the fs.watch
+        process.exit(0);
     });
 }
 

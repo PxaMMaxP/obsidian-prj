@@ -122,7 +122,15 @@ export default class Helper {
         );
     }
 
-
+    /**
+     * Checks if the given string is an emoji
+     * @param str The string to check
+     * @returns Whether the string is an emoji (true or false)
+     */
+    static isEmoji(str: string) {
+        const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u;
+        return emojiRegex.test(str);
+    }
 }
 
 export type WikilinkData = {

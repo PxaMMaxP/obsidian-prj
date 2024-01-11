@@ -8,6 +8,9 @@
 # npm
 node_modules
 
+# main.js in root
+main.js
+
 # Exclude sourcemaps
 *.map
 
@@ -16,3 +19,4 @@ data.json
 
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
+

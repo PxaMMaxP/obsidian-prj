@@ -214,6 +214,11 @@
         padding-bottom: 5px;
         order: -1;
     }
+
+    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell.emoji-cell:before {
+        font-size: medium !important;
+        opacity: 0.8 !important;
+    }
 }
 
 /* DocumentBlockRenderComponent */
