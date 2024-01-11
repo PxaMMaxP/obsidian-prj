@@ -31,6 +31,18 @@ export default class Logging {
     }
 
     /**
+     * Logs a message to the console if the log level is "trace"
+     * @param message 
+     * @param optionalParams 
+     */
+    public trace(message?: any, ...optionalParams: any[]): void {
+        if (this.logLevelActive("trace")) {
+            const logMessage = this.constructLogMessage(message);
+            console.debug(logMessage, ...optionalParams);
+        }
+    }
+
+    /**
      * Logs a message to the console if the log level is "debug"
      * @param message 
      * @param optionalParams 
@@ -86,20 +98,23 @@ export default class Logging {
         if (this.logLevel === "none") {
             return false;
         }
-        if (this.logLevel === "debug") {
+        if (this.logLevel === "trace") {
             return true;
         }
+        if (this.logLevel === "debug") {
+            return logLevel !== "trace";
+        }
         if (this.logLevel === "info") {
-            return logLevel !== "debug";
+            return logLevel !== "trace" && logLevel !== "debug";
         }
         if (this.logLevel === "warn") {
-            return logLevel !== "debug" && logLevel !== "info";
+            return logLevel !== "trace" && logLevel !== "debug" && logLevel !== "info";
         }
         if (this.logLevel === "error") {
-            return logLevel !== "debug" && logLevel !== "info" && logLevel !== "warn";
+            return logLevel !== "trace" && logLevel !== "debug" && logLevel !== "info" && logLevel !== "warn";
         }
         return true;
     }
 }
 
-export type LoggingLevel = "none" | "debug" | "info" | "warn" | "error";
+export type LoggingLevel = "none" | "trace" | "debug" | "info" | "warn" | "error";
