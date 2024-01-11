@@ -20,6 +20,11 @@ export default class Logging {
         Logging.instance = this;
     }
 
+    public setLogLevel(logLevel: LoggingLevel) {
+        this.logLevel = logLevel;
+        console.info(`Log level set to ${logLevel}`);
+    }
+
     /**
      * Returns the Logging instance
      */
