@@ -1,6 +1,6 @@
 import { DocumentModel } from "src/models/DocumentModel";
 import TableBlockRenderComponent from "./TableBlockRenderComponent";
-import { ProcessorSettings } from "../MarkdownBlockProcessor";
+import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
 import Search, { SearchTermsArray } from "../Search";
 import Table, { Row, RowsState, TableHeader } from "../Table";
 import Lng from "src/classes/Lng";
@@ -35,7 +35,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * 
      */
     protected tableHeaders: TableHeader[] = [
-        { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["main-document-symbol", "font-medium"] },
+        { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["dont-decorate-link", "font-medium"] },
         { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Subject"), headerClass: [], columnClass: [] },
         { text: Lng.gt("SendRecip"), headerClass: [], columnClass: ["font-xsmall"] },
@@ -44,7 +44,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
     ];
 
-    constructor(settings: ProcessorSettings) {
+    constructor(settings: IProcessorSettings) {
         super(settings);
         this.parseSettings();
     }
@@ -129,7 +129,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
             this.settings.maxDocuments,
-            50,
+            this.global.settings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this));
         headerFilterButtons.appendChild(maxDocuments);
 
@@ -211,10 +211,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, 9999999);
+            let hide = this.getHideState(document, undefined);
+            this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
+            this.logger.trace(`Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`);
             if (visibleRows >= this.settings.maxDocuments) {
                 hide = true
             }
+            this.logger.trace(`Document ${rowUid} is hidden by max counts: ${hide}`);
 
             if (hide) {
                 rows.push({ rowUid, hidden: true });
@@ -223,33 +226,16 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                 rows.push({ rowUid, hidden: false });
             }
 
-            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
+            if ((i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
-                this.table.changeShowHideStateRows(rows);
+                this.logger.trace(`Batchsize reached. Change rows: ${rows.length}`);
+                await this.table.changeShowHideStateRows(rows);
                 rows.length = 0;
                 sleepPromise = Helper.sleep(sleepBetweenBatches);
             }
         }
 
         this.normalizeHeader();
-    }
-
-    /**
-     * Normalizes the header.
-     * @remarks - Removes the `disable` class from the header.
-     * - The header is not grayed out anymore.
-     */
-    private normalizeHeader() {
-        this.headerContainer.removeClass('disable');
-    }
-
-    /**
-     * Grays out the header.
-     * @remarks - Adds the `disable` class to the header.
-     * - The header is grayed out.
-     */
-    private grayOutHeader() {
-        this.headerContainer.addClass('disable');
     }
 
     /**
@@ -273,11 +259,21 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             return;
         }
 
+        let visibleRows = 0;
+
         for (let i = 0; i < documentsLength; i++) {
             const document = i + 1 < documentsLength ? this.models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = document ? this.generateTableRow(document) : undefined;
+
+            if (row && !row.hidden) {
+                if (visibleRows < this.settings.maxDocuments) {
+                    visibleRows++;
+                } else {
+                    row.hidden = true;
+                }
+            }
 
             if (row)
                 rows.push(row);
@@ -368,7 +364,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             this.component,
             documentModel.getTags());
 
-        const hide = this.getHideState(documentModel, this.settings.maxDocuments);
+        const hide = this.getHideState(documentModel, undefined);
 
         const row = {
             rowUid,
