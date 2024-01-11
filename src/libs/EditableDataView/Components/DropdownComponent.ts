@@ -11,7 +11,7 @@ export default class DropdownComponent extends BaseComponent {
     onFinalize: () => void;
     //#endregion
     //#region extended properties
-    private _onPresentation: (value: string) => string;
+    private _onPresentation: (value: string) => Promise<void> | undefined;
     private _onSave: ((value: string) => Promise<void>);
     private _value: string;
     private _options: { value: string; text: string; }[];
@@ -84,8 +84,16 @@ export default class DropdownComponent extends BaseComponent {
      * @remarks - The formator is called when the component change in `not-edit` mode.
      * - `value` is the value of the selected option. (Not the text!)
      */
-    public setFormator(formator: (value: string) => string) {
-        this._onPresentation = formator;
+    public setFormator(formator: (value: string) => { text: string, html?: DocumentFragment }) {
+        this._onPresentation = async (value: string): Promise<void> => {
+            const { text, html } = formator(value);
+            if (html) {
+                this.presentationSpan.innerHTML = '';
+                this.presentationSpan.appendChild(html);
+            } else {
+                this.presentationSpan.textContent = text;
+            }
+        };
         return this;
     }
 
@@ -130,7 +138,8 @@ export default class DropdownComponent extends BaseComponent {
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('text-presentation');
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
+        this._onPresentation?.(this._selectedOption.value);
+        //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
     }
 
     private buildInput() {
@@ -148,7 +157,8 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     private disableEdit() {
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
+        this._onPresentation?.(this._selectedOption.value);
+        //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
         this.disableOptions();
     }
 

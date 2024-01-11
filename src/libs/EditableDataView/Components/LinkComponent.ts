@@ -117,7 +117,10 @@ export default class LinkComponent extends BaseComponent {
         this._onPresentation = async (value: string): Promise<void> => {
             const linkContent = formator(value);
             this.link.href = linkContent.href;
-            if (linkContent.html) this.link.appendChild(linkContent.html);
+            if (linkContent.html) {
+                this.link.innerHTML = '';
+                this.link.appendChild(linkContent.html);
+            }
             else this.link.textContent = linkContent.text;
 
             switch (this.linkType) {

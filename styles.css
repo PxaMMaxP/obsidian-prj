@@ -58,10 +58,12 @@
 .prj-block-container .header-container .header-item.filter-symbols .filter-search {
     display: flex;
     padding-left: 15px;
+    padding-bottom: 5px;
 }
 
 .prj-block-container .header-container .header-item.filter-symbols .filter-search .filter-text {
     padding-right: 5px;
+    align-self: center;
 }
 
 .prj-block-container .header-container .header-item.filter-symbols .filter-search .search-box-sizer {
@@ -92,13 +94,14 @@
 }
 
 /** The block header items for the max shown objects symbols **/
-.prj-block-container .header-container .header-item.filter-symbols .filter-max-symbols {
+.prj-block-container .header-container .header-item.filter-symbols .filter-max-models {
     padding-left: 15px;
-    display: flex;
     align-items: inherit;
 }
 
-.prj-block-container .header-container .header-item.filter-symbols .filter-max-symbol {
+.prj-block-container .header-container .header-item.filter-symbols .minus-batch-button,
+.prj-block-container .header-container .header-item.filter-symbols .plus-batch-button,
+.prj-block-container .header-container .header-item.filter-symbols .filter-max-number {
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 0px;
@@ -107,6 +110,11 @@
     color: inherit !important;
     text-decoration: none !important;
     white-space: nowrap;
+}
+
+.prj-block-container .header-container .header-item.filter-symbols .filter-max-number {
+    position: relative;
+    top: -4px;
 }
 
 /** The filter symbols are grayed out if they are not active **/
@@ -160,6 +168,10 @@
     display: none !important;
 }
 
+.prj-table>.prj-table-body>#placeholder-row {
+    display: none !important;
+}
+
 .prj-table>.prj-table-body>.prj-table-row.prj-table-row-hover:hover {
     background-color: var(--table-row-background-hover) !important;
 }
@@ -202,9 +214,17 @@
 }
 
 /** Maind Document Symbol **/
-.prj-table .prj-table-body .prj-table-row .prj-table-cell.main-document-symbol a {
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.dont-decorate-link a {
     color: inherit !important;
     text-decoration: none !important;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.link-weight-semibold a {
+    font-weight: var(--font-semibold) !important;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell.link-weight-bold a {
+    font-weight: var(--font-bold) !important;
 }
 
 /** Different font sizes **/
@@ -404,7 +424,7 @@
 .editable-data-view.date-input {
     display: flex;
     position: relative;
-    max-width: 14ch;
+    max-width: 16ch;
     height: 100%;
     color: #FFF;
     border: none;

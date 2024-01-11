@@ -1,11 +1,16 @@
 /* eslint-disable no-case-declarations */
 // Note: MarkdownBlockProcessor Class
 
-import { FrontMatterCache, MarkdownPostProcessorContext, MarkdownRenderChild } from "obsidian";
+import { MarkdownPostProcessorContext, MarkdownRenderChild } from "obsidian";
 import * as yaml from 'js-yaml';
 import Global from "../classes/Global";
 import DocumentBlockRenderComponent from "./BlockRenderComponents/DocumentBlockRenderComponent";
+import { IProcessorSettings } from "../interfaces/IProcessorSettings";
+import ProjectBlockRenderComponent from "./BlockRenderComponents/ProjectBlockRenderComponent";
 
+/**
+ * Class for the markdown block processor.
+ */
 export default class MarkdownBlockProcessor {
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
@@ -34,8 +39,7 @@ export default class MarkdownBlockProcessor {
         el.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
 
-
-        const setting: ProcessorSettings = yaml.load(source) as ProcessorSettings;
+        const setting: IProcessorSettings = yaml.load(source) as IProcessorSettings;
         setting.source = ctx.sourcePath;
         setting.frontmatter = cache.filter(file => file.file.path === ctx.sourcePath).first()?.metadata.frontmatter;
         setting.container = blockContainer;
@@ -48,7 +52,10 @@ export default class MarkdownBlockProcessor {
                     await documentBlock.build();
                     break;
                 case "Tasks":
-
+                case "Projects":
+                case "Topics":
+                    const projectBlock = new ProjectBlockRenderComponent(setting)
+                    await projectBlock.build();
                     break;
                 case "Debug":
                     console.log("Debug Mode");
@@ -65,16 +72,3 @@ export default class MarkdownBlockProcessor {
     }
 }
 
-export interface ProcessorSettings {
-    type: string;
-    options: ProcessorOptions[];
-    source: string;
-    frontmatter: FrontMatterCache | null | undefined;
-    container: HTMLElement;
-    ctx: MarkdownPostProcessorContext;
-}
-
-export interface ProcessorOptions {
-    label: string;
-    value: never;
-}
