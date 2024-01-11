@@ -1,5 +1,7 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import Prj from 'src/main';
+import Global from './Global';
+import { LoggingLevel } from './Logging';
 
 
 export class SettingTab extends PluginSettingTab {
@@ -19,11 +21,30 @@ export class SettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName('Log Level')
             .setDesc('The log level to use')
-            .addText(text => text
-                .setPlaceholder('none | debug | info | warn | error')
+            .addDropdown(dropdown => dropdown
+                .addOptions({
+                    'none': 'none',
+                    'trace': 'trace',
+                    'debug': 'debug',
+                    'info': 'info',
+                    'warn': 'warn',
+                    'error': 'error'
+                })
                 .setValue(this.plugin.settings.logLevel)
                 .onChange(async (value) => {
                     this.plugin.settings.logLevel = value;
+                    Global.getInstance().logger.setLogLevel(value as LoggingLevel);
+                    await this.plugin.saveSettings();
+                }));
+
+        // Editability
+        new Setting(containerEl)
+            .setName('Performance Mode (only Mobile)')
+            .setDesc('The performance of the plugin is affected by this setting. If disabled, the editability of the blocks is disabled. No effect on Desktop!')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.mobile)
+                .onChange(async (value) => {
+                    this.plugin.settings.mobile = value;
                     await this.plugin.saveSettings();
                 }));
 

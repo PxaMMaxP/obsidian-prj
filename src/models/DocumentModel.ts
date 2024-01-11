@@ -72,6 +72,19 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
 
     }
 
+    public getCorospondingSymbol(): string {
+        if (this.data.type === "Metadata") {
+            if (this.data.subType === "Cluster") {
+                return this.global.settings.documentSettings.clusterSymbol;
+            } else if (this.data.hide) {
+                return this.global.settings.documentSettings.hideSymbol;
+            } else {
+                return this.global.settings.documentSettings.symbol;
+            }
+        }
+        return "x-circle";
+    }
+
     /**
      * Returns the description of the document
      * @returns String containing the description

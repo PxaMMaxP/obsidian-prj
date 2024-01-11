@@ -1,6 +1,6 @@
 import { DocumentModel } from "src/models/DocumentModel";
 import TableBlockRenderComponent from "./TableBlockRenderComponent";
-import { ProcessorSettings } from "../MarkdownBlockProcessor";
+import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
 import Search, { SearchTermsArray } from "../Search";
 import Table, { Row, RowsState, TableHeader } from "../Table";
 import Lng from "src/classes/Lng";
@@ -8,7 +8,8 @@ import FilterButton from "./InnerComponents/FilterButton";
 import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
 import SearchInput from "./InnerComponents/SearchInput";
 import Helper from "../Helper";
-import GeneralDocumentBlockRenderComponents from "./InnerComponents/GeneralDocumentBlockRenderComponents";
+import DocumentComponents from "./InnerComponents/DocumentComponents";
+import GeneralComponents from "./InnerComponents/GeneralComponents";
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -35,7 +36,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * 
      */
     protected tableHeaders: TableHeader[] = [
-        { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["main-document-symbol", "font-medium"] },
+        { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["dont-decorate-link", "font-medium"] },
         { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Subject"), headerClass: [], columnClass: [] },
         { text: Lng.gt("SendRecip"), headerClass: [], columnClass: ["font-xsmall"] },
@@ -44,7 +45,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
     ];
 
-    constructor(settings: ProcessorSettings) {
+    constructor(settings: IProcessorSettings) {
         super(settings);
         this.parseSettings();
     }
@@ -129,7 +130,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
             this.settings.maxDocuments,
-            50,
+            this.global.settings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this));
         headerFilterButtons.appendChild(maxDocuments);
 
@@ -211,10 +212,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, 9999999);
+            let hide = this.getHideState(document, undefined);
+            this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
+            this.logger.trace(`Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`);
             if (visibleRows >= this.settings.maxDocuments) {
                 hide = true
             }
+            this.logger.trace(`Document ${rowUid} is hidden by max counts: ${hide}`);
 
             if (hide) {
                 rows.push({ rowUid, hidden: true });
@@ -225,31 +229,14 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
-                this.table.changeShowHideStateRows(rows);
+                this.logger.trace(`Batchsize reached. Change rows: ${rows.length}`);
+                await this.table.changeShowHideStateRows(rows);
                 rows.length = 0;
                 sleepPromise = Helper.sleep(sleepBetweenBatches);
             }
         }
 
         this.normalizeHeader();
-    }
-
-    /**
-     * Normalizes the header.
-     * @remarks - Removes the `disable` class from the header.
-     * - The header is not grayed out anymore.
-     */
-    private normalizeHeader() {
-        this.headerContainer.removeClass('disable');
-    }
-
-    /**
-     * Grays out the header.
-     * @remarks - Adds the `disable` class to the header.
-     * - The header is grayed out.
-     */
-    private grayOutHeader() {
-        this.headerContainer.addClass('disable');
     }
 
     /**
@@ -273,11 +260,21 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             return;
         }
 
+        let visibleRows = 0;
+
         for (let i = 0; i < documentsLength; i++) {
             const document = i + 1 < documentsLength ? this.models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = document ? this.generateTableRow(document) : undefined;
+
+            if (row && !row.hidden) {
+                if (visibleRows < this.settings.maxDocuments) {
+                    visibleRows++;
+                } else {
+                    row.hidden = true;
+                }
+            }
 
             if (row)
                 rows.push(row);
@@ -304,7 +301,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 0 -- Metadata Link
         const metadataLink = document.createDocumentFragment();
         rowData.push(metadataLink);
-        GeneralDocumentBlockRenderComponents.createCellMetadatalink(
+        DocumentComponents.createCellMetadatalink(
             metadataLink,
             this.component,
             documentModel);
@@ -312,7 +309,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 1 -- Date
         const date = document.createDocumentFragment();
         rowData.push(date);
-        GeneralDocumentBlockRenderComponents.createCellDate(
+        GeneralComponents.createCellDate(
             date,
             this.component,
             Lng.gt("DocumentDate"),
@@ -323,13 +320,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 2 -- File Link
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
-        GeneralDocumentBlockRenderComponents.createCellFileLink(
+        DocumentComponents.createCellFileLink(
             fileLink,
             this.component,
             documentModel);
 
         // Row 3 -- Sender Recipient
-        const senderRecipient = GeneralDocumentBlockRenderComponents.createCellSenderRecipient(
+        const senderRecipient = DocumentComponents.createCellSenderRecipient(
             documentModel,
             this.component,
             this.models);
@@ -338,11 +335,11 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 4 -- Summary & Related Files
         const summaryRelatedFiles = document.createDocumentFragment();
         rowData.push(summaryRelatedFiles);
-        GeneralDocumentBlockRenderComponents.createCellSummary(
+        DocumentComponents.createCellSummary(
             documentModel,
             this.component,
             summaryRelatedFiles);
-        GeneralDocumentBlockRenderComponents.createRelatedFilesList(
+        DocumentComponents.createRelatedFilesList(
             summaryRelatedFiles,
             this.component,
             documentModel,
@@ -352,7 +349,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 5 -- Date of delivery
         const deliveryDate = document.createDocumentFragment();
         rowData.push(deliveryDate);
-        GeneralDocumentBlockRenderComponents.createCellDate(
+        GeneralComponents.createCellDate(
             deliveryDate,
             this.component,
             Lng.gt("DeliveryDate"),
@@ -363,12 +360,12 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        GeneralDocumentBlockRenderComponents.createCellTags(
+        DocumentComponents.createCellTags(
             tags,
             this.component,
             documentModel.getTags());
 
-        const hide = this.getHideState(documentModel, this.settings.maxDocuments);
+        const hide = this.getHideState(documentModel, undefined);
 
         const row = {
             rowUid,
@@ -496,7 +493,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
             if (this.settings.tags.length > 0) {
-                const tagFilter = this.isTagIncluded(file.metadata.frontmatter?.tags, this.settings.tags);
+                const tagFilter = Helper.isTagIncluded(this.settings.tags, file.metadata.frontmatter?.tags);
                 return defaultFilter && tagFilter;
             }
             return defaultFilter;

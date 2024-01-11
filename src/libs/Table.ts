@@ -1,8 +1,17 @@
+import Global from "../classes/Global";
+
 export default class Table {
     public get data(): StructedTable {
         return this._table;
     }
+    private logger = Global.getInstance().logger;
     private _table: StructedTable;
+    /**
+     * A list of row placeholders
+     * @remarks - The row placeholders are used to keep the order of the rows when hiding and showing rows.
+     * - The placeholders rows are empty and have the id `defaultIds.placeholder` (default: `placeholder-row`).
+     */
+    private _rowPlaceholders: RowPlaceholder[] = [];
     private _headers: TableHeader[];
     private _tableId: string;
     private _tableClassList: string[] | undefined;
@@ -21,6 +30,10 @@ export default class Table {
         hiddenRow: 'hidden-row',
         evenRow: 'even-row',
         oddRow: 'odd-row'
+    };
+    // Default IDs 
+    private defaultIds = {
+        placeholder: "placeholder-row"
     };
     // // //// // //// // //
 
@@ -106,15 +119,57 @@ export default class Table {
      * @param rows.rowData The data of the new row
      * @param rows.rowClassList The class list of the new row
      * @param rows.hidden Whether the new row should be hidden
+     * @remarks - The rows are added in the order of the array.
+     * - The rows are added to the internal array.
+     * - If the row is hidden, the row content is replaced with a placeholder.
      */
     public addRows(rows: Row[]): void {
+        const collectedRows = document.createDocumentFragment();
         rows.forEach(row => {
-            this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
+            const rowFragment = this.createRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
+            if (rowFragment) {
+                this._table.rows.push(rowFragment);
+                if (row.hidden) {
+                    collectedRows.append(this._getPlaceholder(row.rowUid));
+                } else {
+                    collectedRows.append(rowFragment)
+                }
+            }
         });
+        this._table.body.append(collectedRows);
     }
 
+    /**
+     * Adds a row to the table
+     * @param rowUid The UID of the new row
+     * @param rowData The data of the new row as an array of DocumentFragments. Each DocumentFragment represents a cell.
+     * @param rowClassList The class list of the new row
+     * @param hidden Whether the new row should be hidden
+     * @remarks - The row is added to the internal array.
+     * - If the row is hidden, the row content is replaced with a placeholder.
+     */
     private _addRow(rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean): void {
-        const tableRow = this._table.body.insertRow();
+        const tableRow = this.createRow(rowUid, rowData, rowClassList, hidden);
+        this._table.rows.push(tableRow);
+
+        if (hidden) {
+            this._table.body.append(this._getPlaceholder(rowUid));
+        } else {
+            this._table.body.append(tableRow)
+        }
+    }
+
+    /**
+     * Creates a row
+     * @param rowUid The UID of the row 
+     * @param rowData The data of the row as an array of DocumentFragments. Each DocumentFragment represents a cell.
+     * @param rowClassList The class list of the row
+     * @param hidden Whether the row should be hidden.
+     * @remarks **If true, the row is hidden and the row content is later replaced with a placeholder.**
+     * @returns The created row as an HTMLTableRowElement
+     */
+    private createRow(rowUid: string, rowData: DocumentFragment[], rowClassList: string[] | undefined, hidden: boolean): HTMLTableRowElement {
+        const tableRow = document.createElement('tr');
 
         tableRow.classList.add(...this.defaultClasses.row);
         tableRow.setAttribute('row-uid', rowUid);
@@ -140,9 +195,16 @@ export default class Table {
             }
             tableCell.appendChild(data);
         });
-        this._table.rows.push(tableRow);
+        return tableRow;
     }
 
+    /**
+     * Sets the row to odd or even
+     * @param tableRow The row to set
+     * @remarks - The row is set to odd or even based on the last visible row.
+     * - If no visible row exists, the row is set to even.
+     * @remarks It does not search for the last visible line in the HTML table itself, but in an internal array.
+     */
     private setRowOddOrEven(tableRow: HTMLTableRowElement) {
         let lastVisibleRow;
         for (let i = this._table.rows.length - 1; i >= 0; i--) {
@@ -171,17 +233,33 @@ export default class Table {
     /**
      * Deletes the row with the given UID
      * @param rowUid The UID of the row
+     * @remarks - The row is deleted from the table body and the internal array.
+     * - If a placeholder exists, it is also deleted from the table body and the internal array.
      */
     public deleteRow(rowUid: string): void {
-        const rowToDelete = this._table.rows.find(row => row.getAttribute('row-uid') === rowUid);
+        const rowToDelete = this.getRow(rowUid);
         const rowVisible = rowToDelete && !rowToDelete.classList.contains(this.defaultClasses.hiddenRow);
-        if (rowToDelete) {
-            this._table.body.removeChild(rowToDelete);
-        }
         if (rowVisible) {
+            if (rowToDelete) {
+                try {
+                    this._table.body.removeChild(rowToDelete);
+                } catch (error) {
+                    this.logger.warn("Row not active in the table. Error:", error);
+                }
+                this._table.rows = this._table.rows.filter(row => row.getAttribute('row-uid') !== rowUid);
+                this._removePlaceholder(rowUid);
+            }
             this._visibleRows--;
             this.refreshRowEvenOddClass();
         } else {
+            const placeholder = this._removePlaceholder(rowUid);
+            if (placeholder) {
+                try {
+                    this._table.body.removeChild(placeholder);
+                } catch (error) {
+                    this.logger.warn("Placeholder row not active in the table. Error:", error);
+                }
+            }
             this._hiddenRows--;
         }
     }
@@ -189,35 +267,61 @@ export default class Table {
     /**
      * Set a row to hidden
      * @param rowUid The UID of the row
+     * @remarks - The row is set to hidden and the row content is replaced with a placeholder.
+     * - Only if the state has changed, the calculation of the odd and even rows is updated.
      */
     public hideRow(rowUid: string): void {
-        this._hideRow(rowUid);
-        this.refreshRowEvenOddClass();
+        const changes = this._hideRow(rowUid);
+        if (changes)
+            this.refreshRowEvenOddClass();
     }
 
-    private _hideRow(rowUid: string): void {
+    /**
+     * Set a row to hidden, replaces the row content with a placeholder and updates the row stats
+     * @param rowUid The UID of the row
+     * @returns Whether the state has changed. Returns `false` if the row is already hidden.
+     */
+    private _hideRow(rowUid: string): boolean {
+        this.logger.trace(`Row ${rowUid} should be hidden.`);
         const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], true);
+        this.logger.trace(`Row ${rowUid} changes: ${changes}`);
         if (changes) {
+            this._removeRowContent(rowUid);
             this._visibleRows--;
             this._hiddenRows++;
         }
+
+        return changes;
     }
 
     /**
      * Set a row to visible
      * @param rowUid The UID of the row
+     * @remarks - The row is set to visible and the row content is replaced with the original content.
+     * - Only if the state has changed, the calculation of the odd and even rows is updated.
      */
     public showRow(rowUid: string): void {
-        this._showRow(rowUid);
-        this.refreshRowEvenOddClass();
+        const changes = this._showRow(rowUid);
+        if (changes)
+            this.refreshRowEvenOddClass();
     }
 
-    private _showRow(rowUid: string): void {
+    /**
+     * Set a row to visible, replaces the placeholder with the original row content and updates the row stats
+     * @param rowUid The UID of the row
+     * @returns Whether the state has changed. Returns `false` if the row is already visible.
+     */
+    private _showRow(rowUid: string): boolean {
+        this.logger.trace(`Row ${rowUid} should be shown.`);
         const changes = this.togleRowClass(rowUid, [this.defaultClasses.hiddenRow], false);
+        this.logger.trace(`Row ${rowUid} changes: ${changes}`);
         if (changes) {
+            this._addRowContent(rowUid);
             this._visibleRows++;
             this._hiddenRows--;
         }
+
+        return changes;
     }
 
     /**
@@ -227,13 +331,99 @@ export default class Table {
      * @param rows.hidden Whether to hide or show the row
      */
     public async changeShowHideStateRows(rows: RowsState[]): Promise<void> {
+        this.logger.trace(`Change Show/Hide state of ${rows.length} rows.`);
+        let changes = false;
         rows.forEach(row => {
-            if (row.hidden)
-                this._hideRow(row.rowUid);
-            else
-                this._showRow(row.rowUid);
+            this.logger.trace(`Change Show/Hide state of Row: ${row.rowUid} to ${row.hidden}.`);
+            if (row.hidden) {
+                this.logger.trace(`Hide Row: ${row.rowUid}`);
+                const result = this._hideRow(row.rowUid);
+                changes ||= result;
+            } else {
+                this.logger.trace(`Show Row: ${row.rowUid}`);
+                const result = this._showRow(row.rowUid);
+                changes ||= result;
+            }
         });
-        this.refreshRowEvenOddClass();
+        if (changes)
+            this.refreshRowEvenOddClass();
+    }
+
+    /**
+     * Replaces the row in table body with a placeholder
+     * @param rowUid The UID of the row
+     * @remarks - Search the row in the internal array,
+     * - If found, get the placeholder from the internal array and replace the row in the table body with the placeholder.
+     */
+    private _removeRowContent(rowUid: string): void {
+        const row = this.getRow(rowUid);
+        if (row) {
+            const placeholder = this._getPlaceholder(rowUid);
+            this._table.body.replaceChild(placeholder, row);
+        }
+    }
+
+    /**
+     * Replaces the placeholder in table body with the row
+     * @param rowUid The UID of the row
+     * @remarks - Search the row in the internal array,
+     * - If found, get the placeholder from the internal array and replace the placeholder in the table body with the row.
+     */
+    private _addRowContent(rowUid: string): void {
+        const row = this.getRow(rowUid);
+        if (row) {
+            const placeholder = this._getPlaceholder(rowUid);
+            if (placeholder) {
+                try {
+                    this._table.body.replaceChild(row, placeholder);
+                } catch (error) {
+                    this.logger.warn("Placeholder row not active in the table. Error:", error);
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates a placeholder row
+     * @param rowUid The UID of the row
+     * @returns The generated placeholder row
+     * @remarks - The placeholder row is empty and has the id `defaultIds.placeholder` (default: `placeholder-row`).
+     * - The placeholder row is added to the internal array.
+     */
+    private _generatePlaceholder(rowUid: string): HTMLTableRowElement {
+        const placeholder = document.createElement('tr');
+        placeholder.id = this.defaultIds.placeholder;
+        placeholder.setAttribute('row-uid', rowUid);
+        this._rowPlaceholders.push({ rowUid: rowUid, row: placeholder });
+        return placeholder;
+    }
+
+    /**
+     * Removes the placeholder row with the given UID from the internal array
+     * @param rowUid The UID of the row
+     */
+    private _removePlaceholder(rowUid: string): HTMLTableRowElement | undefined {
+        const placeholder = this._rowPlaceholders.find(rowPlaceholder => rowPlaceholder.rowUid === rowUid)?.row;
+        if (placeholder) {
+            this._rowPlaceholders = this._rowPlaceholders.filter(rowPlaceholder => rowPlaceholder.rowUid !== rowUid);
+        }
+        return placeholder;
+    }
+
+    /**
+     * Returns the placeholder row with the given UID
+     * @param rowUid The UID of the row
+     * @returns - The placeholder row with the given UID
+     * - or a new placeholder row if no placeholder row with the given UID exists
+     * @remarks - If a new placeholder row is generated, it is added to the internal array.
+     */
+    private _getPlaceholder(rowUid: string): HTMLTableRowElement {
+        const placeholder = this._rowPlaceholders.find(rowPlaceholder => rowPlaceholder.rowUid === rowUid)?.row;
+        if (placeholder)
+            return placeholder;
+        else {
+            return this._generatePlaceholder(rowUid);
+        }
     }
 
     /**
@@ -260,6 +450,11 @@ export default class Table {
         return changes;
     }
 
+    /**
+     * Refreshes the odd and even rows with the corosponding classes
+     * @remarks - The odd and even rows are calculated based on the visible rows from the internal array.
+     * - Change the classes only if necessary.
+     */
     private refreshRowEvenOddClass(): void {
         const visibleRows = this._table.rows.filter(row => !row.classList.contains(this.defaultClasses.hiddenRow));
         visibleRows.forEach((row, index) => {
@@ -371,6 +566,11 @@ export type StructedTable = {
     headerCells: HTMLTableCellElement[];
     body: HTMLTableSectionElement;
     rows: HTMLTableRowElement[];
+}
+
+type RowPlaceholder = {
+    rowUid: string;
+    row: HTMLTableRowElement;
 }
 
 export type Row = {

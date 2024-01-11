@@ -1,21 +1,12 @@
-// Note: TaskModel class
-
 import { TFile } from "obsidian";
-import TaskData from "../types/TaskData";
-import { BaseModel } from "./BaseModel";
-import IPrjModel from "../interfaces/IPrjModel";
+import TaskData from "src/types/TaskData";
+import { PrjTaskManagementModel } from "./PrjTaskManagementModel";
 
-export class TaskModel extends BaseModel<TaskData> implements IPrjModel<TaskData> {
+export class TaskModel extends PrjTaskManagementModel<TaskData> {
 
     constructor(file: TFile) {
-        super(file, TaskData, undefined);
+        super(file, TaskData);
     }
 
-    public get data(): Partial<TaskData> {
-        return this._data;
-    }
-    public set data(value: Partial<TaskData>) {
-        this._data = value;
-    }
+
 }
-

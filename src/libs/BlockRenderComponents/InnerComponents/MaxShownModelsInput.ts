@@ -29,28 +29,53 @@ export default class MaxShownModelsInput {
      */
     public static create(component: Component, defaultValue: number, batchSize: number, onChange: MaxShownModelsCallback): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
+        const logger = Global.getInstance().logger;
+        let debounceTimer: NodeJS.Timeout;
 
-        const maxShownModels: MaxShownModelNumber = { maxShownModels: defaultValue };
+        const maxShownModels: MaxShownModelNumber = {
+            maxShownModels: !isNaN(parseFloat(defaultValue as unknown as string)) && isFinite(defaultValue) ? Number(defaultValue) : 0
+        };
 
         const filterMaxModelsContainer = document.createElement('div');
         headerItemContainer.appendChild(filterMaxModelsContainer);
         filterMaxModelsContainer.classList.add('filter-max-models');
 
-        const number = this.createNumberPresentation(maxShownModels);
+        const number = this.createNumberPresentation(maxShownModels, component, batchSize);
+
+        const debounceOnChange = () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                try {
+                    maxShownModels.maxShownModels = (await onChange(maxShownModels.maxShownModels)) ?? maxShownModels.maxShownModels;
+                } catch (error) {
+                    logger.error("The `onChange` callback threw an error!", error);
+                } finally {
+                    number.number.textContent = maxShownModels.maxShownModels.toString();
+                }
+            }, 500);
+        };
+
+        MaxShownModelsInput.createNumberPresentationEvent(
+            component,
+            number.number,
+            maxShownModels,
+            batchSize,
+            debounceOnChange);
+
         const minus = this.createSymbol(
             "minus",
             number.number,
             component,
             maxShownModels,
             batchSize,
-            onChange);
+            debounceOnChange);
         const plus = this.createSymbol(
             "plus",
             number.number,
             component,
             maxShownModels,
             batchSize,
-            onChange);
+            debounceOnChange);
 
         filterMaxModelsContainer.appendChild(minus);
         filterMaxModelsContainer.appendChild(number.container);
@@ -66,7 +91,10 @@ export default class MaxShownModelsInput {
      * - The created presentation span as `HTMLSpanElement`
      * - The span element has the class `filter-max-number`.
      */
-    private static createNumberPresentation(maxShownModels: MaxShownModelNumber): { container: DocumentFragment, number: HTMLSpanElement } {
+    private static createNumberPresentation(
+        maxShownModels: MaxShownModelNumber,
+        component: Component,
+        batchSize: number): { container: DocumentFragment, number: HTMLSpanElement } {
         const filterMaxModelsContainer = document.createDocumentFragment();
 
         const maxShownNumber = document.createElement('span');
@@ -76,6 +104,25 @@ export default class MaxShownModelsInput {
         maxShownNumber.textContent = maxShownModels.maxShownModels.toString();
 
         return { container: filterMaxModelsContainer, number: maxShownNumber };
+    }
+
+    /**
+     * Creates the mouse wheel events for the max shown models number presentation span.
+     * @param component The component to register the events to.
+     * @param maxShownNumber The presentation span of the max shown models number.
+     * @param maxShownModels The container for the max shown models number.
+     * @param batchSize The batch size to add or subtract.
+     * @param onMaxShownModelsChange The callback to call when the max shown models number changes.
+     */
+    private static createNumberPresentationEvent(component: Component, maxShownNumber: HTMLSpanElement, maxShownModels: MaxShownModelNumber, batchSize: number, onMaxShownModelsChange: () => void) {
+        component.registerDomEvent(maxShownNumber, 'wheel', async (event: WheelEvent) => {
+            event.preventDefault();
+            if (event.deltaY > 0) {
+                this.changeValue("minus", maxShownModels, batchSize, maxShownNumber, onMaxShownModelsChange);
+            } else {
+                this.changeValue("plus", maxShownModels, batchSize, maxShownNumber, onMaxShownModelsChange);
+            }
+        }, { passive: false });
     }
 
     /**
@@ -96,8 +143,7 @@ export default class MaxShownModelsInput {
         component: Component,
         maxShownModels: MaxShownModelNumber,
         batchSize: number,
-        onMaxShownModelsChange: MaxShownModelsCallback): DocumentFragment {
-        const logger = Global.getInstance().logger;
+        onMaxShownModelsChange: () => void): DocumentFragment {
         const filterMaxModelsContainer = document.createDocumentFragment();
 
         const maxShownDocMinus = document.createElement('a');
@@ -108,25 +154,33 @@ export default class MaxShownModelsInput {
         setIcon(maxShownDocMinus, type);
 
         component.registerDomEvent(maxShownDocMinus, 'click', async (event: MouseEvent) => {
-            if (type === "minus") {
-                if (maxShownModels.maxShownModels >= batchSize) {
-                    maxShownModels.maxShownModels -= batchSize;
-                } else {
-                    maxShownModels.maxShownModels = 0;
-                }
-            } else {
-                maxShownModels.maxShownModels += batchSize;
-            }
-            try {
-                maxShownModels.maxShownModels = (await onMaxShownModelsChange(maxShownModels.maxShownModels)) ?? maxShownModels.maxShownModels;
-            } catch (error) {
-                logger.error("The `onChange` callback threw an error!", error);
-            } finally {
-                maxShownNumber.textContent = maxShownModels.maxShownModels.toString();
-            }
+            this.changeValue(type, maxShownModels, batchSize, maxShownNumber, onMaxShownModelsChange);
         });
-
         return filterMaxModelsContainer;
+    }
+
+    /**
+     * Changes the max shown models number.
+     * @param type The type of the symbol. Can be `plus` or `minus`.
+     * @param maxShownModels The container for the max shown models number.
+     * @param batchSize The batch size to add or subtract.
+     * @param maxShownNumber The presentation span of the max shown models number.
+     * @param onMaxShownModelsChange The callback to call when the max shown models number changes.
+     */
+    private static changeValue(type: string, maxShownModels: MaxShownModelNumber, batchSize: number, maxShownNumber: HTMLSpanElement, onMaxShownModelsChange: () => void) {
+        if (type === "minus") {
+            if (maxShownModels.maxShownModels >= batchSize) {
+                // Subtracts either the remainder (to arrive at the next multiple of `batchSize`) or `batchSize` itself
+                maxShownModels.maxShownModels -= (maxShownModels.maxShownModels % batchSize) || batchSize;
+            } else {
+                maxShownModels.maxShownModels = 0;
+            }
+        } else {
+            // Adds either the remainder (to arrive at the next multiple of `batchSize`) or `batchSize` itself
+            maxShownModels.maxShownModels += batchSize - (maxShownModels.maxShownModels % batchSize);
+        }
+        maxShownNumber.textContent = maxShownModels.maxShownModels.toString();
+        onMaxShownModelsChange();
     }
 }
 

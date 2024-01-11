@@ -5,27 +5,7 @@ import EditableDataView from "src/libs/EditableDataView/EditableDataView";
 import Helper from "src/libs/Helper";
 import { DocumentModel } from "src/models/DocumentModel";
 
-export default class GeneralDocumentBlockRenderComponents {
-    public static createCellDate(
-        date: DocumentFragment,
-        component: Component,
-        title: string,
-        format: string,
-        onRead: () => string,
-        onWrite: (value: string) => void) {
-        new EditableDataView(date, component)
-            .addDate(date => date
-                .setValue(onRead())
-                .setTitle(title)
-                .enableEditability()
-                .setFormator((value: string) => Helper.formatDate(value, format))
-                .onSave((value: string) => {
-                    onWrite(value);
-                    return Promise.resolve();
-                })
-            );
-    }
-
+export default class DocumentComponents {
     public static createCellTags(
         tagContainer: DocumentFragment,
         component: Component,

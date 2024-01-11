@@ -1,5 +1,5 @@
 import Global from "src/classes/Global";
-import { ProcessorSettings } from "../MarkdownBlockProcessor";
+import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
 import { MarkdownRenderChild, setIcon } from "obsidian";
 import Table, { TableHeader } from "../Table";
 import Helper from "../Helper";
@@ -15,7 +15,7 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     protected fileCache = this.global.fileCache;
     //#endregion
     //#region Component properties
-    protected processorSettings: ProcessorSettings;
+    protected processorSettings: IProcessorSettings;
     protected component: MarkdownRenderChild;
     protected settings: unknown;
     //#endregion
@@ -29,7 +29,7 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     protected tableContainer: HTMLElement;
     //#endregion
 
-    constructor(settings: ProcessorSettings) {
+    constructor(settings: IProcessorSettings) {
         this.processorSettings = settings;
         this.component = new MarkdownRenderChild(this.processorSettings.container);
         //this.parseSettings();
@@ -85,6 +85,24 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     public async redraw(): Promise<void> {
         this.processorSettings.container.innerHTML = "";
         return this.draw();
+    }
+
+    /**
+     * Normalizes the header.
+     * @remarks - Removes the `disable` class from the header.
+     * - The header is not grayed out anymore.
+     */
+    protected normalizeHeader() {
+        this.headerContainer.removeClass('disable');
+    }
+
+    /**
+     * Grays out the header.
+     * @remarks - Adds the `disable` class to the header.
+     * - The header is grayed out.
+     */
+    protected grayOutHeader() {
+        this.headerContainer.addClass('disable');
     }
 
     /**

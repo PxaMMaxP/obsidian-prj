@@ -1,5 +1,6 @@
 export interface PrjSettings {
     logLevel: string;
+    mobile: boolean;
     language: string;
     user: {
         name: string;
@@ -13,10 +14,16 @@ export interface PrjSettings {
     dateFormat: string;
     dateFormatShort: string;
     defaultMaxShow: number;
+    batchSizeShow: number;
     documentSettings: {
         symbol: string;
         hideSymbol: string;
         clusterSymbol: string;
+    };
+    prjSettings: {
+        topicSymbol: string;
+        projectSymbol: string;
+        taskSymbol: string;
     };
     baseTag: string;
     templateFolder: string;
@@ -24,6 +31,7 @@ export interface PrjSettings {
 
 export const DEFAULT_SETTINGS: PrjSettings = {
     logLevel: "none",
+    mobile: false,
     language: "en",
     dateFormat: "DD.MM.YYYY",
     dateFormatShort: "DD.MM.YY",
@@ -37,10 +45,16 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         "country": "",
     },
     "defaultMaxShow": 200,
+    "batchSizeShow": 25,
     documentSettings: {
-        "symbol": "📄",
-        "hideSymbol": "🗞️",
-        "clusterSymbol": "🗂️"
+        "symbol": "file-text",
+        "hideSymbol": "file-minus-2",
+        "clusterSymbol": "library"
+    },
+    prjSettings: {
+        "topicSymbol": "album",
+        "projectSymbol": "layout-list",
+        "taskSymbol": "clipboard"
     },
     baseTag: 'PRJ',
     templateFolder: 'Vorlagen/'

@@ -4,6 +4,7 @@ import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
 import Global from './classes/Global';
+import GetMetadata from './libs/ContextMenus/GetMetadata';
 
 export default class Prj extends Plugin {
 	settings: PrjSettings;
@@ -30,10 +31,14 @@ export default class Prj extends Plugin {
 		this.registerMarkdownCodeBlockProcessor('prj', MarkdownBlockProcessor.parseSource);
 
 		this.app.workspace.updateOptions();
+
+		// Get Metadata File Context Menu & Command
+		GetMetadata.getInstance();
 	}
 
 	onunload() {
 		console.log("Unloading plugin 'PRJ'")
+		GetMetadata.deconstructor();
 		Global.deconstructor();
 	}
 
