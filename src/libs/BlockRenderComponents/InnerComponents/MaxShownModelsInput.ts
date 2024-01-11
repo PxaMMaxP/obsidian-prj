@@ -30,7 +30,9 @@ export default class MaxShownModelsInput {
     public static create(component: Component, defaultValue: number, batchSize: number, onChange: MaxShownModelsCallback): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
 
-        const maxShownModels: MaxShownModelNumber = { maxShownModels: defaultValue };
+        const maxShownModels: MaxShownModelNumber = {
+            maxShownModels: !isNaN(parseFloat(defaultValue as unknown as string)) && isFinite(defaultValue) ? Number(defaultValue) : 0
+        };
 
         const filterMaxModelsContainer = document.createElement('div');
         headerItemContainer.appendChild(filterMaxModelsContainer);
@@ -110,13 +112,16 @@ export default class MaxShownModelsInput {
         component.registerDomEvent(maxShownDocMinus, 'click', async (event: MouseEvent) => {
             if (type === "minus") {
                 if (maxShownModels.maxShownModels >= batchSize) {
-                    maxShownModels.maxShownModels -= batchSize;
+                    // Subtracts either the remainder (to arrive at the next multiple of `batchSize`) or `batchSize` itself
+                    maxShownModels.maxShownModels -= (maxShownModels.maxShownModels % batchSize) || batchSize;
                 } else {
                     maxShownModels.maxShownModels = 0;
                 }
             } else {
-                maxShownModels.maxShownModels += batchSize;
+                // Adds either the remainder (to arrive at the next multiple of `batchSize`) or `batchSize` itself
+                maxShownModels.maxShownModels += batchSize - (maxShownModels.maxShownModels % batchSize);
             }
+
             try {
                 maxShownModels.maxShownModels = (await onMaxShownModelsChange(maxShownModels.maxShownModels)) ?? maxShownModels.maxShownModels;
             } catch (error) {
