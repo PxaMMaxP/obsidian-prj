@@ -2,7 +2,7 @@ import IPrjData from "../interfaces/IPrjData";
 import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
 import { Status, Priority, Energy, FileType, FileSubType, HistoryEntries } from "./PrjTypes";
 
-export default class TaskData implements IPrjData, IPrjTaskManagement {
+export default class TopicData implements IPrjData, IPrjTaskManagement {
     type: FileType | null | undefined;
     subType: FileSubType | null | undefined;
     title: string | null | undefined;
@@ -14,7 +14,7 @@ export default class TaskData implements IPrjData, IPrjTaskManagement {
     tags: string[] | string | null | undefined;
     history: HistoryEntries | null | undefined;
 
-    constructor(data: Partial<TaskData>) {
+    constructor(data: Partial<TopicData>) {
         this.title = data.title !== undefined ? data.title : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
         this.status = data.status !== undefined ? data.status : undefined;
