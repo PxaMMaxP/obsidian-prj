@@ -108,6 +108,8 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
     }
 
+    private proxyMap: WeakMap<object, unknown> = new WeakMap();
+
     /**
      * Creates a proxy for the given object.
      * @param obj The object to create a proxy for.
@@ -115,7 +117,12 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
      * @returns The proxy object.
      */
     private createProxy(obj: Partial<T>, path = ""): unknown {
-        return new Proxy(obj, {
+        const existingProxy = this.proxyMap.get(obj);
+        if (existingProxy) {
+            return existingProxy;
+        }
+
+        const proxy = new Proxy(obj, {
             get: (target, property, receiver) => {
                 const propertyKey = this.getPropertyKey(property);
                 const value = Reflect.get(target, property, receiver);
@@ -133,6 +140,13 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
                 return true;
             },
         });
+
+        this.proxyMap.set(obj, proxy);
+        return proxy;
+    }
+
+    private getPropertyKey(property: string | symbol): string {
+        return typeof property === 'symbol' ? property.toString() : property;
     }
 
     /**
@@ -143,10 +157,6 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         if (yamlKeyMap) {
             this.yamlKeyMap = yamlKeyMap;
         }
-    }
-
-    private getPropertyKey(property: string | symbol): string {
-        return typeof property === 'symbol' ? property.toString() : property;
     }
 
     private getMetadata(): Record<string, unknown> | null {
