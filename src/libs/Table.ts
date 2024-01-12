@@ -1,4 +1,5 @@
 import Global from "../classes/Global";
+import Helper from "./Helper";
 
 export default class Table {
     public get data(): StructedTable {
@@ -26,6 +27,7 @@ export default class Table {
         body: ['prj-table-body'],
         row: ['prj-table-row', 'prj-table-row-hover'],
         cell: ['prj-table-cell'],
+        emojiCell: ['emoji-cell'],
 
         hiddenRow: 'hidden-row',
         evenRow: 'even-row',
@@ -195,6 +197,9 @@ export default class Table {
             }
             // Add Label attribute to the cell
             tableCell.setAttribute('data-label', this._headers[index].text);
+            if (Helper.isEmoji(this._headers[index].text)) {
+                tableCell.classList.add(...this.defaultClasses.emojiCell);
+            }
             tableCell.appendChild(data);
         });
         return tableRow;

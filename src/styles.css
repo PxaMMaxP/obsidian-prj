@@ -45,6 +45,7 @@
     display: flex;
     flex-wrap: wrap;
     position: relative;
+    padding-right: 25px;
 }
 
 .prj-block-container .header-container .header-item.filter-symbols .filter-symbol {
@@ -187,6 +188,10 @@
 /* General Table Mobile */
 @media (max-width: 600px) {
 
+    .workspace-leaf-content[data-mode="source"] .prj-block-container {
+        padding-right: 14px;
+    }
+
     .prj-table>.prj-table-header {
         display: none;
     }
@@ -213,6 +218,12 @@
         transform: translateX(-5px);
         padding-bottom: 5px;
         order: -1;
+    }
+
+    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell.emoji-cell:before {
+        font-size: x-small !important;
+        padding-bottom: 10px;
+        opacity: 0.8 !important;
     }
 }
 

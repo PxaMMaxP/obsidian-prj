@@ -72,6 +72,15 @@ export default class FileCache {
         Global.getInstance().logger.debug("File cache events not registered");
     }
 
+    public get Cache(): TFile[] {
+        if (this.fileCacheReady && this.fileCache) {
+            return Array.from(this.fileCache.values()).filter(file => file !== null) as TFile[];
+        } else {
+            this.logger.error("File cache not initialized");
+            return [];
+        }
+    }
+
     /**
      * Wait for the file cache to be ready
      * @returns {Promise<void>} Promise that resolves when the file cache is ready

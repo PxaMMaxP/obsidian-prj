@@ -19,6 +19,7 @@ export interface PrjSettings {
         symbol: string;
         hideSymbol: string;
         clusterSymbol: string;
+        defaultFolder: string;
     };
     prjSettings: {
         topicSymbol: string;
@@ -49,7 +50,8 @@ export const DEFAULT_SETTINGS: PrjSettings = {
     documentSettings: {
         "symbol": "file-text",
         "hideSymbol": "file-minus-2",
-        "clusterSymbol": "library"
+        "clusterSymbol": "library",
+        "defaultFolder": ""
     },
     prjSettings: {
         "topicSymbol": "album",

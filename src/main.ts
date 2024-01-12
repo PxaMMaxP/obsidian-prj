@@ -5,9 +5,12 @@ import { SettingTab } from 'src/classes/SettingsTab';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
 import Global from './classes/Global';
 import GetMetadata from './libs/ContextMenus/GetMetadata';
+import API from './classes/API';
+import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
 
 export default class Prj extends Plugin {
-	settings: PrjSettings;
+	public settings: PrjSettings;
+	public api: API;
 
 	async onload() {
 		console.log("Loading plugin 'PRJ'")
@@ -34,6 +37,13 @@ export default class Prj extends Plugin {
 
 		// Get Metadata File Context Menu & Command
 		GetMetadata.getInstance();
+
+		// Create New Metadata File Command
+		CreateNewMetadataModal.registerCommand();
+
+		// API
+		this.api = new API();
+
 	}
 
 	onunload() {
