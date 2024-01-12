@@ -6,13 +6,19 @@ import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
 import Global from "../classes/Global";
 import Helper from "../libs/Helper";
+import { StaticDocumentModel } from "src/libs/StaticModels/StaticDocumentModel";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
+    /**
+     * Static API for DocumentModel
+     */
+    public static api = StaticDocumentModel;
+
     private fileCache = Global.getInstance().fileCache;
 
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
-    constructor(file: TFile) {
+    constructor(file: TFile | undefined) {
         super(file, DocumentData, DocumentData.yamlKeyMap);
     }
 
@@ -119,7 +125,7 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
      * Returns the linked file of the document
      * @returns TFile of the linked file
      */
-    public getFile(): TFile {
+    public getFile(): TFile | undefined {
         const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
         const file = this.fileCache.findFileByName(fileLinkData.filename ?? "");
         if (file instanceof TFile) {
@@ -129,7 +135,12 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
             return file.first() ?? this.file;
         }
         this.logger.warn(`No files found for ${fileLinkData.filename}`);
-        return this.file;
+        return undefined;
+    }
+
+    public setLinkedFile(file: TFile, path?: string): void {
+        const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : this.file.path);
+        this.data.file = `[[${linktext}]]`;
     }
 
     /**
@@ -148,48 +159,6 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         }
 
         return formattedTags;
-    }
-
-    /**
-     * Sorts the documents by date descending
-     * @param documents Array of DocumentModels to sort
-     * @remarks This function sorts the array in place
-     */
-    public static sortDocumentsByDateDesc(documents: DocumentModel[]): void {
-        documents.sort((a, b) => {
-            if (a.data.date && b.data.date) {
-                const dateA = new Date(a.data.date);
-                const dateB = new Date(b.data.date);
-                return dateB.getTime() - dateA.getTime();
-            } else if (a.data.date) {
-                return -1;
-            } else if (b.data.date) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-    }
-
-    /**
-     * Sorts the documents by date ascending
-     * @param documents Array of DocumentModels to sort
-     * @remarks This function sorts the array in place
-     */
-    public static sortDocumentsByDateAsc(documents: DocumentModel[]): void {
-        documents.sort((a, b) => {
-            if (a.data.date && b.data.date) {
-                const dateA = new Date(a.data.date);
-                const dateB = new Date(b.data.date);
-                return dateA.getTime() - dateB.getTime();
-            } else if (a.data.date) {
-                return 1;
-            } else if (b.data.date) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
     }
 }
 
