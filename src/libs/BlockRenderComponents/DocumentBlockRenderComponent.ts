@@ -72,7 +72,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         this.grayOutHeader();
         this.models = (await documentsPromise);
 
-        DocumentModel.sortDocumentsByDateDesc(this.models);
+        DocumentModel.api.sortDocumentsByDateDesc(this.models);
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();
