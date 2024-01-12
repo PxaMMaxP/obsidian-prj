@@ -126,6 +126,10 @@ export default class Helper {
         );
     }
 
+    static isValidFileType(fileType: string): boolean {
+        return ["Topic", "Project", "Task", "Metadata"].includes(fileType);
+    }
+
     /**
      * Checks if the given string is an emoji
      * @param str The string to check

@@ -1,3 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Helper from "src/libs/Helper";
+
+/**
+ * File types used in the app
+ * @see {@link Helper.isValidFileType} for a function to check if a string is a valid file type. Change this function if you add a new file type.
+ */
 export type FileType = "Topic" | "Project" | "Task" | "Metadata";
 
 export type FileSubType = null | "Cluster";
