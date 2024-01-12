@@ -99,21 +99,21 @@ export default class CreateNewMetadataModal {
         const document = new DocumentModel(undefined);
         document.data.type = "Metadata";
 
-        if (result.data.file && typeof result.data.file === "string") {
-            this.logger.trace(`Searching file '${result.data.file}'`);
-            const baseFile = Global.getInstance().fileCache.findFileByName(result.data.file);
-            if (!(baseFile && baseFile instanceof TFile)) {
-                this.logger.warn(`File '${result.data.file}' not found`);
-            } else {
-                document.setLinkedFile(baseFile, folder);
-            }
-        }
-
         // SubType
         if (result.data.subType &&
             typeof result.data.subType === "string" &&
             result.data.subType === "Cluster") {
             document.data.subType = result.data.subType;
+        } else {
+            if (result.data.file && typeof result.data.file === "string") {
+                this.logger.trace(`Searching file '${result.data.file}'`);
+                const baseFile = Global.getInstance().fileCache.findFileByName(result.data.file);
+                if (!(baseFile && baseFile instanceof TFile)) {
+                    this.logger.warn(`File '${result.data.file}' not found`);
+                } else {
+                    document.setLinkedFile(baseFile, folder);
+                }
+            }
         }
         // Date
         if (result.data.date && typeof result.data.date === "string") {
@@ -287,7 +287,7 @@ export default class CreateNewMetadataModal {
             name: "file",
             label: Lng.gt("File"),
             description: Lng.gt("FileDescription"),
-            isRequired: true,
+            isRequired: false,
             input: {
                 type: "dataview",
                 query: "app.plugins.plugins.prj.api.documentModel.getAllPDFsWithoutMetadata().map(file => file.name)"
