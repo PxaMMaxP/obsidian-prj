@@ -188,7 +188,7 @@ export default class CreateNewMetadataModal {
         const date: Field = {
             name: "date",
             label: Lng.gt("Date"),
-            description: Lng.gt("DateDescription"),
+            description: Lng.gt("DocDateDescription"),
             isRequired: false,
             input: {
                 type: "date"
