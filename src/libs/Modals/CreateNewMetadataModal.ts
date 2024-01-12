@@ -6,12 +6,18 @@ import { DocumentModel } from "src/models/DocumentModel";
 import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IModalForm, IResultData } from "src/types/ModalFormType";
 
+/**
+ * Modal to create a new metadata file
+ */
 export default class CreateNewMetadataModal {
     private app: App = Global.getInstance().app;
     private settings = Global.getInstance().settings;
     private logger = Global.getInstance().logger;
     private modalFormApi: IModalForm;
 
+    /**
+     * Creates an instance of CreateNewMetadataModal.
+     */
     constructor() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const modalFormApi = (this.app as any).plugins.plugins.modalforms.api as IModalForm;
@@ -23,6 +29,10 @@ export default class CreateNewMetadataModal {
         }
     }
 
+    /**
+     * Registers the command to open the modal
+     * @remarks No cleanup needed
+     */
     public static registerCommand(): void {
         const global = Global.getInstance();
         global.logger.trace("Registering 'CreateNewMetadataModal' commands");
@@ -39,11 +49,21 @@ export default class CreateNewMetadataModal {
         })
     }
 
+    /**
+     * Checks if the ModalForms API is available
+     * @returns {boolean} True if the API is available
+     * @remarks Log an error if the API is not available
+     */
     private isApiAvailable(): boolean {
         if (!this.modalFormApi) this.logger.error("ModalForms API not found");
         return !!this.modalFormApi;
     }
 
+    /**
+     * Opens the modal form
+     * @param {Partial<DocumentData>} [preset] Preset values for the form
+     * @returns {Promise<IFormResult | undefined>} Result of the form
+     */
     public async openForm(preset?: Partial<DocumentData>): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewMetadataModal' form");
@@ -59,6 +79,17 @@ export default class CreateNewMetadataModal {
         return result;
     }
 
+    /**
+     * Evaluates the form result and creates a new metadata file
+     * @param {IFormResult} result Result of the form
+     * @returns {Promise<DocumentModel | undefined>} The created metadata file
+     * @remarks - This function checks if the API is available.
+     * - This function checks if the form result is valid,
+     * - checks if the file exists and is a PDF file,
+     * - fills the metadata file with the form data,
+     * - creates the metadata file and
+     * - returns the metadata file.
+     */
     public async evaluateForm(result: IFormResult): Promise<DocumentModel | undefined> {
         if (!this.isApiAvailable()) return;
         if (result.status !== "ok" || !result.data) return;
@@ -121,9 +152,13 @@ export default class CreateNewMetadataModal {
         const file = await this.app.vault.create(path.join(folder, `${newFileName}.md`), ``);
         document.file = file;
 
-
+        return document;
     }
 
+    /**
+     * Constructs the form
+     * @returns {FormConfiguration} Form configuration
+     */
     private constructForm(): FormConfiguration {
         const form: FormConfiguration = {
             title: `${Lng.gt("New")} ${Lng.gt("MetadataFile")}`,
