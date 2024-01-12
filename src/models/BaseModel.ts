@@ -8,9 +8,23 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
     protected app = Global.getInstance().app;
     protected logger: Logging = Global.getInstance().logger;
-    private _file: TFile;
+    private _file: TFile | undefined;
     public get file(): TFile {
-        return this._file;
+        if (this._file === undefined) {
+            this.logger.warn("File not set");
+        }
+        return this._file as TFile;
+    }
+    public set file(value: TFile) {
+        if (this._file === undefined) {
+            super.setWriteChanges((update) => {
+                return this.setFrontmatter(update as Record<string, unknown>);
+            });
+            this._file = value;
+            super.callWriteChanges();
+        } else {
+            this.logger.warn("File already set");
+        }
     }
     private ctor: new (data?: Partial<T>) => T;
     private dataProxy: T;
@@ -22,11 +36,14 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
      * @param ctor The constructor of the data object.
      * @param yamlKeyMap The yaml key map to use.
      */
-    constructor(file: TFile, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
-        super((update) => {
-            this.frontmatter = update as Record<string, unknown>;
-        });
-        this._file = file;
+    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
+        super(undefined);
+        if (file) {
+            super.setWriteChanges((update) => {
+                return this.setFrontmatter(update as Record<string, unknown>);
+            });
+            this._file = file;
+        }
         this.ctor = ctor;
         this.initYamlKeyMap(yamlKeyMap);
     }
@@ -41,9 +58,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
         const frontmatter = this.getMetadata();
         if (!frontmatter) {
-            this.logger.error('Frontmatter not found');
+            this.logger.trace('Creating empty object');
             const emptyObject = new this.ctor();
-            return emptyObject;
+            this.dataProxy = this.createProxy(emptyObject) as T;
+            return this.dataProxy;
         }
 
         if (this.yamlKeyMap) {
@@ -68,22 +86,26 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
     }
 
-    public get frontmatter(): Record<string, unknown> {
+    private get frontmatter(): Record<string, unknown> {
         return this.getMetadata() ?? {};
     }
 
-    public set frontmatter(value: Record<string, unknown>) {
+    private set frontmatter(value: Record<string, unknown>) {
         (async () => {
-            try {
-                await this.app.fileManager.processFrontMatter(this._file, (frontmatter) => {
-                    this.updateNestedFrontmatterObjects(frontmatter, value);
-                    return frontmatter;
-                });
-                this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
-            } catch (error) {
-                this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
-            }
+            await this.setFrontmatter(value);
         })();
+    }
+
+    private async setFrontmatter(value: Record<string, unknown>) {
+        if (!this._file) return Promise.resolve();
+        try {
+            await this.app.fileManager.processFrontMatter(this._file, (frontmatter) => {
+                this.updateNestedFrontmatterObjects(frontmatter, value);
+            });
+            this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
+        } catch (error) {
+            this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
+        }
     }
 
     /**
@@ -128,12 +150,13 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
     }
 
     private getMetadata(): Record<string, unknown> | null {
+        if (!this._file) return null;
         const cachedMetadata = this.app?.metadataCache?.getCache(this._file.path);
 
         if (cachedMetadata && cachedMetadata.frontmatter) {
             return cachedMetadata.frontmatter as Record<string, unknown>;
         } else {
-            this.logger.warn(`No Metadata found for ${this._file.path}`);
+            this.logger.error(`No Metadata found for ${this._file.path}`);
             return null;
         }
     }

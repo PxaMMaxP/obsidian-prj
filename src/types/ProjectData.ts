@@ -15,6 +15,7 @@ export default class ProjectData implements IPrjData, IPrjTaskManagement {
     history: HistoryEntries | null | undefined;
 
     constructor(data: Partial<ProjectData>) {
+        if (!data) return;
         this.title = data.title !== undefined ? data.title : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
         this.status = data.status !== undefined ? data.status : undefined;

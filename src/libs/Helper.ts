@@ -28,6 +28,10 @@ export default class Helper {
                 if (dateMatch) {
                     date = new Date(`${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`);
                 }
+                // If no file extension is given, use "md" as default. Links without a file extension are always markdown files.
+                if (!dismantledLinkMatch[2]) {
+                    dismantledLinkMatch[2] = "md"
+                }
                 return {
                     date: date,
                     basename: dismantledLinkMatch[1],

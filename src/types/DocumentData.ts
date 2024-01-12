@@ -23,6 +23,7 @@ export default class DocumentData implements IPrjData, IPrjDocument {
     };
 
     constructor(data: Partial<DocumentData>) {
+        if (!data) return;
         this.title = data.title !== undefined ? data.title : undefined;
         this.date = data.date !== undefined ? data.date : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
