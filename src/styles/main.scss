@@ -1,2 +1,11 @@
 // main.scss
 @import 'partials/styles';
+@import 'partials/mobile';
+
+.prj-block-container.panel {
+    @include mobileStyles;
+}
+
+@media (max-width: 1180px) {
+    @include mobileStyles;
+}

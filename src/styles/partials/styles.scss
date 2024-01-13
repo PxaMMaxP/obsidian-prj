@@ -185,48 +185,6 @@
     background-color: var(--table-row-alt-background) !important;
 }
 
-/* General Table Mobile */
-@media (max-width: 1180px) {
-
-    .workspace-leaf-content[data-mode="source"] .prj-block-container {
-        padding-right: 14px;
-    }
-
-    .prj-table>.prj-table-header {
-        display: none;
-    }
-
-    .prj-table>.prj-table-body>.prj-table-row,
-    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell {
-        display: block;
-        width: 100%;
-        height: fit-content;
-    }
-
-    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        border: 1px solid #cccccc05;
-    }
-
-    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell:before {
-        content: attr(data-label);
-        font-size: xx-small !important;
-        font-family: inherit;
-        opacity: 0.5;
-        transform: translateX(-5px);
-        padding-bottom: 5px;
-        order: -1;
-    }
-
-    .prj-table>.prj-table-body>.prj-table-row>.prj-table-cell.emoji-cell:before {
-        font-size: x-small !important;
-        padding-bottom: 10px;
-        opacity: 0.8 !important;
-    }
-}
-
 /* DocumentBlockRenderComponent */
 .prj-table-body div.senderRecipient {
     display: flex;
