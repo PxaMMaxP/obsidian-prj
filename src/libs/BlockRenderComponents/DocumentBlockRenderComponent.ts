@@ -26,6 +26,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         filter: ["Documents"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
+        searchText: undefined,
         batchSize: 8,
         sleepBetweenBatches: 10
     };
@@ -136,7 +137,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         const searchBox = SearchInput.create(
             this.component,
-            this.onSearch.bind(this));
+            this.onSearch.bind(this),
+            this.settings.searchText);
         headerFilterButtons.appendChild(searchBox);
     }
 
@@ -179,13 +181,16 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     private async onSearch(search: string, key: string): Promise<string> {
         if (key === "Enter") {
             if (search !== "") {
+                this.settings.searchText = search;
                 this.settings.search = Search.parseSearchText(search);
                 this.onFilter();
             } else {
+                this.settings.searchText = undefined;
                 this.settings.search = undefined;
                 this.onFilter();
             }
         } else if (key === "Escape") {
+            this.settings.searchText = undefined;
             this.settings.search = undefined;
             this.onFilter();
             return "";
@@ -488,7 +493,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      */
     protected async getModels(): Promise<DocumentModel[]> {
         const templateFolder = this.global.settings.templateFolder;
-        const allDocumentFiles = this.metadataCache.filter(file => {
+        const allDocumentFiles = this.metadataCache.cache.filter(file => {
             const defaultFilter = file.metadata.frontmatter?.type === "Metadata" &&
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
@@ -579,6 +584,11 @@ type DocumentBlockRenderSettings = {
      * If undefined, no search filter is applied.
      */
     search: SearchTermsArray | undefined,
+
+    /**
+     * The search text.
+     */
+    searchText: string | undefined,
 
     /**
      * The number of documents to process in one batch.

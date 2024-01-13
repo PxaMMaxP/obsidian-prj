@@ -28,6 +28,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         filter: ["Topic", "Project", "Task"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
+        searchText: undefined,
         batchSize: 8,
         sleepBetweenBatches: 10
     };
@@ -54,6 +55,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
     public build(): Promise<void> {
         return super.build();
+    }
+
+    public redraw(): Promise<void> {
+        return super.redraw();
     }
 
     protected async draw(): Promise<void> {
@@ -134,7 +139,8 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         const searchBox = SearchInput.create(
             this.component,
-            this.onSearch.bind(this));
+            this.onSearch.bind(this),
+            this.settings.searchText);
         headerFilterButtons.appendChild(searchBox);
     }
 
@@ -284,13 +290,16 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private async onSearch(search: string, key: string): Promise<string> {
         if (key === "Enter") {
             if (search !== "") {
+                this.settings.searchText = search;
                 this.settings.search = Search.parseSearchText(search);
                 this.onFilter();
             } else {
+                this.settings.searchText = undefined;
                 this.settings.search = undefined;
                 this.onFilter();
             }
         } else if (key === "Escape") {
+            this.settings.searchText = undefined;
             this.settings.search = undefined;
             this.onFilter();
             return "";
@@ -409,7 +418,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
     protected async getModels(): Promise<(PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[]> {
         const templateFolder = this.global.settings.templateFolder;
-        const allModelFiles = this.metadataCache.filter(file => {
+        const allModelFiles = this.metadataCache.cache.filter(file => {
             const defaultFilter = (file.metadata.frontmatter?.type === "Topic" || file.metadata.frontmatter?.type === "Project" || file.metadata.frontmatter?.type === "Task") &&
                 file.file.path !== this.processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
@@ -498,6 +507,12 @@ type ProjectBlockRenderSettings = {
      * If undefined, no search filter is applied.
      */
     search: SearchTermsArray | undefined,
+
+
+    /**
+     * The search text.
+     */
+    searchText: string | undefined,
 
     /**
      * The number of models to process in one batch.

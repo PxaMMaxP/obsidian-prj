@@ -11,7 +11,7 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     //#region General properties
     protected global = Global.getInstance();
     protected logger = this.global.logger;
-    protected metadataCache = this.global.metadataCache.cache;
+    protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
     //#endregion
     //#region Component properties
