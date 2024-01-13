@@ -28,6 +28,11 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
     }
     private ctor: new (data?: Partial<T>) => T;
     private dataProxy: T;
+    /**
+     * The proxy map to use.
+     * @see {@link BaseModel.createProxy}
+     */
+    private proxyMap: WeakMap<object, unknown> = new WeakMap();
     private yamlKeyMap: YamlKeyMap | undefined;
 
     /**
@@ -51,6 +56,11 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
     /**
      * Returns the data object as a proxy.
      * @returns The data object as a proxy.
+     * @remarks This is the main entry point for the data object:
+     * - If a proxy already exists, it is returned.
+     * - If no proxy exists,
+     * - and if frontmatter exists, a new proxy with the frontmatter as data is created.
+     * - and if no frontmatter exists, a new proxy with an empty object as data is created.
      */
     protected get _data(): Partial<T> {
         if (this.dataProxy) {
@@ -115,7 +125,12 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
      * @returns The proxy object.
      */
     private createProxy(obj: Partial<T>, path = ""): unknown {
-        return new Proxy(obj, {
+        const existingProxy = this.proxyMap.get(obj);
+        if (existingProxy) {
+            return existingProxy;
+        }
+
+        const proxy = new Proxy(obj, {
             get: (target, property, receiver) => {
                 const propertyKey = this.getPropertyKey(property);
                 const value = Reflect.get(target, property, receiver);
@@ -128,11 +143,34 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
             set: (target, property, value, receiver) => {
                 const propertyKey = this.getPropertyKey(property);
                 const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
-                Reflect.set(target, property, value, receiver);
-                this.updateKeyValue(newPath, value);
+
+                const resolvedValue = this.resolveProxyValue(value);
+
+                Reflect.set(target, property, resolvedValue, receiver);
+                this.updateKeyValue(newPath, resolvedValue);
                 return true;
             },
         });
+
+        this.proxyMap.set(obj, proxy);
+        return proxy;
+    }
+
+    private resolveProxyValue(value: unknown): unknown {
+        if (this.proxyMap.has(value as object)) {
+            // If the value is a proxy, get the original value
+            return this.proxyMap.get(value as object);
+        } else if (value && typeof value === 'object') {
+            // If the value is an object, recursively check the properties
+            return Object.fromEntries(
+                Object.entries(value).map(([key, val]) => [key, this.resolveProxyValue(val)])
+            );
+        }
+        // Return only non-proxy values
+        return value;
+    }
+    private getPropertyKey(property: string | symbol): string {
+        return typeof property === 'symbol' ? property.toString() : property;
     }
 
     /**
