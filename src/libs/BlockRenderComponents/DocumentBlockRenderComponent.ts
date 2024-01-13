@@ -466,6 +466,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                             this.settings.tags.push(...tags);
                         } else if (tags) {
                             this.settings.tags.push(tags);
+                        } else {
+                            this.settings.tags = ["NOTAGSNODATA"];
                         }
                     } else {
                         this.settings.tags = option.value;

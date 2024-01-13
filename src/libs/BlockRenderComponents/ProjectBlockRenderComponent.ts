@@ -399,6 +399,8 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
                             this.settings.tags.push(...tags);
                         } else if (tags) {
                             this.settings.tags.push(tags);
+                        } else {
+                            this.settings.tags = ["NOTAGSNODATA"];
                         }
                     } else {
                         this.settings.tags = option.value;
