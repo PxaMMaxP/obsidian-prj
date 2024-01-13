@@ -2,6 +2,8 @@
     {
         "lang": "en",
         "translations": {
+            "Change": "Change",
+            "Change Status": "Change status..",
             "Cluster": "Document Cluster",
             "Content": "Content",
             "Date": "Date",
@@ -61,6 +63,8 @@
     {
         "lang": "de",
         "translations": {
+            "Change": "Ändern",
+            "Change Status": "Status ändern..",
             "Cluster": "Dokumenten Cluster",
             "Content": "Inhalt",
             "Date": "Datum",

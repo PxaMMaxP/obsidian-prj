@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { TFile, moment } from "obsidian";
 import { BaseModel } from "./BaseModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import IPrjData from "../interfaces/IPrjData";
@@ -41,6 +41,48 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
             default:
                 return 'x-circle';
         }
+    }
+
+    /**
+     * Changes the status of the model and ad a new history entry.
+     * @param newStatus The new status to set.
+     * @remarks -This function will start and finish a transaction if no transaction is currently running.
+     */
+    public changeStatus(newStatus: Status): void {
+        if (this.data.status !== newStatus) {
+            let internalTransaction = false;
+            if (!this.isTransactionActive) {
+                this.startTransaction();
+                internalTransaction = true;
+            }
+            this.data.status = newStatus;
+            this.addHistoryEntry(newStatus);
+            if (internalTransaction)
+                this.finishTransaction();
+        }
+    }
+
+    /**
+     * Add a new history entry to the model.
+     * @param status The status to add to the history. If not provided, the current status of the model will be used. 
+     * @remarks - This function will not start or finish a transaction.
+     * - If no status is provided and the model has no status, an error will be logged and the function will return.
+     */
+    private addHistoryEntry(status?: Status | undefined): void {
+        if (!status) {
+            if (this.data.status)
+                status = this.data.status;
+            else {
+                this.logger.error("No status aviable to add to history");
+                return;
+            }
+        }
+        if (!this.data.history)
+            this.data.history = [];
+        this.data.history.push({
+            status: status,
+            date: moment().format("YYYY-MM-DDTHH:mm")
+        });
     }
 
     /**
