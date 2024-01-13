@@ -1,32 +1,22 @@
-import { App, TFile } from "obsidian";
+import { TFile } from "obsidian";
 import path from "path";
 import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 import { DocumentModel } from "src/models/DocumentModel";
 import DocumentData from "src/types/DocumentData";
-import { Field, FormConfiguration, IFormResult, IModalForm, IResultData } from "src/types/ModalFormType";
+import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
+import ModalFormBase from "./ModalFormBase";
 
 /**
  * Modal to create a new metadata file
  */
-export default class CreateNewMetadataModal {
-    private app: App = Global.getInstance().app;
-    private settings = Global.getInstance().settings;
-    private logger = Global.getInstance().logger;
-    private modalFormApi: IModalForm;
+export default class CreateNewMetadataModal extends ModalFormBase {
 
     /**
      * Creates an instance of CreateNewMetadataModal.
      */
     constructor() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const modalFormApi = (this.app as any).plugins.plugins.modalforms.api as IModalForm;
-        if (!modalFormApi) {
-            this.logger.error("ModalForms API not found");
-        } else {
-            this.logger.trace("ModalForms API found");
-            this.modalFormApi = modalFormApi;
-        }
+        super();
     }
 
     /**
@@ -50,16 +40,6 @@ export default class CreateNewMetadataModal {
     }
 
     /**
-     * Checks if the ModalForms API is available
-     * @returns {boolean} True if the API is available
-     * @remarks Log an error if the API is not available
-     */
-    private isApiAvailable(): boolean {
-        if (!this.modalFormApi) this.logger.error("ModalForms API not found");
-        return !!this.modalFormApi;
-    }
-
-    /**
      * Opens the modal form
      * @param {Partial<DocumentData>} [preset] Preset values for the form
      * @returns {Promise<IFormResult | undefined>} Result of the form
@@ -74,7 +54,7 @@ export default class CreateNewMetadataModal {
             }
         }
         const form = this.constructForm();
-        const result = await this.modalFormApi.openForm(form, { values: convertedPreset });
+        const result = await this.getApi().openForm(form, { values: convertedPreset });
         this.logger.trace(`From closes with status '${result.status}' and data:`, result.data);
         return result;
     }
@@ -159,7 +139,7 @@ export default class CreateNewMetadataModal {
      * Constructs the form
      * @returns {FormConfiguration} Form configuration
      */
-    private constructForm(): FormConfiguration {
+    protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {
             title: `${Lng.gt("New")} ${Lng.gt("MetadataFile")}`,
             name: "new metadata file",
