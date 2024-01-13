@@ -4,6 +4,7 @@ import Helper from "src/libs/Helper";
 /**
  * File types used in the app
  * @see {@link Helper.isValidFileType} for a function to check if a string is a valid file type. Change this function if you add a new file type.
+ * @see {@link Helper.isPrjTaskManagementFile} for a function to check if a file is a prj task management file. Change this function if you add a new file type.
  */
 export type FileType = "Topic" | "Project" | "Task" | "Metadata";
 
