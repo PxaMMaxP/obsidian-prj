@@ -37,6 +37,12 @@ export class TransactionModel<T> {
 
     public setWriteChanges(writeChanges: (update: T) => Promise<void>) {
         this.writeChanges = writeChanges;
+        if (this.isTransactionActive && !(Object.keys(this.changes).length === 0 && this.changes.constructor === Object)) {
+            this.callWriteChanges();
+            this.changes = {};
+            this.transactionActive = false;
+        }
+        this.transactionActive = false;
     }
 
     protected callWriteChanges(update: T = this.changes as T) {
