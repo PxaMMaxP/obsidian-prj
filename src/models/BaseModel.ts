@@ -8,6 +8,7 @@ import Logging from "src/classes/Logging";
 export class BaseModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
     protected app = Global.getInstance().app;
+    protected metadataCache = Global.getInstance().metadataCache;
     protected logger: Logging = Global.getInstance().logger;
 
     private _file: TFile | undefined;
@@ -250,10 +251,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
      */
     private getMetadata(): Record<string, unknown> | null {
         if (!this._file) return null;
-        const cachedMetadata = this.app?.metadataCache?.getCache(this._file.path);
+        const cachedMetadata = this.metadataCache.getEntry(this._file);
 
-        if (cachedMetadata && cachedMetadata.frontmatter) {
-            return cachedMetadata.frontmatter as Record<string, unknown>;
+        if (cachedMetadata && cachedMetadata.metadata && cachedMetadata.metadata.frontmatter) {
+            return cachedMetadata.metadata.frontmatter as Record<string, unknown>;
         } else {
             this.logger.error(`No Metadata found for ${this._file.path}`);
             return null;
