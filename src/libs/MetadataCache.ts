@@ -201,6 +201,28 @@ export default class MetadataCache {
     }
 
     /**
+     * Get the metadata cache entry for a file.
+     * @param file The file to get from the metadata cache.
+     * @returns {FileMetadata | undefined} The metadata cache entry for the file.
+     * @remarks - This method returns undefined if the metadata cache is not ready.
+     * - As key the file path is used!
+     */
+    public getEntry(file: TFile): FileMetadata | undefined {
+        if (this.metadataCache) {
+            const metadata = this.metadataCache.get(file.path);
+            if (metadata) {
+                return metadata;
+            } else {
+                this.logger.warn(`No metadata cache entry found for file ${file.path}`);
+                return undefined;
+            }
+        } else {
+            this.logger.error("Metadata cache not initialized");
+            return undefined;
+        }
+    }
+
+    /**
      * Add a file to the metadata cache
      * @param file The file to add to the metadata cache
      */
