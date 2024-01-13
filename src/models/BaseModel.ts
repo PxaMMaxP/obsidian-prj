@@ -166,8 +166,6 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         }
     }
 
-    private proxyMap: WeakMap<object, unknown> = new WeakMap();
-
     /**
      * Creates a proxy for the given object.
      * @param obj The object to create a proxy for.
