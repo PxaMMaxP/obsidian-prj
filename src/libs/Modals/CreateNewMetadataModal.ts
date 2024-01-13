@@ -6,6 +6,7 @@ import { DocumentModel } from "src/models/DocumentModel";
 import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
 import BaseModalForm from "./BaseModalForm";
+import Helper from "../Helper";
 
 /**
  * Modal to create a new metadata file
@@ -33,7 +34,9 @@ export default class CreateNewMetadataModal extends BaseModalForm {
                 const modal = new CreateNewMetadataModal();
                 const result = await modal.openForm();
                 if (result) {
-                    await modal.evaluateForm(result);
+                    const document = await modal.evaluateForm(result);
+                    if (document)
+                        await Helper.openFile(document.file);
                 }
             },
         })

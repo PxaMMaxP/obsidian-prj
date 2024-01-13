@@ -27,11 +27,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
      */
     public set file(value: TFile) {
         if (this._file === undefined) {
+            this._file = value;
             super.setWriteChanges((update) => {
                 return this.setFrontmatter(update as Record<string, unknown>);
             });
-            this._file = value;
-            super.callWriteChanges();
         } else {
             this.logger.warn("File already set");
         }
@@ -96,6 +95,10 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         if (!frontmatter) {
             this.logger.trace('Creating empty object');
             const emptyObject = new this.ctor();
+            // Save the properties of the empty object to changes in transaction
+            for (const key in emptyObject) {
+                this.updateKeyValue(key, emptyObject[key]);
+            }
             this.dataProxy = this.createProxy(emptyObject) as T;
             return this.dataProxy;
         }

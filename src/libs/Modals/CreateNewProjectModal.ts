@@ -34,7 +34,7 @@ export default class CreateNewProjectModal extends BaseModalForm {
         return result;
     }
 
-    public async evaluateForm(result: IFormResult): Promise<unknown> {
+    public async evaluateForm(result: IFormResult): Promise<ProjectModel | undefined> {
         if (result.status !== "ok" || !result.data) return;
 
         if (!result.data.title || typeof result.data.title !== "string") {
@@ -117,16 +117,24 @@ export default class CreateNewProjectModal extends BaseModalForm {
         };
 
         projectFile.file = this.app.vault.getAbstractFileByPath(projectFile.fullPath) as TFile;
-        if (projectFile.file) { projectFile.postfix = 0; }
-        while (projectFile.file) {
-            console.warn(`Datei mit dem Namen ${projectFile.filename} existiert bereits.`);
-            if (projectFile.postfix !== null) {
+        if (projectFile.file) {
+            projectFile.postfix = 0;
+            while (projectFile.file) {
+                this.logger.warn(`File '${projectFile.fullPath}' already exists`);
                 projectFile.postfix++;
+                projectFile.file = this.app.vault.getAbstractFileByPath(projectFile.fullPath) as TFile;
             }
-            projectFile.file = this.app.vault.getAbstractFileByPath(projectFile.fullPath) as TFile;
         }
 
-        const file = await this.app.vault.create(projectFile.fullPath, ``);
+        let template = "";
+        if (this.global.settings.prjSettings.projectTemplate) {
+            // Read template file:
+            const templateFile = this.app.vault.getAbstractFileByPath(this.global.settings.prjSettings.projectTemplate);
+            if (templateFile && templateFile instanceof TFile)
+                template = await this.app.vault.read(templateFile);
+        }
+
+        const file = await this.app.vault.create(projectFile.fullPath, template);
         project.file = file;
 
         return project;
@@ -252,7 +260,9 @@ export default class CreateNewProjectModal extends BaseModalForm {
                 const modal = new CreateNewProjectModal();
                 const result = await modal.openForm();
                 if (result) {
-                    await modal.evaluateForm(result);
+                    const prj = await modal.evaluateForm(result);
+                    if (prj)
+                        await Helper.openFile(prj.file);
                 }
             },
         })
