@@ -13,9 +13,11 @@ export default class TaskData implements IPrjData, IPrjTaskManagement {
     due: string | null | undefined;
     tags: string[] | string | null | undefined;
     history: HistoryEntries | null | undefined;
+    aliases: string[] | null | undefined;
 
     constructor(data: Partial<TaskData>) {
         if (!data) return;
+        this.aliases = data.aliases !== undefined ? data.aliases : undefined;
         this.title = data.title !== undefined ? data.title : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
         this.status = data.status !== undefined ? data.status : undefined;
