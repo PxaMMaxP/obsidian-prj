@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 // Configuration for file paths and destinations
 const filesToCopy = [
     { name: 'main.js', sourceDir: join(__dirname, 'build'), destDir: '../' },
-    { name: 'styles.css', sourceDir: join(__dirname, 'src'), destDir: '../' },
+    { name: 'styles.css', sourceDir: join(__dirname, 'build'), destDir: '../' },
     { name: 'manifest.json', sourceDir: __dirname, destDir: '../' }
 ];
 const releaseDir = './build'; // Directory for release mode

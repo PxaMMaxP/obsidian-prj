@@ -4,12 +4,14 @@
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
-    "dev": "concurrently \"node esbuild.config.mjs\" \"node copy-plugin-files.mjs watch\"",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node copy-plugin-files.mjs release",
+    "dev": "concurrently \"node esbuild.config.mjs\" \"npm run watch:sass\" \"node copy-plugin-files.mjs watch\"",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass && node copy-plugin-files.mjs release",
     "version:patch": "\"node bump-version.mjs patch\" && npm run postversion",
     "version:minor": "\"node bump-version.mjs minor\" && npm run postversion",
     "version:major": "\"node bump-version.mjs major\" && npm run postversion",
-    "postversion": "npm run build && node copy-plugin-files.mjs release && git add manifest.json versions.json package.json"
+    "postversion": "npm run build && node copy-plugin-files.mjs release && git add manifest.json versions.json package.json",
+    "compile:sass": "sass --no-source-map src/styles/main.scss build/styles.css",
+    "watch:sass": "sass --watch --no-source-map src/styles/main.scss:build/styles.css"
   },
   "keywords": [],
   "author": "",
