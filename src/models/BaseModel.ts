@@ -216,6 +216,9 @@ export class BaseModel<T extends object> extends TransactionModel<T> {
         if (this.proxyMap.has(value as object)) {
             // If the value is a proxy, get the original value
             return this.proxyMap.get(value as object);
+        } else if (Array.isArray(value)) {
+            // If the value is an array, recursively check each element
+            return value.map(item => this.resolveProxyValue(item));
         } else if (value && typeof value === 'object') {
             // If the value is an object, recursively check the properties
             return Object.fromEntries(
