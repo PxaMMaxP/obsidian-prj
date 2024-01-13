@@ -2,9 +2,10 @@ import { App } from "obsidian";
 import Global from "src/classes/Global";
 import { FormConfiguration, IFormResult, IModalForm } from "src/types/ModalFormType";
 
-export default abstract class ModalFormBase {
+export default abstract class BaseModalForm {
     protected app: App = Global.getInstance().app;
     protected settings = Global.getInstance().settings;
+    protected global = Global.getInstance();
     protected logger = Global.getInstance().logger;
     protected modalFormApi: IModalForm | null | undefined = null;
 

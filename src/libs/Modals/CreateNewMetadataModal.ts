@@ -5,12 +5,12 @@ import Lng from "src/classes/Lng";
 import { DocumentModel } from "src/models/DocumentModel";
 import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
-import ModalFormBase from "./ModalFormBase";
+import BaseModalForm from "./BaseModalForm";
 
 /**
  * Modal to create a new metadata file
  */
-export default class CreateNewMetadataModal extends ModalFormBase {
+export default class CreateNewMetadataModal extends BaseModalForm {
 
     /**
      * Creates an instance of CreateNewMetadataModal.

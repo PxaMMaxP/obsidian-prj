@@ -104,10 +104,15 @@ export type Field = {
     input: Input;
 }
 
-export type Input = TextInput | TextareaInput | DateInput | SelectInput | DataViewInput | ToggleInput | TagInput;
+export type Input = TextInput | TextareaInput | DateInput | DocumentBlock | SliderInput | SelectInput | DataViewInput | ToggleInput | TagInput;
 
 export type TextInput = {
     type: 'text';
+}
+
+export type DocumentBlock = {
+    type: 'document_block';
+    body: string;
 }
 
 export type TextareaInput = {
@@ -116,6 +121,12 @@ export type TextareaInput = {
 
 export type DateInput = {
     type: 'date';
+}
+
+export type SliderInput = {
+    type: 'slider';
+    min: number;
+    max: number;
 }
 
 export type SelectInput = {
