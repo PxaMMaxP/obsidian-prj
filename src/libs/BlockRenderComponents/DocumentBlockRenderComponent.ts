@@ -360,7 +360,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        DocumentComponents.createCellTags(
+        GeneralComponents.createCellTags(
             tags,
             this.component,
             documentModel.getTags());

@@ -1,4 +1,5 @@
 import { Component, setIcon } from "obsidian";
+import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 import EditableDataView from "src/libs/EditableDataView/EditableDataView";
 import Helper from "src/libs/Helper";
@@ -52,6 +53,28 @@ export default class GeneralComponents {
                     return Promise.resolve();
                 })
             );
+    }
+
+    public static createCellTags(
+        tagContainer: DocumentFragment,
+        component: Component,
+        tags: string[]) {
+        tags.forEach(tag => {
+            new EditableDataView(tagContainer, component)
+                .addLink(link => link
+                    .setValue(tag)
+                    .setTitle("Tag")
+                    .setLinkType("tag")
+                    .setFormator((value: string) => {
+                        const baseTag = Global.getInstance().settings.baseTag + "/";
+                        let valueReduced = value;
+                        if (valueReduced && valueReduced !== "" && valueReduced.startsWith(baseTag)) {
+                            valueReduced = valueReduced.substring(baseTag.length);
+                        }
+                        return { href: `#${value}`, text: `#${valueReduced}` };
+                    })
+                );
+        });
     }
 
 }

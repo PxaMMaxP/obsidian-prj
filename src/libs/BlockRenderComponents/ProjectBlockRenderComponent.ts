@@ -15,7 +15,6 @@ import { TopicModel } from "src/models/TopicModel";
 import { ProjectModel } from "src/models/ProjectModel";
 import { TaskModel } from "src/models/TaskModel";
 import { Priority, Status } from "src/types/PrjTypes";
-import DocumentComponents from "./InnerComponents/DocumentComponents";
 import ProjectComponents from "./InnerComponents/ProjectComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
 
@@ -250,7 +249,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        DocumentComponents.createCellTags(
+        GeneralComponents.createCellTags(
             tags,
             this.component,
             model.getTags());

@@ -38,6 +38,7 @@ export default class MarkdownBlockProcessor {
         const blockContainer = document.createElement('div');
         el.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
+        blockContainer.lang = global.settings.language;
 
         const setting: IProcessorSettings = yaml.load(source) as IProcessorSettings;
         setting.source = ctx.sourcePath;

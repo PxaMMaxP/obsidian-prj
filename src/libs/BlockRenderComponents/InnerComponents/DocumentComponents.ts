@@ -6,23 +6,6 @@ import Helper from "src/libs/Helper";
 import { DocumentModel } from "src/models/DocumentModel";
 
 export default class DocumentComponents {
-    public static createCellTags(
-        tagContainer: DocumentFragment,
-        component: Component,
-        tags: string[]) {
-        tags.forEach(tag => {
-            new EditableDataView(tagContainer, component)
-                .addLink(link => link
-                    .setValue(tag)
-                    .setTitle("Tag")
-                    .setLinkType("tag")
-                    .setFormator((value: string) => {
-                        return { href: `#${value}`, text: `#${value}` };
-                    })
-                );
-        });
-    }
-
     public static createCellSummary(
         documentModel: DocumentModel,
         component: Component,

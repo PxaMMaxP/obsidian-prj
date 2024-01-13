@@ -186,7 +186,7 @@
 }
 
 /* General Table Mobile */
-@media (max-width: 600px) {
+@media (max-width: 1180px) {
 
     .workspace-leaf-content[data-mode="source"] .prj-block-container {
         padding-right: 14px;
@@ -384,6 +384,9 @@
     max-width: 100%;
     margin: 0;
     border: none;
+    white-space: pre-wrap;
+    word-wrap: normal;
+    hyphens: auto;
 }
 
 .editable-data-view.button {
@@ -533,4 +536,14 @@
     background: transparent;
     resize: none;
     padding: 0.5em 0em 0.5em 0.5em;
+}
+
+/** Link input **/
+.editable-data-view.link-presentation.tag {
+    white-space: nowrap;
+}
+
+.editable-data-view.link-presentation.internal-link {
+    white-space: pre-wrap;
+    word-break: keep-all;
 }
