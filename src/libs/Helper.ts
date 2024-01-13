@@ -1,4 +1,6 @@
-import { moment } from "obsidian";
+import { TFile, moment } from "obsidian";
+import Global from "src/classes/Global";
+import { FileType } from "src/types/PrjTypes";
 
 export default class Helper {
     private static md5 = require('crypto-js/md5');
@@ -126,8 +128,30 @@ export default class Helper {
         );
     }
 
+    /**
+     * Checks if the given file type is valid.
+     * @param fileType The file type to check.
+     * @returns Whether the file type is valid (true or false).
+     */
     static isValidFileType(fileType: string): boolean {
         return ["Topic", "Project", "Task", "Metadata"].includes(fileType);
+    }
+
+    /**
+     * Checks if the given file is a valid PrjTaskManagement file (Topic, Project or Task).
+     * @param file The file to check.
+     * @returns Whether the file is a valid PrjTaskManagement file (true or false).
+     */
+    static isPrjTaskManagementFile(file: TFile): boolean {
+        const metadata = Global.getInstance().metadataCache.getEntry(file);
+        if (!metadata) {
+            return false;
+        }
+        const type = metadata.metadata.frontmatter?.type as FileType | undefined | null;
+        if (!type) {
+            return false;
+        }
+        return ["Topic", "Project", "Task"].includes(type);
     }
 
     /**
