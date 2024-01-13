@@ -28,7 +28,7 @@ export default class MarkdownBlockProcessor {
 
         const global = Global.getInstance();
         await global.metadataCache.waitForCacheReady();
-        const cache = global.metadataCache.Cache;
+        const cache = global.metadataCache.cache;
         const logger = global.logger;
 
         const cmp = new MarkdownRenderChild(el);

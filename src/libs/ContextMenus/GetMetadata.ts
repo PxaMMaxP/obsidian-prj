@@ -10,7 +10,7 @@ export default class GetMetadata {
     private app = Global.getInstance().app;
     private logger = Global.getInstance().logger;
     private plugin = Global.getInstance().plugin;
-    private metadataCache = Global.getInstance().metadataCache.Cache;
+    private metadataCache = Global.getInstance().metadataCache.cache;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 

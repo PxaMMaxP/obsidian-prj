@@ -31,7 +31,7 @@ export default class MetadataCache {
      * @returns {FileMetadata[]} Array of FileMetadata objects
      * @description This method returns the metadata cache as an array of FileMetadata objects. The FileMetadata object contains the file and the cached metadata.
      */
-    public get Cache(): FileMetadata[] {
+    public get cache(): FileMetadata[] {
         if (this.metadataCacheReady && this.metadataCache) {
             return Array.from(this.metadataCache.values());
         } else {
