@@ -24,6 +24,9 @@ jobs:
             - name: Build the Project
               run: tsc -noEmit -skipLibCheck && node esbuild.config.mjs production
 
+            - name: Compile SASS to CSS
+              run: npx sass --no-source-map src/styles/main.scss build/styles.css
+
             - name: Get the version
               id: get_version
               run: echo "::set-output name=VERSION::$(jq -r .version manifest.json)"
@@ -56,7 +59,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./src/styles.css
+                  asset_path: ./build/styles.css
                   asset_name: styles.css
                   asset_content_type: text/css
 
