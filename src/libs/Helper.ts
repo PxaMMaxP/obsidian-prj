@@ -239,6 +239,16 @@ export default class Helper {
         });
         return tagFound !== undefined;
     }
+
+    static async openFile(file: TFile): Promise<void> {
+        Global.getInstance().logger.trace(`Opening metadata file for ${file.name}`);
+        const workspace = Global.getInstance().app.workspace;
+        const newLeaf = workspace.getLeaf(true);
+        await newLeaf.openFile(file);
+        const view = newLeaf.getViewState();
+        view.state.mode = 'preview';
+        newLeaf.setViewState(view);
+    }
 }
 
 export type WikilinkData = {

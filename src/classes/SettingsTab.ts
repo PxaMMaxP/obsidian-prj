@@ -53,12 +53,15 @@ export class SettingTab extends PluginSettingTab {
             .setHeading()
             .setName('Localisation');
 
-        // Language
+        // Language (Dropdown)
         new Setting(containerEl)
             .setName('Language')
             .setDesc('The language to use')
-            .addText(text => text
-                .setPlaceholder('en | de')
+            .addDropdown(dropdown => dropdown
+                .addOptions({
+                    'en': 'English',
+                    'de': 'Deutsch'
+                })
                 .setValue(this.plugin.settings.language)
                 .onChange(async (value) => {
                     this.plugin.settings.language = value;
@@ -94,7 +97,7 @@ export class SettingTab extends PluginSettingTab {
             .setName('Base Tag')
             .setDesc('The Base Tag for all Elements')
             .addText(text => text
-                .setPlaceholder('#YourBaseTag')
+                .setPlaceholder('YourBaseTag (without / and #)')
                 .setValue(this.plugin.settings.baseTag)
                 .onChange(async (value) => {
                     this.plugin.settings.baseTag = value;
@@ -252,6 +255,143 @@ export class SettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.documentSettings.clusterSymbol)
                 .onChange(async (value) => {
                     this.plugin.settings.documentSettings.clusterSymbol = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Default Folder
+        new Setting(containerEl)
+            .setName('Default Folder')
+            .setDesc('The default folder for new Documents')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.documentSettings.defaultFolder)
+                .onChange(async (value) => {
+                    this.plugin.settings.documentSettings.defaultFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Template file
+        new Setting(containerEl)
+            .setName('Template File')
+            .setDesc('The Template file for new Documents')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.documentSettings.template)
+                .onChange(async (value) => {
+                    this.plugin.settings.documentSettings.template = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Project Settings
+        new Setting(containerEl)
+            .setHeading()
+            .setName('Project Settings');
+
+        // Topic Symbol
+        new Setting(containerEl)
+            .setName('Topic Symbol')
+            .setDesc('The Symbol for Topics')
+            .addText(text => text
+                .setPlaceholder('album')
+                .setValue(this.plugin.settings.prjSettings.topicSymbol)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.topicSymbol = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Topic Folder
+        new Setting(containerEl)
+            .setName('Topic Folder')
+            .setDesc('The default folder for new Topics')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.topicFolder)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.topicFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Template file
+        new Setting(containerEl)
+            .setName('Template File')
+            .setDesc('The Template file for new Topics')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.topicTemplate)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.topicTemplate = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Project Symbol
+        new Setting(containerEl)
+            .setName('Project Symbol')
+            .setDesc('The Symbol for Projects')
+            .addText(text => text
+                .setPlaceholder('album')
+                .setValue(this.plugin.settings.prjSettings.projectSymbol)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.projectSymbol = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Project Folder
+        new Setting(containerEl)
+            .setName('Project Folder')
+            .setDesc('The default folder for new Projects')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.projectFolder)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.projectFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Template file
+        new Setting(containerEl)
+            .setName('Template File')
+            .setDesc('The Template file for new Projects')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.projectTemplate)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.projectTemplate = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Task Symbol
+        new Setting(containerEl)
+            .setName('Task Symbol')
+            .setDesc('The Symbol for Tasks')
+            .addText(text => text
+                .setPlaceholder('album')
+                .setValue(this.plugin.settings.prjSettings.taskSymbol)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.taskSymbol = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Task Folder
+        new Setting(containerEl)
+            .setName('Task Folder')
+            .setDesc('The default folder for new Tasks')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.taskFolder)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.taskFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        // Template file
+        new Setting(containerEl)
+            .setName('Template File')
+            .setDesc('The Template file for new Tasks')
+            .addText(text => text
+                .setPlaceholder('')
+                .setValue(this.plugin.settings.prjSettings.taskTemplate)
+                .onChange(async (value) => {
+                    this.plugin.settings.prjSettings.taskTemplate = value;
                     await this.plugin.saveSettings();
                 }));
     }
