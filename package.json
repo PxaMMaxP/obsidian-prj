@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "dev": "concurrently \"node esbuild.config.mjs\" \"node copy-plugin-files.mjs watch\"",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node copy-plugin-files.mjs release",
     "version:patch": "\"node bump-version.mjs patch\" && npm run postversion",
     "version:minor": "\"node bump-version.mjs minor\" && npm run postversion",
     "version:major": "\"node bump-version.mjs major\" && npm run postversion",
