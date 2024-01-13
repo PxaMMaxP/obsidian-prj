@@ -15,6 +15,7 @@ export default class MarkdownBlockProcessor {
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const startTime = Date.now();
+        const setting: IProcessorSettings = yaml.load(source) as IProcessorSettings;
 
         // Remove the cm-embed-block class from the parent element
         // and add the prj-block class.
@@ -39,8 +40,13 @@ export default class MarkdownBlockProcessor {
         el.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
         blockContainer.lang = global.settings.language;
+        if (setting.styles) {
+            setting.styles.forEach(style => {
+                blockContainer.classList.add(style);
+            });
+        }
 
-        const setting: IProcessorSettings = yaml.load(source) as IProcessorSettings;
+
         setting.source = ctx.sourcePath;
         setting.frontmatter = cache.filter(file => file.file.path === ctx.sourcePath).first()?.metadata.frontmatter;
         setting.container = blockContainer;

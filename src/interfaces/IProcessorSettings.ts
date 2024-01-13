@@ -48,4 +48,11 @@ export interface IProcessorSettings {
      * @remarks - This property is used to pass the context to the processor.
      */
     ctx: MarkdownPostProcessorContext;
+
+    /**
+     * The styles of the processor.
+     * @remarks - This property is used to pass the styles to the processor.
+     * - The styles are used to style the main container.
+     */
+    styles: string[];
 }
