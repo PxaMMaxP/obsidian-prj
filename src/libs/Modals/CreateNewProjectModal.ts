@@ -17,17 +17,7 @@ export default class CreateNewProjectModal extends BaseModalForm {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewProjectModal' form");
         const activeFile = Helper.getActiveFile();
-        const tags: string[] = [];
-        if (activeFile) {
-            const cache = this.global.metadataCache.getEntry(activeFile);
-            if (cache && cache.metadata && cache.metadata.frontmatter && cache.metadata.frontmatter.tags) {
-                if (Array.isArray(cache.metadata.frontmatter.tags)) {
-                    tags.push(...cache.metadata.frontmatter.tags);
-                } else {
-                    tags.push(cache.metadata.frontmatter.tags);
-                }
-            }
-        }
+        const tags: string[] = BaseModalForm.getTags(activeFile);
         const form = this.constructForm();
         const result = await this.getApi().openForm(form, { values: { tags: tags } });
         this.logger.trace(`From closes with status '${result.status}' and data:`, result.data);

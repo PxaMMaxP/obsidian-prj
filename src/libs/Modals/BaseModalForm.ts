@@ -1,4 +1,4 @@
-import { App } from "obsidian";
+import { App, TFile } from "obsidian";
 import Global from "src/classes/Global";
 import { FormConfiguration, IFormResult, IModalForm } from "src/types/ModalFormType";
 
@@ -60,4 +60,19 @@ export default abstract class BaseModalForm {
     public abstract openForm(): Promise<IFormResult | undefined>;
 
     protected abstract constructForm(): FormConfiguration;
+
+    public static getTags(activeFile: TFile | undefined): string[] {
+        const tags: string[] = [];
+        if (activeFile) {
+            const cache = Global.getInstance().metadataCache.getEntry(activeFile);
+            if (cache && cache.metadata && cache.metadata.frontmatter && cache.metadata.frontmatter.tags) {
+                if (Array.isArray(cache.metadata.frontmatter.tags)) {
+                    tags.push(...cache.metadata.frontmatter.tags);
+                } else {
+                    tags.push(cache.metadata.frontmatter.tags);
+                }
+            }
+        }
+        return tags;
+    }
 }

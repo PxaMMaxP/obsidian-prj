@@ -56,6 +56,16 @@ export default class CreateNewMetadataModal extends BaseModalForm {
                 convertedPreset[key] = value ?? "";
             }
         }
+        const activeFile = Helper.getActiveFile();
+        const tags: string[] = BaseModalForm.getTags(activeFile);
+        if (convertedPreset) {
+            if (convertedPreset.tags && Array.isArray(convertedPreset.tags)) {
+                convertedPreset.tags = [...convertedPreset.tags, ...tags];
+            } else {
+                convertedPreset.tags = [...tags];
+            }
+        }
+
         const form = this.constructForm();
         const result = await this.getApi().openForm(form, { values: convertedPreset });
         this.logger.trace(`From closes with status '${result.status}' and data:`, result.data);
