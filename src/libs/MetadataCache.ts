@@ -256,14 +256,13 @@ export default class MetadataCache {
      * Update a file in the metadata cache
      * @param file The file to update in the metadata cache
      */
-    private async updateEntry(file: TFile) {
+    private async updateEntry(file: TFile, cache: CachedMetadata) {
         if (this.metadataCache) {
             const entry = this.metadataCache.get(file.path);
-            const metadata = this.app.metadataCache.getFileCache(file);
-            if (entry && metadata) {
+            if (entry && cache) {
                 // Check if a event should be emitted
-                this.onChangedMetadata(metadata, entry.metadata, file);
-                entry.metadata = metadata;
+                this.onChangedMetadata(cache, entry.metadata, file);
+                entry.metadata = cache;
             } else if (!entry) {
                 this.logger.warn(`No metadata cache entry found for file ${file.path}`);
             } else {
@@ -316,12 +315,15 @@ export default class MetadataCache {
     /**
      * Event handler for the changed event
      * @param file Changed file object
+     * @param data Changed complete file content
+     * @param cache Cached metadata
      */
-    private changedEventHandler(file: TFile) {
+    private changedEventHandler(file: TFile, data: string, cache: CachedMetadata) {
+        this.logger.trace(`File ${file.path} changed. Data-content:`, { data }, "Cache-metadata:", cache);
         if (this.metadataCache) {
             const existingEntry = this.metadataCache.get(file.path);
             if (existingEntry) {
-                this.updateEntry(file);
+                this.updateEntry(file, cache);
             } else {
                 this.addEntry(file);
             }
