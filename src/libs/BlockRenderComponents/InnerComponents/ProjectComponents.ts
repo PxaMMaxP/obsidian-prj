@@ -63,7 +63,7 @@ export default class ProjectComponents {
         description: string,
         onWrite: (value: string) => void) {
         new EditableDataView(container, component)
-            .addText(text => text
+            .addTextarea(text => text
                 .setValue(description)
                 .setTitle(Lng.gt("Description"))
                 .setPlaceholder(Lng.gt("Description"))

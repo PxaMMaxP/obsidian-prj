@@ -99,7 +99,7 @@ export default class Tag {
             tag = `#${tag}`;
         }
 
-        const existFile = this.metadataCache.Cache.find(file => {
+        const existFile = this.metadataCache.cache.find(file => {
             const tags = file.metadata?.frontmatter?.tags;
             if (typeof tags === 'string') {
                 return tags === tag;

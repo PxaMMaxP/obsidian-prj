@@ -4,7 +4,7 @@ import { PrjTaskManagementModel } from "./PrjTaskManagementModel";
 
 export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
 
-    constructor(file: TFile) {
+    constructor(file: TFile | undefined) {
         super(file, ProjectData);
     }
 

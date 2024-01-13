@@ -8,6 +8,7 @@ import GetMetadata from './libs/ContextMenus/GetMetadata';
 import API from './classes/API';
 import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
+import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -41,6 +42,9 @@ export default class Prj extends Plugin {
 
 		// Create New Metadata File Command
 		CreateNewMetadataModal.registerCommand();
+
+		// Create new Project Command
+		CreateNewProjectModal.registerCommand();
 
 		// Change Status Command
 		ChangeStatusModal.registerCommand();

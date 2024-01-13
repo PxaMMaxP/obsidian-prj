@@ -10,4 +10,5 @@ export default interface IPrjTaskManagement {
     energy: Energy | null | undefined;
     due: string | null | undefined;
     history: HistoryEntries | null | undefined;
+    aliases: string[] | null | undefined;
 }

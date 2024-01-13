@@ -9,7 +9,7 @@ import TaskData from "src/types/TaskData";
 import TopicData from "src/types/TopicData";
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> extends BaseModel<T> implements IPrjModel<T> {
-    constructor(file: TFile, ctor: new (data?: Partial<T>) => T) {
+    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
         super(file, ctor, undefined);
     }
 

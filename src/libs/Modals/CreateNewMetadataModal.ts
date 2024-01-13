@@ -5,12 +5,13 @@ import Lng from "src/classes/Lng";
 import { DocumentModel } from "src/models/DocumentModel";
 import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
-import ModalFormBase from "./ModalFormBase";
+import BaseModalForm from "./BaseModalForm";
+import Helper from "../Helper";
 
 /**
  * Modal to create a new metadata file
  */
-export default class CreateNewMetadataModal extends ModalFormBase {
+export default class CreateNewMetadataModal extends BaseModalForm {
 
     /**
      * Creates an instance of CreateNewMetadataModal.
@@ -33,7 +34,9 @@ export default class CreateNewMetadataModal extends ModalFormBase {
                 const modal = new CreateNewMetadataModal();
                 const result = await modal.openForm();
                 if (result) {
-                    await modal.evaluateForm(result);
+                    const document = await modal.evaluateForm(result);
+                    if (document)
+                        await Helper.openFile(document.file);
                 }
             },
         })

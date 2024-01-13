@@ -24,7 +24,7 @@ export default class SearchInput {
      *  - `search-box-sizer` - The sizer of the search input component.
      *  - `search-box` - The search box of the search input component.
      */
-    public static create(component: Component, onSearch: SearchCallback): DocumentFragment {
+    public static create(component: Component, onSearch: SearchCallback, defaultText?: string): DocumentFragment {
         const logger = Global.getInstance().logger;
         const headerItemContainer = document.createDocumentFragment();
 
@@ -35,6 +35,11 @@ export default class SearchInput {
         SearchInput.createSearchLabel(searchLabelContainer);
         const searchBoxSizer = SearchInput.createSearchBoxSizer(searchLabelContainer);
         const searchBoxInput = SearchInput.createSearchBoxInput(searchBoxSizer);
+
+        if (defaultText) {
+            this.setSearchBoxSizerValue(searchBoxSizer, defaultText);
+            this.setSearchBoxInputValue(searchBoxInput, defaultText);
+        }
 
         /**
          * Register input event to set the search box sizer value.

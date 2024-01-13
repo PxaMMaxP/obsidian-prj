@@ -23,7 +23,10 @@ export default class DocumentData implements IPrjData, IPrjDocument {
     };
 
     constructor(data: Partial<DocumentData>) {
-        if (!data) return;
+        if (!data) {
+            this.type = "Metadata";
+            return;
+        }
         this.title = data.title !== undefined ? data.title : undefined;
         this.date = data.date !== undefined ? data.date : undefined;
         this.description = data.description !== undefined ? data.description : undefined;
@@ -35,7 +38,7 @@ export default class DocumentData implements IPrjData, IPrjDocument {
         this.relatedFiles = data.relatedFiles !== undefined ? data.relatedFiles : undefined;
         this.citationTitle = data.citationTitle !== undefined ? data.citationTitle : undefined;
         this.tags = data.tags !== undefined ? data.tags : undefined;
-        this.type = data.type !== undefined ? data.type : undefined;
+        this.type = data.type !== undefined ? data.type : "Metadata";
         this.subType = data.subType !== undefined ? data.subType : undefined;
         this.annotationTarget = data.annotationTarget !== undefined ? data.annotationTarget : undefined;
     }

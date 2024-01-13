@@ -375,6 +375,13 @@
     margin-top: auto;
     margin-bottom: auto;
 }
+/** To display rendered Markdown correkt **/
+.editable-data-view.container ol {
+    white-space: normal;
+    line-height: var(--line-height-normal);
+    margin-top: auto;
+    margin-bottom: auto;
+}
 
 .editable-data-view.presentation-container,
 .editable-data-view.data-input-container,

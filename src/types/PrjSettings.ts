@@ -20,11 +20,18 @@ export interface PrjSettings {
         hideSymbol: string;
         clusterSymbol: string;
         defaultFolder: string;
+        template: string;
     };
     prjSettings: {
         topicSymbol: string;
+        topicFolder: string;
+        topicTemplate: string;
         projectSymbol: string;
+        projectFolder: string;
+        projectTemplate: string;
         taskSymbol: string;
+        taskFolder: string;
+        taskTemplate: string;
     };
     baseTag: string;
     templateFolder: string;
@@ -51,13 +58,20 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         "symbol": "file-text",
         "hideSymbol": "file-minus-2",
         "clusterSymbol": "library",
-        "defaultFolder": ""
+        "defaultFolder": "",
+        "template": ""
     },
     prjSettings: {
         "topicSymbol": "album",
+        "topicFolder": "Topics/",
+        "topicTemplate": "",
         "projectSymbol": "layout-list",
-        "taskSymbol": "clipboard"
+        "projectFolder": "Projects/",
+        "projectTemplate": "",
+        "taskSymbol": "clipboard",
+        "taskFolder": "Tasks/",
+        "taskTemplate": "",
     },
     baseTag: 'PRJ',
-    templateFolder: 'Vorlagen/'
+    templateFolder: 'Templates/'
 };

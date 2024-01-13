@@ -14,13 +14,13 @@ export class StaticDocumentModel {
      * @returns {DocumentModel[]} List of all documents
      */
     public static getAllDocuments(): DocumentModel[] {
-        const metadataCache = Global.getInstance().metadataCache.Cache;
+        const metadataCache = Global.getInstance().metadataCache.cache;
         const documents = metadataCache.filter(file => file.metadata?.frontmatter?.type === "Metadata").map(file => new DocumentModel(file.file));
         return documents;
     }
 
     public static getAllSenderRecipients(): string[] {
-        const metadataCache = Global.getInstance().metadataCache.Cache;
+        const metadataCache = Global.getInstance().metadataCache.cache;
         const documents = metadataCache.filter(file => file.metadata?.frontmatter?.type === "Metadata")
             .flatMap(file => [file.metadata?.frontmatter?.sender, file.metadata?.frontmatter?.recipient])
             .filter((v): v is string => v != null)
@@ -56,7 +56,7 @@ export class StaticDocumentModel {
      * - The function uses the metadataCache and fileCache to find all PDFs without a metadata file.
      */
     public static getAllPDFsWithoutMetadata(): TFile[] {
-        const metadataCache = Global.getInstance().metadataCache.Cache;
+        const metadataCache = Global.getInstance().metadataCache.cache;
         const fileCache = Global.getInstance().fileCache.Cache;
         const setOfPDFsWithMetadata = new Set(metadataCache
             .filter(file => file.metadata?.frontmatter?.type === "Metadata" && file.metadata?.frontmatter?.file)

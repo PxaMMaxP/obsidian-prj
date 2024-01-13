@@ -4,13 +4,14 @@ import Lng from "src/classes/Lng";
 import { DocumentModel } from "src/models/DocumentModel";
 import { FileType } from "src/types/PrjTypes";
 import { FileMetadata } from "../MetadataCache";
+import Helper from "../Helper";
 
 export default class GetMetadata {
     static instance: GetMetadata;
     private app = Global.getInstance().app;
     private logger = Global.getInstance().logger;
     private plugin = Global.getInstance().plugin;
-    private metadataCache = Global.getInstance().metadataCache.Cache;
+    private metadataCache = Global.getInstance().metadataCache.cache;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
@@ -86,7 +87,7 @@ export default class GetMetadata {
                 item.setTitle(Lng.gt("ShowMetadataFile"))
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
-                        await this.openMetadataFile(document.file);
+                        await Helper.openFile(document.file);
                     }
                     );
             });
@@ -124,16 +125,6 @@ export default class GetMetadata {
             return;
         }
         const document = new DocumentModel(metadataFile.file);
-        await this.openMetadataFile(document.file);
-    }
-
-    private async openMetadataFile(file: TFile) {
-        this.logger.trace(`Opening metadata file for ${file.name}`);
-        const workspace = this.app.workspace;
-        const newLeaf = workspace.getLeaf(true);
-        await newLeaf.openFile(file);
-        const view = newLeaf.getViewState();
-        view.state.mode = 'preview';
-        newLeaf.setViewState(view);
+        await Helper.openFile(document.file);
     }
 }
