@@ -23,8 +23,11 @@ export interface PrjSettings {
     };
     prjSettings: {
         topicSymbol: string;
+        topicFolder: string;
         projectSymbol: string;
+        projectFolder: string;
         taskSymbol: string;
+        taskFolder: string;
     };
     baseTag: string;
     templateFolder: string;
@@ -55,8 +58,11 @@ export const DEFAULT_SETTINGS: PrjSettings = {
     },
     prjSettings: {
         "topicSymbol": "album",
+        "topicFolder": "Themen/",
         "projectSymbol": "layout-list",
-        "taskSymbol": "clipboard"
+        "projectFolder": "Projekte/",
+        "taskSymbol": "clipboard",
+        "taskFolder": "Aufgaben/"
     },
     baseTag: 'PRJ',
     templateFolder: 'Vorlagen/'
