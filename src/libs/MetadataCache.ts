@@ -3,8 +3,6 @@
 import Logging from "src/classes/Logging";
 import Global from "../classes/Global";
 import { App, CachedMetadata, TFile } from "obsidian";
-import { EventEmitter } from 'events';
-import Helper from "./Helper";
 
 /**
  * FileMetadata interface
@@ -13,13 +11,6 @@ import Helper from "./Helper";
  * @property {CachedMetadata} metadata The cached metadata
  */
 export class FileMetadata { file: TFile; metadata: CachedMetadata }
-
-/**
- * MetadataCacheEvent type
- * @description This type is used to define the events emitted by the metadata cache.
- * @property `prj-task-management-changed-status` Event emitted when the status of a plugin file is changed
- */
-export type MetadataCacheEvent = 'prj-task-management-changed-status';
 
 /**
  * Singleton class for caching metadata
@@ -32,7 +23,6 @@ export default class MetadataCache {
     private metadataCache: Map<string, FileMetadata> | null = null;
     private metadataCacheReady = false;
     private eventsRegistered = false;
-    private eventEmitter = new EventEmitter();
 
     static instance: MetadataCache;
 
@@ -89,7 +79,6 @@ export default class MetadataCache {
         }
 
         const instance = MetadataCache.instance;
-        this.instance.eventEmitter.removeAllListeners();
 
         if (instance.eventsRegistered) {
             instance.app.vault.off('rename', instance.renameEventHandler);
@@ -103,62 +92,6 @@ export default class MetadataCache {
         }
 
         Global.getInstance().logger.debug("Metadata cache events not registered");
-    }
-
-    /**
-     * Register an event listener for the metadata cache. The event is emitted when the status of a plugin file is changed.
-     * @param eventName The name of the event: `prj-task-management-changed-status`
-     * @param listener The listener function. The listener function receives the file object as an argument.
-     */
-    public on(eventName: 'prj-task-management-changed-status', listener: (file: TFile) => void): void;
-
-    /**
-     * Register an event listener for the metadata cache.
-     * @param eventName The name of the event
-     * @param listener The listener function. The listener function receives the file object as an argument.
-     */
-    public on(eventName: MetadataCacheEvent, listener: (file: TFile) => void): void {
-        this.eventEmitter.on(eventName, listener);
-    }
-
-    /**
-     * Will be called when the metadata of a file is changed. Checks if the file is a plugin file and emits an event if necessary.
-     * @param newMetadata The changed metadata
-     * @param oldMetadata The old metadata
-     * @param file The file object
-     */
-    private async onChangedMetadata(newMetadata: CachedMetadata, oldMetadata: CachedMetadata, file: TFile) {
-        this.logger.trace(`Metadata changed for file ${file.path} and is processed.`);
-        // Check if the file is plugin file
-        if (newMetadata.frontmatter?.type && Helper.isValidFileType(newMetadata.frontmatter.type)) {
-            switch (newMetadata.frontmatter.type) {
-                case "Topic":
-                case "Project":
-                case "Task":
-                    // Changed status
-                    if (newMetadata.frontmatter?.status !== oldMetadata.frontmatter?.status) {
-                        this.emitEvent('prj-task-management-changed-status', file);
-                    }
-                    break;
-                case "Metadata":
-                    // Check if the file is a metadata file
-
-                    break;
-                default:
-                    this.logger.error(`Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Emit an event
-     * @param eventName The name of the event
-     * @param file The file object
-     */
-    private emitEvent(eventName: MetadataCacheEvent, file: TFile) {
-        this.logger.trace(`Emitting event ${eventName} for file ${file.path}`);
-        this.eventEmitter.emit(eventName, file);
     }
 
     /**
@@ -260,8 +193,6 @@ export default class MetadataCache {
         if (this.metadataCache) {
             const entry = this.metadataCache.get(file.path);
             if (entry && cache) {
-                // Check if a event should be emitted
-                this.onChangedMetadata(cache, entry.metadata, file);
                 entry.metadata = cache;
             } else if (!entry) {
                 this.logger.warn(`No metadata cache entry found for file ${file.path}`);
@@ -315,7 +246,7 @@ export default class MetadataCache {
     /**
      * Event handler for the changed event
      * @param file Changed file object
-     * @param data Changed complete file content
+* @param data Changed complete file content
      * @param cache Cached metadata
      */
     private changedEventHandler(file: TFile, data: string, cache: CachedMetadata) {
