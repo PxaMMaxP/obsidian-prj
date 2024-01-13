@@ -14,7 +14,7 @@ import Logging from "src/classes/Logging";
  */
 export class TransactionModel<T> {
     protected logger: Logging = Global.getInstance().logger;
-    protected transactionActive = false;
+    private transactionActive = false;
     protected changes: Partial<T> = {};
     /**
      * A function that writes the changes to the file.
@@ -136,7 +136,7 @@ export class TransactionModel<T> {
      * Returns whether a transaction is active.
      * @returns `true` if a transaction is active, otherwise `false`.
      */
-    private get isTransactionActive(): boolean {
+    public get isTransactionActive(): boolean {
         return this.transactionActive;
     }
 }
