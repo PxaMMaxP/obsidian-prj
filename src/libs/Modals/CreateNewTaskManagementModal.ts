@@ -265,6 +265,18 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         };
         form.fields.push(tags);
 
+        // Would you like to open the type specific modal?
+        /**const openTypeSpecificModal: Field = {
+            name: "openTypeSpecificModal",
+            label: Lng.gt("OpenTypeSpecificModal"),
+            description: Lng.gt("OpenTypeSpecificModalDescription"),
+            isRequired: false,
+            input: {
+                type: "toggle"
+            }
+        };
+        form.fields.push(openTypeSpecificModal);**/
+
         // Acronym
         const acronym: Field = {
             name: "acronym",
