@@ -13,7 +13,7 @@ export default class Logging {
      */
     constructor(logLevel: LoggingLevel = "info", logPrefix = "") {
         this.logLevel = logLevel;
-        this.logPrefix = `${logPrefix}: `;
+        this.logPrefix = `${logPrefix}-`;
         if (this.logLevel === "none") {
             console.info("Logging disabled");
         }
