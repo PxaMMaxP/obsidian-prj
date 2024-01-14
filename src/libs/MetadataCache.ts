@@ -18,7 +18,7 @@ export class FileMetadata { file: TFile; metadata: CachedMetadata }
  */
 export default class MetadataCache {
     private app: App = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
+    private logger = Logging.getLogger("MetadataCache");
     private metadataCachePromise: Promise<void> | undefined = undefined;
     private metadataCache: Map<string, FileMetadata> | undefined = undefined;
     private metadataCacheArray: FileMetadata[] | undefined = undefined;
