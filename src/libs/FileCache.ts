@@ -326,6 +326,20 @@ export default class FileCache {
     }
 
     /**
+     * Returns the first file from the file cache or if no file found returns undefined
+     * @param fileName The name of the file to find
+     * @returns The file as `TFile` if found, `undefined` otherwise
+     */
+    public findFirstFileByName(fileName: string): TFile | undefined {
+        const foundFile = this.findFileByName(fileName);
+        if (foundFile instanceof Array) {
+            return foundFile.first();
+        } else {
+            return foundFile;
+        }
+    }
+
+    /**
      * Returns the file from the file cache
      * @param filePath The path of the file to find
      * @returns The file/s if found, undefined otherwise
