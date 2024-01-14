@@ -138,8 +138,18 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
         return undefined;
     }
 
-    public setLinkedFile(file: TFile, path?: string): void {
-        const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : this.file.path);
+
+    /**
+     * Sets the linked file for the document.
+     * 
+     * @param file The TFile object representing the linked file.
+     * @param path The optional path to override the file's path.
+     * @remarks - This function sets the `file` property of the document to the wikilink of the file.
+     * - If no file is provided, the function will return.
+     */
+    public setLinkedFile(file: TFile | undefined, path?: string): void {
+        if (!file || !(file instanceof TFile)) return;
+        const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : file.path);
         this.data.file = `[[${linktext}]]`;
     }
 
