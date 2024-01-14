@@ -1,11 +1,26 @@
 // main.scss
 @import 'partials/styles';
 @import 'partials/mobile';
+@import 'partials/table';
 
 .prj-block-container.panel {
-    @include mobileStyles;
+    @include mobileGeneralStyles;
+    @include mobileTableGeneralStyles;
+    @include mobileTable1ColumnStyles;
 }
 
-@media (max-width: 1180px) {
-    @include mobileStyles;
+@media (min-width: 681px) and (max-width: 1200px) {
+    @include mobileGeneralStyles;
+    .prj-block-container:not(.panel) {
+        @include mobileTableGeneralStyles;
+        @include mobileTable2ColumnStyles;
+    }
+}
+
+@media (max-width: 680px) {
+    @include mobileGeneralStyles;
+    .prj-block-container:not(.panel) {
+        @include mobileTableGeneralStyles;
+        @include mobileTable1ColumnStyles;
+    }
 }

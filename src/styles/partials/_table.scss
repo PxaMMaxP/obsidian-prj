@@ -1,0 +1,66 @@
+@mixin generalTable {
+
+.prj-table {
+    width: 100%;
+    max-width: 100%;
+    ;
+    table-layout: auto;
+    border-bottom: 1px solid #ffffff0a;
+}
+
+.prj-table .prj-table-header .prj-table-header-row,
+.prj-table>.prj-table-body>.prj-table-row {
+    margin: 1em 0 0 1em;
+    text-align: left;
+}
+
+.prj-table .prj-table-header .prj-table-header-row .prj-table-header-cell {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: solid;
+    font-weight: var(--font-medium);
+    font-size: large;
+    white-space: nowrap;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell {
+    border: none;
+    text-align: left;
+    font-weight: var(--font-normal);
+    font-size: small;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell {
+    border-right: 0.1px solid #ffffff05;
+}
+
+.prj-table .prj-table-body .prj-table-row .prj-table-cell:last-child {
+    border-right: none;
+}
+
+.prj-table .prj-table-body {
+    background-color: transparent !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.hidden-row {
+    display: none !important;
+}
+
+.prj-table>.prj-table-body>#placeholder-row {
+    display: none !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.prj-table-row-hover:hover {
+    background-color: var(--table-row-background-hover) !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.odd-row {
+    background-color: var(--table-row-background) !important;
+}
+
+.prj-table>.prj-table-body>.prj-table-row.even-row {
+    background-color: var(--table-row-alt-background) !important;
+}
+
+}
