@@ -10,7 +10,7 @@ import { App, TAbstractFile, TFile } from "obsidian";
  */
 export default class FileCache {
     private app: App = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
+    private logger = Logging.getLogger("FileCache");
     private fileCachePromise: Promise<void> | null = null;
     private fileCache: Map<string, TFile | null> | null = null;
     private duplicateNames: Map<string, Array<TFile>> | null = null;
