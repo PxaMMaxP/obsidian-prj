@@ -36,6 +36,36 @@ export default class Logging {
     }
 
     /**
+     * Returns an object with logging methods that prepend a specified prefix to messages
+     * @param prefix The prefix to prepend to all log messages
+     */
+    public static getLogger(prefix: string): { [key in Exclude<LoggingLevel, "none">]: (...args: any[]) => void } {
+        const instance = Logging.getInstance();
+        prefix = `${prefix}: `;
+        const logMethods: { [key in Exclude<LoggingLevel, "none">]: (...args: any[]) => void } = {
+            trace: (...args: any[]) => instance.logWithPrefix("trace", prefix, args),
+            debug: (...args: any[]) => instance.logWithPrefix("debug", prefix, args),
+            info: (...args: any[]) => instance.logWithPrefix("info", prefix, args),
+            warn: (...args: any[]) => instance.logWithPrefix("warn", prefix, args),
+            error: (...args: any[]) => instance.logWithPrefix("error", prefix, args),
+        };
+
+        return logMethods;
+    }
+
+    /**
+     * Logs a message with a specified prefix and level.
+     * 
+     * @param level - The logging level.
+     * @param prefix - The prefix to add to the log message.
+     * @param args - The arguments to be logged.
+     */
+    private logWithPrefix(level: Exclude<LoggingLevel, "none">, prefix: string, args: any[]) {
+        args.unshift(this.constructLogMessage(prefix));
+        (this[level] as (...args: any[]) => void)(...args);
+    }
+
+    /**
      * Logs a message to the console if the log level is "trace"
      * @param message 
      * @param optionalParams 
