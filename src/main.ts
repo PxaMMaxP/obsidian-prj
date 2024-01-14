@@ -8,11 +8,11 @@ import GetMetadata from './libs/ContextMenus/GetMetadata';
 import API from './classes/API';
 import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
-import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
+import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
-	public api: API;
+	public api: API = API;
 
 	async onload() {
 		console.log("Loading plugin 'PRJ'")
@@ -44,13 +44,10 @@ export default class Prj extends Plugin {
 		CreateNewMetadataModal.registerCommand();
 
 		// Create new Project Command
-		CreateNewProjectModal.registerCommand();
+		CreateNewTaskManagementModal.registerCommand();
 
 		// Change Status Command
 		ChangeStatusModal.registerCommand();
-
-		// API
-		this.api = new API();
 
 	}
 

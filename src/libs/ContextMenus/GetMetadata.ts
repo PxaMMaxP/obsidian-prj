@@ -11,7 +11,7 @@ export default class GetMetadata {
     private app = Global.getInstance().app;
     private logger = Global.getInstance().logger;
     private plugin = Global.getInstance().plugin;
-    private metadataCache = Global.getInstance().metadataCache.cache;
+    private metadataCache = Global.getInstance().metadataCache;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
@@ -100,7 +100,7 @@ export default class GetMetadata {
      * @returns The metadata file or undefined if not found
      */
     private getCorrespondingMetadataFile(file: TFile): FileMetadata | undefined {
-        return this.metadataCache.find(metadata => {
+        return this.metadataCache.cache.find(metadata => {
             const type = metadata.metadata.frontmatter?.type as FileType | undefined | null;
             const fileLink = metadata.metadata.frontmatter?.file as string | undefined | null;
             if (type && fileLink && type === "Metadata") {

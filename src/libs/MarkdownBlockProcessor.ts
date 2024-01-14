@@ -29,7 +29,6 @@ export default class MarkdownBlockProcessor {
 
         const global = Global.getInstance();
         await global.metadataCache.waitForCacheReady();
-        const cache = global.metadataCache.cache;
         const logger = global.logger;
 
         const cmp = new MarkdownRenderChild(el);
@@ -48,7 +47,7 @@ export default class MarkdownBlockProcessor {
 
 
         setting.source = ctx.sourcePath;
-        setting.frontmatter = cache.filter(file => file.file.path === ctx.sourcePath).first()?.metadata.frontmatter;
+        setting.frontmatter = global.metadataCache.cache.filter(file => file.file.path === ctx.sourcePath).first()?.metadata.frontmatter;
         setting.container = blockContainer;
         setting.ctx = ctx;
 
