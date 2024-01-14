@@ -1,8 +1,8 @@
 import { TFile } from "obsidian";
 import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
-import { DocumentModel } from "src/models/DocumentModel";
-import Helper from "../Helper";
+import Helper from "src/libs/Helper";
+import { DocumentModel } from "../DocumentModel";
 
 /**
  * Static API for DocumentModel
@@ -19,6 +19,11 @@ export class StaticDocumentModel {
         return documents;
     }
 
+    /**
+     * Retrieves all unique sender and recipient names from the metadata cache.
+     * 
+     * @returns An array of strings representing the sender and recipient names.
+     */
     public static getAllSenderRecipients(): string[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
         const documents = metadataCache.filter(file => file.metadata?.frontmatter?.type === "Metadata")
@@ -29,6 +34,11 @@ export class StaticDocumentModel {
         return documents;
     }
 
+    /**
+     * Generates a metadata filename based on the provided DocumentModel.
+     * @param model The DocumentModel object.
+     * @returns The generated metadata filename.
+     */
     public static generateMetadataFilename(model: DocumentModel): string {
         const newFileName: string[] = [];
         if (model.data.date) {

@@ -10,7 +10,7 @@ import { App, TAbstractFile, TFile } from "obsidian";
  */
 export default class FileCache {
     private app: App = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
+    private logger = Logging.getLogger("FileCache");
     private fileCachePromise: Promise<void> | null = null;
     private fileCache: Map<string, TFile | null> | null = null;
     private duplicateNames: Map<string, Array<TFile>> | null = null;
@@ -322,6 +322,20 @@ export default class FileCache {
             return duplicateEntry;
         } else {
             return undefined;
+        }
+    }
+
+    /**
+     * Returns the first file from the file cache or if no file found returns undefined
+     * @param fileName The name of the file to find
+     * @returns The file as `TFile` if found, `undefined` otherwise
+     */
+    public findFirstFileByName(fileName: string): TFile | undefined {
+        const foundFile = this.findFileByName(fileName);
+        if (foundFile instanceof Array) {
+            return foundFile.first();
+        } else {
+            return foundFile;
         }
     }
 

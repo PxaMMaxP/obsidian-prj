@@ -18,10 +18,10 @@ export class FileMetadata { file: TFile; metadata: CachedMetadata }
  */
 export default class MetadataCache {
     private app: App = Global.getInstance().app;
-    private logger: Logging = Global.getInstance().logger;
-    private metadataCachePromise: Promise<void> | null = null;
-    private metadataCache: Map<string, FileMetadata> | null = null;
-    private metadataCacheArray: FileMetadata[] | null = null;
+    private logger = Logging.getLogger("MetadataCache");
+    private metadataCachePromise: Promise<void> | undefined = undefined;
+    private metadataCache: Map<string, FileMetadata> | undefined = undefined;
+    private metadataCacheArray: FileMetadata[] | undefined = undefined;
     private metadataCacheReady = false;
     private eventsRegistered = false;
 
@@ -123,17 +123,13 @@ export default class MetadataCache {
     }
 
     /**
-     * Refresh the metadata cache
-     * @remarks - Empties the existing array and repopulates it with the current values from metadata cache. 
-     * - If no array exists, this method does nothing.
+     * Invalidate the metadata cache
+     * @remarks Set the metadata cache array to undefined.
      */
-    private refreshMetadataCacheArray() {
+    private invalidateMetadataCacheArray() {
         if (this.metadataCacheArray) {
             if (this.metadataCache) {
-                this.metadataCacheArray.length = 0;
-                Array.from(this.metadataCache.values()).forEach(item => {
-                    this.metadataCacheArray?.push(item);
-                });
+                this.metadataCacheArray = undefined;
             } else {
                 this.logger.error("Metadata cache not initialized");
             }
@@ -142,9 +138,9 @@ export default class MetadataCache {
 
     /**
      * Build the metadata cache
-     * @returns {Promise<void>} Promise that resolves when the metadata cache is built
+     * @returns Promise that resolves when the metadata cache is built
      */
-    private async buildMetadataCache() {
+    private async buildMetadataCache(): Promise<void> {
         const startTime = Date.now();
 
         this.metadataCache = new Map<string, FileMetadata>();
@@ -163,7 +159,7 @@ export default class MetadataCache {
     /**
      * Get the metadata cache entry for a file.
      * @param file The file to get from the metadata cache.
-     * @returns {FileMetadata | undefined} The metadata cache entry for the file.
+     * @returns The metadata cache entry for the file.
      * @remarks - This method returns undefined if the metadata cache is not ready.
      * - As key the file path is used!
      */
@@ -191,7 +187,7 @@ export default class MetadataCache {
             const metadata = this.app.metadataCache.getFileCache(file);
             if (metadata) {
                 this.metadataCache.set(file.path, { file, metadata });
-                this.refreshMetadataCacheArray();
+                this.invalidateMetadataCacheArray();
             } else {
                 this.logger.warn(`No metadata found for file ${file.path}`);
             }
@@ -207,7 +203,7 @@ export default class MetadataCache {
     private deleteEntry(file: TFile) {
         if (this.metadataCache) {
             this.metadataCache.delete(file.path);
-            this.refreshMetadataCacheArray();
+            this.invalidateMetadataCacheArray();
         } else {
             this.logger.error("Metadata cache not initialized");
         }
@@ -223,7 +219,7 @@ export default class MetadataCache {
             const entry = this.metadataCache.get(file.path);
             if (entry && cache) {
                 entry.metadata = cache;
-                this.refreshMetadataCacheArray();
+                this.invalidateMetadataCacheArray();
             } else if (!entry) {
                 this.logger.warn(`No metadata cache entry found for file ${file.path}`);
             } else {
@@ -242,13 +238,8 @@ export default class MetadataCache {
      */
     private async renameEntry(newFile: TFile, oldPath: string) {
         if (this.metadataCache) {
-            const entry = this.metadataCache.get(oldPath);
-            if (entry) {
-                entry.file = newFile;
-                this.refreshMetadataCacheArray();
-            } else {
-                this.logger.warn(`No metadata cache entry found for file ${oldPath}`);
-            }
+            this.metadataCache.delete(oldPath);
+            this.addEntry(newFile);
         } else {
             this.logger.error("Metadata cache not initialized");
         }
@@ -261,7 +252,7 @@ export default class MetadataCache {
      * @param oldPath Old path of the file
      */
     private renameEventHandler(file: TFile, oldPath: string) {
-        this.logger.debug(`File ${file.path} renamed to ${oldPath}`);
+        this.logger.debug(`File ${oldPath} renamed to ${file.path}`);
         this.renameEntry(file, oldPath);
     }
 

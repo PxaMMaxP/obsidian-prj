@@ -4,7 +4,7 @@ import Lng from "src/classes/Lng";
 import Helper from "../Helper";
 import Global from "src/classes/Global";
 import { ProjectModel } from "src/models/ProjectModel";
-import { Priority, Status } from "src/types/PrjTypes";
+import PrjTypes, { } from "src/types/PrjTypes";
 import { TFile } from "obsidian";
 import path from "path";
 
@@ -27,25 +27,19 @@ export default class CreateNewProjectModal extends BaseModalForm {
     public async evaluateForm(result: IFormResult): Promise<ProjectModel | undefined> {
         if (result.status !== "ok" || !result.data) return;
 
-        if (!result.data.title || typeof result.data.title !== "string") {
-            this.logger.error("No title provided");
-            return;
-        }
-        if (!result.data.tags || !Array.isArray(result.data.tags)) {
-            this.logger.error("No tags provided");
-            return;
-        }
+        (result.data.title ?? (() => { this.logger.error("No title provided"); return; })());
+        (result.data.tags ?? (() => { this.logger.error("No tags provided"); return; })());
 
-        const acronym = Helper.generateAcronym(result.data.title);
+        const acronym = Helper.generateAcronym(result.data.title as string);
         const mainTag = {
-            tag: "",
-            postfix: 0,
+            tag: undefined as string | undefined,
+            postfix: undefined as number | undefined,
             get fullTag() {
                 return this.tag + (this.postfix ? this.postfix : "");
             }
         };
         const baseTag = this.settings.baseTag;
-        result.data.tags = result.data.tags.map((tag, index) => {
+        result.data.tags = (result.data.tags as string[]).map((tag, index) => {
             if (index === 0) {
                 if (tag.startsWith(baseTag)) {
                     mainTag.tag = `${tag}/${acronym}`
@@ -61,51 +55,33 @@ export default class CreateNewProjectModal extends BaseModalForm {
             return tag;
         });
 
-        if (!mainTag.tag) {
-            this.logger.error("No main tag provided");
-            return;
-        }
+        (mainTag.tag ?? (() => { this.logger.error("No main tag provided"); return; })());
 
         const project = new ProjectModel(undefined);
 
-        // Title
-        project.data.title = result.data.title;
+        project.data.title = result.data.title as string;
+        project.data.description = result.data.description as string ?? undefined;
+        project.changeStatus(result.data.status);
+        project.data.priority = PrjTypes.isValidPriority(result.data.priority);
+        project.data.due = result.data.dueDate as string ?? undefined;
 
-        // Description
-        if (result.data.description && typeof result.data.description === "string") {
-            project.data.description = result.data.description;
-        }
-
-        // Status
-        if (result.data.status && typeof result.data.status === "string") {
-            project.changeStatus(result.data.status as Status);
-        }
-
-        // Priority
-        if (result.data.priority && typeof result.data.priority === "number") {
-            project.data.priority = result.data.priority as Priority;
-        }
-
-        // Due Date
-        if (result.data.dueDate && typeof result.data.dueDate === "string") {
-            project.data.due = result.data.dueDate;
-        }
-
-        // Tags & Aliases
-        project.data.tags = result.data.tags;
+        project.data.tags = result.data.tags as string[];
         project.data.aliases = [`#${mainTag.fullTag}`];
 
         const projectFile = {
             filepath: `${this.settings.prjSettings.projectFolder}`,
             filename: `${acronym} - ${result.data.title}`,
-            postfix: null as number | null,
+            postfix: undefined as number | undefined,
             extension: `.md`,
-            file: null as TFile | null,
+            file: undefined as TFile | undefined,
             get fullPath() {
                 return path.join(this.filepath, this.filename + (this.postfix ? this.postfix : "") + this.extension);
             }
         };
 
+        /**
+         * Check if file already exists and add postfix if needed.
+         */
         projectFile.file = this.app.vault.getAbstractFileByPath(projectFile.fullPath) as TFile;
         if (projectFile.file) {
             projectFile.postfix = 0;
@@ -116,12 +92,19 @@ export default class CreateNewProjectModal extends BaseModalForm {
             }
         }
 
+        /**
+         * If a template is provided, use it to create the file.
+         */
         let template = "";
         if (this.global.settings.prjSettings.projectTemplate) {
-            // Read template file:
             const templateFile = this.app.vault.getAbstractFileByPath(this.global.settings.prjSettings.projectTemplate);
-            if (templateFile && templateFile instanceof TFile)
-                template = await this.app.vault.read(templateFile);
+            if (templateFile && templateFile instanceof TFile) {
+                try {
+                    template = await this.app.vault.read(templateFile);
+                } catch (error) {
+                    this.logger.error(`Error reading template file '${templateFile.path}'`, error);
+                }
+            }
         }
 
         const file = await this.app.vault.create(projectFile.fullPath, template);

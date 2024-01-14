@@ -2,12 +2,12 @@ import { Modal, Setting } from "obsidian";
 import Lng from "src/classes/Lng";
 import { Status } from "src/types/PrjTypes";
 import Helper from "../Helper";
-import StaticPrjTaskManagementModel from "../StaticModels/StaticPrjTaskManagementModel";
 import { PrjTaskManagementModel } from "src/models/PrjTaskManagementModel";
 import ProjectData from "src/types/ProjectData";
 import TaskData from "src/types/TaskData";
 import TopicData from "src/types/TopicData";
 import Global from "src/classes/Global";
+import API from "src/classes/API";
 
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
@@ -26,7 +26,7 @@ export default class ChangeStatusModal extends Modal {
         } else if (!Helper.isPrjTaskManagementFile(activeFile)) {
             return;
         }
-        const model = StaticPrjTaskManagementModel.getCorospondingModel(activeFile);
+        const model = API.prjTaskManagementModel.getCorospondingModel(activeFile);
         if (!model) {
             return;
         }

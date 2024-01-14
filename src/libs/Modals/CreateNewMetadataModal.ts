@@ -1,4 +1,3 @@
-import { TFile } from "obsidian";
 import path from "path";
 import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
@@ -7,11 +6,14 @@ import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
 import BaseModalForm from "./BaseModalForm";
 import Helper from "../Helper";
+import PrjTypes from "src/types/PrjTypes";
+import API from "src/classes/API";
 
 /**
  * Modal to create a new metadata file
  */
 export default class CreateNewMetadataModal extends BaseModalForm {
+    private fileCache = Global.getInstance().fileCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.
@@ -81,7 +83,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      * - checks if the file exists and is a PDF file,
      * - fills the metadata file with the form data,
      * - creates the metadata file and
-     * - returns the metadata file.
+     * - returns the metadata file if created successfully else undefined.
      */
     public async evaluateForm(result: IFormResult): Promise<DocumentModel | undefined> {
         if (!this.isApiAvailable()) return;
@@ -92,55 +94,23 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const document = new DocumentModel(undefined);
         document.data.type = "Metadata";
 
-        // SubType
-        if (result.data.subType &&
-            typeof result.data.subType === "string" &&
-            result.data.subType === "Cluster") {
-            document.data.subType = result.data.subType;
-        } else {
-            if (result.data.file && typeof result.data.file === "string") {
-                this.logger.trace(`Searching file '${result.data.file}'`);
-                const baseFile = Global.getInstance().fileCache.findFileByName(result.data.file);
-                if (!(baseFile && baseFile instanceof TFile)) {
-                    this.logger.warn(`File '${result.data.file}' not found`);
-                } else {
-                    document.setLinkedFile(baseFile, folder);
-                }
-            }
+        document.data.subType = PrjTypes.isValidFileSubType(result.data.subType);
+
+        if (!document.data.subType && result.data.file) {
+            const linkedFile = this.fileCache.findFirstFileByName(result.data.file as string);
+            document.setLinkedFile(linkedFile, folder);
         }
-        // Date
-        if (result.data.date && typeof result.data.date === "string") {
-            document.data.date = result.data.date;
-        }
-        // Date of delivery
-        if (result.data.dateOfDelivery && typeof result.data.dateOfDelivery === "string") {
-            document.data.dateOfDelivery = result.data.dateOfDelivery;
-        }
-        // Title
-        if (result.data.title && typeof result.data.title === "string") {
-            document.data.title = result.data.title;
-        }
-        // Description
-        if (result.data.description && typeof result.data.description === "string") {
-            document.data.description = result.data.description;
-        }
-        // Sender
-        if (result.data.sender && typeof result.data.sender === "string") {
-            document.data.sender = result.data.sender;
-        }
-        // Recipient
-        if (result.data.recipient && typeof result.data.recipient === "string") {
-            document.data.recipient = result.data.recipient;
-        }
-        // Hide
-        if (result.data.hide && typeof result.data.hide === "boolean") {
-            document.data.hide = result.data.hide;
-        }
-        // Tags
-        if (result.data.tags && Array.isArray(result.data.tags) || typeof result.data.tags === "string") {
-            document.data.tags = result.data.tags;
-        }
-        const newFileName = DocumentModel.api.generateMetadataFilename(document);
+
+        document.data.date = (result.data.date as string) ?? undefined;
+        document.data.dateOfDelivery = (result.data.dateOfDelivery as string) ?? undefined;
+        document.data.title = result.data.title as string ?? undefined;
+        document.data.description = result.data.description as string ?? undefined;
+        document.data.sender = result.data.sender as string ?? undefined;
+        document.data.recipient = result.data.recipient as string ?? undefined;
+        document.data.hide = result.data.hide as boolean ?? undefined;
+        document.data.tags = result.data.tags as string[] ?? undefined;
+
+        const newFileName = API.documentModel.generateMetadataFilename(document);
 
         const file = await this.app.vault.create(path.join(folder, `${newFileName}.md`), ``);
         document.file = file;

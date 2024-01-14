@@ -59,6 +59,10 @@ export default class Table {
         this._table.table.remove();
     }
 
+    /**
+     * Creates a structured table element with headers and body.
+     * @returns The structured table object containing the table, header, header row, header cells, body, and rows.
+     */
     private createTable(): StructedTable {
         const table = document.createElement('table');
         table.id = this._tableId;
@@ -475,6 +479,14 @@ export default class Table {
         });
     }
 
+    /**
+     * Toggles the specified classes on the given element.
+     * 
+     * @param element - The HTML element to toggle the classes on.
+     * @param classList - An array of classes to toggle.
+     * @param add - A boolean value indicating whether to add or remove the classes.
+     * @returns A boolean value indicating whether any changes were made to the element's class list.
+     */
     private toggleClass(element: HTMLElement, classList: string[], add: boolean): boolean {
         let changes = false;
         const presentClasses = element.classList;
@@ -519,6 +531,10 @@ export default class Table {
         }
     }
 
+    /**
+     * Changes the column class of the table header and corresponding cells.
+     * @param header - The table header object.
+     */
     private changeColumnClass(header: TableHeader): void {
         const columnIndex = this._headers.findIndex(headerItem => headerItem.text === header.text);
         const oldHeaderClasses = this._headers[columnIndex].headerClass;
@@ -535,6 +551,12 @@ export default class Table {
         });
     }
 
+    /**
+     * Makes the input string safe for use as an ID.
+     * 
+     * @param input - The input string to be made safe.
+     * @returns The safe ID string.
+     */
     private makeSafeForId(input: string): string {
         let result = '';
 
@@ -560,12 +582,27 @@ export default class Table {
     }
 }
 
+/**
+ * Represents the header of a table.
+ */
 export type TableHeader = {
+    /**
+     * The text displayed in the header.
+     */
     text: string;
+    /**
+     * The CSS classes applied to the header.
+     */
     headerClass: string[] | undefined;
+    /**
+     * The CSS classes applied to the column.
+     */
     columnClass: string[] | undefined;
 }
 
+/**
+ * Represents a structured table.
+ */
 export type StructedTable = {
     table: HTMLTableElement;
     header: HTMLTableSectionElement;
@@ -575,18 +612,39 @@ export type StructedTable = {
     rows: HTMLTableRowElement[];
 }
 
+/**
+ * Represents a placeholder for a table row.
+ */
 type RowPlaceholder = {
     rowUid: string;
     row: HTMLTableRowElement;
 }
 
+/**
+ * Represents a row in a table.
+ */
 export type Row = {
+    /**
+     * The unique identifier of the row.
+     */
     rowUid: string;
+    /**
+     * The data contained in the row, represented as an array of DocumentFragments.
+     */
     rowData: DocumentFragment[];
+    /**
+     * The list of CSS class names applied to the row.
+     */
     rowClassList: string[] | undefined;
+    /**
+     * Indicates whether the row is hidden or not.
+     */
     hidden: boolean;
 }
 
+/**
+ * Represents the state of a row in a table.
+ */
 export type RowsState = {
     rowUid: string;
     hidden: boolean;
