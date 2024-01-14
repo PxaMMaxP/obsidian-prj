@@ -17,6 +17,7 @@ import { TaskModel } from "src/models/TaskModel";
 import { Priority, Status } from "src/types/PrjTypes";
 import ProjectComponents from "./InnerComponents/ProjectComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
+import API from "src/classes/API";
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<PrjTaskManagementModel<TaskData | TopicData | ProjectData>> {
     protected settings: ProjectBlockRenderSettings = {
@@ -71,7 +72,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         this.grayOutHeader();
         this.models = (await getModelsPromise);
 
-        PrjTaskManagementModel.sortModelsByUrgency(this.models as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[]);
+        API.prjTaskManagementModel.sortModelsByUrgency(this.models as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[]);
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();

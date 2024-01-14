@@ -7,6 +7,7 @@ import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/Mo
 import BaseModalForm from "./BaseModalForm";
 import Helper from "../Helper";
 import PrjTypes from "src/types/PrjTypes";
+import API from "src/classes/API";
 
 /**
  * Modal to create a new metadata file
@@ -109,7 +110,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         document.data.hide = result.data.hide as boolean ?? undefined;
         document.data.tags = result.data.tags as string[] ?? undefined;
 
-        const newFileName = DocumentModel.api.generateMetadataFilename(document);
+        const newFileName = API.documentModel.generateMetadataFilename(document);
 
         const file = await this.app.vault.create(path.join(folder, `${newFileName}.md`), ``);
         document.file = file;

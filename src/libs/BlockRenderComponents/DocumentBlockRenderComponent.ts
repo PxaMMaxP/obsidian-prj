@@ -10,6 +10,7 @@ import SearchInput from "./InnerComponents/SearchInput";
 import Helper from "../Helper";
 import DocumentComponents from "./InnerComponents/DocumentComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
+import API from "src/classes/API";
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -73,7 +74,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         this.grayOutHeader();
         this.models = (await documentsPromise);
 
-        DocumentModel.api.sortDocumentsByDateDesc(this.models);
+        API.documentModel.sortDocumentsByDateDesc(this.models);
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();

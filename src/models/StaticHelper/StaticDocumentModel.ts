@@ -1,8 +1,8 @@
 import { TFile } from "obsidian";
 import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
-import { DocumentModel } from "src/models/DocumentModel";
-import Helper from "../../libs/Helper";
+import Helper from "src/libs/Helper";
+import { DocumentModel } from "../DocumentModel";
 
 /**
  * Static API for DocumentModel

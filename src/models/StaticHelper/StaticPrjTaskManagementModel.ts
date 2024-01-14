@@ -1,18 +1,18 @@
 import { TFile } from "obsidian";
 import Global from "src/classes/Global";
-import { PrjTaskManagementModel } from "src/models/PrjTaskManagementModel";
-import { ProjectModel } from "src/models/ProjectModel";
-import { TaskModel } from "src/models/TaskModel";
-import { TopicModel } from "src/models/TopicModel";
 import { Status } from "src/types/PrjTypes";
 import ProjectData from "src/types/ProjectData";
 import TaskData from "src/types/TaskData";
 import TopicData from "src/types/TopicData";
+import { PrjTaskManagementModel } from "../PrjTaskManagementModel";
+import { ProjectModel } from "../ProjectModel";
+import { TaskModel } from "../TaskModel";
+import { TopicModel } from "../TopicModel";
 
 /**
  * Represents a static helper class for managing project task models.
  */
-export default class StaticPrjTaskManagementModel {
+export class StaticPrjTaskManagementModel {
     /**
      * Retrieves the corresponding model based on the file type.
      * @param file The file for which to retrieve the corresponding model.
@@ -44,21 +44,21 @@ export default class StaticPrjTaskManagementModel {
     }
 
     /**
- * Sorts the models by urgency descending
- * @param documents Array of DocumentModels to sort
- * @remarks This function sorts the array in place
- * @see {@link statusToNumber}
- * @see {@link calculateUrgency}
- * @see {@link getLastHistoryDate}
- * @remarks The sorting is done as follows:
- * - If both are `done`, sort by last history entry
- * - If `a` or `b` is done, sort it lower
- * - Both are not done, sort by urgency
- * - Both have the same urgency, sort by status
- * - Both have the same status, sort by priority
- * - Fallback to sorting by last history entry
- * - Fallback to stop sorting
- */
+     * Sorts the models by urgency descending
+     * @param documents Array of DocumentModels to sort
+     * @remarks This function sorts the array in place
+     * @see {@link statusToNumber}
+     * @see {@link calculateUrgency}
+     * @see {@link getLastHistoryDate}
+     * @remarks The sorting is done as follows:
+     * - If both are `done`, sort by last history entry
+     * - If `a` or `b` is done, sort it lower
+     * - Both are not done, sort by urgency
+     * - Both have the same urgency, sort by status
+     * - Both have the same status, sort by priority
+     * - Fallback to sorting by last history entry
+     * - Fallback to stop sorting
+     */
     public static sortModelsByUrgency(models: (PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[]): void {
         models.sort((a, b) => {
             // If both are `done`, sort by last history entry

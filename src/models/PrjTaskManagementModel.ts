@@ -4,16 +4,13 @@ import IPrjModel from "../interfaces/IPrjModel";
 import IPrjData from "../interfaces/IPrjData";
 import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
 import PrjTypes, { Status } from "src/types/PrjTypes";
-import ProjectData from "src/types/ProjectData";
+import API from "src/classes/API";
 import TaskData from "src/types/TaskData";
+import ProjectData from "src/types/ProjectData";
 import TopicData from "src/types/TopicData";
-import StaticPrjTaskManagementModel from "./StaticHelper/StaticPrjTaskManagementModel";
+
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> extends BaseModel<T> implements IPrjModel<T> {
-    /**
-     * Static API for PrjTaskManagementModel
-     */
-    public static api = StaticPrjTaskManagementModel;
 
     constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
         super(file, ctor, undefined);
@@ -71,6 +68,10 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
         }
     }
 
+    public getUrgency(): number {
+        return API.prjTaskManagementModel.calculateUrgency(this as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>));
+    }
+
     /**
      * Add a new history entry to the model.
      * @param status The status to add to the history. If not provided, the current status of the model will be used. 
@@ -94,12 +95,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
         });
     }
 
-
-
-    public getUrgency(): number {
-        return StaticPrjTaskManagementModel.calculateUrgency(this as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>));
-    }
-
     /**
      * Returns the tags of the model as an array of strings
      * @returns Array of strings containing the tags
@@ -117,6 +112,5 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
 
         return formattedTags;
     }
-
 
 }

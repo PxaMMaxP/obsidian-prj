@@ -6,13 +6,8 @@ import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
 import Global from "../classes/Global";
 import Helper from "../libs/Helper";
-import { StaticDocumentModel } from "src/models/StaticHelper/StaticDocumentModel";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
-    /**
-     * Static API for DocumentModel
-     */
-    public static api = StaticDocumentModel;
 
     private fileCache = Global.getInstance().fileCache;
 
