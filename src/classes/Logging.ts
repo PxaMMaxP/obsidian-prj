@@ -61,7 +61,7 @@ export default class Logging {
      * @param args - The arguments to be logged.
      */
     private logWithPrefix(level: Exclude<LoggingLevel, "none">, prefix: string, args: any[]) {
-        args.unshift(this.constructLogMessage(prefix));
+        args.unshift(prefix);
         (this[level] as (...args: any[]) => void)(...args);
     }
 
