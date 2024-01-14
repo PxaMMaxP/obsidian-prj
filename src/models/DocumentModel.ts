@@ -6,7 +6,7 @@ import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
 import Global from "../classes/Global";
 import Helper from "../libs/Helper";
-import { StaticDocumentModel } from "src/libs/StaticModels/StaticDocumentModel";
+import { StaticDocumentModel } from "src/models/StaticHelper/StaticDocumentModel";
 
 export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
     /**
@@ -73,9 +73,12 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
      * Returns the file contents of the document
      * @returns String containing the file contents
      */
-    public async getFileContents(): Promise<string> {
-        return this.app.vault.read(this.file);
-
+    public async getFileContents(): Promise<string | undefined> {
+        try {
+            return this.app.vault.read(this.file);
+        } catch (error) {
+            this.logger.error(error);
+        }
     }
 
     public getCorospondingSymbol(): string {

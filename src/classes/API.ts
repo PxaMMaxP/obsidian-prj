@@ -1,10 +1,10 @@
 import Global from "src/classes/Global";
 import Helper from "src/libs/Helper";
-import { StaticDocumentModel } from "src/libs/StaticModels/StaticDocumentModel";
+import { DocumentModel } from "src/models/DocumentModel";
 
 export default class API {
     public global: Global
-    public documentModel = StaticDocumentModel;
+    public documentModel = DocumentModel.api;
     public helper = Helper;
 
     constructor() {
