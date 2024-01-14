@@ -104,10 +104,14 @@ export type Field = {
     input: Input;
 }
 
-export type Input = TextInput | TextareaInput | DateInput | DocumentBlock | SliderInput | SelectInput | DataViewInput | ToggleInput | TagInput;
+export type Input = TextInput | TextareaInput | DateInput | DocumentBlock | Time | SliderInput | SelectInput | DataViewInput | ToggleInput | TagInput;
 
 export type TextInput = {
     type: 'text';
+}
+
+export type Time = {
+    type: 'time';
 }
 
 export type DocumentBlock = {
