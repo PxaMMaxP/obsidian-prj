@@ -11,6 +11,7 @@ import Helper from "../Helper";
 import DocumentComponents from "./InnerComponents/DocumentComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
 import API from "src/classes/API";
+import { FileMetadata } from "../MetadataCache";
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -42,7 +43,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Subject"), headerClass: [], columnClass: [] },
         { text: Lng.gt("SendRecip"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("Content"), headerClass: [], columnClass: ["font-xsmall"] },
+        { text: Lng.gt("Content description"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("DeliveryDate"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
     ];
@@ -67,7 +68,10 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     protected async draw(): Promise<void> {
         const startTime = Date.now();
 
-        const documentsPromise = this.getModels();
+        const documentsPromise = super.getModels(
+            ['Metadata'],
+            this.settings.tags,
+            (metadata: FileMetadata) => new DocumentModel(metadata.file));
         await super.draw();
         await this.buildTable();
         await this.buildHeader();
@@ -484,46 +488,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                     break;
             }
         });
-    }
-
-    /**
-     * Returns the models for the table.
-     * @returns The models for the table.
-     * @remarks - The models are the documents.
-     * - The documents are filtered by the `tags` setting. 
-     * If tags are empty, all documents are returned, 
-     * else only the documents with the tags are returned.
-     */
-    protected async getModels(): Promise<DocumentModel[]> {
-        const templateFolder = this.global.settings.templateFolder;
-        const allDocumentFiles = this.metadataCache.cache.filter(file => {
-            const defaultFilter = file.metadata.frontmatter?.type === "Metadata" &&
-                file.file.path !== this.processorSettings.source &&
-                !file.file.path.startsWith(templateFolder);
-            if (this.settings.tags.length > 0) {
-                const tagFilter = Helper.isTagIncluded(this.settings.tags, file.metadata.frontmatter?.tags);
-                return defaultFilter && tagFilter;
-            }
-            return defaultFilter;
-        });
-        const documents = allDocumentFiles.map(file => new DocumentModel(file.file));
-        return documents;
-    }
-
-    /**
-     * Returns if the file tags are included in the setting tags.
-     * @param fileTags The tags of the file.
-     * @param settingTags The tags of the settings.
-     * @returns If the file tags are included in the setting tags.
-     * @remarks - If the file tags are an array, one tag must be included.
-     * - If the file tags are a string, the string must be included.
-     */
-    private isTagIncluded(fileTags: string | string[], settingTags: string[]): boolean {
-        if (Array.isArray(fileTags)) {
-            return fileTags.some(tag => settingTags.includes(tag));
-        } else {
-            return settingTags.includes(fileTags);
-        }
     }
 
 }

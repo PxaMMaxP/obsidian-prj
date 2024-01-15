@@ -6,6 +6,8 @@ import Helper from "../Helper";
 import RedrawableBlockRenderComponent from "./RedrawableBlockRenderComponent";
 import IPrjModel from "src/interfaces/IPrjModel";
 import Lng from "src/classes/Lng";
+import { FileType } from "src/types/PrjTypes";
+import { FileMetadata } from "../MetadataCache";
 
 export default abstract class TableBlockRenderComponent<T extends IPrjModel<unknown>> implements RedrawableBlockRenderComponent {
     //#region General properties
@@ -115,9 +117,35 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
         return Helper.generateUID(model.file.path);
     }
 
+
     /**
-     * Returns the models.
-     * @remarks Override this method to return the models.
+     * Retrieves models based on the specified file types, tags, and model factory.
+     * 
+     * @param types - The file types to filter by.
+     * @param tags - The tags to filter by.
+     * @param modelFactory - The factory function to create models from file metadata.
+     * @returns A promise that resolves to an array of models.
      */
-    protected abstract getModels(): Promise<T[]>
+    protected getModels(types: FileType[], tags: string[], modelFactory: (metadata: FileMetadata) => T | undefined): Promise<T[]> {
+        const templateFolder = this.global.settings.templateFolder;
+        const allDocumentFiles = this.metadataCache.cache.filter(file => {
+            const typeFilter = Helper.isTypeIncluded(types, file.metadata.frontmatter?.type);
+            const thisFileAndTemplateFilter = file.file.path !== this.processorSettings.source &&
+                !file.file.path.startsWith(templateFolder);
+            if (tags.length > 0) {
+                const tagFilter = Helper.isTagIncluded(tags, file.metadata.frontmatter?.tags);
+                return thisFileAndTemplateFilter && typeFilter && tagFilter;
+            }
+            return thisFileAndTemplateFilter && typeFilter;
+        });
+
+        const models: T[] = [];
+        for (const file of allDocumentFiles) {
+            const model = modelFactory(file);
+            if (model)
+                models.push(model);
+        }
+
+        return Promise.resolve(models);
+    }
 }

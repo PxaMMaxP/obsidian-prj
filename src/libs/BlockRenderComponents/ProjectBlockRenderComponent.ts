@@ -11,13 +11,12 @@ import FilterButton from "./InnerComponents/FilterButton";
 import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
 import SearchInput from "./InnerComponents/SearchInput";
 import Helper from "../Helper";
-import { TopicModel } from "src/models/TopicModel";
-import { ProjectModel } from "src/models/ProjectModel";
-import { TaskModel } from "src/models/TaskModel";
 import { Priority, Status } from "src/types/PrjTypes";
 import ProjectComponents from "./InnerComponents/ProjectComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
 import API from "src/classes/API";
+import { FileMetadata } from "../MetadataCache";
+import { StaticPrjTaskManagementModel } from "src/models/StaticHelper/StaticPrjTaskManagementModel";
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<PrjTaskManagementModel<TaskData | TopicData | ProjectData>> {
     protected settings: ProjectBlockRenderSettings = {
@@ -65,7 +64,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     protected async draw(): Promise<void> {
         const startTime = Date.now();
 
-        const getModelsPromise = this.getModels();
+        const getModelsPromise = super.getModels(
+            ['Topic', 'Project', 'Task'],
+            this.settings.tags,
+            (metadata: FileMetadata) => StaticPrjTaskManagementModel.getCorospondingModel(metadata.file));
         await super.draw();
         await this.buildTable();
         await this.buildHeader();
@@ -417,37 +419,6 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
                     break;
             }
         });
-    }
-
-    protected async getModels(): Promise<(PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[]> {
-        const templateFolder = this.global.settings.templateFolder;
-        const allModelFiles = this.metadataCache.cache.filter(file => {
-            const defaultFilter = (file.metadata.frontmatter?.type === "Topic" || file.metadata.frontmatter?.type === "Project" || file.metadata.frontmatter?.type === "Task") &&
-                file.file.path !== this.processorSettings.source &&
-                !file.file.path.startsWith(templateFolder);
-            if (this.settings.tags.length > 0) {
-                const tagFilter = Helper.isTagIncluded(this.settings.tags, file.metadata.frontmatter?.tags);
-                return defaultFilter && tagFilter;
-            }
-            return defaultFilter;
-        });
-        const models: (PrjTaskManagementModel<TaskData | TopicData | ProjectData>)[] = [];
-        allModelFiles.forEach(file => {
-            switch (file.metadata.frontmatter?.type) {
-                case "Topic":
-                    models.push(new TopicModel(file.file) as PrjTaskManagementModel<TopicData>);
-                    break;
-                case "Project":
-                    models.push(new ProjectModel(file.file) as PrjTaskManagementModel<ProjectData>);
-                    break;
-                case "Task":
-                    models.push(new TaskModel(file.file) as PrjTaskManagementModel<TaskData>);
-                    break;
-                default:
-                    break;
-            }
-        });
-        return models;
     }
 }
 
