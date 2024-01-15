@@ -7,9 +7,9 @@ import Global from "../classes/Global";
 import DocumentBlockRenderComponent from "./BlockRenderComponents/DocumentBlockRenderComponent";
 import { IProcessorSettings } from "../interfaces/IProcessorSettings";
 import ProjectBlockRenderComponent from "./BlockRenderComponents/ProjectBlockRenderComponent";
-import NoteBlockRenderComponent from "./BlockRenderComponents/NoteBlockRenderComponent";
 import Logging from "src/classes/Logging";
 import Helper from "./Helper";
+import NoteBlockRenderComponent from "./BlockRenderComponents/NoteBlockRenderComponent";
 
 class mdRenderChild extends MarkdownRenderChild {
     constructor(container: HTMLElement) {
@@ -155,17 +155,17 @@ export default class MarkdownBlockProcessor {
         if (setting && show) {
             switch (setting.type) {
                 case "Documents":
-                    const documentBlock = new DocumentBlockRenderComponent(setting)
+                    const documentBlock = new DocumentBlockRenderComponent(setting);
                     await documentBlock.build();
                     break;
                 case "Tasks":
                 case "Projects":
                 case "Topics":
-                    const projectBlock = new ProjectBlockRenderComponent(setting)
+                    const projectBlock = new ProjectBlockRenderComponent(setting);
                     await projectBlock.build();
                     break;
                 case "Notes":
-                    const noteBlock = new NoteBlockRenderComponent(setting)
+                    const noteBlock = new NoteBlockRenderComponent(setting);
                     await noteBlock.build();
                     break;
                 case "Debug":
