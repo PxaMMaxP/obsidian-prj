@@ -1,7 +1,7 @@
 import { DocumentModel } from "src/models/DocumentModel";
-import TableBlockRenderComponent from "./TableBlockRenderComponent";
+import TableBlockRenderComponent, { BlockRenderSettings } from "./TableBlockRenderComponent";
 import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
-import Search, { SearchTermsArray } from "../Search";
+import Search from "../Search";
 import Table, { Row, RowsState, TableHeader } from "../Table";
 import Lng from "src/classes/Lng";
 import FilterButton from "./InnerComponents/FilterButton";
@@ -19,12 +19,8 @@ import { FileMetadata } from "../MetadataCache";
  * @see {@link create} for details about creating a document block render component.
  */
 export default class DocumentBlockRenderComponent extends TableBlockRenderComponent<DocumentModel> {
-    protected settings: DocumentBlockRenderSettings = {
+    protected settings: BlockRenderSettings = {
         tags: [],
-        docSymbol: this.global.settings.documentSettings.symbol,
-        hideDocSymbol: this.global.settings.documentSettings.hideSymbol,
-        clusterSymbol: this.global.settings.documentSettings.clusterSymbol,
-        noneDocSymbol: "diamond",
         filter: ["Documents"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
@@ -112,7 +108,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const documentFilterButton = FilterButton.create(
             this.component,
             "Documents",
-            this.settings.docSymbol,
+            this.globalSettings.documentSettings.symbol,
             this.settings.filter.includes("Documents"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(documentFilterButton);
@@ -120,7 +116,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const hideDocumentFilterButton = FilterButton.create(
             this.component,
             "HideDocuments",
-            this.settings.hideDocSymbol,
+            this.globalSettings.documentSettings.hideSymbol,
             this.settings.filter.includes("HideDocuments"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(hideDocumentFilterButton);
@@ -128,7 +124,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const clusterFilterButton = FilterButton.create(
             this.component,
             "Cluster",
-            this.settings.clusterSymbol,
+            this.globalSettings.documentSettings.clusterSymbol,
             this.settings.filter.includes("Cluster"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(clusterFilterButton);
@@ -353,7 +349,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             summaryRelatedFiles,
             this.component,
             documentModel,
-            this.settings.noneDocSymbol,
+            this.globalSettings.noneSymbol,
             this.global.settings.dateFormatShort);
 
         // Row 5 -- Date of delivery
@@ -448,48 +444,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         return super.redraw();
     }
 
-    /**
-     * Parses the settings given by the user per YAML in code block.
-     * @remarks The settings are parsed and saved in the `settings` property.
-     * @remarks Settings:
-     * - `tags`: Can be `all`, `this` or a list of tags.
-     * `this` means the tags of the current document.
-     * - `maxDocuments`: The maximum number of documents to show on same time.
-     * - `filter`: Must be an array. You can add the following values:
-     * `Documents`, `HideDocuments` or `Cluster`. The values present the document types.
-     * All values that are in the array are shown.
-     */
-    protected parseSettings(): void {
-        this.processorSettings.options.forEach(option => {
-            switch (option.label) {
-                case "tags":
-                    if (option.value === "all") {
-                        this.settings.tags = [];
-                    } else if (option.value === "this") {
-                        const tags = this.processorSettings?.frontmatter?.tags;
-                        if (Array.isArray(tags)) {
-                            this.settings.tags.push(...tags);
-                        } else if (tags) {
-                            this.settings.tags.push(tags);
-                        } else {
-                            this.settings.tags = ["NOTAGSNODATA"];
-                        }
-                    } else {
-                        this.settings.tags = option.value;
-                    }
-                    break;
-                case "maxDocuments":
-                    this.settings.maxDocuments = option.value;
-                    break;
-                case "filter":
-                    this.settings.filter = option.value;
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
-
 }
 
 /**
@@ -499,71 +453,3 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
  * - `Cluster` - Show clusters.
  */
 type FilteredDocument = "Documents" | "HideDocuments" | "Cluster";
-
-/**
- * The settings for the document block render component.
- * @remarks The settings are parsed from the YAML options in the code block.
- */
-type DocumentBlockRenderSettings = {
-    /**
-     * The tags associated with the documents.
-     * Can be `all`, `this` or a list of specific tags.
-     * `all` includes all documents regardless of their tags.
-     * `this` includes documents that have the same tags as the current document.
-     */
-    tags: string[],
-
-    /**
-     * Symbol representing a document.
-     */
-    docSymbol: string,
-
-    /**
-     * Symbol used to indicate hidden documents.
-     */
-    hideDocSymbol: string,
-
-    /**
-     * Symbol representing a cluster of documents.
-     */
-    clusterSymbol: string,
-
-    /**
-     * Symbol used for documents that don't fit any other category.
-     */
-    noneDocSymbol: string,
-
-    /**
-     * Filter for the document types to display.
-     * Must be an array containing any of the following values:
-     * `Documents`, `HideDocuments`, `Cluster`.
-     * Only the document types listed in the array will be shown.
-     */
-    filter: FilteredDocument[],
-
-    /**
-     * The maximum number of documents to show at the same time.
-     */
-    maxDocuments: number,
-
-    /**
-     * Search terms array used to filter the documents.
-     * If undefined, no search filter is applied.
-     */
-    search: SearchTermsArray | undefined,
-
-    /**
-     * The search text.
-     */
-    searchText: string | undefined,
-
-    /**
-     * The number of documents to process in one batch.
-     */
-    batchSize: number,
-
-    /**
-     * The time to wait (in milliseconds) between processing batches of documents.
-     */
-    sleepBetweenBatches: number
-};

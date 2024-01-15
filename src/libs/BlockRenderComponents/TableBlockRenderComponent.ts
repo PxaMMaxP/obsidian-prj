@@ -8,10 +8,12 @@ import IPrjModel from "src/interfaces/IPrjModel";
 import Lng from "src/classes/Lng";
 import { FileType } from "src/types/PrjTypes";
 import { FileMetadata } from "../MetadataCache";
+import { SearchTermsArray } from "../Search";
 
 export default abstract class TableBlockRenderComponent<T extends IPrjModel<unknown>> implements RedrawableBlockRenderComponent {
     //#region General properties
     protected global = Global.getInstance();
+    protected globalSettings = Global.getInstance().settings;
     protected logger = this.global.logger;
     protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
@@ -19,7 +21,7 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     //#region Component properties
     protected processorSettings: IProcessorSettings;
     protected component: MarkdownRenderChild;
-    protected settings: unknown;
+    protected settings: BlockRenderSettings;
     //#endregion
     //#region Models
     protected models: T[];
@@ -108,10 +110,45 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     }
 
     /**
-     * Parse the settings from the Markdown code block.
-     * @remarks Override this method to parse the settings.
+     * Parses the settings given by the user per YAML in code block.
+     * @remarks The settings are parsed and saved in the `settings` property.
+     * @remarks Settings:
+     * - `tags`: Can be `all`, `this` or a list of tags.
+     * `this` means the tags of the current document.
+     * - `maxDocuments`: The maximum number of documents to show on same time.
+     * - `filter`: Must be an array. The values present the document types.
+     *   All values that are in the array are shown.
      */
-    protected abstract parseSettings(): void;
+    protected parseSettings(): void {
+        this.processorSettings.options.forEach(option => {
+            switch (option.label) {
+                case "tags":
+                    if (option.value === "all") {
+                        this.settings.tags = [];
+                    } else if (option.value === "this") {
+                        const tags = this.processorSettings?.frontmatter?.tags;
+                        if (Array.isArray(tags)) {
+                            this.settings.tags.push(...tags);
+                        } else if (tags) {
+                            this.settings.tags.push(tags);
+                        } else {
+                            this.settings.tags = ["NOTAGSNODATA"];
+                        }
+                    } else {
+                        this.settings.tags = option.value;
+                    }
+                    break;
+                case "maxDocuments":
+                    this.settings.maxDocuments = option.value;
+                    break;
+                case "filter":
+                    this.settings.filter = option.value;
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
 
     protected getUID(model: T): string {
         return Helper.generateUID(model.file.path);
@@ -149,3 +186,46 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
         return Promise.resolve(models);
     }
 }
+
+
+export type BlockRenderSettings = {
+    /**
+     * The tags associated with the documents.
+     * Can be `all`, `this` or a list of specific tags.
+     * `all` includes all documents regardless of their tags.
+     * `this` includes documents that have the same tags as the current document.
+     */
+    tags: string[],
+
+    /**
+     * Filter for the model types to display.
+     * Only the types listed in the array will be shown.
+     */
+    filter: unknown[],
+
+    /**
+     * The maximum number of models to show at the same time.
+     */
+    maxDocuments: number,
+
+    /**
+     * Search terms array used to filter the models.
+     * If undefined, no search filter is applied.
+     */
+    search: SearchTermsArray | undefined,
+
+    /**
+     * The search text.
+     */
+    searchText: string | undefined,
+
+    /**
+     * The number of models to process in one batch.
+     */
+    batchSize: number,
+
+    /**
+     * The time to wait (in milliseconds) between processing batches of models.
+     */
+    sleepBetweenBatches: number
+};

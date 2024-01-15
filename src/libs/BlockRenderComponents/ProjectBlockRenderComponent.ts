@@ -1,10 +1,10 @@
-import TableBlockRenderComponent from "./TableBlockRenderComponent";
+import TableBlockRenderComponent, { BlockRenderSettings } from "./TableBlockRenderComponent";
 import { PrjTaskManagementModel } from "src/models/PrjTaskManagementModel";
 import TaskData from "src/types/TaskData";
 import TopicData from "src/types/TopicData";
 import ProjectData from "src/types/ProjectData";
 import { IProcessorSettings } from "src/interfaces/IProcessorSettings";
-import Search, { SearchTermsArray } from "../Search";
+import Search from "../Search";
 import Table, { Row, RowsState, TableHeader } from "../Table";
 import Lng from "src/classes/Lng";
 import FilterButton from "./InnerComponents/FilterButton";
@@ -19,12 +19,8 @@ import { FileMetadata } from "../MetadataCache";
 import { StaticPrjTaskManagementModel } from "src/models/StaticHelper/StaticPrjTaskManagementModel";
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<PrjTaskManagementModel<TaskData | TopicData | ProjectData>> {
-    protected settings: ProjectBlockRenderSettings = {
+    protected settings: BlockRenderSettings = {
         tags: [],
-        topicSymbol: this.global.settings.prjSettings.topicSymbol,
-        projectSymbol: this.global.settings.prjSettings.projectSymbol,
-        taskSymbol: this.global.settings.prjSettings.taskSymbol,
-        otherSymbol: "diamond",
         filter: ["Topic", "Project", "Task"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
@@ -104,7 +100,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const topicFilterButton = FilterButton.create(
             this.component,
             "Topic",
-            this.settings.topicSymbol,
+            this.globalSettings.prjSettings.topicSymbol,
             this.settings.filter.includes("Topic"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(topicFilterButton);
@@ -112,7 +108,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const projectFilterButton = FilterButton.create(
             this.component,
             "Project",
-            this.settings.projectSymbol,
+            this.globalSettings.prjSettings.projectSymbol,
             this.settings.filter.includes("Project"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(projectFilterButton);
@@ -120,7 +116,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const taskFilterButton = FilterButton.create(
             this.component,
             "Task",
-            this.settings.taskSymbol,
+            this.globalSettings.prjSettings.taskSymbol,
             this.settings.filter.includes("Task"),
             this.onFilterButton.bind(this));
         headerFilterButtons.appendChild(taskFilterButton);
@@ -389,37 +385,6 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         }
         return true;
     }
-
-    protected parseSettings(): void {
-        this.processorSettings.options.forEach(option => {
-            switch (option.label) {
-                case "tags":
-                    if (option.value === "all") {
-                        this.settings.tags = [];
-                    } else if (option.value === "this") {
-                        const tags = this.processorSettings?.frontmatter?.tags;
-                        if (Array.isArray(tags)) {
-                            this.settings.tags.push(...tags);
-                        } else if (tags) {
-                            this.settings.tags.push(tags);
-                        } else {
-                            this.settings.tags = ["NOTAGSNODATA"];
-                        }
-                    } else {
-                        this.settings.tags = option.value;
-                    }
-                    break;
-                case "maxDocuments":
-                    this.settings.maxDocuments = option.value;
-                    break;
-                case "filter":
-                    this.settings.filter = option.value;
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
 }
 
 /**
@@ -429,72 +394,3 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
  * - `Task` includes all tasks.
  */
 type FilteredModels = "Topic" | "Project" | "Task" | "Done";
-
-/**
- * The settings for the project block render component.
- * @remarks The settings are parsed from the YAML options in the code block.
- */
-type ProjectBlockRenderSettings = {
-    /**
-     * The tags associated with the documents.
-     * Can be `all`, `this` or a list of specific tags.
-     * `all` includes all documents regardless of their tags.
-     * `this` includes documents that have the same tags as the current document.
-     */
-    tags: string[],
-
-    /**
-     * Symbol representing a topic.
-     */
-    topicSymbol: string,
-
-    /**
-     * Symbol representing a project.
-     */
-    projectSymbol: string,
-
-    /**
-     * Symbol representing a task.
-     */
-    taskSymbol: string,
-
-    /**
-     * Symbol used for documents that don't fit any other category.
-     */
-    otherSymbol: string,
-
-    /**
-     * Filter for the model types to display.
-     * Must be an array containing any of the following values:
-     * `Topic`, `Project`, `Task`.
-     * Only the types listed in the array will be shown.
-     */
-    filter: FilteredModels[],
-
-    /**
-     * The maximum number of models to show at the same time.
-     */
-    maxDocuments: number,
-
-    /**
-     * Search terms array used to filter the models.
-     * If undefined, no search filter is applied.
-     */
-    search: SearchTermsArray | undefined,
-
-
-    /**
-     * The search text.
-     */
-    searchText: string | undefined,
-
-    /**
-     * The number of models to process in one batch.
-     */
-    batchSize: number,
-
-    /**
-     * The time to wait (in milliseconds) between processing batches of models.
-     */
-    sleepBetweenBatches: number
-};
