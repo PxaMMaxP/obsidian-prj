@@ -50,7 +50,6 @@ export class ObserverChild extends MarkdownRenderChild {
      * Callback for the unload event.
      */
     override onunload(): void {
-        this.logger?.debug("On Unload");
         this.onUnload();
         super.onunload();
     }
@@ -159,7 +158,7 @@ export default class SingletonBlockProcessor {
      * @remarks Disconnect the observer.
      */
     private onUnloadCallback(): void {
-        this.logger?.debug("On Unload");
+        this.logger?.debug(`On Unload, UID: ${this.uid}`);
         this.observer?.disconnect();
     }
 
@@ -195,7 +194,7 @@ export default class SingletonBlockProcessor {
         this.observerChild = new ObserverChild(this.el, this.onUnload, this.logger);
 
         this.observer = new MutationObserver((mutations) => {
-            this.logger?.trace("Observer detect changes:", mutations);
+            this.logger?.trace("Observer detect changes:", mutations, `UID: ${this.uid}`);
             for (const mutation of mutations) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-mode') {
                     const newViewState = this.workspaceLeafState;
@@ -228,10 +227,10 @@ export default class SingletonBlockProcessor {
         preview: Element | undefined): boolean {
 
         if (blockViewState === "source" && source && preview) {
-            this.logger?.debug("Move preview to source");
+            this.logger?.debug("Move preview to source", `UID: ${this.uid}`);
             return this.moveChilds(preview, source);
         } else if (blockViewState === "preview" && source && preview) {
-            this.logger?.debug("Move source to preview");
+            this.logger?.debug("Move source to preview", `UID: ${this.uid}`);
             return this.moveChilds(source, preview);
         }
         return false;
@@ -276,10 +275,10 @@ export default class SingletonBlockProcessor {
         const sourceView = this.el.closest('.markdown-source-view');
         const readingView = this.el.closest('.markdown-reading-view');
         if (sourceView) {
-            (!logging) ? this.logger?.debug("CodeBlock View state: 'source'") : undefined;
+            (!logging) ? this.logger?.debug(`CodeBlock View state: 'source'`, `UID: ${this.uid}`) : undefined;
             return "source";
         } else if (readingView) {
-            (!logging) ? this.logger?.debug("CodeBlock View state: 'preview'") : undefined;
+            (!logging) ? this.logger?.debug(`CodeBlock View state: 'preview'`, `UID: ${this.uid}`) : undefined;
             return "preview";
         }
 
