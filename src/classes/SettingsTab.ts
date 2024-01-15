@@ -394,5 +394,24 @@ export class SettingTab extends PluginSettingTab {
                     this.plugin.settings.prjSettings.taskTemplate = value;
                     await this.plugin.saveSettings();
                 }));
+
+        // Sub Templates
+        new Setting(containerEl)
+            .setName('Sub Templates')
+            .setDesc('The Task Sub Templates. \nOne per line and Label and File separated by a semicolon.')
+            .addTextArea(text => text
+                .setPlaceholder('Sub Templates')
+                .setValue(this.plugin.settings.prjSettings.subTaskTemplates?.map((value) => `${value.label};${value.template}`).join('\n'))
+                .onChange(async (value) => {
+                    const lines = value.split('\n');
+                    this.plugin.settings.prjSettings.subTaskTemplates = lines.map((line) => {
+                        const parts = line.split(';');
+                        return {
+                            label: parts[0],
+                            template: parts[1]
+                        };
+                    });
+                    await this.plugin.saveSettings();
+                }));
     }
 }

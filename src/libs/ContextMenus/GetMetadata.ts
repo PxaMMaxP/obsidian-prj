@@ -59,7 +59,7 @@ export default class GetMetadata {
         this.logger.trace("Registering 'GetMetadata' commands");
         this.plugin.addCommand({
             id: "get-metadata-file",
-            name: Lng.gt("ShowMetadataFile"),
+            name: Lng.gt("Show Metadata File"),
             callback: () => {
                 GetMetadata.getInstance().invoke();
             },
@@ -84,7 +84,7 @@ export default class GetMetadata {
         if (metadataFile) {
             menu.addSeparator();
             menu.addItem((item) => {
-                item.setTitle(Lng.gt("ShowMetadataFile"))
+                item.setTitle(Lng.gt("Show Metadata File"))
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
                         await Helper.openFile(document.file);

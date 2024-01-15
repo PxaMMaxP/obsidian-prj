@@ -4,25 +4,25 @@ import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
 import Search from "../Search";
 import Table, { Row, RowsState, TableHeader } from "../Table";
 import Lng from "src/classes/Lng";
-import FilterButton from "./InnerComponents/FilterButton";
 import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
 import SearchInput from "./InnerComponents/SearchInput";
 import Helper from "../Helper";
-import DocumentComponents from "./InnerComponents/DocumentComponents";
 import GeneralComponents from "./InnerComponents/GeneralComponents";
 import API from "src/classes/API";
 import { FileMetadata } from "../MetadataCache";
+import { NoteModel } from "src/models/NoteModel";
+import ProjectComponents from "./InnerComponents/ProjectComponents";
+import EditableDataView from "../EditableDataView/EditableDataView";
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
  * @remarks This class provides methods to create and manage a document block render component.
  * @see {@link create} for details about creating a document block render component.
  */
-export default class DocumentBlockRenderComponent extends TableBlockRenderComponent<DocumentModel> {
-    private filterButtonDebounceTimer: NodeJS.Timeout;
+export default class NoteBlockRenderComponent extends TableBlockRenderComponent<NoteModel> {
     protected settings: BlockRenderSettings = {
         tags: [],
-        filter: ["Documents"],
+        filter: ["Note"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
@@ -36,12 +36,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * 
      */
     protected tableHeaders: TableHeader[] = [
-        { text: Lng.gt("DocumentType"), headerClass: [], columnClass: ["dont-decorate-link", "font-medium"] },
         { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("Subject"), headerClass: [], columnClass: [] },
-        { text: Lng.gt("SendRecip"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("Content description"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("DeliveryDate"), headerClass: [], columnClass: ["font-xsmall"] },
+        { text: Lng.gt("Notice"), headerClass: [], columnClass: [] },
+        { text: Lng.gt("Description"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
     ];
 
@@ -66,16 +63,16 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const startTime = Date.now();
 
         const documentsPromise = super.getModels(
-            ['Metadata'],
+            ['Note'],
             this.settings.tags,
-            (metadata: FileMetadata) => new DocumentModel(metadata.file));
+            (metadata: FileMetadata) => new NoteModel(metadata.file));
         await super.draw();
         await this.buildTable();
         await this.buildHeader();
         this.grayOutHeader();
         this.models = (await documentsPromise);
 
-        API.documentModel.sortDocumentsByDateDesc(this.models);
+        API.documentModel.sortDocumentsByDateDesc(this.models as unknown as DocumentModel[]);
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();
@@ -106,30 +103,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         filterLabel.classList.add('filter-symbol');
         filterLabel.textContent = Lng.gt("Filter");
 
-        const documentFilterButton = FilterButton.create(
-            this.component,
-            "Documents",
-            this.globalSettings.documentSettings.symbol,
-            this.settings.filter.includes("Documents"),
-            this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(documentFilterButton);
-
-        const hideDocumentFilterButton = FilterButton.create(
-            this.component,
-            "HideDocuments",
-            this.globalSettings.documentSettings.hideSymbol,
-            this.settings.filter.includes("HideDocuments"),
-            this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(hideDocumentFilterButton);
-
-        const clusterFilterButton = FilterButton.create(
-            this.component,
-            "Cluster",
-            this.globalSettings.documentSettings.clusterSymbol,
-            this.settings.filter.includes("Cluster"),
-            this.onFilterButton.bind(this));
-        headerFilterButtons.appendChild(clusterFilterButton);
-
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
             this.settings.maxDocuments,
@@ -142,28 +115,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             this.onSearch.bind(this),
             this.settings.searchText);
         headerFilterButtons.appendChild(searchBox);
-    }
-
-    /**
-     * This method is called when the filter button is clicked.
-     * @param type The type of the filter button.
-     * @param status The new status of the filter button.
-     * @remarks Runs the `onFilter` method.
-     */
-    private async onFilterButton(type: string, status: boolean): Promise<void> {
-        if (this.settings.filter.includes(type as FilteredDocument)) {
-            this.settings.filter = this.settings.filter.filter(v => v !== type);
-        } else {
-            this.settings.filter.push(type as FilteredDocument);
-        }
-        await this.onFilterDebounce();
-    }
-
-    private async onFilterDebounce(): Promise<void> {
-        clearTimeout(this.filterButtonDebounceTimer);
-        this.filterButtonDebounceTimer = setTimeout(async () => {
-            await this.onFilter();
-        }, 750);
     }
 
     /**
@@ -226,7 +177,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, undefined);
+            let hide = false;
             this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
             this.logger.trace(`Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`);
             if (visibleRows >= this.settings.maxDocuments) {
@@ -304,23 +255,15 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
     /**
      * Generates a table row for the given document.
-     * @param documentModel The document to generate the table row for.
+     * @param noteModel The document to generate the table row for.
      * @returns The generated table row.
      */
-    private async generateTableRow(documentModel: DocumentModel): Promise<Row> {
+    private async generateTableRow(noteModel: NoteModel): Promise<Row> {
         const rowClassList: string[] = [];
         const rowData: DocumentFragment[] = [];
-        const rowUid = this.getUID(documentModel);
+        const rowUid = this.getUID(noteModel);
 
-        // Row 0 -- Metadata Link
-        const metadataLink = document.createDocumentFragment();
-        rowData.push(metadataLink);
-        DocumentComponents.createCellMetadatalink(
-            metadataLink,
-            this.component,
-            documentModel);
-
-        // Row 1 -- Date
+        // Row 0 -- Date
         const date = document.createDocumentFragment();
         rowData.push(date);
         GeneralComponents.createCellDate(
@@ -328,64 +271,49 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             this.component,
             Lng.gt("DocumentDate"),
             this.global.settings.dateFormat,
-            () => documentModel.data.date ?? "na",
-            async (value: string) => documentModel.data.date = value);
+            () => noteModel.data.date ?? "na",
+            async (value: string) => noteModel.data.date = value);
 
-        // Row 2 -- File Link
+        // Row 1 -- File Link & Title
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
-        DocumentComponents.createCellFileLink(
-            fileLink,
-            this.component,
-            documentModel);
+        new EditableDataView(fileLink, this.component)
+            .addLink(link => link
+                .setValue(noteModel.data.title ?? "na")
+                .setTitle("Note")
+                .setLinkType("file")
+                .setFormator((value: string) => {
+                    return { href: `${noteModel.file.path}`, text: `${value}`, html: undefined };
+                })
+                .enableEditability()
+                .onSave((value: string) => {
+                    noteModel.data.title = value;
+                    return Promise.resolve();
+                }));
 
-        // Row 3 -- Sender Recipient
-        const senderRecipient = DocumentComponents.createCellSenderRecipient(
-            documentModel,
+        // Row 2 -- Description
+        const description = document.createDocumentFragment();
+        rowData.push(description);
+        ProjectComponents.createSummary(
+            description,
             this.component,
-            this.models);
-        rowData.push(senderRecipient);
+            noteModel.data.description ?? "",
+            async (value: string) => noteModel.data.description = value);
 
-        // Row 4 -- Summary & Related Files
-        const summaryRelatedFiles = document.createDocumentFragment();
-        rowData.push(summaryRelatedFiles);
-        DocumentComponents.createCellSummary(
-            documentModel,
-            this.component,
-            summaryRelatedFiles);
-        DocumentComponents.createRelatedFilesList(
-            summaryRelatedFiles,
-            this.component,
-            documentModel,
-            this.globalSettings.noneSymbol,
-            this.global.settings.dateFormatShort);
-
-        // Row 5 -- Date of delivery
-        const deliveryDate = document.createDocumentFragment();
-        rowData.push(deliveryDate);
-        GeneralComponents.createCellDate(
-            deliveryDate,
-            this.component,
-            Lng.gt("DeliveryDate"),
-            this.global.settings.dateFormat,
-            () => documentModel.data.dateOfDelivery ?? "na",
-            async (value: string) => documentModel.data.dateOfDelivery = value);
-
-        // Row 6 -- Tags
+        // Row 3 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
         GeneralComponents.createCellTags(
             tags,
             this.component,
-            documentModel.getTags());
+            noteModel.getTags());
 
-        const hide = this.getHideState(documentModel, undefined);
 
         const row = {
             rowUid,
             rowData,
             rowClassList,
-            hidden: hide
+            hidden: false
         };
         return row;
     }
@@ -404,7 +332,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
-        const hide = this.determineHideState(document);
+        const hide = false;
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
@@ -415,25 +343,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         }
 
         return hide; // Standard-Verhalten
-    }
-
-    /**
-     * Determines if the document should be hidden.
-     * @param document The document to check.
-     * @returns If the document should be hidden returns `true`, else `false`.
-     * @remarks - The document is hidden if the `filter` setting not includes the document type.
-     */
-    private determineHideState(document: DocumentModel): boolean {
-        if (this.settings.filter.includes("Documents") && document.data.hide !== true && document.data.subType !== "Cluster") {
-            return false;
-        }
-        if (this.settings.filter.includes("Cluster") && document.data.subType === "Cluster") {
-            return false;
-        }
-        if (this.settings.filter.includes("HideDocuments") && document.data.hide === true) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -453,11 +362,3 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     }
 
 }
-
-/**
- * The types of documents to show.
- * @remarks - `Documents` - Show documents.
- * - `HideDocuments` - Show hidden documents.
- * - `Cluster` - Show clusters.
- */
-type FilteredDocument = "Documents" | "HideDocuments" | "Cluster";

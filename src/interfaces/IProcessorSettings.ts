@@ -1,4 +1,4 @@
-import { FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
+import { Component, FrontMatterCache, MarkdownPostProcessorContext } from "obsidian";
 import { IProcessorOptions } from "src/interfaces/IProcessorOptions";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import MarkdownBlockProcessor from "src/libs/MarkdownBlockProcessor";
@@ -42,6 +42,12 @@ export interface IProcessorSettings {
      * @remarks - This property is used to pass the container to the processor.
      */
     container: HTMLElement;
+
+    /**
+     * The component of the processor.
+     * @remarks - This property is used to pass the component to the processor.
+     */
+    component: Component;
 
     /**
      * The context of the processor.

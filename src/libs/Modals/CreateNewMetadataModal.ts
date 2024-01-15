@@ -141,7 +141,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
                 source: "fixed",
                 options: [
                     { value: "none", label: Lng.gt("None") },
-                    { value: "Cluster", label: Lng.gt("Cluster") }
+                    { value: "Cluster", label: Lng.gt("Metadata Cluster") }
                 ]
             }
         };

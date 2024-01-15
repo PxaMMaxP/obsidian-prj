@@ -7,6 +7,20 @@ import Global from "../classes/Global";
 import DocumentBlockRenderComponent from "./BlockRenderComponents/DocumentBlockRenderComponent";
 import { IProcessorSettings } from "../interfaces/IProcessorSettings";
 import ProjectBlockRenderComponent from "./BlockRenderComponents/ProjectBlockRenderComponent";
+import NoteBlockRenderComponent from "./BlockRenderComponents/NoteBlockRenderComponent";
+import Logging from "src/classes/Logging";
+import Helper from "./Helper";
+
+class mdRenderChild extends MarkdownRenderChild {
+    constructor(container: HTMLElement) {
+        super(container);
+    }
+
+    override onunload(): void {
+        console.trace("On Unload");
+        super.onunload();
+    }
+}
 
 /**
  * Class for the markdown block processor.
@@ -15,6 +29,12 @@ export default class MarkdownBlockProcessor {
 
     static async parseSource(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         const startTime = Date.now();
+        const global = Global.getInstance();
+        await global.metadataCache.waitForCacheReady();
+        const logger = Logging.getLogger("BlockProcessor");
+        logger.trace(`DocId: ${ctx.docId}`);
+
+        const uid = Helper.generateUID(source.trim(), 15);
         const setting: IProcessorSettings = yaml.load(source) as IProcessorSettings;
 
         // Remove the cm-embed-block class from the parent element
@@ -27,16 +47,97 @@ export default class MarkdownBlockProcessor {
             parent.addClass('prj-block');
         }
 
-        const global = Global.getInstance();
-        await global.metadataCache.waitForCacheReady();
-        const logger = global.logger;
+        let viewState: string | null = null;
+        const viewStateParent = el.closest('.workspace-leaf-content');
+        const same = viewStateParent?.querySelectorAll(`#${uid}`);
+        if (viewStateParent) {
+            viewState = viewStateParent.getAttribute('data-mode');
+            console.log("Same:", same);
+            const observer = new MutationObserver((mutations) => {
+                console.log("Observer changes:", mutations);
+                for (const mutation of mutations) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-mode') {
+                        const newViewState = viewStateParent.getAttribute('data-mode');
+                        const source = viewStateParent?.querySelector(`#${uid}[data-mode='source']`);
+                        const preview = viewStateParent?.querySelector(`#${uid}[data-mode='preview']`);
+                        if (newViewState === "preview" && source && preview) {
+                            while (source.firstChild) {
+                                preview.appendChild(source.firstChild);
+                            }
+                        } else if (newViewState === "source" && source && preview) {
+                            while (preview.firstChild) {
+                                source.appendChild(preview.firstChild);
+                            }
+                        }
+                    }
+                }
+            });
 
-        const cmp = new MarkdownRenderChild(el);
+            observer.observe(viewStateParent, {
+                attributes: true
+            });
+        }
+
+
+
+
+        let show = true;
+        let thisViewState: string | null = null;
+        // Get the view state of the block
+        const sourceView = el.closest('.markdown-source-view');
+        const readingView = el.closest('.markdown-reading-view');
+        if (sourceView) {
+            thisViewState = "source";
+        } else if (readingView) {
+            thisViewState = "preview";
+        }
+
+        const diffContainer = document.createElement('div');
+        el.append(diffContainer);
+        diffContainer.id = uid;
+        diffContainer.setAttribute('data-mode', thisViewState ?? "none");
+
+        const cmp = new mdRenderChild(diffContainer);
+        setting.component = cmp;
         ctx.addChild(cmp);
-        cmp.load();
+
+        if (thisViewState && viewState && thisViewState === viewState && same && same.length < 1) {
+            show = true;
+        } else {
+            const source = viewStateParent?.querySelector(`#${uid}[data-mode='source']`);
+            const preview = viewStateParent?.querySelector(`#${uid}[data-mode='preview']`);
+            let move = false;
+            if (thisViewState === "preview" && source && preview) {
+                while (source.firstChild) {
+
+                    if (source.firstChild.childNodes.length > 0) {
+                        move = true;
+                        logger.trace("Move:", source.firstChild);
+                        diffContainer.appendChild(source.firstChild);
+                    }
+
+                }
+            } else if (thisViewState === "source" && source && preview) {
+                while (preview.firstChild) {
+
+                    if (preview.firstChild.childNodes.length > 0) {
+                        move = true;
+                        logger.trace("Move:", preview.firstChild);
+                        diffContainer.appendChild(preview.firstChild);
+                    }
+
+                }
+            }
+
+            if (move) {
+                const endTime = Date.now();
+                logger.debug(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
+                return;
+            }
+        }
 
         const blockContainer = document.createElement('div');
-        el.append(blockContainer);
+        diffContainer.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
         blockContainer.lang = global.settings.language;
         if (setting.styles) {
@@ -51,7 +152,7 @@ export default class MarkdownBlockProcessor {
         setting.container = blockContainer;
         setting.ctx = ctx;
 
-        if (setting) {
+        if (setting && show) {
             switch (setting.type) {
                 case "Documents":
                     const documentBlock = new DocumentBlockRenderComponent(setting)
@@ -62,6 +163,10 @@ export default class MarkdownBlockProcessor {
                 case "Topics":
                     const projectBlock = new ProjectBlockRenderComponent(setting)
                     await projectBlock.build();
+                    break;
+                case "Notes":
+                    const noteBlock = new NoteBlockRenderComponent(setting)
+                    await noteBlock.build();
                     break;
                 case "Debug":
                     console.log("Debug Mode");
