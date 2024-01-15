@@ -2,10 +2,9 @@
     {
         "lang": "en",
         "translations": {
-            "Change": "Change",
             "Change Status": "Change status..",
-            "Cluster": "Document Cluster",
-            "Content": "Content",
+            "Metadata Cluster": "Document Cluster",
+            "Content description": "Content",
             "Date": "Date",
             "DateOfDeliveryDescription": "Date of delivery.",
             "DeliveryDate": "Delivery date",
@@ -41,7 +40,7 @@
             "Sender": "Sender",
             "SenderDescription": "Sender of the document.",
             "SendRecip": "Snd./Rcp.",
-            "ShowMetadataFile": "Show metadata file",
+            "Show Metadata File": "Show metadata file",
             "Status": "Status",
             "StatusActive": "Active",
             "StatusDone": "Done",
@@ -63,10 +62,9 @@
     {
         "lang": "de",
         "translations": {
-            "Change": "Ändern",
             "Change Status": "Status ändern..",
-            "Cluster": "Dokumenten Cluster",
-            "Content": "Inhalt",
+            "Metadata Cluster": "Dokumenten Cluster",
+            "Content description": "Inhalt",
             "Date": "Datum",
             "DateOfDeliveryDescription": "Zustelldatum.",
             "DeliveryDate": "Zustelldatum",
@@ -102,7 +100,7 @@
             "Sender": "Absender",
             "SenderDescription": "Absender des Dokuments.",
             "SendRecip": "Abs./Empf.",
-            "ShowMetadataFile": "Metadaten Datei anzeigen",
+            "Show Metadata File": "Metadaten Datei anzeigen",
             "Status": "Status",
             "StatusActive": "Aktiv",
             "StatusDone": "Erledigt",

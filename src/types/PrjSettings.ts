@@ -15,6 +15,7 @@ export interface PrjSettings {
     dateFormatShort: string;
     defaultMaxShow: number;
     batchSizeShow: number;
+    noneSymbol: string;
     documentSettings: {
         symbol: string;
         hideSymbol: string;
@@ -32,6 +33,7 @@ export interface PrjSettings {
         taskSymbol: string;
         taskFolder: string;
         taskTemplate: string;
+        subTaskTemplates: { label: string, template: string }[];
     };
     baseTag: string;
     templateFolder: string;
@@ -54,6 +56,7 @@ export const DEFAULT_SETTINGS: PrjSettings = {
     },
     "defaultMaxShow": 200,
     "batchSizeShow": 25,
+    noneSymbol: "diamond",
     documentSettings: {
         "symbol": "file-text",
         "hideSymbol": "file-minus-2",
@@ -71,6 +74,7 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         "taskSymbol": "clipboard",
         "taskFolder": "Tasks/",
         "taskTemplate": "",
+        "subTaskTemplates": []
     },
     baseTag: 'PRJ',
     templateFolder: 'Templates/'

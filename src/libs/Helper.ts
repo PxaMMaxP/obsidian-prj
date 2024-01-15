@@ -128,13 +128,25 @@ export default class Helper {
         );
     }
 
+
     /**
-     * Checks if the given file type is valid.
-     * @param fileType The file type to check.
-     * @returns Whether the file type is valid (true or false).
+     * Checks if a given file type or an array of file types is included in another given file type or an array of file types.
+     * 
+     * @param typesToCheck The file type or array of file types to check.
+     * @param typesToBeChecked The file type or array of file types to be checked against.
+     * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
      */
-    static isValidFileType(fileType: string): boolean {
-        return ["Topic", "Project", "Task", "Metadata"].includes(fileType);
+    static isTypeIncluded(typesToCheck: FileType | FileType[], typesToBeChecked: FileType | FileType[]): boolean {
+        const _typesToCheck: FileType[] = Array.isArray(typesToCheck) ?
+            typesToCheck : (typesToCheck ? [typesToCheck] : []);
+        const _typesToBeChecked: FileType[] = Array.isArray(typesToBeChecked) ?
+            typesToBeChecked : (typesToBeChecked ? [typesToBeChecked] : []);
+
+        return _typesToCheck.some(typeToCheck =>
+            _typesToBeChecked.some(typeToBeChecked =>
+                typeToBeChecked === typeToCheck
+            )
+        );
     }
 
     /**
@@ -222,6 +234,17 @@ export default class Helper {
             return undefined;
         }
         return activeFile;
+    }
+
+    // Generate a random string
+    static generateRandomString(length: number): string {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters.charAt(randomIndex);
+        }
+        return result;
     }
 
     static existTag(tag: string): boolean {

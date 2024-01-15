@@ -1,7 +1,7 @@
 /**
  * Represents the types used in the app.
  */
-export type FileType = "Topic" | "Project" | "Task" | "Metadata";
+export type FileType = "Topic" | "Project" | "Task" | "Metadata" | "Note";
 
 /**
  * Represents the subtypes of a file.
@@ -49,7 +49,7 @@ export default class PrjTypes {
     /**
      * An array of valid file types.
      */
-    public static readonly fileTypes: FileType[] = ["Topic", "Project", "Task", "Metadata"];
+    public static readonly fileTypes: FileType[] = ["Topic", "Project", "Task", "Metadata", "Note"];
 
     /**
      * An array of valid file subtypes.

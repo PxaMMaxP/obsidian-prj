@@ -19,11 +19,16 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
     public async openForm(): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewTaskManagementModal' form");
+
+        // Get active file to extract tags
         const activeFile = Helper.getActiveFile();
         const tags: string[] = BaseModalForm.getTags(activeFile);
+
         const form = this.constructForm();
         const result = await this.getApi().openForm(form, { values: { tags: tags } });
+
         this.logger.trace(`From closes with status '${result.status}' and data:`, result.data);
+
         return result;
     }
 
@@ -36,7 +41,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         let model: (PrjTaskManagementModel<TaskData | TopicData | ProjectData>);
         let modelFolderPath = "";
         let templateFilePath: string | undefined;
-        let acronym: string;
+        let subTemplatePath: string | undefined;
+        let acronym: string | undefined;
 
         switch (result.data.type) {
             case "Topic":
@@ -55,7 +61,11 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 model = new PrjTaskManagementModel<TaskData>(undefined, TaskData);
                 templateFilePath = this.global.settings.prjSettings.taskTemplate;
                 modelFolderPath = this.global.settings.prjSettings.taskFolder;
-                acronym = Helper.generateAcronym(result.data.title as string, 3, "t");
+                //acronym = Helper.generateAcronym(result.data.title as string, 3, "t");
+                if (result.data.subtype && result.data.subtype !== "") {
+                    subTemplatePath = result.data.subtype as string;
+                }
+                delete result.data.subtype;
                 break;
             default:
                 this.logger.error("No valid type provided");
@@ -73,9 +83,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         result.data.tags = (result.data.tags as string[]).map((tag, index) => {
             if (index === 0) {
                 if (tag.startsWith(baseTag)) {
-                    mainTag.tag = `${tag}/${acronym}`
+                    mainTag.tag = `${tag}` + (acronym ? `/${acronym}` : "");
                 } else {
-                    mainTag.tag = `${baseTag}/${tag}/${acronym}`;
+                    mainTag.tag = `${baseTag}/${tag}` + (acronym ? `/${acronym}` : "");
                 }
                 while (Helper.existTag(mainTag.fullTag)) {
                     if (!mainTag.postfix) { mainTag.postfix = 0; }
@@ -100,7 +110,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         const modelFile = {
             filepath: `${modelFolderPath}`,
-            filename: `${acronym} - ${result.data.title}`,
+            filename: acronym ? `${acronym} - ${result.data.title}` : `${result.data.title}`,
             postfix: undefined as number | undefined,
             extension: `.md`,
             file: undefined as TFile | undefined,
@@ -126,7 +136,16 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
          * If a template is provided, use it to create the file.
          */
         let template = "";
-        if (templateFilePath) {
+        if (subTemplatePath) {
+            const subTemplateFile = this.app.vault.getAbstractFileByPath(subTemplatePath);
+            if (subTemplateFile && subTemplateFile instanceof TFile) {
+                try {
+                    template = await this.app.vault.read(subTemplateFile);
+                } catch (error) {
+                    this.logger.error(`Error reading sub template file '${subTemplateFile.path}'`, error);
+                }
+            }
+        } else if (templateFilePath) {
             const templateFile = this.app.vault.getAbstractFileByPath(templateFilePath);
             if (templateFile && templateFile instanceof TFile) {
                 try {
@@ -146,7 +165,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {
             title: `${Lng.gt("New")} ${Lng.gt("Project")}`,
-            name: "new proejct file",
+            name: "new task managment file",
             customClassname: "",
             fields: []
         };

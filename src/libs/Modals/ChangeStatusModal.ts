@@ -54,7 +54,7 @@ export default class ChangeStatusModal extends Modal {
 
         new Setting(contentEl)
             .addButton((btn) =>
-                btn.setButtonText(Lng.gt("Change"))
+                btn.setButtonText(Lng.gt("Change Status"))
                     .setCta()
                     .onClick(() => {
                         this.close();
