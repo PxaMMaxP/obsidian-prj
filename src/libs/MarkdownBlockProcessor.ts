@@ -10,14 +10,16 @@ import ProjectBlockRenderComponent from "./BlockRenderComponents/ProjectBlockRen
 import Logging from "src/classes/Logging";
 import Helper from "./Helper";
 import NoteBlockRenderComponent from "./BlockRenderComponents/NoteBlockRenderComponent";
+import SingletonBlockProcessor from "./SingletonBlockProcessor";
 
-class mdRenderChild extends MarkdownRenderChild {
+class MdRenderChild extends MarkdownRenderChild {
     constructor(container: HTMLElement) {
         super(container);
     }
 
     override onunload(): void {
-        console.trace("On Unload");
+        const logger = Logging.getLogger("MdRenderChild");
+        logger.trace("On Unload");
         super.onunload();
     }
 }
@@ -47,97 +49,23 @@ export default class MarkdownBlockProcessor {
             parent.addClass('prj-block');
         }
 
-        let viewState: string | null = null;
-        const viewStateParent = el.closest('.workspace-leaf-content');
-        const same = viewStateParent?.querySelectorAll(`#${uid}`);
-        if (viewStateParent) {
-            viewState = viewStateParent.getAttribute('data-mode');
-            console.log("Same:", same);
-            const observer = new MutationObserver((mutations) => {
-                console.log("Observer changes:", mutations);
-                for (const mutation of mutations) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-mode') {
-                        const newViewState = viewStateParent.getAttribute('data-mode');
-                        const source = viewStateParent?.querySelector(`#${uid}[data-mode='source']`);
-                        const preview = viewStateParent?.querySelector(`#${uid}[data-mode='preview']`);
-                        if (newViewState === "preview" && source && preview) {
-                            while (source.firstChild) {
-                                preview.appendChild(source.firstChild);
-                            }
-                        } else if (newViewState === "source" && source && preview) {
-                            while (preview.firstChild) {
-                                source.appendChild(preview.firstChild);
-                            }
-                        }
-                    }
-                }
-            });
+        const singletonBlockProcessor = new SingletonBlockProcessor(
+            uid,
+            el,
+            ctx,
+            Logging.getLogger("SingletonBlockProcessor"));
 
-            observer.observe(viewStateParent, {
-                attributes: true
-            });
-        }
+        const singleToneBlock = singletonBlockProcessor.getSingletoneContainer();
+        el.append(singleToneBlock);
 
-
-
-
-        let show = true;
-        let thisViewState: string | null = null;
-        // Get the view state of the block
-        const sourceView = el.closest('.markdown-source-view');
-        const readingView = el.closest('.markdown-reading-view');
-        if (sourceView) {
-            thisViewState = "source";
-        } else if (readingView) {
-            thisViewState = "preview";
-        }
-
-        const diffContainer = document.createElement('div');
-        el.append(diffContainer);
-        diffContainer.id = uid;
-        diffContainer.setAttribute('data-mode', thisViewState ?? "none");
-
-        const cmp = new mdRenderChild(diffContainer);
-        setting.component = cmp;
-        ctx.addChild(cmp);
-
-        if (thisViewState && viewState && thisViewState === viewState && same && same.length < 1) {
-            show = true;
-        } else {
-            const source = viewStateParent?.querySelector(`#${uid}[data-mode='source']`);
-            const preview = viewStateParent?.querySelector(`#${uid}[data-mode='preview']`);
-            let move = false;
-            if (thisViewState === "preview" && source && preview) {
-                while (source.firstChild) {
-
-                    if (source.firstChild.childNodes.length > 0) {
-                        move = true;
-                        logger.trace("Move:", source.firstChild);
-                        diffContainer.appendChild(source.firstChild);
-                    }
-
-                }
-            } else if (thisViewState === "source" && source && preview) {
-                while (preview.firstChild) {
-
-                    if (preview.firstChild.childNodes.length > 0) {
-                        move = true;
-                        logger.trace("Move:", preview.firstChild);
-                        diffContainer.appendChild(preview.firstChild);
-                    }
-
-                }
-            }
-
-            if (move) {
-                const endTime = Date.now();
-                logger.debug(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
-                return;
-            }
+        if (!singletonBlockProcessor.checkForSiblingBlocks()) {
+            const endTime = Date.now();
+            logger.debug(`MarkdownBlockProcessor runs for ${endTime - startTime}ms`);
+            return;
         }
 
         const blockContainer = document.createElement('div');
-        diffContainer.append(blockContainer);
+        singleToneBlock.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
         blockContainer.lang = global.settings.language;
         if (setting.styles) {
@@ -146,13 +74,16 @@ export default class MarkdownBlockProcessor {
             });
         }
 
+        const cmp = new MdRenderChild(blockContainer);
+        setting.component = cmp;
+        ctx.addChild(cmp);
 
         setting.source = ctx.sourcePath;
         setting.frontmatter = global.metadataCache.cache.filter(file => file.file.path === ctx.sourcePath).first()?.metadata.frontmatter;
         setting.container = blockContainer;
         setting.ctx = ctx;
 
-        if (setting && show) {
+        if (setting) {
             switch (setting.type) {
                 case "Documents":
                     const documentBlock = new DocumentBlockRenderComponent(setting);
