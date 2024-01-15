@@ -19,6 +19,7 @@ import { FileMetadata } from "../MetadataCache";
 import { StaticPrjTaskManagementModel } from "src/models/StaticHelper/StaticPrjTaskManagementModel";
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<PrjTaskManagementModel<TaskData | TopicData | ProjectData>> {
+    private filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
         tags: [],
         filter: ["Topic", "Project", "Task"],
@@ -277,7 +278,14 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         } else {
             this.settings.filter.push(type as FilteredModels);
         }
-        this.onFilter();
+        await this.onFilterDebounce();
+    }
+
+    private async onFilterDebounce(): Promise<void> {
+        clearTimeout(this.filterButtonDebounceTimer);
+        this.filterButtonDebounceTimer = setTimeout(async () => {
+            await this.onFilter();
+        }, 750);
     }
 
     private async onMaxDocumentsChange(maxDocuments: number): Promise<undefined> {

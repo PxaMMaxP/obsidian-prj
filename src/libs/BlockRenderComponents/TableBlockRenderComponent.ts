@@ -1,6 +1,6 @@
 import Global from "src/classes/Global";
 import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
-import { MarkdownRenderChild, setIcon } from "obsidian";
+import { Component, setIcon } from "obsidian";
 import Table, { TableHeader } from "../Table";
 import Helper from "../Helper";
 import RedrawableBlockRenderComponent from "./RedrawableBlockRenderComponent";
@@ -17,10 +17,11 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
     protected logger = this.global.logger;
     protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
+    private activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
     protected processorSettings: IProcessorSettings;
-    protected component: MarkdownRenderChild;
+    protected component: Component;
     protected settings: BlockRenderSettings;
     //#endregion
     //#region Models
@@ -35,7 +36,8 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
 
     constructor(settings: IProcessorSettings) {
         this.processorSettings = settings;
-        this.component = new MarkdownRenderChild(this.processorSettings.container);
+        this.component = settings.component;
+        this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
         //this.parseSettings();
     }
 
@@ -113,8 +115,9 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
      * Parses the settings given by the user per YAML in code block.
      * @remarks The settings are parsed and saved in the `settings` property.
      * @remarks Settings:
-     * - `tags`: Can be `all`, `this` or a list of tags.
+     * - `tags`: Can be `all`, `this`, `activeFile` or a list of tags.
      * `this` means the tags of the current document.
+     * `activeFile` means the tags of the active file.
      * - `maxDocuments`: The maximum number of documents to show on same time.
      * - `filter`: Must be an array. The values present the document types.
      *   All values that are in the array are shown.
@@ -134,6 +137,11 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
                         } else {
                             this.settings.tags = ["NOTAGSNODATA"];
                         }
+                    } else if (option.value === "activeFile") {
+                        // Register event to update the tags when the active file changes
+                        this.component.registerEvent(
+                            this.global.app.workspace.on('active-leaf-change', () => this.onActiveFileChange.bind(this)())
+                        );
                     } else {
                         this.settings.tags = option.value;
                     }
@@ -148,6 +156,53 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
                     break;
             }
         });
+    }
+
+    /**
+     * Handles the event when the active file changes.
+     * If the active file is not in the "Ressourcen/Panels/" path,
+     * it updates the tags in the settings based on the metadata of the active file.
+     * @private
+     */
+    private onActiveFileChange(): void {
+        const activeFile = this.global.app.workspace.getActiveFile();
+        if (activeFile && !activeFile.path.contains("Ressourcen/Panels/")) {
+            this.logger.trace("Active file changed: ", activeFile.path);
+            const tags = this.metadataCache.getEntry(activeFile)?.metadata?.frontmatter?.tags;
+            let newTags: string[] = [];
+            if (Array.isArray(tags)) {
+                newTags = tags;
+            } else if (tags && this) {
+                newTags = [tags];
+            }
+
+            const areTagsDifferent = (tags1: string[], tags2: string[]) => {
+                if (tags1.length !== tags2.length) return true;
+
+                const sortedTags1 = [...tags1].sort();
+                const sortedTags2 = [...tags2].sort();
+
+                for (let i = 0; i < sortedTags1.length; i++) {
+                    if (sortedTags1[i] !== sortedTags2[i]) return true;
+                }
+                return false;
+            };
+            if (areTagsDifferent(newTags, this.settings.tags)) {
+                this.settings.tags = newTags;
+                this.onActiveFileDebounce();
+            }
+        }
+    }
+
+    /**
+     * Debounces the active file change event and triggers a redraw after a delay.
+     */
+    private onActiveFileDebounce(): void {
+        this.logger.trace("Active file changed: Debouncing");
+        clearTimeout(this.activeFileDebounceTimer);
+        this.activeFileDebounceTimer = setTimeout(async () => {
+            this.redraw();
+        }, 750);
     }
 
     protected getUID(model: T): string {
