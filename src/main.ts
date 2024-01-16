@@ -11,6 +11,7 @@ import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
+import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTaskManagementModel';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -54,6 +55,11 @@ export default class Prj extends Plugin {
 
 		// Change Status Command
 		ChangeStatusModal.registerCommand();
+
+		//Register event on `Status` change..
+		Global.getInstance().metadataCache.on('prj-task-management-changed-status', (file) => {
+			StaticPrjTaskManagementModel.syncStatusToPath(file);
+		});
 
 	}
 
