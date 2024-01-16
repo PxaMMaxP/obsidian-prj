@@ -162,7 +162,7 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
      */
     public setLinkedFile(file: TFile | undefined, path?: string): void {
         if (!file || !(file instanceof TFile)) return;
-        const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : file.path);
+        const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : this.file.path);
         this.data.file = `[[${linktext}]]`;
     }
 
