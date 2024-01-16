@@ -1,20 +1,31 @@
 // Note: DocumentModel class
 
 import { TFile } from "obsidian";
-import { BaseModel } from "./BaseModel";
+import { FileModel } from "./FileModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import DocumentData from "../types/DocumentData";
 import Global from "../classes/Global";
 import Helper from "../libs/Helper";
 
-export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<DocumentData> {
-
+export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<DocumentData> {
     private fileCache = Global.getInstance().fileCache;
-
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
-    constructor(file: TFile | undefined) {
-        super(file, DocumentData, DocumentData.yamlKeyMap);
+    get tags(): string[] {
+        const tags = this.data.tags;
+        let formattedTags: string[] = [];
+
+        if (tags && typeof tags === 'string') {
+            formattedTags = [tags];
+        }
+        else if (Array.isArray(tags)) {
+            formattedTags = [...tags];
+        }
+
+        return formattedTags;
+    }
+    set tags(value: string[]) {
+        this.data.tags = value;
     }
 
     public get data(): Partial<DocumentData> {
@@ -22,6 +33,10 @@ export class DocumentModel extends BaseModel<DocumentData> implements IPrjModel<
     }
     public set data(value: Partial<DocumentData>) {
         this._data = value;
+    }
+
+    constructor(file: TFile | undefined) {
+        super(file, DocumentData, DocumentData.yamlKeyMap);
     }
 
     public get relatedFiles(): DocumentModel[] | null {

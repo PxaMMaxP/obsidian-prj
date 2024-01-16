@@ -10,6 +10,7 @@ import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
+import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -48,6 +49,8 @@ export default class Prj extends Plugin {
 		CreateNewTaskManagementModal.registerCommand();
 		// Create new Task Command
 		CreateNewTaskModal.registerCommand();
+		// Add Annotation Command
+		AddAnnotationModal.registerCommand();
 
 		// Change Status Command
 		ChangeStatusModal.registerCommand();

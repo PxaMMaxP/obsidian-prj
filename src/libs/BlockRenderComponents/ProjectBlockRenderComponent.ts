@@ -40,7 +40,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         { text: Lng.gt("TraficLight"), headerClass: [], columnClass: [] },
         { text: Lng.gt("Description"), headerClass: [], columnClass: ["dont-decorate-link", "link-weight-bold"] },
         { text: Lng.gt("Priority"), headerClass: [], columnClass: [] },
-        { text: Lng.gt("DueDate"), headerClass: [], columnClass: ["font-xsmall"] },
+        { text: Lng.gt("Due date"), headerClass: [], columnClass: ["font-xsmall"] },
         { text: Lng.gt("Status"), headerClass: [], columnClass: [] },
         { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
     ];
@@ -202,7 +202,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 1 -- Trafic Light
         const traficLight = document.createDocumentFragment();
         rowData.push(traficLight);
-        ProjectComponents.createTraficLight(traficLight, model.getUrgency());
+        ProjectComponents.createTraficLight(traficLight, model.urgency);
 
         // Row 2 -- Title & Description
         const titleAndSummary = document.createDocumentFragment();
@@ -238,7 +238,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         GeneralComponents.createCellDate(
             dueDate,
             this.component,
-            Lng.gt("DueDate"),
+            Lng.gt("Due date"),
             this.global.settings.dateFormat,
             () => model.data.due ?? "na",
             async (value: string) => model.data.due = value);

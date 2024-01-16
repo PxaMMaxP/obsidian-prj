@@ -165,7 +165,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {
-            title: `${Lng.gt("New")} ${Lng.gt("Project")}`,
+            title: `${Lng.gt("New Topic/Project")}`,
             name: "new task managment file",
             customClassname: "",
             fields: []
@@ -174,16 +174,15 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         // Type
         const type: Field = {
             name: "type",
-            label: Lng.gt("Type"),
-            description: Lng.gt("TypeDescription"),
+            label: Lng.gt("Task managment type"),
+            description: Lng.gt("Task managment type description"),
             isRequired: true,
             input: {
                 type: "select",
                 source: "fixed",
                 options: [
                     { value: "Topic", label: Lng.gt("Topic") },
-                    { value: "Project", label: Lng.gt("Project") },
-                    { value: "Task", label: Lng.gt("Task") }
+                    { value: "Project", label: Lng.gt("Project") }
                 ]
             }
         };
@@ -192,8 +191,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         // Title
         const title: Field = {
             name: "title",
-            label: Lng.gt("Titel"),
-            description: Lng.gt("TitelDescription"),
+            label: Lng.gt("Title"),
+            description: Lng.gt("Title description"),
             isRequired: true,
             input: {
                 type: "text"
@@ -205,7 +204,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const description: Field = {
             name: "description",
             label: Lng.gt("Description"),
-            description: Lng.gt("DescriptionDescription"),
+            description: Lng.gt("Document description description"),
             isRequired: false,
             input: {
                 type: "textarea"
@@ -217,7 +216,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const status: Field = {
             name: "status",
             label: Lng.gt("Status"),
-            description: Lng.gt("StatusDescription"),
+            description: Lng.gt("Status description"),
             isRequired: true,
             input: {
                 type: "select",
@@ -237,7 +236,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const priority: Field = {
             name: "priority",
             label: Lng.gt("Priority"),
-            description: Lng.gt("PriorityDescription"),
+            description: Lng.gt("Priority description"),
             isRequired: false,
             input: {
                 type: "slider",
@@ -251,7 +250,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const energy: Field = {
             name: "energy",
             label: Lng.gt("Energy"),
-            description: Lng.gt("EnergyDescription"),
+            description: Lng.gt("Energy description"),
             isRequired: false,
             input: {
                 type: "slider",
@@ -264,8 +263,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         // Due Date
         const dueDate: Field = {
             name: "dueDate",
-            label: Lng.gt("DueDate"),
-            description: Lng.gt("DueDateDescription"),
+            label: Lng.gt("Due date"),
+            description: Lng.gt("Due date description"),
             isRequired: false,
             input: {
                 type: "date"
@@ -277,7 +276,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const tags: Field = {
             name: "tags",
             label: Lng.gt("Tags"),
-            description: Lng.gt("TagsDescription"),
+            description: Lng.gt("Tags description"),
             isRequired: false,
             input: {
                 type: "tag"
@@ -301,7 +300,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         const acronym: Field = {
             name: "acronym",
             label: Lng.gt("Acronym"),
-            description: Lng.gt("AcronymDescription"),
+            description: Lng.gt("Acronym description"),
             isRequired: false,
             input: {
                 type: "document_block",
@@ -322,7 +321,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         global.logger.trace("Registering 'CreateTaskManagementModal' commands");
         global.plugin.addCommand({
             id: "create-new-task-management-file",
-            name: `${Lng.gt("New")} ${Lng.gt("Topic")}/${Lng.gt("Project")}/${Lng.gt("Task")}`,
+            name: `${Lng.gt("New Topic/Project")}`,
             callback: async () => {
                 const modal = new CreateNewTaskManagementModal();
                 const result = await modal.openForm();

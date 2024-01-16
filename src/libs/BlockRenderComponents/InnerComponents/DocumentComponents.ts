@@ -184,7 +184,7 @@ export default class DocumentComponents {
         new EditableDataView(fileLink, component)
             .addLink(link => {
                 link.setValue(documentModel.data.title ?? "")
-                    .setTitle(Lng.gt("PDFFile"))
+                    .setTitle(Lng.gt("PDF file"))
                     .setLinkType("file")
                     .setFormator((value: string) => {
                         const baseFileData = Helper.extractDataFromWikilink(documentModel.data.file);

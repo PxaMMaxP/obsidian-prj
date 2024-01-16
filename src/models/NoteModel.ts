@@ -1,18 +1,29 @@
 // Note: DocumentModel class
 
 import { TFile } from "obsidian";
-import { BaseModel } from "./BaseModel";
+import { FileModel } from "./FileModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import Global from "../classes/Global";
 import NoteData from "src/types/NoteData";
 
-export class NoteModel extends BaseModel<NoteData> implements IPrjModel<NoteData> {
-
+export class NoteModel extends FileModel<NoteData> implements IPrjModel<NoteData> {
     private fileCache = Global.getInstance().fileCache;
 
+    get tags(): string[] {
+        const tags = this.data.tags;
+        let formattedTags: string[] = [];
 
-    constructor(file: TFile | undefined) {
-        super(file, NoteData, undefined);
+        if (tags && typeof tags === 'string') {
+            formattedTags = [tags];
+        }
+        else if (Array.isArray(tags)) {
+            formattedTags = [...tags];
+        }
+
+        return formattedTags;
+    }
+    set tags(value: string[]) {
+        this.data.tags = value;
     }
 
     public get data(): Partial<NoteData> {
@@ -22,6 +33,9 @@ export class NoteModel extends BaseModel<NoteData> implements IPrjModel<NoteData
         this._data = value;
     }
 
+    constructor(file: TFile | undefined) {
+        super(file, NoteData, undefined);
+    }
 
     public override toString(): string {
         let allText = this.data.title ?? "";

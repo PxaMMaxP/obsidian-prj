@@ -1,4 +1,4 @@
-import Translations from '../translations.json';
+import Translations from '../translations/translations.json';
 import Global from "./Global";
 
 export default class Lng {

@@ -22,14 +22,17 @@ export default class Tag {
      * @param tags The tag/s to return the valid tags array from
      * @returns The valid tags array
      */
-    getValidTags(tags: string | Array<string>): Array<string> {
-        let validTags: Array<string> = [];
+    static getValidTags(tags: string | Array<string>): Array<string> {
+        let formattedTags: string[] = [];
 
-        if (tags) {
-            validTags = Array.from(tags)
+        if (tags && typeof tags === 'string') {
+            formattedTags = [tags];
+        }
+        else if (Array.isArray(tags)) {
+            formattedTags = [...tags];
         }
 
-        return validTags;
+        return formattedTags;
     }
 
     /**

@@ -55,7 +55,7 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
         global.logger.trace("Registering 'CreateNewTaskModal' commands");
         global.plugin.addCommand({
             id: "create-new-task-file",
-            name: `${Lng.gt("New")} ${Lng.gt("Task")}`,
+            name: `${Lng.gt("New task")}`,
             callback: async () => {
                 const modal = new CreateNewTaskModal();
                 const result = await modal.openForm();

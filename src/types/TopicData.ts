@@ -1,9 +1,9 @@
 import IPrjData from "../interfaces/IPrjData";
 import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
-import { Status, Priority, Energy, FileType, FileSubType, HistoryEntries } from "./PrjTypes";
+import { Status, Priority, Energy, FileSubType, HistoryEntries } from "./PrjTypes";
 
 export default class TopicData implements IPrjData, IPrjTaskManagement {
-    type: FileType | null | undefined;
+    type: "Topic" | null | undefined;
     subType: FileSubType | null | undefined;
     title: string | null | undefined;
     description: string | null | undefined;

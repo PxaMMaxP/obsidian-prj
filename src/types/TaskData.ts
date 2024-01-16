@@ -1,9 +1,9 @@
 import IPrjData from "../interfaces/IPrjData";
 import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
-import { Status, Priority, Energy, FileType, FileSubType, HistoryEntries } from "./PrjTypes";
+import { Status, Priority, Energy, FileSubType, HistoryEntries } from "./PrjTypes";
 
 export default class TaskData implements IPrjData, IPrjTaskManagement {
-    type: FileType | null | undefined;
+    type: "Task" | null | undefined;
     subType: FileSubType | null | undefined;
     title: string | null | undefined;
     description: string | null | undefined;
@@ -14,12 +14,14 @@ export default class TaskData implements IPrjData, IPrjTaskManagement {
     tags: string[] | string | null | undefined;
     history: HistoryEntries | null | undefined;
     aliases: string[] | null | undefined;
+    sort: number | null | undefined;
 
     constructor(data: Partial<TaskData>) {
         if (!data) {
             this.type = "Task";
             return;
         }
+        this.sort = data.sort !== undefined ? data.sort : undefined;
         this.aliases = data.aliases !== undefined ? data.aliases : undefined;
         this.title = data.title !== undefined ? data.title : undefined;
         this.description = data.description !== undefined ? data.description : undefined;

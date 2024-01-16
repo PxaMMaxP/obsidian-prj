@@ -31,7 +31,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         global.logger.trace("Registering 'CreateNewMetadataModal' commands");
         global.plugin.addCommand({
             id: "create-new-metadata-file",
-            name: `${Lng.gt("New")} ${Lng.gt("MetadataFile")}`,
+            name: `${Lng.gt("Create new metadata")}`,
             callback: async () => {
                 const modal = new CreateNewMetadataModal();
                 const result = await modal.openForm();
@@ -124,7 +124,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {
-            title: `${Lng.gt("New")} ${Lng.gt("MetadataFile")}`,
+            title: `${Lng.gt("Create new metadata")}`,
             name: "new metadata file",
             customClassname: "",
             fields: []
@@ -133,8 +133,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         // Sub type
         const subType: Field = {
             name: "subType",
-            label: Lng.gt("SubType"),
-            description: Lng.gt("SubTypeDescription"),
+            label: Lng.gt("Metadata sub type"),
+            description: Lng.gt("Metadata sub type description"),
             isRequired: true,
             input: {
                 type: "select",
@@ -150,8 +150,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         // Date
         const date: Field = {
             name: "date",
-            label: Lng.gt("Date"),
-            description: Lng.gt("DocDateDescription"),
+            label: Lng.gt("Document date"),
+            description: Lng.gt("Document date description"),
             isRequired: false,
             input: {
                 type: "date"
@@ -162,8 +162,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         // Date of delivery
         const dateOfDelivery: Field = {
             name: "dateOfDelivery",
-            label: Lng.gt("DateOfDelivery"),
-            description: Lng.gt("DateOfDeliveryDescription"),
+            label: Lng.gt("Date of delivery"),
+            description: Lng.gt("Date of delivery description"),
             isRequired: false,
             input: {
                 type: "date"
@@ -175,7 +175,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const title: Field = {
             name: "title",
             label: Lng.gt("Title"),
-            description: Lng.gt("TitleDescription"),
+            description: Lng.gt("Title description"),
             isRequired: true,
             input: {
                 type: "text"
@@ -186,8 +186,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         // Description
         const description: Field = {
             name: "description",
-            label: Lng.gt("Description"),
-            description: Lng.gt("DescriptionDescription"),
+            label: Lng.gt("Document description"),
+            description: Lng.gt("Document description description"),
             isRequired: false,
             input: {
                 type: "textarea"
@@ -199,7 +199,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const sender: Field = {
             name: "sender",
             label: Lng.gt("Sender"),
-            description: Lng.gt("SenderDescription"),
+            description: Lng.gt("Sender description"),
             isRequired: false,
             input: {
                 type: "dataview",
@@ -212,7 +212,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const recipient: Field = {
             name: "recipient",
             label: Lng.gt("Recipient"),
-            description: Lng.gt("RecipientDescription"),
+            description: Lng.gt("Recipient description"),
             isRequired: false,
             input: {
                 type: "dataview",
@@ -225,7 +225,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const hide: Field = {
             name: "hide",
             label: Lng.gt("Hide"),
-            description: Lng.gt("HideDescription"),
+            description: Lng.gt("Hide description"),
             isRequired: false,
             input: {
                 type: "toggle"
@@ -237,7 +237,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const tags: Field = {
             name: "tags",
             label: Lng.gt("Tags"),
-            description: Lng.gt("TagsDescription"),
+            description: Lng.gt("Tags description"),
             isRequired: false,
             input: {
                 type: "tag"
@@ -248,8 +248,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         // File
         const file: Field = {
             name: "file",
-            label: Lng.gt("File"),
-            description: Lng.gt("FileDescription"),
+            label: Lng.gt("PDF file"),
+            description: Lng.gt("PDF file description"),
             isRequired: false,
             input: {
                 type: "dataview",

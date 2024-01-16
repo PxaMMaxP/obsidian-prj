@@ -1,5 +1,5 @@
 import { TFile, moment } from "obsidian";
-import { BaseModel } from "./BaseModel";
+import { FileModel } from "./FileModel";
 import IPrjModel from "../interfaces/IPrjModel";
 import IPrjData from "../interfaces/IPrjData";
 import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
@@ -10,18 +10,34 @@ import ProjectData from "src/types/ProjectData";
 import TopicData from "src/types/TopicData";
 
 
-export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> extends BaseModel<T> implements IPrjModel<T> {
+export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> extends FileModel<T> implements IPrjModel<T> {
 
-    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
-        super(file, ctor, undefined);
+    get tags(): string[] {
+        const tags = this.data.tags;
+        let formattedTags: string[] = [];
+
+        if (tags && typeof tags === 'string') {
+            formattedTags = [tags];
+        }
+        else if (Array.isArray(tags)) {
+            formattedTags = [...tags];
+        }
+
+        return formattedTags;
+    }
+    set tags(value: string[]) {
+        this.data.tags = value;
     }
 
     public get data(): Partial<T> {
         return this._data;
     }
-
     public set data(value: Partial<T>) {
         this._data = value;
+    }
+
+    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
+        super(file, ctor, undefined);
     }
 
     public override toString(): string {
@@ -68,7 +84,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
         }
     }
 
-    public getUrgency(): number {
+    public get urgency(): number {
         return API.prjTaskManagementModel.calculateUrgency(this as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>));
     }
 
