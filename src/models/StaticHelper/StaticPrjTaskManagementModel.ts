@@ -1,6 +1,6 @@
 import { TFile } from "obsidian";
 import Global from "src/classes/Global";
-import { Status } from "src/types/PrjTypes";
+import PrjTypes, { Status } from "src/types/PrjTypes";
 import ProjectData from "src/types/ProjectData";
 import TaskData from "src/types/TaskData";
 import TopicData from "src/types/TopicData";
@@ -8,6 +8,9 @@ import { PrjTaskManagementModel } from "../PrjTaskManagementModel";
 import { ProjectModel } from "../ProjectModel";
 import { TaskModel } from "../TaskModel";
 import { TopicModel } from "../TopicModel";
+import path from "path";
+import Logging from "src/classes/Logging";
+
 
 /**
  * Represents a static helper class for managing project task models.
@@ -192,6 +195,59 @@ export class StaticPrjTaskManagementModel {
             return new Date(lastEntry.date);
         } else {
             return null;
+        }
+    }
+
+    public static syncStatusToPath(file: TFile) {
+        const model = StaticPrjTaskManagementModel.getCorospondingModel(file);
+        if (!model) {
+            return;
+        }
+        const status = model.data.status;
+        if (!status) {
+            return;
+        }
+        const settings = Global.getInstance().settings.prjSettings;
+        let parentPath: string | undefined;
+        const filename = model.file.name;
+        if (model.file.parent?.path) {
+            switch (model.data.type) {
+                case "Topic":
+                    if (settings.topicFolder) {
+                        parentPath = settings.topicFolder;
+                    }
+                    break;
+                case "Project":
+                    if (settings.projectFolder) {
+                        parentPath = settings.projectFolder;
+                    }
+                    break;
+                case "Task":
+                    if (settings.taskFolder) {
+                        parentPath = settings.taskFolder;
+                    }
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        if (parentPath) {
+            let movePath: string;
+            if (model.data.status === 'Done') {
+                movePath = path.join(parentPath, 'Archiv', filename);
+            } else if (PrjTypes.isValidStatus(model.data.status)) {
+                movePath = path.join(parentPath, filename);
+            } else {
+                return;
+            }
+
+            if (movePath.replace('\\', '/') !== model.file.path) {
+                Logging.getLogger('StaticPrjTaskManagementModel').debug(`Moving file ${model.file.path} to ${movePath}`);
+                Global.getInstance().app.vault.rename(model.file, movePath);
+            } else {
+                Logging.getLogger('StaticPrjTaskManagementModel').debug(`File ${model.file.path} is already in the correct folder`);
+            }
         }
     }
 }
