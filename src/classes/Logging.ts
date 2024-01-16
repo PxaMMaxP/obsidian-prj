@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { ILogger } from "src/interfaces/ILogger";
+
 /**
  * Logging class; encapsulates console.log, console.debug, console.warn and console.error
  */
-export default class Logging {
+export default class Logging implements ILogger {
     private static instance: Logging;
     private logLevel: LoggingLevel;
     private logPrefix: string;
@@ -39,7 +42,7 @@ export default class Logging {
      * Returns an object with logging methods that prepend a specified prefix to messages
      * @param prefix The prefix to prepend to all log messages
      */
-    public static getLogger(prefix: string): { [key in Exclude<LoggingLevel, "none">]: (...args: any[]) => void } {
+    public static getLogger(prefix: string): ILogger {
         const instance = Logging.getInstance();
         prefix = `${prefix}: `;
         const logMethods: { [key in Exclude<LoggingLevel, "none">]: (...args: any[]) => void } = {
