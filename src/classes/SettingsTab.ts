@@ -116,6 +116,18 @@ export class SettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
+        // PDF Folder
+        new Setting(containerEl)
+            .setName('PDF Folder')
+            .setDesc('The Folder where all PDFs are stored. {YYYY} is replaced with the current year and {MM} with the current month.')
+            .addText(text => text
+                .setPlaceholder('YourPDFFolder')
+                .setValue(this.plugin.settings.documentSettings.pdfFolder)
+                .onChange(async (value) => {
+                    this.plugin.settings.documentSettings.pdfFolder = value;
+                    await this.plugin.saveSettings();
+                }));
+
         // User information
         new Setting(containerEl)
             .setHeading()
