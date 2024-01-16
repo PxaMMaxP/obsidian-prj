@@ -152,8 +152,11 @@ export class StaticPrjTaskManagementModel {
         if (!model.data.status || model.data.status === 'Done') {
             return -2;
         }
-        if (!model.data.due || model.data.status === 'Someday') {
+        if (model.data.status === 'Someday') {
             return -1;
+        }
+        if (!model.data.due) {
+            return 0;
         }
 
         const dueDate = new Date(model.data.due);

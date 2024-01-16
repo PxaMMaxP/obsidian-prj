@@ -55,7 +55,7 @@ export default class MarkdownBlockProcessor {
             ctx,
             Logging.getLogger("SingletonBlockProcessor"));
 
-        const singleToneBlock = singletonBlockProcessor.getSingletoneContainer();
+        const singleToneBlock = singletonBlockProcessor.singletoneContainer;
         el.append(singleToneBlock);
 
         if (!singletonBlockProcessor.checkForSiblingBlocks()) {

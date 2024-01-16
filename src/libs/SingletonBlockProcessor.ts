@@ -65,7 +65,7 @@ export class ObserverChild extends MarkdownRenderChild {
  * //const uid = Create a unique id for the block.
  * const singletonBlockProcessor = new SingletonBlockProcessor(uid, el, ctx);
  * 
- * const singleToneBlock = singletonBlockProcessor.getSingletoneContainer();
+ * const singleToneBlock = singletonBlockProcessor.singletoneContainer;
  * el.append(singleToneBlock);
  * 
  * if (!singletonBlockProcessor.checkForSiblingBlocks()) {
@@ -87,9 +87,20 @@ export default class SingletonBlockProcessor {
     private uid: string;
     private el: HTMLElement;
     private ctx: MarkdownPostProcessorContext;
+    private singletonContainer: HTMLElement | undefined;
     private observer: MutationObserver | undefined;
     private onUnload: () => void;
     private observerChild: ObserverChild | undefined;
+
+    /**
+     * Get the singletone container for the block.
+     * @remarks - Use this container for all your block content.
+     * - Register a component with **this** container.
+     */
+    public get singletoneContainer(): HTMLElement {
+        this.singletonContainer = this.singletonContainer ?? this.getSingletoneContainer();
+        return this.singletonContainer;
+    }
 
     /**
      * Get the current code block view state.
@@ -186,12 +197,22 @@ export default class SingletonBlockProcessor {
         }
         // If a sibling block is available, we dont need to create an observer
         // because one observer is enough for all sibling blocks.
-        if (this.siblingBlocks && this.siblingBlocks.length > 0) {
-            return;
+        if (this.siblingBlocks && this.siblingBlocks.length === 1) {
+            // This test is certainly not sufficient.
+            // We now check whether the other container has child elements. If not, we unload it to unload the observer.
+            // After that we clone the container and append it to the parent again to use it as a new container.
+            if (this.siblingBlocks[0].childNodes.length === 0) {
+                const clone = this.siblingBlocks[0].cloneNode(false);
+                const parent = this.siblingBlocks[0].parentElement;
+                this.siblingBlocks[0].remove();
+                parent?.append(clone);
+            } else {
+                return;
+            }
         }
 
         // Create a observer component. To `disconnect` the observer on unload.
-        this.observerChild = new ObserverChild(this.el, this.onUnload, this.logger);
+        this.observerChild = new ObserverChild(this.singletoneContainer, this.onUnload, this.logger);
 
         this.observer = new MutationObserver((mutations) => {
             this.logger?.trace("Observer detect changes:", mutations, `UID: ${this.uid}`);
@@ -259,7 +280,7 @@ export default class SingletonBlockProcessor {
      * @remarks - Use this container for all your block content.
      * - Register a component with **this** container.
      */
-    public getSingletoneContainer(): HTMLElement {
+    private getSingletoneContainer(): HTMLElement {
         const singletoneContainer = document.createElement('div');
         singletoneContainer.id = this.uid;
         singletoneContainer.setAttribute('data-mode', this.getCodeBlockViewState(true) ?? "none");
