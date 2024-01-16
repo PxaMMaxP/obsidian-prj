@@ -12,6 +12,8 @@ import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementM
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTaskManagementModel';
+import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
+import Lng from './classes/Lng';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -59,6 +61,30 @@ export default class Prj extends Plugin {
 		//Register event on `Status` change..
 		Global.getInstance().metadataCache.on('prj-task-management-changed-status', (file) => {
 			StaticPrjTaskManagementModel.syncStatusToPath(file);
+		});
+
+		//Register event on `Document Metadata` change..
+		Global.getInstance().metadataCache.on('document-changed-metadata', (file) => {
+			StaticDocumentModel.syncMetadataToFile(file);
+		});
+
+		// Register rebuild View command:
+		this.addCommand({
+			id: "rebuild-active-view",
+			name: Lng.gt("Rebuild active view"),
+			callback: async () => {
+				const workspace = Global.getInstance().app.workspace;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const activeLeaf = workspace.activeLeaf as any;
+				if (activeLeaf) {
+					try {
+						activeLeaf.rebuildView();
+					}
+					catch (error) {
+						console.error(error);
+					}
+				}
+			},
 		});
 
 	}

@@ -3,6 +3,8 @@ import Global from "src/classes/Global";
 import Lng from "src/classes/Lng";
 import Helper from "src/libs/Helper";
 import { DocumentModel } from "../DocumentModel";
+import path from "path";
+import Logging from "src/classes/Logging";
 
 /**
  * Static API for DocumentModel
@@ -37,7 +39,7 @@ export class StaticDocumentModel {
     /**
      * Generates a metadata filename based on the provided DocumentModel.
      * @param model The DocumentModel object.
-     * @returns The generated metadata filename.
+     * @returns The generated metadata filename without extension.
      */
     public static generateMetadataFilename(model: DocumentModel): string {
         const newFileName: string[] = [];
@@ -116,5 +118,66 @@ export class StaticDocumentModel {
                 return 0;
             }
         });
+    }
+
+    /**
+     * Set the metadata and pfd file to the correct folder and filename
+     * @param file The document/metadata file
+     */
+    public static async syncMetadataToFile(file: TFile): Promise<void> {
+        const logger = Logging.getLogger('SyncMetadataToFile');
+        const app = Global.getInstance().app;
+        const settings = Global.getInstance().settings;
+
+        const document = new DocumentModel(file);
+        const desiredFilename = StaticDocumentModel.generateMetadataFilename(document);
+        const defaultDocumentFolder = settings.documentSettings.defaultFolder;
+        const desiredFilePath = path.join(defaultDocumentFolder, `${desiredFilename}.md`);
+
+        // Markdown file
+        if (desiredFilePath.replace('\\', '/') !== document.file.path) {
+            logger.trace(`Moving file '${document.file.path}' to '${desiredFilePath}'`);
+            await app.vault.rename(document.file, desiredFilePath);
+
+        } else {
+            logger.trace(`File '${document.file.path}' is already in the correct folder`);
+        }
+
+        // PDF file
+        const pdfFile = document.getFile();
+        if (!pdfFile) return;
+
+        const documentDate = document.data.date ? new Date(document.data.date) : undefined;
+        const defaultPdfFolder = documentDate ? settings.documentSettings.pdfFolder
+            .replace('{YYYY}', documentDate.getFullYear().toString())
+            .replace('{MM}', (documentDate.getMonth() + 1).toString().padStart(2, '0'))
+            : settings.documentSettings.pdfFolder;
+
+        let desiredPdfFilePath: string | undefined;
+
+        // Check if file is already in the default folder
+        // if not, move it there
+        if (defaultPdfFolder && !pdfFile.path.contains(defaultPdfFolder)) {
+            desiredPdfFilePath = path.join(defaultPdfFolder, `${desiredFilename}.${pdfFile.extension}`);
+
+        } else {
+            // If file in default folder, rename it if necessary
+            const pdfParentFolder = pdfFile.parent?.path;
+            if (pdfParentFolder) {
+                desiredPdfFilePath = path.join(pdfParentFolder, `${desiredFilename}.${pdfFile.extension}`);
+
+                if (desiredPdfFilePath.replace('\\', '/') === pdfFile.path) {
+                    logger.trace(`File '${pdfFile.path}' is already in the correct folder`);
+                    desiredPdfFilePath = undefined
+                }
+            }
+
+        }
+
+        if (desiredPdfFilePath) {
+            logger.trace(`Moving file '${pdfFile.path}' to '${desiredPdfFilePath}'`);
+            await app.vault.rename(pdfFile, desiredPdfFilePath);
+            document.setLinkedFile(pdfFile);
+        }
     }
 }

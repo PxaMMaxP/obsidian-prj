@@ -3,7 +3,7 @@
 import Logging from "src/classes/Logging";
 import Global from "../classes/Global";
 import { App, CachedMetadata, TFile } from "obsidian";
-import GenericEvents, { ICallback, IEvent } from "./Events";
+import GenericEvents, { ICallback, IEvent } from "./GenericEvents";
 import PrjTypes from "src/types/PrjTypes";
 
 /**
@@ -134,6 +134,8 @@ export default class MetadataCache {
      */
     public on(eventName: 'prj-task-management-changed-status', listener: (file: TFile) => void): void;
 
+    public on(eventName: 'document-changed-metadata', listener: (file: TFile) => void): void;
+
     /**
      * Register an event listener for the metadata cache.
      * @param eventName The name of the event
@@ -168,8 +170,7 @@ export default class MetadataCache {
                     }
                     break;
                 case "Metadata":
-                    // Check if the file is a metadata file
-
+                    this.eventHandler.fireEvent('document-changed-metadata', file);
                     break;
                 default:
                     this.logger.error(`Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`);
@@ -225,6 +226,11 @@ export default class MetadataCache {
             if (metadata) {
                 return metadata;
             } else {
+                this.addEntry(file);
+                const metadata = this.metadataCache.get(file.path);
+                if (metadata) {
+                    return metadata;
+                }
                 this.logger.warn(`No metadata cache entry found for file ${file.path}`);
                 return undefined;
             }
@@ -368,6 +374,7 @@ export default class MetadataCache {
 interface MetadataCacheEvents extends ICallback {
     events: {
         'prj-task-management-changed-status': IEvent<TFile, undefined>;
+        'document-changed-metadata': IEvent<TFile, undefined>;
         // Add more events here
     };
 }

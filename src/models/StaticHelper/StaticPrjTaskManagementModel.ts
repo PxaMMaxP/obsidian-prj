@@ -198,6 +198,10 @@ export class StaticPrjTaskManagementModel {
         }
     }
 
+    /**
+     * Syncs the status of the model to the path.
+     * @param file The file to sync the status for.
+     */
     public static syncStatusToPath(file: TFile) {
         const model = StaticPrjTaskManagementModel.getCorospondingModel(file);
         if (!model) {
@@ -242,11 +246,13 @@ export class StaticPrjTaskManagementModel {
                 return;
             }
 
+            const app = Global.getInstance().app;
+            const logger = Logging.getLogger('StaticPrjTaskManagementModel');
             if (movePath.replace('\\', '/') !== model.file.path) {
-                Logging.getLogger('StaticPrjTaskManagementModel').debug(`Moving file ${model.file.path} to ${movePath}`);
-                Global.getInstance().app.vault.rename(model.file, movePath);
+                logger.debug(`Moving file ${model.file.path} to ${movePath}`);
+                app.vault.rename(model.file, movePath);
             } else {
-                Logging.getLogger('StaticPrjTaskManagementModel').debug(`File ${model.file.path} is already in the correct folder`);
+                logger.debug(`File ${model.file.path} is already in the correct folder`);
             }
         }
     }
