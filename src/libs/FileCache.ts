@@ -311,6 +311,8 @@ export default class FileCache {
      * Returns the file from the file cache
      * @param fileName The name of the file to find
      * @returns The file/s if found, undefined otherwise
+     * @deprecated Use `findFileByLinkText` instead
+     * @see {@link findFileByLinkText}
      */
     public findFileByName(fileName: string): TFile | Array<TFile> | undefined {
         const foundFile = this.fileCache?.get(fileName);
@@ -329,8 +331,11 @@ export default class FileCache {
      * Returns the first file from the file cache or if no file found returns undefined
      * @param fileName The name of the file to find
      * @returns The file as `TFile` if found, `undefined` otherwise
+     * @deprecated Use `findFileByLinkText` instead
+     * @see {@link findFileByLinkText}
      */
     public findFirstFileByName(fileName: string): TFile | undefined {
+        // eslint-disable-next-line deprecation/deprecation
         const foundFile = this.findFileByName(fileName);
         if (foundFile instanceof Array) {
             return foundFile.first();
@@ -343,11 +348,24 @@ export default class FileCache {
      * Returns the file from the file cache
      * @param filePath The path of the file to find
      * @returns The file/s if found, undefined otherwise
+     * @deprecated Use `findFileByLinkText` instead
+     * @see {@link findFileByLinkText}
      */
     public findFileByPath(filePath: string): TFile | Array<TFile> | undefined {
         const fileName = this.getFileNameFromPath(filePath);
         if (!fileName) { this.logger.error("File name not available"); return undefined; }
+        // eslint-disable-next-line deprecation/deprecation
         return this.findFileByName(fileName);
+    }
+
+    /**
+     * Returns the first file from the file cache or if no file found returns undefined.
+     * @param linkText The link text of the file to find.
+     * @param sourcePath The original path of the file from which the link originates.
+     * @returns The file as `TFile` if found, `undefined` otherwise.
+     */
+    public findFileByLinkText(linkText: string, sourcePath = ""): TFile | undefined {
+        return this.app.metadataCache.getFirstLinkpathDest(linkText, sourcePath) ?? undefined;
     }
 
 }

@@ -188,7 +188,7 @@ export default class DocumentComponents {
                     .setLinkType("file")
                     .setFormator((value: string) => {
                         const baseFileData = Helper.extractDataFromWikilink(documentModel.data.file);
-                        const baseFile = fileCache.findFileByName(baseFileData.filename ?? "");
+                        const baseFile = fileCache.findFileByLinkText(baseFileData.filename ?? "", documentModel.file.path);
                         let baseFilePath = baseFileData.filename ?? "";
                         if (baseFile && baseFile instanceof TFile) {
                             baseFilePath = baseFile.path;

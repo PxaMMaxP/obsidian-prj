@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sample-plugin",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "@typescript-eslint/parser": "5.29.0",
     "builtin-modules": "3.3.0",
     "esbuild": "0.17.3",
+    "eslint-plugin-deprecation": "^2.0.0",
     "obsidian": "latest",
     "obsidian-dataview": "^0.4.21",
     "quicktype": "^23.0.81",

@@ -97,7 +97,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         document.data.subType = PrjTypes.isValidFileSubType(result.data.subType);
 
         if (!document.data.subType && result.data.file) {
-            const linkedFile = this.fileCache.findFirstFileByName(result.data.file as string);
+            const linkedFile = this.fileCache.findFileByLinkText(result.data.file as string, "");
             document.setLinkedFile(linkedFile, folder);
         }
 

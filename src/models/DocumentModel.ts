@@ -47,7 +47,7 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
                 relatedFiles.map((relatedFile) => {
                     const wikilinkData = Helper.extractDataFromWikilink(relatedFile);
                     const mdFilename = wikilinkData.basename ? `${wikilinkData.basename}.md` : "";
-                    const file = this.fileCache.findFileByName(mdFilename);
+                    const file = this.fileCache.findFileByLinkText(mdFilename, this.file.path);
                     if (file instanceof TFile && file.path !== this.file.path) {
                         this._relatedFiles?.push(new DocumentModel(file));
                     }
@@ -140,15 +140,13 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
      */
     public getFile(): TFile | undefined {
         const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
-        const file = this.fileCache.findFileByName(fileLinkData.filename ?? "");
+        const file = this.fileCache.findFileByLinkText(fileLinkData.filename ?? "", this.file.path);
         if (file instanceof TFile) {
             return file;
-        } else if (Array.isArray(file)) {
-            this.logger.warn(`Multiple files found for ${fileLinkData.filename}`);
-            return file.first() ?? this.file;
+        } else {
+            this.logger.warn(`No files found for ${fileLinkData.filename}`);
+            return undefined;
         }
-        this.logger.warn(`No files found for ${fileLinkData.filename}`);
-        return undefined;
     }
 
 
