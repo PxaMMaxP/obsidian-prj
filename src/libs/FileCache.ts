@@ -33,6 +33,7 @@ export default class FileCache {
     /**
      * Creates a new FileCache instance
      * @constructor
+     * @remarks Events are disabled: We do not need them for now
      */
     constructor() {
         if (!this.fileCache) {
@@ -43,7 +44,7 @@ export default class FileCache {
         this.createEventHandler = this.createEventHandler.bind(this);
         this.renameEventHandler = this.renameEventHandler.bind(this);
         this.deleteEventHandler = this.deleteEventHandler.bind(this);
-        this.registerEvents();
+        //this.registerEvents();
     }
 
     /**
