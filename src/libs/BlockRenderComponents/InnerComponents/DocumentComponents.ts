@@ -4,6 +4,7 @@ import Lng from "src/classes/Lng";
 import EditableDataView from "src/libs/EditableDataView/EditableDataView";
 import Helper from "src/libs/Helper";
 import { DocumentModel } from "src/models/DocumentModel";
+import { StaticDocumentModel } from "src/models/StaticHelper/StaticDocumentModel";
 
 export default class DocumentComponents {
     public static createCellSummary(
@@ -161,13 +162,10 @@ export default class DocumentComponents {
                 .setTitle(title)
                 .enableEditability()
                 .setSuggester((inputValue: string) => {
-                    const suggestions = models
-                        .flatMap(document => [document.data.sender, document.data.recipient])
-                        .filter((v): v is string => v != null)
-                        .filter((v, index, self) => self.indexOf(v) === index)
-                        .filter(v => v.includes(inputValue))
-                        .sort()
-                        .splice(0, 10);
+                    const suggestions = StaticDocumentModel.getAllSenderRecipients()
+                        .filter(suggestion => suggestion.toLowerCase().includes(inputValue.toLowerCase()))
+                        .slice(0, 100)
+                        .map(suggestion => { return { value: suggestion, label: suggestion } });
                     return suggestions;
                 })
                 .onSave((newValue: string) => onSaveCallback(newValue))

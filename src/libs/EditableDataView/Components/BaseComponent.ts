@@ -1,7 +1,6 @@
 import { Component, Platform, setIcon } from "obsidian";
 import Global from "src/classes/Global";
 
-
 export default abstract class BaseComponent {
     public get container(): HTMLDivElement {
         return this.shippingContainer;
@@ -149,8 +148,8 @@ export default abstract class BaseComponent {
         }
         // Switch mode to Edit: hide the `edit` button and show the `save` and `cancel` buttons.
         if (this.cancelButton && this.saveButton) {
-            this.presentationContainer.classList.add('hidden');
-            this.dataInputContainer.classList.remove('hidden');
+            //this.presentationContainer.classList.add('hidden');
+            //this.dataInputContainer.classList.remove('hidden');
             this.cancelButton.classList.remove('hidden');
             this.saveButton.classList.remove('hidden');
             this.editButton.classList.add('hidden');
@@ -166,8 +165,8 @@ export default abstract class BaseComponent {
     protected disableEditMode(): void {
         // Switch mode to View: hide the `save` and `cancel` buttons and show the `edit` button.
         if (this.cancelButton && this.saveButton) {
-            this.presentationContainer.classList.remove('hidden');
-            this.dataInputContainer.classList.add('hidden');
+            //this.presentationContainer.classList.remove('hidden');
+            //this.dataInputContainer.classList.add('hidden');
             this.cancelButton.classList.add('hidden');
             this.saveButton.classList.add('hidden');
             this.editButton.classList.remove('hidden');
