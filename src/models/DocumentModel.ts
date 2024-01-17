@@ -138,7 +138,7 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
      * Returns the linked file of the document
      * @returns TFile of the linked file
      */
-    public getFile(): TFile | undefined {
+    public getLinkedFile(): TFile | undefined {
         const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
         const file = this.fileCache.findFileByLinkText(fileLinkData.filename ?? "", this.file.path);
         if (file instanceof TFile) {
@@ -158,10 +158,12 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
      * @remarks - This function sets the `file` property of the document to the wikilink of the file.
      * - If no file is provided, the function will return.
      */
-    public setLinkedFile(file: TFile | undefined, path?: string): void {
+    public setLinkedFile(file: TFile | undefined, path?: string): string | undefined {
         if (!file || !(file instanceof TFile)) return;
         const linktext = this.global.app.metadataCache.fileToLinktext(file, path ? path : this.file.path);
-        this.data.file = `[[${linktext}]]`;
+        const link = `[[${linktext}]]`;
+        this.data.file = link;
+        return link;
     }
 
     /**
