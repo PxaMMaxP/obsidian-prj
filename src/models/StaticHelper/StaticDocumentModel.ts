@@ -72,7 +72,7 @@ export class StaticDocumentModel {
         const fileCache = Global.getInstance().fileCache.Cache;
         const setOfPDFsWithMetadata = new Set(metadataCache
             .filter(file => file.metadata?.frontmatter?.type === "Metadata" && file.metadata?.frontmatter?.file)
-            .map(file => new DocumentModel(file.file).getFile())
+            .map(file => new DocumentModel(file.file).getLinkedFile())
             .filter(file => file !== undefined && file.extension === "pdf"));
         const listOfPDFWithoutMetadata = fileCache.filter(file => file.extension === "pdf" && !setOfPDFsWithMetadata.has(file));
         return listOfPDFWithoutMetadata;
@@ -144,7 +144,7 @@ export class StaticDocumentModel {
         }
 
         // PDF file
-        const pdfFile = document.getFile();
+        const pdfFile = document.getLinkedFile();
         if (!pdfFile) return;
 
         const documentDate = document.data.date ? new Date(document.data.date) : undefined;

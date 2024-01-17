@@ -6,8 +6,9 @@ import DocumentData from "src/types/DocumentData";
 import { Field, FormConfiguration, IFormResult, IResultData } from "src/types/ModalFormType";
 import BaseModalForm from "./BaseModalForm";
 import Helper from "../Helper";
-import PrjTypes from "src/types/PrjTypes";
+import PrjTypes, { FileSubType } from "src/types/PrjTypes";
 import API from "src/classes/API";
+import { TFile } from "obsidian";
 
 /**
  * Modal to create a new metadata file
@@ -78,42 +79,44 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      * Evaluates the form result and creates a new metadata file
      * @param {IFormResult} result Result of the form
      * @returns {Promise<DocumentModel | undefined>} The created metadata file
-     * @remarks - This function checks if the API is available.
-     * - This function checks if the form result is valid,
-     * - checks if the file exists and is a PDF file,
-     * - fills the metadata file with the form data,
-     * - creates the metadata file and
-     * - returns the metadata file if created successfully else undefined.
+     * @remarks 1. Creates a new Document model with the give file or no file.
+     * 2. Sets the data of the document model to the form result.
+     * 3. Creates a new file with the metadata filename or uses the existing file and rename it.
      */
-    public async evaluateForm(result: IFormResult): Promise<DocumentModel | undefined> {
+    public async evaluateForm(result: IFormResult, existingFile?: TFile): Promise<DocumentModel | undefined> {
         if (!this.isApiAvailable()) return;
         if (result.status !== "ok" || !result.data) return;
 
-        const folder = this.settings.documentSettings.defaultFolder;
+        const document = new DocumentModel(existingFile ? existingFile : undefined);
 
-        const document = new DocumentModel(undefined);
-        document.data.type = "Metadata";
+        const folder = existingFile?.parent?.path ? existingFile.parent?.path : this.settings.documentSettings.defaultFolder;
 
-        document.data.subType = PrjTypes.isValidFileSubType(result.data.subType);
+        (result.data.subType as FileSubType | undefined) = PrjTypes.isValidFileSubType(result.data.subType);
+        const linkedFile = this.fileCache.findFileByLinkText(result.data.file as string, "");
+        (result.data.file as string | undefined) = result.data.file ? document.setLinkedFile(linkedFile, folder) : undefined;
 
-        if (!document.data.subType && result.data.file) {
-            const linkedFile = this.fileCache.findFileByLinkText(result.data.file as string, "");
-            document.setLinkedFile(linkedFile, folder);
+        document.data = result.data as Partial<DocumentData>;
+
+        if (!existingFile) {
+            // No existing file, create a new one
+            let template = "";
+            // If a template is set, use it
+            const templateFile = this.app.vault.getAbstractFileByPath(this.settings.documentSettings.template);
+            if (templateFile && templateFile instanceof TFile) {
+                try {
+                    template = await this.app.vault.read(templateFile);
+                } catch (error) {
+                    this.logger.error(`Error reading template file '${templateFile.path}'`, error);
+                }
+            }
+
+            const newFileName = API.documentModel.generateMetadataFilename(document);
+            const file = await this.app.vault.create(path.join(folder, `${newFileName}.md`), template);
+            document.file = file;
+        } else {
+            // Existing file, rename it properly
+            await API.documentModel.syncMetadataToFile(document.file);
         }
-
-        document.data.date = (result.data.date as string) ?? undefined;
-        document.data.dateOfDelivery = (result.data.dateOfDelivery as string) ?? undefined;
-        document.data.title = result.data.title as string ?? undefined;
-        document.data.description = result.data.description as string ?? undefined;
-        document.data.sender = result.data.sender as string ?? undefined;
-        document.data.recipient = result.data.recipient as string ?? undefined;
-        document.data.hide = result.data.hide as boolean ?? undefined;
-        document.data.tags = result.data.tags as string[] ?? undefined;
-
-        const newFileName = API.documentModel.generateMetadataFilename(document);
-
-        const file = await this.app.vault.create(path.join(folder, `${newFileName}.md`), ``);
-        document.file = file;
 
         return document;
     }

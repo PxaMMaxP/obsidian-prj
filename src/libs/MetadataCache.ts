@@ -304,6 +304,7 @@ export default class MetadataCache {
         if (this.metadataCache) {
             this.metadataCache.delete(oldPath);
             this.addEntry(newFile);
+            this.invalidateMetadataCacheArray();
         } else {
             this.logger.error("Metadata cache not initialized");
         }

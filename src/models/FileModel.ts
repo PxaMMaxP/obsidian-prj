@@ -69,10 +69,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
     constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
         super(undefined);
         if (file) {
-            super.setWriteChanges((update) => {
-                return this.setFrontmatter(update as Record<string, unknown>);
-            });
-            this._file = file;
+            this.file = file;
         }
         this.ctor = ctor;
         this.initYamlKeyMap(yamlKeyMap);
@@ -95,10 +92,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         if (!frontmatter) {
             this.logger.trace('Creating empty object');
             const emptyObject = new this.ctor();
-            // Save the properties of the empty object to changes in transaction
-            for (const key in emptyObject) {
-                this.updateKeyValue(key, emptyObject[key]);
-            }
+            // Save the default values to the changes object in `TransactionModel`
+            this.changes = emptyObject;
             this.dataProxy = this.createProxy(emptyObject) as T;
             return this.dataProxy;
         }
@@ -121,12 +116,16 @@ export class FileModel<T extends object> extends TransactionModel<T> {
     /**
      * Sets the data object.
      * @param values The values to set.
-     * @remarks Overwrites only the given values.
+     * @remarks Overwrites only the given values:
+     * - If value is `undefined`, the value is not overwritten.
+     * - If value is `null`, the value is cleared.
      */
     protected set _data(values: Partial<T>) {
         const dataObject: T = new this.ctor(values);
         for (const key in dataObject) {
-            this._data[key] = values[key];
+            if (values[key] !== undefined) {
+                this._data[key] = values[key];
+            }
         }
     }
 

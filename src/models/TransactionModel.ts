@@ -26,30 +26,47 @@ export class TransactionModel<T> {
     /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
+     * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
      */
     constructor(writeChanges: ((update: T) => Promise<void>) | undefined) {
         if (writeChanges) {
-            this.transactionActive = false;
             this.writeChanges = writeChanges;
+        } else {
+            this.startTransaction();
         }
-        this.transactionActive = true;
     }
 
+
+    /**
+     * Sets the callback function for writing changes to the transaction model.
+     * @param writeChanges The callback function that takes an update of type T and returns a Promise that resolves when the changes are written.
+     * @remarks - If a transaction is active, the transaction is finished after the callback function is set and the `changes` property is not empty.
+     * - Else, if the transaction is active and the `changes` property is empty, the transaction is aborted.
+     */
     public setWriteChanges(writeChanges: (update: T) => Promise<void>) {
         this.writeChanges = writeChanges;
         if (this.isTransactionActive && !(Object.keys(this.changes).length === 0 && this.changes.constructor === Object)) {
-            this.callWriteChanges();
-            this.changes = {};
-            this.transactionActive = false;
+            this.finishTransaction();
+        } else if (this.isTransactionActive) {
+            this.abortTransaction();
         }
-        this.transactionActive = false;
     }
 
-    protected callWriteChanges(update: T = this.changes as T) {
+    /**
+     * Calls the `writeChanges` function if it is available.
+     * @param update The changes to write.
+     * @returns `true` if the `writeChanges` function is available, otherwise `false`.
+     * @remarks - If the `writeChanges` function is available, it will be called asynchronously (No waiting for the function to finish).
+     */
+    protected callWriteChanges(update: T = this.changes as T): boolean {
         if (this.writeChanges) {
-            this.writeChanges(update);
+            this.writeChanges(update)
+                .then(() => { this.logger.debug("Changes written to file"); })
+                .catch((error) => { this.logger.error("Failed to write changes to file:", error); })
+            return true;
         } else {
             this.logger.debug("No writeChanges function available");
+            return false;
         }
     }
 
@@ -69,26 +86,16 @@ export class TransactionModel<T> {
      * Finishes a transaction
      * @remarks - If no transaction is active, this method does nothing and logs a warning.
      * - This method writes the changes to the file.
-     * @remarks - If the `writeChanges` method throws an error, the error is logged and the transaction is aborted.
+     * @remarks - If the `writeChanges` method is not available, this method does nothing.
      */
-    public async finishTransaction(): Promise<void> {
+    public finishTransaction(): void {
         if (!this.isTransactionActive) {
             this.logger.warn('No transaction active');
             return;
-        } else if (!this.writeChanges) {
-            this.logger.info('No writeChanges function available');
-            return;
         }
-        try {
-            this.callWriteChanges();
-        }
-        catch (error) {
-            this.logger.error("`writeChanges` failed with error:", error);
-        }
-        finally {
-            this.changes = {};
-            this.transactionActive = false;
-        }
+        const writeChanges = this.callWriteChanges();
+        this.changes = writeChanges ? {} : this.changes;
+        this.transactionActive = writeChanges ? false : this.transactionActive;
     }
 
     /**
@@ -99,9 +106,6 @@ export class TransactionModel<T> {
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
             this.logger.warn('No transaction active');
-            return;
-        } else if (!this.writeChanges) {
-            this.logger.info('No writeChanges function available');
             return;
         }
         this.changes = {};
@@ -127,8 +131,8 @@ export class TransactionModel<T> {
         });
 
         if (!this.isTransactionActive) {
-            this.callWriteChanges();
-            this.changes = {};
+            const writeChanges = this.callWriteChanges();
+            this.changes = writeChanges ? {} : this.changes;
         }
     }
 
