@@ -121,12 +121,16 @@ export class FileModel<T extends object> extends TransactionModel<T> {
     /**
      * Sets the data object.
      * @param values The values to set.
-     * @remarks Overwrites only the given values.
+     * @remarks Overwrites only the given values:
+     * - If value is `undefined`, the value is not overwritten.
+     * - If value is `null`, the value is cleared.
      */
     protected set _data(values: Partial<T>) {
         const dataObject: T = new this.ctor(values);
         for (const key in dataObject) {
-            this._data[key] = values[key];
+            if (values[key] !== undefined) {
+                this._data[key] = values[key];
+            }
         }
     }
 
