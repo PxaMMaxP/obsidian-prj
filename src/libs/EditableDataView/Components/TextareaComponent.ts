@@ -147,6 +147,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     private enableEdit() {
+        this.presentationContainer.classList.remove('hidden');
         this.presentationSpan.textContent = this._value;
         this.presentationSpan.contentEditable = 'true';
         this.presentationSpan.focus();
