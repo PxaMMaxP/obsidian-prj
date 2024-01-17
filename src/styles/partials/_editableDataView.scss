@@ -182,6 +182,11 @@
     font-family: inherit;
 }
 
+.editable-data-view.textarea-presentation[contenteditable="true"] {
+    white-space: pre-wrap;
+    display: inline-block;
+}
+
 .editable-data-view.textarea-input-sizer {
     display: flex;
     position: relative;

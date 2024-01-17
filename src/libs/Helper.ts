@@ -109,6 +109,11 @@ export default class Helper {
         return regexMarkdownSymbols.test(text);
     }
 
+    static containsHTML(text: string) {
+        const htmlRegex = /<[^>]*>/;
+        return htmlRegex.test(text);
+    }
+
     /**
      * Checks if any of the tags in `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
      * @param tagsToCheck The tags to check as substrings

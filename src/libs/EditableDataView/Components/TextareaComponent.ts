@@ -142,6 +142,15 @@ export default class TextareaComponent extends BaseComponent {
         this.component.registerDomEvent(this.presentationSpan, 'keydown', (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 this.disableEditMode();
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(document.createTextNode('\n'));
+                    range.collapse(false);
+                }
             }
         });
     }

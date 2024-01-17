@@ -74,15 +74,10 @@ export default class FileCache {
     }
 
     /**
-     * @depraecated Use directly the Obsidian API.
+     * @deprecated Use `app.vault.getFiles()` instead
      */
     public get Cache(): TFile[] {
-        if (this.fileCacheReady && this.fileCache) {
-            return Array.from(this.fileCache.values()).filter(file => file !== null) as TFile[];
-        } else {
-            this.logger.error("File cache not initialized");
-            return [];
-        }
+        return this.app.vault.getFiles();
     }
 
     /**

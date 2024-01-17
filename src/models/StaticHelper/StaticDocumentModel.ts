@@ -69,7 +69,7 @@ export class StaticDocumentModel {
      */
     public static getAllPDFsWithoutMetadata(): TFile[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
-        const fileCache = Global.getInstance().fileCache.Cache;
+        const fileCache = Global.getInstance().app.vault.getFiles();
         const setOfPDFsWithMetadata = new Set(metadataCache
             .filter(file => file.metadata?.frontmatter?.type === "Metadata" && file.metadata?.frontmatter?.file)
             .map(file => new DocumentModel(file.file).getLinkedFile())
