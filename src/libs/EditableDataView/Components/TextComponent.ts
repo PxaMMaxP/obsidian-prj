@@ -152,33 +152,6 @@ export default class TextComponent extends BaseComponent {
     }
     //#endregion
 
-    private setSuggestionsList(suggestions: Suggestions) {
-        this.suggestionsContainer.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const div = document.createElement('div');
-            div.classList.add('editable-data-view', 'suggestion-item');
-            div.textContent = suggestion.label;
-            div.onclick = () => {
-                // Logik für das Klicken auf einen Vorschlag
-            };
-            this.suggestionsContainer.appendChild(div);
-        });
-
-        if (suggestions.length > 0) {
-            this.suggestionsContainer.style.display = 'block';
-        } else {
-            this.suggestionsContainer.style.display = 'none';
-        }
-    }
-
-    /**private updateSuggestionsPosition(inputElement) {
-        const rect = inputElement.getBoundingClientRect();
-        suggestionsContainer.style.position = 'fixed';
-        suggestionsContainer.style.left = `${rect.left}px`;
-        suggestionsContainer.style.top = `${rect.top + window.scrollY + rect.height}px`;
-    }**/
-
-
     //#region Base Callbacks
     private build() {
         this.presentationSpan = document.createElement('span');
@@ -217,6 +190,7 @@ export default class TextComponent extends BaseComponent {
     }
 
     private enableEdit() {
+        this.presentationContainer.classList.remove('hidden');
         this.presentationSpan.contentEditable = 'true';
         this.presentationSpan.focus();
         this.suggestionComponent?.enableSuggestior();
