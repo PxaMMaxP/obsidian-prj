@@ -107,6 +107,9 @@ export class TransactionModel<T> {
         if (!this.isTransactionActive) {
             this.logger.warn('No transaction active');
             return;
+        } else if (!this.writeChanges) {
+            this.logger.warn("No writeChanges function available");
+            return;
         }
         this.changes = {};
         this.transactionActive = false;
