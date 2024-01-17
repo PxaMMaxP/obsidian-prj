@@ -186,4 +186,18 @@ export default abstract class BaseComponent {
             this.disableEditMode();
         }
     }
+
+    /**
+     * You can use this method to change whatevers you want in the main container.
+     * @param callback The callback to run. `container` is the main container of the component.
+     * @returns The component itself.
+     * @remarks You can use this method to change whatevers you want in the main container:
+     * - You can add new elements to the container,
+     * - change or add CSS classes,
+     * - etc.
+     */
+    public then(callback: (container: HTMLDivElement) => void): BaseComponent {
+        callback(this.shippingContainer);
+        return this;
+    }
 }
