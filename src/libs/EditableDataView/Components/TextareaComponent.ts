@@ -22,8 +22,6 @@ export default class TextareaComponent extends BaseComponent {
     //#endregion
     //#region HTML Elements
     private presentationSpan: HTMLElement;
-    private label: HTMLElement;
-    private textarea: HTMLTextAreaElement;
     //#endregion
 
     constructor(component: Component) {
@@ -126,6 +124,7 @@ export default class TextareaComponent extends BaseComponent {
         this.presentationSpan = document.createElement('span');
         this.presentationContainer.appendChild(this.presentationSpan);
 
+        this.presentationSpan.contentEditable = 'false';
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('textarea-presentation');
@@ -140,21 +139,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     private buildInput() {
-        this.label = document.createElement('label');
-        this.label.title = this._title;
-        this.dataInputContainer.appendChild(this.label);
-        this.label.classList.add('editable-data-view');
-        this.label.classList.add('textarea-input-sizer');
-
-        this.textarea = document.createElement('textarea');
-        this.label.appendChild(this.textarea);
-        this.textarea.classList.add('editable-data-view');
-        this.textarea.classList.add('textarea-input');
-        this.textarea.placeholder = this._placeholder ? this._placeholder : '';
-        this.component.registerDomEvent(this.textarea, 'input', () => {
-            this.label.dataset.value = this.textarea.value ? this.textarea.value : this._placeholder ? this._placeholder : '';
-        });
-        this.component.registerDomEvent(this.textarea, 'keydown', (event: KeyboardEvent) => {
+        this.component.registerDomEvent(this.presentationSpan, 'keydown', (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 this.disableEditMode();
             }
@@ -162,10 +147,9 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     private enableEdit() {
-        this.textarea.value = this._value ? this._value : '';
-        this.label.dataset.value = this._value ? this._value : this._placeholder ? this._placeholder : '';
-        this.textarea.focus();
-        this.textarea.select();
+        this.presentationSpan.textContent = this._value;
+        this.presentationSpan.contentEditable = 'true';
+        this.presentationSpan.focus();
     }
 
     private disableEdit() {
@@ -177,10 +161,11 @@ export default class TextareaComponent extends BaseComponent {
         } else {
             this.presentationSpan.textContent = this._value;
         }
+        this.presentationSpan.contentEditable = 'false';
     }
 
     private async save(): Promise<void> {
-        this._value = this.textarea.value;
+        this._value = this.presentationSpan.textContent ?? '';
         await this._onSave?.(this._value);
     }
     //#endregion

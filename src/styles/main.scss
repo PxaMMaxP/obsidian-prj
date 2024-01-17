@@ -2,6 +2,7 @@
 @import 'partials/styles';
 @import 'partials/mobile';
 @import 'partials/table';
+@import 'partials/editableDataView';
 
 .prj-block-container.panel {
     @include mobileGeneralStyles;

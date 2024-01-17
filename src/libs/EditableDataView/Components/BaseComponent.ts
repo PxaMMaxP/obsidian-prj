@@ -1,7 +1,6 @@
 import { Component, Platform, setIcon } from "obsidian";
 import Global from "src/classes/Global";
 
-
 export default abstract class BaseComponent {
     public get container(): HTMLDivElement {
         return this.shippingContainer;

@@ -2,6 +2,7 @@ import { Component, MarkdownRenderer } from "obsidian";
 import BaseComponent from "./BaseComponent";
 import Global from "src/classes/Global";
 import Helper from "src/libs/Helper";
+import SuggestionComponent, { Suggestions } from "./SuggestionComponent";
 
 export default class TextComponent extends BaseComponent {
     //#region base properties
@@ -16,18 +17,24 @@ export default class TextComponent extends BaseComponent {
     private _onPresentation: ((value: string) => Promise<void>) | undefined;
     private _onMarkdownPresentation: ((value: string) => Promise<void>) | undefined;
     private _onSave: ((value: string) => Promise<void>) | undefined;
-    private _suggester: ((value: string) => string[]) | undefined;
+    private _suggester: ((value: string) => Suggestions) | undefined;
     private _value: string;
     private _placeholder: string;
-    private _suggestions: string[];
+    private _suggestions: Suggestions;
     private _title: string;
     //#endregion
     //#region HTML Elements
     private presentationSpan: HTMLElement;
-    private label: HTMLElement;
-    private input: HTMLInputElement;
-    private datalist: HTMLDataListElement;
+    private suggestionsContainer: HTMLDivElement;
     //#endregion
+    private suggestionComponent: SuggestionComponent | undefined;
+
+    /**
+     * Returns `true` if the suggester is set. (Suggestions are enabled.)
+     */
+    private get isSuggesterSet() {
+        return this._suggester !== undefined;
+    }
 
     constructor(component: Component) {
         super(component);
@@ -73,7 +80,7 @@ export default class TextComponent extends BaseComponent {
      * @param suggestions The suggestions to set.
      * @returns The component itself.
      */
-    public setSuggestions(suggestions: string[]) {
+    public setSuggestions(suggestions: Suggestions) {
         this._suggestions = suggestions;
         return this;
     }
@@ -94,7 +101,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The suggester is called when the user types in the input element.
      */
-    public setSuggester(suggester: (value: string) => string[]) {
+    public setSuggester(suggester: (value: string) => Suggestions) {
         this._suggester = suggester;
         return this;
     }
@@ -145,22 +152,12 @@ export default class TextComponent extends BaseComponent {
     }
     //#endregion
 
-    private setSuggestionsList(suggestions: string[]) {
-        if (!this.datalist) return;
-        this.datalist.innerHTML = '';
-        if (!suggestions) return;
-        suggestions.forEach(suggestion => {
-            const option = document.createElement('option');
-            option.value = suggestion;
-            this.datalist.appendChild(option);
-        });
-    }
-
     //#region Base Callbacks
     private build() {
         this.presentationSpan = document.createElement('span');
         this.presentationContainer.appendChild(this.presentationSpan);
 
+        this.presentationSpan.contentEditable = 'false';
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('text-presentation');
@@ -172,48 +169,31 @@ export default class TextComponent extends BaseComponent {
         } else {
             this.presentationSpan.textContent = this._value;
         }
+
+        if (this._suggestions || this._suggester) {
+            if (!this.suggestionComponent) {
+                this.suggestionComponent = new SuggestionComponent(this.presentationSpan, this.component);
+            }
+            this._suggestions ? this.suggestionComponent.setSuggestions(this._suggestions) : void 0;
+            this._suggester ? this.suggestionComponent.setSuggester(this._suggester) : void 0;
+        }
     }
 
     private buildInput() {
-        this.label = document.createElement('label');
-        this.label.title = this._title;
-        this.dataInputContainer.appendChild(this.label);
-        this.label.classList.add('editable-data-view');
-        this.label.classList.add('text-input-sizer');
-
-        this.input = document.createElement('input');
-        this.label.appendChild(this.input);
-        this.input.classList.add('editable-data-view');
-        this.input.classList.add('text-input');
-        this.input.placeholder = this._placeholder ? this._placeholder : '';
-        this.component.registerDomEvent(this.input, 'input', () => {
-            this.label.dataset.value = this.input.value ? this.input.value : this._placeholder ? this._placeholder : '';
-            if (this._suggester && this.label.dataset.value !== this._placeholder && this.label.dataset.value !== "")
-                this.setSuggestionsList(this._suggester(this.input.value));
-        });
-        this.component.registerDomEvent(this.input, 'keydown', (event: KeyboardEvent) => {
+        this.component.registerDomEvent(this.presentationSpan, 'keydown', (event: KeyboardEvent) => {
             if (event.key === 'Enter') {
                 this.saveChanges();
             } else if (event.key === 'Escape') {
                 this.disableEditMode();
             }
         });
-
-        if ((this._suggestions && this._suggestions.length > 0) || this._suggester) {
-            const id = Math.random().toString(36).substring(2, 10);
-            this.input.setAttribute('list', id);
-            this.datalist = document.createElement('datalist');
-            this.datalist.id = id;
-            this.input.appendChild(this.datalist);
-            this.setSuggestionsList(this._suggestions);
-        }
     }
 
     private enableEdit() {
-        this.input.value = this._value ? this._value : '';
-        this.label.dataset.value = this._value ? this._value : this._placeholder ? this._placeholder : '';
-        this.input.focus();
-        this.input.select();
+        this.presentationContainer.classList.remove('hidden');
+        this.presentationSpan.contentEditable = 'true';
+        this.presentationSpan.focus();
+        this.suggestionComponent?.enableSuggestior();
     }
 
     private disableEdit() {
@@ -225,10 +205,12 @@ export default class TextComponent extends BaseComponent {
         } else {
             this.presentationSpan.textContent = this._value;
         }
+        this.presentationSpan.contentEditable = 'false';
+        this.suggestionComponent?.disableSuggestor();
     }
 
     private async save(): Promise<void> {
-        this._value = this.input.value;
+        this._value = this.presentationSpan.textContent ?? '';
         await this._onSave?.(this._value);
     }
     //#endregion
