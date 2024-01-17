@@ -11,7 +11,7 @@ export default class DocumentComponents {
         documentModel: DocumentModel,
         component: Component,
         summaryRelatedFiles: DocumentFragment) {
-        const description = documentModel.getDescription();
+        const description = documentModel.data.description ?? "";
         new EditableDataView(summaryRelatedFiles, component)
             .addTextarea(textarea => textarea
                 .setValue(description)
