@@ -73,6 +73,9 @@ export default class FileCache {
         Global.getInstance().logger.debug("File cache events not registered");
     }
 
+    /**
+     * @depraecated Use directly the Obsidian API.
+     */
     public get Cache(): TFile[] {
         if (this.fileCacheReady && this.fileCache) {
             return Array.from(this.fileCache.values()).filter(file => file !== null) as TFile[];

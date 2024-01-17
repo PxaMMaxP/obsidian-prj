@@ -107,6 +107,7 @@ export class DocumentModel extends FileModel<DocumentData> implements IPrjModel<
     /**
      * Returns the description of the document
      * @returns String containing the description
+     * @deprecated Use `data.description` instead.
      */
     public getDescription(): string {
         return this.data.description ?? "";
