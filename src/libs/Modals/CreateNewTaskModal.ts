@@ -23,7 +23,7 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
             name: "subtype",
             label: Lng.gt("SubType"),
             description: Lng.gt("SubTypeDescription"),
-            isRequired: true,
+            isRequired: false,
             input: {
                 type: "select",
                 source: "fixed",
