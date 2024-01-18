@@ -262,7 +262,19 @@ export default class MetadataCache {
 
                     // Changes in Kanban
                     if (newMetadata.frontmatter?.subtype === 'Kanban') {
-                        this.eventHandler.fireEvent('changes-in-kanban-event', {
+                        this._eventHandler.fireEvent(
+                            'changes-in-kanban-event',
+                            {
+                                file,
+                                newMetadata,
+                                oldMetadata,
+                            },
+                        );
+                    }
+
+                    // Changes in Kanban
+                    if (newMetadata.frontmatter?.subtype === 'Kanban') {
+                        this._eventHandler.fireEvent('changes-in-kanban', {
                             file,
                             newMetadata,
                             oldMetadata,
@@ -544,4 +556,10 @@ interface MetadataCacheEvents extends ICallback {
         'changes-in-kanban-event': IEvent<MetadataCacheEventArgs, undefined>;
         // Add more events here
     };
+}
+
+export interface MetadataCacheEventArgs {
+    file: TFile;
+    newMetadata: CachedMetadata;
+    oldMetadata: CachedMetadata;
 }
