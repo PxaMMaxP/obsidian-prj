@@ -22,6 +22,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
         tags: [],
+        reactOnActiveFile: false,
         filter: ["Topic", "Project", "Task"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
@@ -368,7 +369,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
-        const hide = this.determineHideState(model);
+        const hide = this.determineHideState(model) || this.determineTagHideState(model);
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
@@ -392,6 +393,14 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             return false;
         }
         return true;
+    }
+
+    private determineTagHideState(document: (PrjTaskManagementModel<TaskData | TopicData | ProjectData>)): boolean {
+        return this.settings.reactOnActiveFile ? !Helper.isTagIncluded(this.settings.tags, document.getTags()) : false;
+    }
+
+    public onActiveFileFilter() {
+        this.onFilter();
     }
 }
 

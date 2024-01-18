@@ -22,6 +22,7 @@ import EditableDataView from "../EditableDataView/EditableDataView";
 export default class NoteBlockRenderComponent extends TableBlockRenderComponent<NoteModel> {
     protected settings: BlockRenderSettings = {
         tags: [],
+        reactOnActiveFile: false,
         filter: ["Note"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
@@ -177,7 +178,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             const document = this.models[i];
 
             const rowUid = this.getUID(document);
-            let hide = false;
+            let hide = this.determineTagHideState(document);
             this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
             this.logger.trace(`Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`);
             if (visibleRows >= this.settings.maxDocuments) {
@@ -343,6 +344,14 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         }
 
         return hide; // Standard-Verhalten
+    }
+
+    private determineTagHideState(document: NoteModel): boolean {
+        return this.settings.reactOnActiveFile ? !Helper.isTagIncluded(this.settings.tags, document.getTags()) : false;
+    }
+
+    public onActiveFileFilter() {
+        this.onFilter();
     }
 
     /**

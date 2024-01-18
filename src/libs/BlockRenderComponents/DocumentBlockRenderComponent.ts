@@ -22,6 +22,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     private filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
         tags: [],
+        reactOnActiveFile: false,
         filter: ["Documents"],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
@@ -404,7 +405,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
-        const hide = this.determineHideState(document);
+        const hide = this.determineHideState(document) || this.determineTagHideState(document);
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
@@ -434,6 +435,14 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             return false;
         }
         return true;
+    }
+
+    private determineTagHideState(document: DocumentModel): boolean {
+        return this.settings.reactOnActiveFile ? !Helper.isTagIncluded(this.settings.tags, document.getTags()) : false;
+    }
+
+    public onActiveFileFilter() {
+        this.onFilter();
     }
 
     /**

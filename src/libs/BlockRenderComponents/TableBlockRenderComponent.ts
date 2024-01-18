@@ -142,6 +142,7 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
                         this.component.registerEvent(
                             this.global.app.workspace.on('active-leaf-change', () => this.onActiveFileChange.bind(this)())
                         );
+                        this.settings.reactOnActiveFile = true;
                     } else {
                         this.settings.tags = option.value;
                     }
@@ -201,9 +202,14 @@ export default abstract class TableBlockRenderComponent<T extends IPrjModel<unkn
         this.logger.trace("Active file changed: Debouncing");
         clearTimeout(this.activeFileDebounceTimer);
         this.activeFileDebounceTimer = setTimeout(async () => {
-            this.redraw();
+            this.onActiveFileFilter();
         }, 750);
     }
+
+    /**
+     * Handles the event when the active file changes.
+     */
+    abstract onActiveFileFilter(): void;
 
     protected getUID(model: T): string {
         return Helper.generateUID(model.file.path);
@@ -251,6 +257,11 @@ export type BlockRenderSettings = {
      * `this` includes documents that have the same tags as the current document.
      */
     tags: string[],
+
+    /**
+     * Whether to react to the active file change event.
+     */
+    reactOnActiveFile: boolean,
 
     /**
      * Filter for the model types to display.
