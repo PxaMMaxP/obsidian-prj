@@ -6,7 +6,7 @@ export type FileType = 'Topic' | 'Project' | 'Task' | 'Metadata' | 'Note';
 /**
  * Represents the subtypes of a file.
  */
-export type FileSubType = null | 'Cluster';
+export type FileSubType = null | 'Cluster' | 'Kanban';
 
 /**
  * Represents a history entry.
