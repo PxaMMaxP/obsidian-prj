@@ -6,7 +6,7 @@ export type FileType = "Topic" | "Project" | "Task" | "Metadata" | "Note";
 /**
  * Represents the subtypes of a file.
  */
-export type FileSubType = null | "Cluster";
+export type FileSubType = null | "Cluster" | "Kanban";
 
 /**
  * Represents a history entry.
@@ -54,7 +54,7 @@ export default class PrjTypes {
     /**
      * An array of valid file subtypes.
      */
-    public static readonly fileSubTypes: FileSubType[] = [null, "Cluster"];
+    public static readonly fileSubTypes: FileSubType[] = [null, "Cluster", "Kanban"];
 
     /**
      * An array of valid task statuses.
