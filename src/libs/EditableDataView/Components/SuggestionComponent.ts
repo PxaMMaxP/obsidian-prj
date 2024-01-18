@@ -14,6 +14,13 @@ export interface Suggestion {
 export type Suggestions = Suggestion[];
 
 /**
+ * A cursor position.
+ * @remarks - The cursor position can be a number, 'start' or 'end'.
+ * @see {@link SuggestionComponent.getCursorPositionNumber}
+ */
+type CursorPosition = number | 'start' | 'end';
+
+/**
  * A child for the suggestor.
  * @remarks - This child is used to register the events for the suggestor.
  * - After the suggestor is unloaded, the events are unregistered.
@@ -139,7 +146,7 @@ export default class SuggestionComponent {
         this._component.addChild(this._suggestorChild);
 
         // Set the cursor to the end of the input element.
-        this.setInputCursorAbsolutePosition(Number.MAX_SAFE_INTEGER);
+        this.setInputCursorAbsolutePosition('end');
 
         this.buildSuggestionsContainer();
 
@@ -209,7 +216,7 @@ export default class SuggestionComponent {
             // If the 'Ctrl' + 'a' button is pressed, the text in the input element is selected.
             event.preventDefault();
 
-            this.selectText(0, Number.MAX_SAFE_INTEGER);
+            this.selectText(0, 'end');
         }
     }
 
@@ -221,7 +228,7 @@ export default class SuggestionComponent {
         const suggestion = this._activeSuggestions.find(suggestion => suggestion.value.toLowerCase().startsWith(this._inputElement.textContent?.toLowerCase() ?? ''))
         this._inputElement.textContent = suggestion ? suggestion.value : this._inputElement.textContent;
         this.suggestionsContainer.innerText = '';
-        this.setInputCursorAbsolutePosition(Number.MAX_SAFE_INTEGER);
+        this.setInputCursorAbsolutePosition('end');
     }
 
     /**
@@ -270,7 +277,9 @@ export default class SuggestionComponent {
      * @param position Position to set the cursor to.
      * @remarks The position is clamped to the length of the input element.
      */
-    private setInputCursorAbsolutePosition(position: number) {
+    private setInputCursorAbsolutePosition(position: CursorPosition) {
+        position = this.getCursorPositionNumber(position);
+
         const selection = window.getSelection();
         const range = document.createRange();
 
@@ -289,11 +298,28 @@ export default class SuggestionComponent {
     }
 
     /**
+     * Returns the cursor position as a number.
+     * @param position Position to convert. Can be a number, 'start' or 'end'.
+     * @returns The cursor position as a number.
+     */
+    private getCursorPositionNumber(position: CursorPosition): number {
+        if (position === 'start') {
+            position = 0;
+        } else if (position === 'end') {
+            position = Number.MAX_SAFE_INTEGER;
+        }
+        return position;
+    }
+
+    /**
      * Selects the text in the input element.
      * @param startPosition Start position of the selection.
      * @param endPosition End position of the selection.
      */
-    private selectText(startPosition: number, endPosition: number) {
+    private selectText(startPosition: CursorPosition, endPosition: CursorPosition) {
+        startPosition = this.getCursorPositionNumber(startPosition);
+        endPosition = this.getCursorPositionNumber(endPosition);
+
         const selection = window.getSelection();
         const range = document.createRange();
 
@@ -323,7 +349,7 @@ export default class SuggestionComponent {
 
         // On click on the suggestions container, the cursor should be set to the end of the input element.
         this._suggestorChild?.registerDomEvent(this.suggestionsContainer, 'click', () => {
-            this.setInputCursorAbsolutePosition(Number.MAX_SAFE_INTEGER);
+            this.setInputCursorAbsolutePosition('end');
         });
     }
 
