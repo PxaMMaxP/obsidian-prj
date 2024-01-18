@@ -195,6 +195,10 @@ export default class MetadataCache {
                         this.eventHandler.fireEvent('prj-task-management-changed-status', file);
                     }
                     this.eventHandler.fireEvent('prj-task-management-file-changed', file);
+                    // Changes in Kanban
+                    if (newMetadata.frontmatter?.subtype === "Kanban") {
+                        this.eventHandler.fireEvent('changes-in-kanban', { file, newMetadata, oldMetadata });
+                    }
                     break;
                 case "Metadata":
                     this.eventHandler.fireEvent('document-changed-metadata', file);
@@ -427,6 +431,13 @@ interface MetadataCacheEvents extends ICallback {
         'prj-task-management-changed-status': IEvent<TFile, undefined | void>;
         'prj-task-management-file-changed': IEvent<TFile, undefined | void>;
         'document-changed-metadata': IEvent<TFile, undefined | void>;
+        'changes-in-kanban': IEvent<MetadataCacheEventArgs, undefined>;
         // Add more events here
     };
+}
+
+export interface MetadataCacheEventArgs {
+    'file': TFile;
+    'newMetadata': CachedMetadata;
+    'oldMetadata': CachedMetadata;
 }
