@@ -4,7 +4,7 @@ import { PrjTaskManagementModel } from "./PrjTaskManagementModel";
 import API from "src/classes/API";
 import ProjectData from "src/types/ProjectData";
 import TopicData from "src/types/TopicData";
-import Tag from "src/libs/Tag";
+import Tags from "src/libs/Tags";
 import { Status } from "src/types/PrjTypes";
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
@@ -29,7 +29,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
 
     private getRelatedTasks(status?: (status: Status | undefined) => boolean): TaskModel[] {
         const filesWithSameTags = this.metadataCache.cache.filter((file) => {
-            const fileTags = Tag.getValidTags(file.metadata?.frontmatter?.tags);
+            const fileTags = Tags.getValidTags(file.metadata?.frontmatter?.tags);
             const thisTags = this.tags;
             return (fileTags.some((tag) => thisTags.includes(tag)))
                 && (file.file.basename !== this.file.basename)
