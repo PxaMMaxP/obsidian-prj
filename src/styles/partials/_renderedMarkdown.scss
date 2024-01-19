@@ -1,0 +1,30 @@
+
+/** To display rendered Markdown correct **/
+/** 
+Example: 
+@import 'renderedMarkdown';
+@include renderedMarkdown; 
+**/
+@mixin renderedMarkdown {
+    p {
+        white-space: normal;
+        line-height: var(--line-height-normal);
+        margin-top: auto;
+        margin-bottom: auto;
+        display: inline;
+    }
+
+    ul {
+        white-space: normal;
+        line-height: var(--line-height-normal);
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    ol {
+        white-space: normal;
+        line-height: var(--line-height-normal);
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+}
