@@ -287,6 +287,20 @@ export default class Helper {
     static sanitizeFilename(filename: string): string {
         return filename.replace(/[^a-zA-Z0-9-_. ]/g, '');
     }
+
+    static rebuildActiveView(): void {
+        const workspace = Global.getInstance().app.workspace;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, deprecation/deprecation
+        const activeLeaf = workspace.activeLeaf as any;
+        if (activeLeaf) {
+            try {
+                activeLeaf.rebuildView();
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+    }
 }
 
 export type WikilinkData = {

@@ -14,6 +14,7 @@ import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTaskManagementModel';
 import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
+import Helper from './libs/Helper';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -73,20 +74,19 @@ export default class Prj extends Plugin {
 			id: "rebuild-active-view",
 			name: Lng.gt("Rebuild active view"),
 			callback: async () => {
-				const workspace = Global.getInstance().app.workspace;
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const activeLeaf = workspace.activeLeaf as any;
-				if (activeLeaf) {
-					try {
-						activeLeaf.rebuildView();
-					}
-					catch (error) {
-						console.error(error);
-					}
-				}
+				Helper.rebuildActiveView();
 			},
 		});
 
+		/**
+		 * Run rebuild active view after 500ms
+		 * This is a workaround for the problem
+		 * that the plugin is not loaded when the
+		 * start page is loaded.
+		 */
+		setTimeout(() => {
+			Helper.rebuildActiveView();
+		}, 500);
 	}
 
 	onunload() {
