@@ -218,9 +218,13 @@ export default class SingletonBlockProcessor {
     private moveChilds(from: Element, to: Element): boolean {
         let elementsMoved = false;
         while (from.firstChild) {
-            if (from.firstChild.childNodes.length > 0) {
+            const child = from.firstChild;
+            if (child.childNodes.length > 0) {
                 elementsMoved = true;
-                to.appendChild(from.firstChild);
+                to.appendChild(child);
+            } else {
+                this.logger?.warn("Child has no child nodes", child);
+                from.removeChild(child);
             }
         }
         return elementsMoved;

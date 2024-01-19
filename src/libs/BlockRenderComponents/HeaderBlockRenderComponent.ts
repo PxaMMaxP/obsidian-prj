@@ -283,6 +283,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * @remarks This function is called in the constructor.
      */
     private parseSettings(): void {
+        if (!this._processorSettings.options || this._processorSettings.options.length === 0) return;
         this._processorSettings.options.forEach(option => {
             switch (option.label) {
                 case "watchActiveFile":
