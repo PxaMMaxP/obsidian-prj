@@ -199,6 +199,8 @@ export default class MetadataCache {
                 case "Metadata":
                     this.eventHandler.fireEvent('document-changed-metadata', file);
                     break;
+                case "Note":
+                    break;
                 default:
                     this.logger.error(`Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`);
                     break;
