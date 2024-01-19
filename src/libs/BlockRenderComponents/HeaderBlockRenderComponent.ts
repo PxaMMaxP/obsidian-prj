@@ -147,7 +147,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * @remarks - This function is called when the `prj-task-management-file-changed` event is fired.
      * - The function checks if the file is the file in which the block is located and calls the `redraw` function.
      */
-    private onDocumentChangedMetadata(file: TFile): undefined {
+    private onDocumentChangedMetadata(file: TFile): void {
         if (file.path === this.path) {
             this.redraw();
         }
