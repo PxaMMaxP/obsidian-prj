@@ -11,6 +11,7 @@ import Logging from "src/classes/Logging";
 import Helper from "./Helper";
 import NoteBlockRenderComponent from "./BlockRenderComponents/NoteBlockRenderComponent";
 import SingletonBlockProcessor from "./SingletonBlockProcessor";
+import HeaderBlockRenderComponent from "./BlockRenderComponents/HeaderBlockRenderComponent";
 
 class MdRenderChild extends MarkdownRenderChild {
     constructor(container: HTMLElement) {
@@ -98,6 +99,10 @@ export default class MarkdownBlockProcessor {
                 case "Notes":
                     const noteBlock = new NoteBlockRenderComponent(setting);
                     await noteBlock.build();
+                    break;
+                case "Header":
+                    const header = new HeaderBlockRenderComponent(setting);
+                    await header.build();
                     break;
                 case "Debug":
                     console.log("Debug Mode");
