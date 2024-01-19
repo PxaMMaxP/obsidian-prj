@@ -90,8 +90,17 @@ export default class GenericEvents<T extends ICallback> {
         callback: (data: T['events'][K]['data']) => T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown
     ): void {
         // Delete the event from the _events array
+        const initialLength = this._events.length;
         this._events = this._events.filter(event => event.eventName !== eventName || event.callback !== callback);
-        this.logger?.debug(`Event ${eventName.toString()} deregistered`);
+        const finalLength = this._events.length;
+
+        if (finalLength === initialLength) {
+            // No event was removed, log a warning
+            this.logger?.warn(`Event ${eventName.toString()} could not be deregistered`);
+        } else {
+            // Event was removed, log a debug message
+            this.logger?.debug(`Event ${eventName.toString()} deregistered`);
+        }
     }
 
     /**

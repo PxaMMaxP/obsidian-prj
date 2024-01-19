@@ -72,7 +72,7 @@ export default class MetadataCache {
         this.renameEventHandler = this.renameEventHandler.bind(this);
         this.deleteEventHandler = this.deleteEventHandler.bind(this);
 
-        this.eventHandler = new GenericEvents<MetadataCacheEvents>();
+        this.eventHandler = new GenericEvents<MetadataCacheEvents>(this.logger);
 
         if (!this.metadataCache) {
             this.buildMetadataCache().then(() => {
@@ -134,7 +134,19 @@ export default class MetadataCache {
      */
     public on(eventName: 'prj-task-management-changed-status', listener: (file: TFile) => void): void;
 
+    /**
+     * Register an event listener for the metadata cache. The event is emitted when the metadata of a document is changed.
+     * @param eventName The name of the event: `document-changed-metadata`
+     * @param listener The listener function. The listener function receives the file object as an argument.
+     */
     public on(eventName: 'document-changed-metadata', listener: (file: TFile) => void): void;
+
+    /**
+     * Register an event listener for the metadata cache. The event is emitted when the metadata of a plugin file is changed.
+     * @param eventName The name of the event: `prj-task-management-file-changed`
+     * @param listener The listener function. The listener function receives the file object as an argument.
+     */
+    public on(eventName: 'prj-task-management-file-changed', listener: (file: TFile) => void): void;
 
     /**
      * Register an event listener for the metadata cache.
@@ -148,6 +160,20 @@ export default class MetadataCache {
     ): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.eventHandler.registerEvent(eventName, listener as any);
+    }
+
+    /**
+     * Deregister an event listener for the metadata cache. 
+     * @param eventName The name of the event
+     * @param listener The listener function.
+     */
+    public off<K extends keyof MetadataCacheEvents['events']>(
+        eventName: K,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        listener: (file: MetadataCacheEvents['events'][K]['data']) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn> ? TReturn : void
+    ): void {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.eventHandler.deregisterEvent(eventName, listener as any);
     }
 
     /**
@@ -168,6 +194,7 @@ export default class MetadataCache {
                     if (newMetadata.frontmatter?.status !== oldMetadata.frontmatter?.status) {
                         this.eventHandler.fireEvent('prj-task-management-changed-status', file);
                     }
+                    this.eventHandler.fireEvent('prj-task-management-file-changed', file);
                     break;
                 case "Metadata":
                     this.eventHandler.fireEvent('document-changed-metadata', file);
@@ -232,6 +259,27 @@ export default class MetadataCache {
                     return metadata;
                 }
                 this.logger.warn(`No metadata cache entry found for file ${file.path}`);
+                return undefined;
+            }
+        } else {
+            this.logger.error("Metadata cache not initialized");
+            return undefined;
+        }
+    }
+
+    /**
+     * Get the metadata cache entry for a file path.
+     * @param path The file path to get from the metadata cache.
+     * @returns The metadata cache entry for the file path.
+     * @remarks - This method returns undefined if the metadata cache is not ready or if no entry is found.
+     */
+    public getEntryByPath(path: string): FileMetadata | undefined {
+        if (this.metadataCache) {
+            const metadata = this.metadataCache.get(path);
+            if (metadata) {
+                return metadata;
+            } else {
+                this.logger.warn(`No metadata cache entry found for file ${path}`);
                 return undefined;
             }
         } else {
@@ -374,8 +422,9 @@ export default class MetadataCache {
 
 interface MetadataCacheEvents extends ICallback {
     events: {
-        'prj-task-management-changed-status': IEvent<TFile, undefined>;
-        'document-changed-metadata': IEvent<TFile, undefined>;
+        'prj-task-management-changed-status': IEvent<TFile, undefined | void>;
+        'prj-task-management-file-changed': IEvent<TFile, undefined | void>;
+        'document-changed-metadata': IEvent<TFile, undefined | void>;
         // Add more events here
     };
 }

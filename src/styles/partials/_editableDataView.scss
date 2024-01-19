@@ -1,3 +1,5 @@
+@import 'renderedMarkdown';
+
 /* Editable DataView */
 .editable-data-view.container {
     display: inline-flex;
@@ -11,28 +13,8 @@
 }
 
 /** To display rendered Markdown correct **/
-.editable-data-view.container p {
-    white-space: normal;
-    line-height: var(--line-height-normal);
-    margin-top: auto;
-    margin-bottom: auto;
-    display: inline;
-}
-
-/** To display rendered Markdown correkt **/
-.editable-data-view.container ul {
-    white-space: normal;
-    line-height: var(--line-height-normal);
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-/** To display rendered Markdown correkt **/
-.editable-data-view.container ol {
-    white-space: normal;
-    line-height: var(--line-height-normal);
-    margin-top: auto;
-    margin-bottom: auto;
+.editable-data-view.container {
+    @include renderedMarkdown;
 }
 
 /**.editable-data-view.presentation-container {

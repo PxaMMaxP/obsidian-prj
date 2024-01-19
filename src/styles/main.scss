@@ -3,6 +3,7 @@
 @import 'partials/mobile';
 @import 'partials/table';
 @import 'partials/editableDataView';
+@import 'partials/markdownRenderHeader';
 
 .prj-block-container.panel {
     @include mobileGeneralStyles;
