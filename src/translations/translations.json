@@ -148,7 +148,7 @@
             "StatusDone": "Erledigt",
             "StatusLater": "Später",
             "StatusSomeday": "Irgendwann",
-            "StatusWaiting": "Warten",
+            "StatusWaiting": "Wartend",
             "SubTypeDescription": "Wählen Sie ob es sich um normale Metadaten oder einen Cluster handelt.",
             "Subject": "Betreff",
             "Tags": "Tags",
