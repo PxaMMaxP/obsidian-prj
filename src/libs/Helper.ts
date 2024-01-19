@@ -277,6 +277,16 @@ export default class Helper {
         view.state.mode = 'preview';
         newLeaf.setViewState(view);
     }
+
+    /**
+     * Sanitizes a filename by removing any characters that are not alphanumeric, hyphen, underscore, period, or space.
+     * 
+     * @param filename - The filename to sanitize.
+     * @returns The sanitized filename.
+     */
+    static sanitizeFilename(filename: string): string {
+        return filename.replace(/[^a-zA-Z0-9-_. ]/g, '');
+    }
 }
 
 export type WikilinkData = {

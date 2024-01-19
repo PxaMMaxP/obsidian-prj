@@ -61,7 +61,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 model = new PrjTaskManagementModel<TaskData>(undefined, TaskData);
                 templateFilePath = this.global.settings.prjSettings.taskTemplate;
                 modelFolderPath = this.global.settings.prjSettings.taskFolder;
-                //acronym = Helper.generateAcronym(result.data.title as string, 3, "t");
+                acronym = Helper.generateAcronym(result.data.title as string, 3, "t");
                 if (result.data.subtype && result.data.subtype !== "") {
                     subTemplatePath = result.data.subtype as string;
                 }
@@ -107,7 +107,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         model.data.due = result.data.dueDate as string ?? undefined;
 
         model.data.tags = result.data.tags as string[];
-        model.data.aliases = [`#${mainTag.fullTag}`];
+        if (result.data.type !== "Task")
+            model.data.aliases = [`#${mainTag.fullTag}`];
 
         const modelFile = {
             filepath: `${modelFolderPath}`,
@@ -119,6 +120,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 return path.join(this.filepath, this.filename + (this.postfix ? this.postfix : "") + this.extension);
             }
         };
+        modelFile.filename = Helper.sanitizeFilename(modelFile.filename);
 
         /**
          * Check if file already exists and add postfix if needed.
@@ -304,7 +306,10 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             isRequired: false,
             input: {
                 type: "document_block",
-                body: "if (form.type === \"Task\") return app.plugins.plugins.prj.api.helper.generateAcronym(form.title,3,'t'); else return app.plugins.plugins.prj.api.helper.generateAcronym(form.title);"
+                body: "if (form.type === \"Task\") " +
+                    "return app.plugins.plugins.prj.api.helper.generateAcronym(form.title,3,'t');" +
+                    " else " +
+                    "return app.plugins.plugins.prj.api.helper.generateAcronym(form.title);"
             }
         };
         form.fields.push(acronym);

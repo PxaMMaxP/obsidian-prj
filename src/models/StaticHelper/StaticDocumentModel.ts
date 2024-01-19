@@ -58,7 +58,7 @@ export class StaticDocumentModel {
         newFileName.push(`${model.data.title}`);
 
 
-        return newFileName.join(' - ');
+        return Helper.sanitizeFilename(newFileName.join(' - '));
     }
 
     /**
