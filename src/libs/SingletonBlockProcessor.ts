@@ -1,59 +1,11 @@
-import { MarkdownPostProcessorContext, MarkdownRenderChild } from "obsidian";
-
-/**
- * Interface for the logger.
- * @remarks You can attach your own logger or `console` as logger.
- */
-export interface Logger {
-    /**
-     * Log a `trace` message.
-     * @param message The trace message to log. 
-     * @param optionalParams Optional parameters: strings, objects, etc.
-     */
-    trace(message?: unknown, ...optionalParams: unknown[]): void;
-    /**
-     * Log a `debug` message.
-     * @param message The debug message to log.
-     * @param optionalParams Optional parameters: strings, objects, etc.
-     */
-    debug(message?: unknown, ...optionalParams: unknown[]): void;
-}
+import { MarkdownPostProcessorContext } from "obsidian";
+import { ILogger } from "src/interfaces/ILogger";
+import CustomizableRenderChild from "./CustomizableRenderChild";
 
 /**
  * Type for the view state.
  */
 export type ViewState = "source" | "preview";
-
-/**
- * Class for the Observer child.
- * @remarks This class is used to disconnect the observer on unload.
- */
-export class ObserverChild extends MarkdownRenderChild {
-    private logger: Logger | undefined;
-    private onUnload: () => void;
-
-    /**
-     * Create a new instance of the observer child.
-     * @param container The parent container.
-     * @param onUnload The callback for the unload event.
-     */
-    constructor(
-        container: HTMLElement,
-        onUnload: () => void,
-        logger?: Logger) {
-        super(container);
-        this.logger = logger ?? undefined;
-        this.onUnload = onUnload;
-    }
-
-    /**
-     * Callback for the unload event.
-     */
-    override onunload(): void {
-        this.onUnload();
-        super.onunload();
-    }
-}
 
 /**
  * Class for the singleton block processor.
@@ -83,14 +35,14 @@ export class ObserverChild extends MarkdownRenderChild {
  * ```
  */
 export default class SingletonBlockProcessor {
-    private logger: Logger | undefined;
+    private logger: ILogger | undefined;
     private uid: string;
     private el: HTMLElement;
     private ctx: MarkdownPostProcessorContext;
     private singletonContainer: HTMLElement | undefined;
     private observer: MutationObserver | undefined;
     private onUnload: () => void;
-    private observerChild: ObserverChild | undefined;
+    private observerChild: CustomizableRenderChild | undefined;
 
     /**
      * Get the singletone container for the block.
@@ -154,7 +106,7 @@ export default class SingletonBlockProcessor {
         uid: string,
         el: HTMLElement,
         ctx: MarkdownPostProcessorContext,
-        logger?: Logger) {
+        logger?: ILogger) {
 
         this.logger = logger ?? undefined;
         this.uid = uid;
@@ -212,7 +164,7 @@ export default class SingletonBlockProcessor {
         }
 
         // Create a observer component. To `disconnect` the observer on unload.
-        this.observerChild = new ObserverChild(this.singletoneContainer, this.onUnload, this.logger);
+        this.observerChild = new CustomizableRenderChild(this.singletoneContainer, undefined, this.onUnload, this.logger);
 
         this.observer = new MutationObserver((mutations) => {
             this.logger?.trace("Observer detect changes:", mutations, `UID: ${this.uid}`);
