@@ -25,8 +25,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
 
     private _processorSettings: IProcessorSettings;
     private childComponent: CustomizableRenderChild;
-
-    private placeholder = '🗌';
+    private activeFileDebounceTimer: NodeJS.Timeout;
 
     private _headerContainer: HTMLElement | undefined;
 
@@ -35,6 +34,15 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      */
     private get path(): string {
         return this._processorSettings.source;
+    }
+
+    /**
+     * Sets the path value.
+     * 
+     * @param value - The new path value.
+     */
+    private set path(value: string) {
+        this._processorSettings.source = value;
     }
 
     /**
@@ -67,19 +75,19 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
     /**
      * The title of the Prj File.
      */
-    private get title(): string {
-        return this.frontmatter?.title ?? this.placeholder;
+    private get title(): string | undefined {
+        return this.frontmatter?.title;
     }
 
     /**
      * The status of the Prj File.
      */
-    private get status(): string {
-        return this.frontmatter?.status ?? this.placeholder;
+    private get status(): string | undefined {
+        return this.frontmatter?.status;
     }
 
-    private get description(): string {
-        return this.frontmatter?.description ?? this.placeholder;
+    private get description(): string | undefined {
+        return this.frontmatter?.description;
     }
 
     /**
@@ -108,7 +116,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
             this.logger);
         this.childComponent.load();
         this._processorSettings.ctx.addChild(this.childComponent);
-
+        this.parseSettings();
     }
 
     /**
@@ -158,10 +166,15 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      */
     public async build(): Promise<void> {
         try {
-            this.headerContainer.append(this.createTitle());
-            this.headerContainer.append(this.createStatus());
-            this.headerContainer.append(this.createTags());
-            this.headerContainer.append(this.createDescription());
+            if (this.title)
+                this.headerContainer.append(this.createTitle());
+            if (this.status)
+                this.headerContainer.append(this.createStatus());
+            if (this.tags.length > 0)
+                this.headerContainer.append(this.createTags());
+            if (this.description)
+                this.headerContainer.append(this.createDescription());
+
             this.container.append(this.headerContainer);
         } catch (error) {
             this.logger.error(`Error while building HeaderBlockRenderComponent: ${error}`);
@@ -192,6 +205,19 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         MarkdownRenderer.render(this.app, `${Lng.gt("Status")}: **${this.status}**`, statusDiv, this.path, this.component);
 
         return this.createDocumentFragment(statusDiv);
+    }
+
+    /**
+     * Creates a document fragment for the description.
+     * @returns The created document fragment.
+     */
+    private createDescription(): DocumentFragment {
+        const descriptionDiv = document.createElement('div');
+        descriptionDiv.classList.add('description');
+
+        MarkdownRenderer.render(this.app, `${this.description}`, descriptionDiv, this.path, this.component);
+
+        return this.createDocumentFragment(descriptionDiv);
     }
 
     /**
@@ -241,15 +267,6 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         return this.createDocumentFragment(tagsDiv);
     }
 
-    private createDescription(): DocumentFragment {
-        const descriptionDiv = document.createElement('div');
-        descriptionDiv.classList.add('description');
-
-        MarkdownRenderer.render(this.app, `${this.description}`, descriptionDiv, this.path, this.component);
-
-        return this.createDocumentFragment(descriptionDiv);
-    }
-
     /**
      * Creates a document fragment with the given element as a child.
      * @param element The element to append to the document fragment.
@@ -259,6 +276,55 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         const documentFragment = new DocumentFragment();
         documentFragment.append(element);
         return documentFragment;
+    }
+
+    /**
+     * Parses the settings of the block.
+     * @remarks This function is called in the constructor.
+     */
+    private parseSettings(): void {
+        this._processorSettings.options.forEach(option => {
+            switch (option.label) {
+                case "watchActiveFile":
+                    if (option.value === "true") {
+                        // Register event to update the header when the active file changes
+                        this.component.registerEvent(
+                            this.global.app.workspace.on('active-leaf-change', () => this.onActiveFileChange.bind(this)())
+                        );
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    /**
+     * Handles the event when the active file changes.
+     * If the active file is not in the "Ressourcen/Panels/" path,
+     * it updates the `path` in the instance and calls the `onActiveFileDebounce` function.
+     * @private
+     */
+    private onActiveFileChange(): void {
+        const activeFile = this.global.app.workspace.getActiveFile();
+        if (activeFile && !activeFile.path.contains("Ressourcen/Panels/")) {
+            this.logger.trace("Active file changed: ", activeFile.path);
+            if (this.path !== activeFile.path) {
+                this.path = activeFile.path;
+                this.onActiveFileDebounce();
+            }
+        }
+    }
+
+    /**
+     * Debounces the active file change event and triggers a redraw after a delay.
+     */
+    private onActiveFileDebounce(): void {
+        this.logger.trace("Active file changed: Debouncing");
+        clearTimeout(this.activeFileDebounceTimer);
+        this.activeFileDebounceTimer = setTimeout(async () => {
+            this.redraw();
+        }, 750);
     }
 
 }

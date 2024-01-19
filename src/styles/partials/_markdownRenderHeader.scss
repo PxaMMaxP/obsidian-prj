@@ -16,7 +16,7 @@
     }
 
     .description {
-        width: max-content;
+        width: 90%;
         height: max-content;
         text-shadow: 2px -2px 4px #000000;
         @include renderedMarkdown;
