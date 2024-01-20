@@ -1,4 +1,4 @@
-import { CachedMetadata, TFile } from 'obsidian';
+import { App, CachedMetadata, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
@@ -11,6 +11,7 @@ export default class KanbanSync {
     private _kanbanMetadata: CachedMetadata | undefined;
     private _syncMode: 'in' | 'out' = 'out';
     private _structedKanbanHeading: Heading[] | undefined;
+    private _structedKanban: StructedKanban | undefined;
     private _changedFile: TFile | undefined;
 
     /**
@@ -47,19 +48,109 @@ export default class KanbanSync {
                 `Syncing files linked to kanban ${this._kanbanFile.path}`,
             );
             this.syncFiles();
+        } else {
+            this.logger.debug(
+                `Syncing kanban ${this._kanbanFile.path} with changed file ${this._changedFile?.path}`,
+            );
+            await this.syncKanban();
         }
     }
 
     /**
-     * Synchronizes the files in the Kanban board with their corresponding models,
-     * updating their status based on the headings' titles.
+     * Synchronizes the Kanban board by moving a file to a new position based on its status.
+     * If the file's status has changed, it finds the corresponding heading for the new state
+     * and moves the file to the appropriate position within the Kanban board.
+     *
+     * @returns A Promise that resolves once the Kanban synchronization is complete.
+     */
+    private async syncKanban(): Promise<void> {
+        let fileToChange: File | undefined;
+        let oldState: Status | undefined;
+        const headings: Heading[] = [];
+
+        /**
+         * Get all headings with valid status and find the changed file.
+         */
+        this._structedKanbanHeading?.forEach((heading) => {
+            const status: Status | undefined =
+                PrjTypes.getValidStatusFromLanguage(heading.title);
+
+            if (!status) {
+                return;
+            }
+
+            const headingWithStatus = {
+                title: status,
+                startLine: heading.startLine,
+                endLine: heading.endLine,
+                files: [],
+            };
+            headings.push(headingWithStatus);
+
+            heading.files?.forEach((file) => {
+                if (file.file.path === this._changedFile?.path) {
+                    oldState = status;
+                    fileToChange = file;
+                }
+            });
+        });
+
+        if (fileToChange) {
+            this._structedKanban = new StructedKanban(this._kanbanFile);
+
+            const newHeadingState =
+                StaticPrjTaskManagementModel.getCorospondingModel(
+                    fileToChange.file,
+                )?.data.status;
+
+            // Find the corresponding heading for the new state
+            const newHeading = headings.find((heading) => {
+                return heading.title === newHeadingState;
+            });
+
+            // If the state is the same, do nothing
+            if (newHeadingState === oldState) return;
+
+            if (!newHeading || !newHeadingState) {
+                return;
+            }
+
+            let newLine: number = newHeading?.startLine + 1 ?? 0;
+
+            if (newHeading.endLine === 'end') {
+                newHeading.endLine = Number.MAX_SAFE_INTEGER;
+            }
+
+            this._kanbanMetadata?.listItems?.forEach((listItem) => {
+                if (
+                    listItem.position.start.line >= newHeading.startLine &&
+                    newHeading.endLine &&
+                    newHeading.endLine !== 'end' &&
+                    listItem.position.start.line <= newHeading.endLine &&
+                    newLine <= listItem.position.start.line
+                ) {
+                    this.logger.debug('newLine set to: ', newLine);
+                    newLine = listItem.position.start.line + 1;
+                }
+            });
+
+            await this._structedKanban.loadFileAsLines();
+
+            this._structedKanban.moveLine(fileToChange.line, newLine);
+
+            await this._structedKanban.saveLinesToFile();
+        }
+    }
+
+    /**
+     * Synchronizes the files based on the structured kanban headings.
      */
     private syncFiles(): void {
         this._structedKanbanHeading?.forEach((heading) => {
             const status: Status | undefined =
                 PrjTypes.getValidStatusFromLanguage(heading.title);
 
-            if (!status) {
+            if (!status || !PrjTypes.isValidStatus(status)) {
                 return;
             }
 
@@ -121,6 +212,53 @@ export default class KanbanSync {
         });
 
         return kanbanFiles;
+    }
+}
+
+class StructedKanban {
+    private logger = Logging.getLogger('StructedKanban');
+    private _app: App = Global.getInstance().app;
+    private _file: TFile;
+    private _content: string[];
+
+    constructor(file: TFile) {
+        this._file = file;
+    }
+
+    public async loadFileAsLines(): Promise<void> {
+        this._content = (await this._app.vault.read(this._file)).split('\n');
+    }
+
+    public async saveLinesToFile(): Promise<void> {
+        await this._app.vault.modify(this._file, this._content.join('\n'));
+    }
+
+    public moveLine(fromLine: number, toLine: number): void {
+        const lines = this._content;
+
+        if (
+            fromLine < 0 ||
+            fromLine >= lines.length ||
+            toLine < 0 ||
+            toLine > lines.length
+        ) {
+            this.logger.warn('Zeilennummer außerhalb des gültigen Bereichs');
+
+            return;
+        }
+
+        // Remove the line from the array
+        const [removedLine] = lines.splice(fromLine, 1);
+
+        // If the line was moved down, the line number must be reduced by one
+        if (fromLine < toLine) {
+            toLine--;
+        }
+
+        // Insert the line at the new position
+        lines.splice(toLine, 0, removedLine);
+
+        this._content = lines;
     }
 }
 
