@@ -398,21 +398,6 @@ export default class MetadataCache {
         }
     }
 
-    public getBacklinks(file: TFile): TFile[] {
-        const filesWithBacklinks: TFile[] = [];
-
-        for (const [path, fileCache] of Object.entries(
-            this.app.metadataCache.resolvedLinks,
-        )) {
-            if (fileCache[file.path]) {
-                const file = this.getEntryByPath(path);
-                file && filesWithBacklinks.push(file.file);
-            }
-        }
-
-        return filesWithBacklinks;
-    }
-
     /**
      * Add a file to the metadata cache
      * @param file The file to add to the metadata cache
