@@ -39,7 +39,7 @@ export default class SuggestionComponent {
     private _component: Component;
     private _suggester: ((value: string) => Suggestions) | undefined;
 
-    private suggestionsContainer: HTMLSpanElement;
+    private _suggestionsContainer: HTMLSpanElement;
     private _inputElement: HTMLElement;
 
     private _suggestions: Suggestions;
@@ -127,7 +127,7 @@ export default class SuggestionComponent {
                 const suggestionText = suggestion.value.slice(
                     this.inputTextLength,
                 );
-                this.suggestionsContainer.innerText = suggestionText;
+                this._suggestionsContainer.innerText = suggestionText;
             } else {
                 // If the suggestion does not start with the text in the input element, the text in the input element is replaced with the suggestion.
                 const length = this._inputElement.textContent?.length ?? 1;
@@ -137,16 +137,16 @@ export default class SuggestionComponent {
                     length,
                 );
 
-                this.suggestionsContainer.innerText =
+                this._suggestionsContainer.innerText =
                     suggestion.value.slice(length);
                 this.setInputCursorAbsolutePosition(length);
             }
         }
 
         if (this._activeSuggestions.length > 0) {
-            this.suggestionsContainer.style.display = '';
+            this._suggestionsContainer.style.display = '';
         } else {
-            this.suggestionsContainer.style.display = 'none';
+            this._suggestionsContainer.style.display = 'none';
         }
     }
 
@@ -168,7 +168,7 @@ export default class SuggestionComponent {
      * - The suggestor is loaded and registered to the input element.
      */
     public enableSuggestior() {
-        this._suggestorChild = new SuggestorChild(this.suggestionsContainer);
+        this._suggestorChild = new SuggestorChild(this._suggestionsContainer);
         this._suggestorChild.load();
         this._component.addChild(this._suggestorChild);
 
@@ -260,7 +260,7 @@ export default class SuggestionComponent {
      * Adopts the complete suggestion in the suggestions container.
      */
     private adoptSuggestion() {
-        this._inputElement.textContent += this.suggestionsContainer.innerText;
+        this._inputElement.textContent += this._suggestionsContainer.innerText;
 
         const suggestion = this._activeSuggestions.find((suggestion) =>
             suggestion.value
@@ -273,7 +273,7 @@ export default class SuggestionComponent {
         this._inputElement.textContent = suggestion
             ? suggestion.value
             : this._inputElement.textContent;
-        this.suggestionsContainer.innerText = '';
+        this._suggestionsContainer.innerText = '';
         this.setInputCursorAbsolutePosition('end');
     }
 
@@ -284,10 +284,10 @@ export default class SuggestionComponent {
     private adoptSuggestionCharacter(): boolean {
         if (this.cursorPosition === this.inputTextLength) {
             this._inputElement.textContent +=
-                this.suggestionsContainer.innerText.slice(0, 1);
+                this._suggestionsContainer.innerText.slice(0, 1);
 
-            this.suggestionsContainer.innerText =
-                this.suggestionsContainer.innerText.slice(1);
+            this._suggestionsContainer.innerText =
+                this._suggestionsContainer.innerText.slice(1);
 
             return true;
         }
@@ -418,20 +418,20 @@ export default class SuggestionComponent {
      * - The suggestions container has the css classes `editable-data-view` & `suggestions-container`.
      */
     private buildSuggestionsContainer() {
-        this.suggestionsContainer = document.createElement('span');
+        this._suggestionsContainer = document.createElement('span');
 
-        this.suggestionsContainer.classList.add(
+        this._suggestionsContainer.classList.add(
             'editable-data-view',
             'suggestions-container',
         );
 
         this._inputElement.parentElement?.appendChild(
-            this.suggestionsContainer,
+            this._suggestionsContainer,
         );
 
         // On click on the suggestions container, the cursor should be set to the end of the input element.
         this._suggestorChild?.registerDomEvent(
-            this.suggestionsContainer,
+            this._suggestionsContainer,
             'click',
             () => {
                 this.setInputCursorAbsolutePosition('end');
@@ -446,6 +446,6 @@ export default class SuggestionComponent {
      */
     public disableSuggestor() {
         this._suggestorChild?.unload();
-        this.suggestionsContainer.remove();
+        this._suggestionsContainer.remove();
     }
 }

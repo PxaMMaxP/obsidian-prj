@@ -7,21 +7,21 @@ import TextareaComponent from './Components/TextareaComponent';
 
 export default class EditableDataView {
     private _container: HTMLElement | DocumentFragment;
-    private component: Component;
-    private attributesList: Record<string, string> = {};
+    private _component: Component;
+    private _attributesList: Record<string, string> = {};
 
     constructor(
         container: HTMLElement | DocumentFragment,
         component: Component,
     ) {
         this._container = container;
-        this.component = component;
+        this._component = component;
     }
 
     public addText(
         configure: (component: TextComponent) => void,
     ): EditableDataView {
-        const textComponent = new TextComponent(this.component);
+        const textComponent = new TextComponent(this._component);
         configure(textComponent);
         textComponent.finalize();
 
@@ -33,7 +33,7 @@ export default class EditableDataView {
     public addTextarea(
         configure: (component: TextareaComponent) => void,
     ): EditableDataView {
-        const textComponent = new TextareaComponent(this.component);
+        const textComponent = new TextareaComponent(this._component);
         configure(textComponent);
         textComponent.finalize();
 
@@ -45,7 +45,7 @@ export default class EditableDataView {
     public addLink(
         configure: (component: LinkComponent) => void,
     ): EditableDataView {
-        const linkComponent = new LinkComponent(this.component);
+        const linkComponent = new LinkComponent(this._component);
         configure(linkComponent);
         linkComponent.finalize();
 
@@ -57,7 +57,7 @@ export default class EditableDataView {
     public addDate(
         configure: (component: DateComponent) => void,
     ): EditableDataView {
-        const dateComponent = new DateComponent(this.component);
+        const dateComponent = new DateComponent(this._component);
         configure(dateComponent);
         dateComponent.finalize();
 
@@ -69,7 +69,7 @@ export default class EditableDataView {
     public addDropdown(
         configure: (component: DropdownComponent) => void,
     ): EditableDataView {
-        const dropdownComponent = new DropdownComponent(this.component);
+        const dropdownComponent = new DropdownComponent(this._component);
         configure(dropdownComponent);
         dropdownComponent.finalize();
 

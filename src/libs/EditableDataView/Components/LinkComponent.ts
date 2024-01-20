@@ -18,13 +18,13 @@ export default class LinkComponent extends BaseComponent {
     private _placeholder: string;
     private _suggestions: string[];
     private _title: string;
-    private linkType: 'tag' | 'file' | 'external' = 'external';
+    private _linkType: 'tag' | 'file' | 'external' = 'external';
     //#endregion
     //#region HTML Elements
-    private link: HTMLAnchorElement;
-    private label: HTMLElement;
-    private input: HTMLInputElement;
-    private datalist: HTMLDataListElement;
+    private _link: HTMLAnchorElement;
+    private _label: HTMLElement;
+    private _input: HTMLInputElement;
+    private _datalist: HTMLDataListElement;
     //#endregion
 
     constructor(component: Component) {
@@ -97,7 +97,7 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      */
     public setLinkType(type: 'tag' | 'file' | 'external') {
-        this.linkType = type;
+        this._linkType = type;
 
         return this;
     }
@@ -129,28 +129,28 @@ export default class LinkComponent extends BaseComponent {
     ) {
         this._onPresentation = async (value: string): Promise<void> => {
             const linkContent = formator(value);
-            this.link.href = linkContent.href;
+            this._link.href = linkContent.href;
 
             if (linkContent.html) {
-                this.link.innerHTML = '';
-                this.link.appendChild(linkContent.html);
-            } else this.link.textContent = linkContent.text;
+                this._link.innerHTML = '';
+                this._link.appendChild(linkContent.html);
+            } else this._link.textContent = linkContent.text;
 
-            switch (this.linkType) {
+            switch (this._linkType) {
                 case 'tag':
                     break;
                 case 'file':
-                    this.link.setAttribute('aria-label', linkContent.href);
-                    this.link.setAttribute('data-href', linkContent.href);
+                    this._link.setAttribute('aria-label', linkContent.href);
+                    this._link.setAttribute('data-href', linkContent.href);
                     break;
                 case 'external':
                     break;
             }
 
-            if (this.input && this.label) {
-                this.input.value = linkContent.text ? linkContent.text : '';
+            if (this._input && this._label) {
+                this._input.value = linkContent.text ? linkContent.text : '';
 
-                this.label.dataset.value = linkContent.text
+                this._label.dataset.value = linkContent.text
                     ? linkContent.text
                     : this._placeholder
                       ? this._placeholder
@@ -175,36 +175,36 @@ export default class LinkComponent extends BaseComponent {
     //#endregion
 
     private setSuggestionsList(suggestions: string[]) {
-        if (!this.datalist) return;
-        this.datalist.innerHTML = '';
+        if (!this._datalist) return;
+        this._datalist.innerHTML = '';
 
         suggestions.forEach((suggestion) => {
             const option = document.createElement('option');
             option.value = suggestion;
-            this.datalist.appendChild(option);
+            this._datalist.appendChild(option);
         });
     }
 
     //#region Base Callbacks
     private build() {
-        this.link = document.createElement('a');
-        this.presentationContainer.appendChild(this.link);
+        this._link = document.createElement('a');
+        this.presentationContainer.appendChild(this._link);
 
-        this.link.title = this._title;
-        this.link.classList.add('editable-data-view');
-        this.link.classList.add('link-presentation');
+        this._link.title = this._title;
+        this._link.classList.add('editable-data-view');
+        this._link.classList.add('link-presentation');
 
-        switch (this.linkType) {
+        switch (this._linkType) {
             case 'tag':
-                this.link.classList.add('tag');
-                this.link.target = '_blank';
-                this.link.rel = 'noopener';
+                this._link.classList.add('tag');
+                this._link.target = '_blank';
+                this._link.rel = 'noopener';
                 break;
             case 'file':
-                this.link.setAttribute('data-tooltip-position', 'top');
-                this.link.classList.add('internal-link');
-                this.link.target = '_blank';
-                this.link.rel = 'noopener';
+                this._link.setAttribute('data-tooltip-position', 'top');
+                this._link.classList.add('internal-link');
+                this._link.target = '_blank';
+                this._link.rel = 'noopener';
                 break;
             case 'external':
                 break;
@@ -214,35 +214,35 @@ export default class LinkComponent extends BaseComponent {
     }
 
     private buildInput() {
-        this.label = document.createElement('label');
-        this.label.title = this._title;
-        this.dataInputContainer.appendChild(this.label);
-        this.label.classList.add('editable-data-view');
-        this.label.classList.add('text-input-sizer');
+        this._label = document.createElement('label');
+        this._label.title = this._title;
+        this.dataInputContainer.appendChild(this._label);
+        this._label.classList.add('editable-data-view');
+        this._label.classList.add('text-input-sizer');
 
-        this.input = document.createElement('input');
-        this.label.appendChild(this.input);
-        this.input.classList.add('editable-data-view');
-        this.input.classList.add('text-input');
-        this.input.placeholder = this._placeholder ? this._placeholder : '';
+        this._input = document.createElement('input');
+        this._label.appendChild(this._input);
+        this._input.classList.add('editable-data-view');
+        this._input.classList.add('text-input');
+        this._input.placeholder = this._placeholder ? this._placeholder : '';
 
-        this.component.registerDomEvent(this.input, 'input', () => {
-            this.label.dataset.value = this.input.value
-                ? this.input.value
+        this.component.registerDomEvent(this._input, 'input', () => {
+            this._label.dataset.value = this._input.value
+                ? this._input.value
                 : this._placeholder
                   ? this._placeholder
                   : '';
 
             if (
                 this._suggester &&
-                this.label.dataset.value !== this._placeholder &&
-                this.label.dataset.value !== ''
+                this._label.dataset.value !== this._placeholder &&
+                this._label.dataset.value !== ''
             )
-                this.setSuggestionsList(this._suggester(this.input.value));
+                this.setSuggestionsList(this._suggester(this._input.value));
         });
 
         this.component.registerDomEvent(
-            this.input,
+            this._input,
             'keydown',
             (event: KeyboardEvent) => {
                 if (event.key === 'Enter') {
@@ -258,18 +258,18 @@ export default class LinkComponent extends BaseComponent {
             this._suggester
         ) {
             const id = Math.random().toString(36).substring(2, 10);
-            this.input.setAttribute('list', id);
-            this.datalist = document.createElement('datalist');
-            this.datalist.id = id;
-            this.input.appendChild(this.datalist);
+            this._input.setAttribute('list', id);
+            this._datalist = document.createElement('datalist');
+            this._datalist.id = id;
+            this._input.appendChild(this._datalist);
             this.setSuggestionsList(this._suggestions);
         }
     }
 
     private enableEdit() {
         this._onPresentation?.(this._value);
-        this.input.focus();
-        this.input.select();
+        this._input.focus();
+        this._input.select();
     }
 
     private disableEdit() {
@@ -277,7 +277,7 @@ export default class LinkComponent extends BaseComponent {
     }
 
     private async save(): Promise<void> {
-        this._value = this.input.value;
+        this._value = this._input.value;
         await this._onSave?.(this._value);
     }
     //#endregion

@@ -66,7 +66,7 @@ export default class Prj extends Plugin {
 
         //Register event on `Status` change..
         Global.getInstance().metadataCache.on(
-            'prj-task-management-changed-status',
+            'prj-task-management-changed-status-event',
             (file) => {
                 StaticPrjTaskManagementModel.syncStatusToPath(file);
             },
@@ -74,7 +74,7 @@ export default class Prj extends Plugin {
 
         //Register event on `Document Metadata` change..
         Global.getInstance().metadataCache.on(
-            'document-changed-metadata',
+            'document-changed-metadata-event',
             (file) => {
                 StaticDocumentModel.syncMetadataToFile(file);
             },

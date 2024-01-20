@@ -36,13 +36,13 @@ export type ViewState = 'source' | 'preview';
  */
 export default class SingletonBlockProcessor {
     private logger: ILogger | undefined;
-    private uid: string;
-    private el: HTMLElement;
-    private ctx: MarkdownPostProcessorContext;
-    private singletonContainer: HTMLElement | undefined;
-    private observer: MutationObserver | undefined;
-    private onUnload: () => void;
-    private observerChild: CustomizableRenderChild | undefined;
+    private _uid: string;
+    private _el: HTMLElement;
+    private _ctx: MarkdownPostProcessorContext;
+    private _singletonContainer: HTMLElement | undefined;
+    private _observer: MutationObserver | undefined;
+    private _onUnload: () => void;
+    private _observerChild: CustomizableRenderChild | undefined;
 
     /**
      * Get the singletone container for the block.
@@ -50,10 +50,10 @@ export default class SingletonBlockProcessor {
      * - Register a component with **this** container.
      */
     public get singletoneContainer(): HTMLElement {
-        this.singletonContainer =
-            this.singletonContainer ?? this.getSingletoneContainer();
+        this._singletonContainer =
+            this._singletonContainer ?? this.getSingletoneContainer();
 
-        return this.singletonContainer;
+        return this._singletonContainer;
     }
 
     /**
@@ -67,7 +67,7 @@ export default class SingletonBlockProcessor {
      * Get the current workspace leaf content block.
      */
     private get workspaceLeafContent(): Element | undefined {
-        return this.el.closest('.workspace-leaf-content') ?? undefined;
+        return this._el.closest('.workspace-leaf-content') ?? undefined;
     }
 
     /**
@@ -83,7 +83,7 @@ export default class SingletonBlockProcessor {
      * Get all sibling blocks with the uis as id.
      */
     private get siblingBlocks(): NodeListOf<Element> | undefined {
-        return this.workspaceLeafContent?.querySelectorAll(`#${this.uid}`);
+        return this.workspaceLeafContent?.querySelectorAll(`#${this._uid}`);
     }
 
     /**
@@ -92,7 +92,7 @@ export default class SingletonBlockProcessor {
     private get sourceSiblingBlock(): Element | undefined {
         return (
             this.workspaceLeafContent?.querySelector(
-                `#${this.uid}[data-mode='source']`,
+                `#${this._uid}[data-mode='source']`,
             ) ?? undefined
         );
     }
@@ -103,7 +103,7 @@ export default class SingletonBlockProcessor {
     private get previewSiblingBlock(): Element | undefined {
         return (
             this.workspaceLeafContent?.querySelector(
-                `#${this.uid}[data-mode='preview']`,
+                `#${this._uid}[data-mode='preview']`,
             ) ?? undefined
         );
     }
@@ -121,10 +121,10 @@ export default class SingletonBlockProcessor {
         logger?: ILogger,
     ) {
         this.logger = logger ?? undefined;
-        this.uid = uid;
-        this.el = el;
-        this.ctx = ctx;
-        this.onUnload = this.onUnloadCallback.bind(this);
+        this._uid = uid;
+        this._el = el;
+        this._ctx = ctx;
+        this._onUnload = this.onUnloadCallback.bind(this);
         this.createObserver();
     }
 
@@ -133,8 +133,8 @@ export default class SingletonBlockProcessor {
      * @remarks Disconnect the observer.
      */
     private onUnloadCallback(): void {
-        this.logger?.debug(`On Unload, UID: ${this.uid}`);
-        this.observer?.disconnect();
+        this.logger?.debug(`On Unload, UID: ${this._uid}`);
+        this._observer?.disconnect();
     }
 
     /**
@@ -188,18 +188,18 @@ export default class SingletonBlockProcessor {
         }
 
         // Create a observer component. To `disconnect` the observer on unload.
-        this.observerChild = new CustomizableRenderChild(
+        this._observerChild = new CustomizableRenderChild(
             this.singletoneContainer,
             undefined,
-            this.onUnload,
+            this._onUnload,
             this.logger,
         );
 
-        this.observer = new MutationObserver((mutations) => {
+        this._observer = new MutationObserver((mutations) => {
             this.logger?.trace(
                 'Observer detect changes:',
                 mutations,
-                `UID: ${this.uid}`,
+                `UID: ${this._uid}`,
             );
 
             for (const mutation of mutations) {
@@ -220,13 +220,13 @@ export default class SingletonBlockProcessor {
             }
         });
 
-        this.observer.observe(this.workspaceLeafContent, {
+        this._observer.observe(this.workspaceLeafContent, {
             attributes: true,
         });
 
         // Add the observer component to the context.
-        this.observerChild.load();
-        this.ctx.addChild(this.observerChild);
+        this._observerChild.load();
+        this._ctx.addChild(this._observerChild);
     }
 
     /**
@@ -242,11 +242,11 @@ export default class SingletonBlockProcessor {
         preview: Element | undefined,
     ): boolean {
         if (blockViewState === 'source' && source && preview) {
-            this.logger?.debug('Move preview to source', `UID: ${this.uid}`);
+            this.logger?.debug('Move preview to source', `UID: ${this._uid}`);
 
             return this.moveChilds(preview, source);
         } else if (blockViewState === 'preview' && source && preview) {
-            this.logger?.debug('Move source to preview', `UID: ${this.uid}`);
+            this.logger?.debug('Move source to preview', `UID: ${this._uid}`);
 
             return this.moveChilds(source, preview);
         }
@@ -286,7 +286,7 @@ export default class SingletonBlockProcessor {
      */
     private getSingletoneContainer(): HTMLElement {
         const singletoneContainer = document.createElement('div');
-        singletoneContainer.id = this.uid;
+        singletoneContainer.id = this._uid;
 
         singletoneContainer.setAttribute(
             'data-mode',
@@ -302,14 +302,14 @@ export default class SingletonBlockProcessor {
      * @returns The current code block view state.
      */
     private getCodeBlockViewState(logging = false): ViewState | undefined {
-        const sourceView = this.el.closest('.markdown-source-view');
-        const readingView = this.el.closest('.markdown-reading-view');
+        const sourceView = this._el.closest('.markdown-source-view');
+        const readingView = this._el.closest('.markdown-reading-view');
 
         if (sourceView) {
             !logging
                 ? this.logger?.debug(
                       `CodeBlock View state: 'source'`,
-                      `UID: ${this.uid}`,
+                      `UID: ${this._uid}`,
                   )
                 : undefined;
 
@@ -318,7 +318,7 @@ export default class SingletonBlockProcessor {
             !logging
                 ? this.logger?.debug(
                       `CodeBlock View state: 'preview'`,
-                      `UID: ${this.uid}`,
+                      `UID: ${this._uid}`,
                   )
                 : undefined;
 

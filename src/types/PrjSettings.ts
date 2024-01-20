@@ -34,50 +34,50 @@ export interface PrjSettings {
         taskSymbol: string;
         taskFolder: string;
         taskTemplate: string;
-        subTaskTemplates: { label: string, template: string }[];
+        subTaskTemplates: { label: string; template: string }[];
     };
     baseTag: string;
     templateFolder: string;
 }
 
 export const DEFAULT_SETTINGS: PrjSettings = {
-    logLevel: "none",
+    logLevel: 'none',
     mobile: false,
-    language: "en",
-    dateFormat: "DD.MM.YYYY",
-    dateFormatShort: "DD.MM.YY",
+    language: 'en',
+    dateFormat: 'DD.MM.YYYY',
+    dateFormatShort: 'DD.MM.YY',
     user: {
-        "name": "",
-        "shortName": "",
-        "email": "",
-        "street": "",
-        "city": "",
-        "zip": "",
-        "country": "",
+        name: '',
+        shortName: '',
+        email: '',
+        street: '',
+        city: '',
+        zip: '',
+        country: '',
     },
-    "defaultMaxShow": 200,
-    "batchSizeShow": 25,
-    noneSymbol: "diamond",
+    defaultMaxShow: 200,
+    batchSizeShow: 25,
+    noneSymbol: 'diamond',
     documentSettings: {
-        "symbol": "file-text",
-        "hideSymbol": "file-minus-2",
-        "clusterSymbol": "library",
-        "defaultFolder": "",
-        "template": "",
-        "pdfFolder": "",
+        symbol: 'file-text',
+        hideSymbol: 'file-minus-2',
+        clusterSymbol: 'library',
+        defaultFolder: '',
+        template: '',
+        pdfFolder: '',
     },
     prjSettings: {
-        "topicSymbol": "album",
-        "topicFolder": "Topics/",
-        "topicTemplate": "",
-        "projectSymbol": "layout-list",
-        "projectFolder": "Projects/",
-        "projectTemplate": "",
-        "taskSymbol": "clipboard",
-        "taskFolder": "Tasks/",
-        "taskTemplate": "",
-        "subTaskTemplates": []
+        topicSymbol: 'album',
+        topicFolder: 'Topics/',
+        topicTemplate: '',
+        projectSymbol: 'layout-list',
+        projectFolder: 'Projects/',
+        projectTemplate: '',
+        taskSymbol: 'clipboard',
+        taskFolder: 'Tasks/',
+        taskTemplate: '',
+        subTaskTemplates: [],
     },
     baseTag: 'PRJ',
-    templateFolder: 'Templates/'
+    templateFolder: 'Templates/',
 };

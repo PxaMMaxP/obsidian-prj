@@ -10,7 +10,7 @@ export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
-    private fileCache = Global.getInstance().fileCache;
+    private _fileCache = Global.getInstance().fileCache;
 
     get tags(): string[] {
         const tags = this.data.tags;

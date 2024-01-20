@@ -14,7 +14,7 @@ import Logging from 'src/classes/Logging';
  */
 export class TransactionModel<T> {
     protected logger: Logging = Global.getInstance().logger;
-    private transactionActive = false;
+    private _transactionActive = false;
     protected changes: Partial<T> = {};
     /**
      * A function that writes the changes to the file.
@@ -95,7 +95,7 @@ export class TransactionModel<T> {
 
             return;
         }
-        this.transactionActive = true;
+        this._transactionActive = true;
     }
 
     /**
@@ -112,7 +112,10 @@ export class TransactionModel<T> {
         }
         const writeChanges = this.callWriteChanges();
         this.changes = writeChanges ? {} : this.changes;
-        this.transactionActive = writeChanges ? false : this.transactionActive;
+
+        this._transactionActive = writeChanges
+            ? false
+            : this._transactionActive;
     }
 
     /**
@@ -131,7 +134,7 @@ export class TransactionModel<T> {
             return;
         }
         this.changes = {};
-        this.transactionActive = false;
+        this._transactionActive = false;
     }
 
     /**
@@ -163,6 +166,6 @@ export class TransactionModel<T> {
      * @returns `true` if a transaction is active, otherwise `false`.
      */
     public get isTransactionActive(): boolean {
-        return this.transactionActive;
+        return this._transactionActive;
     }
 }

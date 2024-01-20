@@ -8,7 +8,7 @@ import Helper from '../Helper';
  * Modal to create a new metadata file
  */
 export default class AddAnnotationModal extends BaseModalForm {
-    private fileCache = Global.getInstance().fileCache;
+    private _fileCache = Global.getInstance().fileCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.

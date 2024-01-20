@@ -26,10 +26,10 @@ export default class TextComponent extends BaseComponent {
     private _title: string;
     //#endregion
     //#region HTML Elements
-    private presentationSpan: HTMLElement;
-    private suggestionsContainer: HTMLDivElement;
+    private _presentationSpan: HTMLElement;
+    private _suggestionsContainer: HTMLDivElement;
     //#endregion
-    private suggestionComponent: SuggestionComponent | undefined;
+    private _suggestionComponent: SuggestionComponent | undefined;
 
     /**
      * Returns `true` if the suggester is set. (Suggestions are enabled.)
@@ -122,7 +122,7 @@ export default class TextComponent extends BaseComponent {
      */
     public setFormator(formator: (value: string) => Promise<string>) {
         this._onPresentation = async (value: string): Promise<void> => {
-            this.presentationSpan.textContent = await formator(this._value);
+            this._presentationSpan.textContent = await formator(this._value);
         };
 
         return this;
@@ -143,13 +143,13 @@ export default class TextComponent extends BaseComponent {
                 return MarkdownRenderer.render(
                     app,
                     value,
-                    this.presentationSpan,
+                    this._presentationSpan,
                     path,
                     this.component,
                 );
             } else {
-                this.presentationSpan.innerHTML = '';
-                this.presentationSpan.textContent = value;
+                this._presentationSpan.innerHTML = '';
+                this._presentationSpan.textContent = value;
 
                 return Promise.resolve();
             }
@@ -173,44 +173,44 @@ export default class TextComponent extends BaseComponent {
 
     //#region Base Callbacks
     private build() {
-        this.presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this.presentationSpan);
+        this._presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this._presentationSpan);
 
-        this.presentationSpan.contentEditable = 'false';
-        this.presentationSpan.title = this._title;
-        this.presentationSpan.classList.add('editable-data-view');
-        this.presentationSpan.classList.add('text-presentation');
+        this._presentationSpan.contentEditable = 'false';
+        this._presentationSpan.title = this._title;
+        this._presentationSpan.classList.add('editable-data-view');
+        this._presentationSpan.classList.add('text-presentation');
 
         if (this._onMarkdownPresentation) {
-            this.presentationSpan.textContent = null;
+            this._presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
             this._onPresentation(this._value);
         } else {
-            this.presentationSpan.textContent = this._value;
+            this._presentationSpan.textContent = this._value;
         }
 
         if (this._suggestions || this._suggester) {
-            if (!this.suggestionComponent) {
-                this.suggestionComponent = new SuggestionComponent(
-                    this.presentationSpan,
+            if (!this._suggestionComponent) {
+                this._suggestionComponent = new SuggestionComponent(
+                    this._presentationSpan,
                     this.component,
                 );
             }
 
             this._suggestions
-                ? this.suggestionComponent.setSuggestions(this._suggestions)
+                ? this._suggestionComponent.setSuggestions(this._suggestions)
                 : void 0;
 
             this._suggester
-                ? this.suggestionComponent.setSuggester(this._suggester)
+                ? this._suggestionComponent.setSuggester(this._suggester)
                 : void 0;
         }
     }
 
     private buildInput() {
         this.component.registerDomEvent(
-            this.presentationSpan,
+            this._presentationSpan,
             'keydown',
             (event: KeyboardEvent) => {
                 if (event.key === 'Enter') {
@@ -224,26 +224,26 @@ export default class TextComponent extends BaseComponent {
 
     private enableEdit() {
         this.presentationContainer.classList.remove('hidden');
-        this.presentationSpan.contentEditable = 'true';
-        this.presentationSpan.focus();
-        this.suggestionComponent?.enableSuggestior();
+        this._presentationSpan.contentEditable = 'true';
+        this._presentationSpan.focus();
+        this._suggestionComponent?.enableSuggestior();
     }
 
     private disableEdit() {
         if (this._onMarkdownPresentation) {
-            this.presentationSpan.textContent = null;
+            this._presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
             this._onPresentation(this._value);
         } else {
-            this.presentationSpan.textContent = this._value;
+            this._presentationSpan.textContent = this._value;
         }
-        this.presentationSpan.contentEditable = 'false';
-        this.suggestionComponent?.disableSuggestor();
+        this._presentationSpan.contentEditable = 'false';
+        this._suggestionComponent?.disableSuggestor();
     }
 
     private async save(): Promise<void> {
-        this._value = this.presentationSpan.textContent ?? '';
+        this._value = this._presentationSpan.textContent ?? '';
         await this._onSave?.(this._value);
     }
     //#endregion

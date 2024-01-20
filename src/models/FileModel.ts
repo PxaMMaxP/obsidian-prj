@@ -43,24 +43,24 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * - It is set in the constructor of this class.
      * @see {@link FileModel.constructor}
      */
-    private ctor: new (data?: Partial<T>) => T;
+    private _ctor: new (data?: Partial<T>) => T;
     /**
      * The proxy of the data object.
      * @see {@link FileModel._data}
      * @see {@link FileModel.createProxy}
      */
-    private dataProxy: T;
+    private _dataProxy: T;
     /**
      * The proxy map to use.
      * @see {@link FileModel.createProxy}
      */
-    private proxyMap: WeakMap<object, unknown> = new WeakMap();
+    private _proxyMap: WeakMap<object, unknown> = new WeakMap();
     /**
      * The yaml key map to use.
      * @see {@link YamlKeyMap}
      * @see {@link FileModel.initYamlKeyMap}
      */
-    private yamlKeyMap: YamlKeyMap | undefined;
+    private _yamlKeyMap: YamlKeyMap | undefined;
 
     /**
      * Creates a new BaseModel instance.
@@ -78,7 +78,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         if (file) {
             this.file = file;
         }
-        this.ctor = ctor;
+        this._ctor = ctor;
         this.initYamlKeyMap(yamlKeyMap);
     }
 
@@ -92,34 +92,34 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * - and if no frontmatter exists, a new proxy with an empty object as data is created.
      */
     protected get _data(): Partial<T> {
-        if (this.dataProxy) {
-            return this.dataProxy;
+        if (this._dataProxy) {
+            return this._dataProxy;
         }
         const frontmatter = this.getMetadata();
 
         if (!frontmatter) {
             this.logger.trace('Creating empty object');
-            const emptyObject = new this.ctor();
+            const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
             this.changes = emptyObject;
-            this.dataProxy = this.createProxy(emptyObject) as T;
+            this._dataProxy = this.createProxy(emptyObject) as T;
 
-            return this.dataProxy;
+            return this._dataProxy;
         }
 
-        if (this.yamlKeyMap) {
-            for (const key in this.yamlKeyMap) {
-                if (frontmatter[this.yamlKeyMap[key]]) {
-                    frontmatter[key] = frontmatter[this.yamlKeyMap[key]];
-                    delete frontmatter[this.yamlKeyMap[key]];
+        if (this._yamlKeyMap) {
+            for (const key in this._yamlKeyMap) {
+                if (frontmatter[this._yamlKeyMap[key]]) {
+                    frontmatter[key] = frontmatter[this._yamlKeyMap[key]];
+                    delete frontmatter[this._yamlKeyMap[key]];
                 }
             }
         }
 
-        const dataObject: T = new this.ctor(frontmatter as Partial<T>);
-        this.dataProxy = this.createProxy(dataObject) as T;
+        const dataObject: T = new this._ctor(frontmatter as Partial<T>);
+        this._dataProxy = this.createProxy(dataObject) as T;
 
-        return this.dataProxy;
+        return this._dataProxy;
     }
 
     /**
@@ -130,7 +130,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * - If value is `null`, the value is cleared.
      */
     protected set _data(values: Partial<T>) {
-        const dataObject: T = new this.ctor(values);
+        const dataObject: T = new this._ctor(values);
 
         for (const key in dataObject) {
             if (values[key] !== undefined) {
@@ -196,14 +196,14 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * @remarks - If the object is already proxied, the existing proxy is returned.
      * - If the object is not proxied, a new proxy is created
      * and the `proxyMap` is updated. The proxy is returned.
-     * @see {@link FileModel.proxyMap}
+     * @see {@link FileModel._proxyMap}
      * - If the object is an object, the function is called recursively.
      * - Only non-proxy values are sent to the `updateKeyValue` function.
      * @see {@link FileModel.resolveProxyValue}
      * @see {@link FileModel.updateKeyValue}
      */
     private createProxy(obj: Partial<T>, path = ''): unknown {
-        const existingProxy = this.proxyMap.get(obj);
+        const existingProxy = this._proxyMap.get(obj);
 
         if (existingProxy) {
             return existingProxy;
@@ -240,15 +240,15 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             },
         });
 
-        this.proxyMap.set(obj, proxy);
+        this._proxyMap.set(obj, proxy);
 
         return proxy;
     }
 
     private resolveProxyValue(value: unknown): unknown {
-        if (this.proxyMap.has(value as object)) {
+        if (this._proxyMap.has(value as object)) {
             // If the value is a proxy, get the original value
-            return this.proxyMap.get(value as object);
+            return this._proxyMap.get(value as object);
         } else if (Array.isArray(value)) {
             // If the value is an array, recursively check each element
             return value.map((item) => this.resolveProxyValue(item));
@@ -281,7 +281,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      */
     private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
         if (yamlKeyMap) {
-            this.yamlKeyMap = yamlKeyMap;
+            this._yamlKeyMap = yamlKeyMap;
         }
     }
 
@@ -322,8 +322,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         updates: object,
     ) {
         Object.entries(updates).forEach(([key, value]) => {
-            if (this.yamlKeyMap && this.yamlKeyMap[key]) {
-                key = this.yamlKeyMap[key];
+            if (this._yamlKeyMap && this._yamlKeyMap[key]) {
+                key = this._yamlKeyMap[key];
             }
 
             if (

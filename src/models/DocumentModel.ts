@@ -11,7 +11,7 @@ export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
 {
-    private fileCache = Global.getInstance().fileCache;
+    private _fileCache = Global.getInstance().fileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     get tags(): string[] {
@@ -55,7 +55,7 @@ export class DocumentModel
                         ? `${wikilinkData.basename}.md`
                         : '';
 
-                    const file = this.fileCache.findFileByLinkText(
+                    const file = this._fileCache.findFileByLinkText(
                         mdFilename,
                         this.file.path,
                     );
@@ -166,7 +166,7 @@ export class DocumentModel
     public getLinkedFile(): TFile | undefined {
         const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
 
-        const file = this.fileCache.findFileByLinkText(
+        const file = this._fileCache.findFileByLinkText(
             fileLinkData.filename ?? '',
             this.file.path,
         );
