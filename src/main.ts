@@ -15,6 +15,7 @@ import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTas
 import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
+import KanbanSync from './libs/KanbanSync';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;

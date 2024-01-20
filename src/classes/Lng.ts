@@ -33,9 +33,10 @@ export default class Lng {
      * - Look at the `translations.json` file to see all available translations.
      */
     public static gtAll(key: string): string[] {
-        const logger = Global.getInstance().logger
-        const translations = (Translations as Translations);
+        const logger = Global.getInstance().logger;
+        const translations = Translations as Translations;
         const translationStrings: string[] = [];
+
         for (const language of translations) {
             if (language.translations.hasOwnProperty(key)) {
                 translationStrings.push(language.translations[key]);
