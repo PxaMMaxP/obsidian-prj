@@ -182,6 +182,11 @@ export default class MetadataCache {
         listener: (file: TFile) => void,
     ): void;
 
+    public on(
+        eventName: 'changes-in-kanban-event',
+        listener: (file: TFile) => void,
+    ): void;
+
     /**
      * Register an event listener for the metadata cache.
      * @param eventName The name of the event
@@ -255,10 +260,20 @@ export default class MetadataCache {
                         );
                     }
 
+                    // General file change event
                     this._eventHandler.fireEvent(
                         'prj-task-management-file-changed-event',
                         file,
                     );
+
+                    // Changes in Kanban
+                    if (newMetadata.frontmatter?.subType === 'Kanban') {
+                        this._eventHandler.fireEvent(
+                            'changes-in-kanban-event',
+                            file,
+                        );
+                    }
+
                     break;
                 case 'Metadata':
                     this._eventHandler.fireEvent(
@@ -372,6 +387,39 @@ export default class MetadataCache {
 
             return undefined;
         }
+    }
+
+    /**
+     * Get the metadata cache entry for a file link.
+     * @param link The file link to get from the metadata cache.
+     * @param path The path of the file where the link is located.
+     * @returns The metadata cache entry for the file link.
+     */
+    public getEntryByLink(link: string, path = ''): FileMetadata | undefined {
+        const file = this._app.metadataCache.getFirstLinkpathDest(link, path);
+
+        if (file) {
+            return this.getEntry(file);
+        } else {
+            this.logger.warn(`No file found for link ${link}`);
+
+            return undefined;
+        }
+    }
+
+    public getBacklinks(file: TFile): TFile[] {
+        const filesWithBacklinks: TFile[] = [];
+
+        for (const [path, fileCache] of Object.entries(
+            this._app.metadataCache.resolvedLinks,
+        )) {
+            if (fileCache[file.path]) {
+                const file = this.getEntryByPath(path);
+                file && filesWithBacklinks.push(file.file);
+            }
+        }
+
+        return filesWithBacklinks;
     }
 
     /**
@@ -532,6 +580,13 @@ interface MetadataCacheEvents extends ICallback {
             undefined | void
         >;
         'document-changed-metadata-event': IEvent<TFile, undefined | void>;
+        'changes-in-kanban-event': IEvent<TFile, undefined>;
         // Add more events here
     };
+}
+
+export interface MetadataCacheEventArgs {
+    file: TFile;
+    newMetadata: CachedMetadata;
+    oldMetadata: CachedMetadata;
 }
