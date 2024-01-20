@@ -260,6 +260,7 @@ export default class MetadataCache {
                         );
                     }
 
+                    // General file change event
                     this._eventHandler.fireEvent(
                         'prj-task-management-file-changed-event',
                         file,
