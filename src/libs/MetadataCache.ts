@@ -389,6 +389,24 @@ export default class MetadataCache {
         }
     }
 
+    /**
+     * Get the metadata cache entry for a file link.
+     * @param link The file link to get from the metadata cache.
+     * @param path The path of the file where the link is located.
+     * @returns The metadata cache entry for the file link.
+     */
+    public getEntryByLink(link: string, path = ''): FileMetadata | undefined {
+        const file = this._app.metadataCache.getFirstLinkpathDest(link, path);
+
+        if (file) {
+            return this.getEntry(file);
+        } else {
+            this.logger.warn(`No file found for link ${link}`);
+
+            return undefined;
+        }
+    }
+
     public getBacklinks(file: TFile): TFile[] {
         const filesWithBacklinks: TFile[] = [];
 

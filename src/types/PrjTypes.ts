@@ -1,3 +1,5 @@
+import Lng from 'src/classes/Lng';
+
 /**
  * Represents the types used in the app.
  */
@@ -59,7 +61,11 @@ export default class PrjTypes {
     /**
      * An array of valid file subtypes.
      */
-    public static readonly fileSubTypes: FileSubType[] = [null, 'Cluster'];
+    public static readonly fileSubTypes: FileSubType[] = [
+        null,
+        'Cluster',
+        'Kanban',
+    ];
 
     /**
      * An array of valid task statuses.
@@ -144,6 +150,29 @@ export default class PrjTypes {
         }
 
         return undefined;
+    }
+
+    /**
+     * Returns a valid status if the given status is a valid translation.
+     * @param status The status to check.
+     * @returns The valid status or undefined if the status is not valid.
+     */
+    public static getValidStatusFromLanguage(
+        status: string,
+    ): Status | undefined {
+        let validStatus: Status | undefined;
+
+        this.statuses.forEach((statusFromValidStatuses) => {
+            const translation = Lng.gtAll(`Status${statusFromValidStatuses}`);
+
+            translation.forEach((translationFromStatus) => {
+                if (translationFromStatus === status) {
+                    validStatus = statusFromValidStatuses;
+                }
+            });
+        });
+
+        return validStatus;
     }
 
     /**
