@@ -27,8 +27,8 @@ export default class DropdownComponent extends BaseComponent {
     private _title: string;
     //#endregion
     //#region HTML Elements
-    private presentationSpan: HTMLElement;
-    private select: HTMLSelectElement;
+    private _presentationSpan: HTMLElement;
+    private _select: HTMLSelectElement;
     //#endregion
 
     constructor(component: Component) {
@@ -98,10 +98,10 @@ export default class DropdownComponent extends BaseComponent {
             const { text, html } = formator(value);
 
             if (html) {
-                this.presentationSpan.innerHTML = '';
-                this.presentationSpan.appendChild(html);
+                this._presentationSpan.innerHTML = '';
+                this._presentationSpan.appendChild(html);
             } else {
-                this.presentationSpan.textContent = text;
+                this._presentationSpan.textContent = text;
             }
         };
 
@@ -129,45 +129,45 @@ export default class DropdownComponent extends BaseComponent {
             const optionElement = document.createElement('option');
             optionElement.value = this._value;
             optionElement.textContent = `${this._value} (not in options)`;
-            this.select.appendChild(optionElement);
+            this._select.appendChild(optionElement);
         }
 
         this._options.forEach((option) => {
             const optionElement = document.createElement('option');
             optionElement.value = option.value;
             optionElement.textContent = option.text;
-            this.select.appendChild(optionElement);
+            this._select.appendChild(optionElement);
         });
     }
 
     private disableOptions() {
-        this.select.innerHTML = '';
+        this._select.innerHTML = '';
     }
 
     //#region Base Callbacks
     private build() {
-        this.presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this.presentationSpan);
+        this._presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this._presentationSpan);
 
-        this.presentationSpan.title = this._title;
-        this.presentationSpan.classList.add('editable-data-view');
-        this.presentationSpan.classList.add('text-presentation');
+        this._presentationSpan.title = this._title;
+        this._presentationSpan.classList.add('editable-data-view');
+        this._presentationSpan.classList.add('text-presentation');
         this._onPresentation?.(this._selectedOption.value);
         //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
     }
 
     private buildInput() {
-        this.select = document.createElement('select');
-        this.dataInputContainer.appendChild(this.select);
-        this.select.title = this._title;
-        this.select.classList.add('editable-data-view');
-        this.select.classList.add('select-input');
+        this._select = document.createElement('select');
+        this.dataInputContainer.appendChild(this._select);
+        this._select.title = this._title;
+        this._select.classList.add('editable-data-view');
+        this._select.classList.add('select-input');
     }
 
     private enableEdit() {
         this.enableOptions();
-        this.select.value = this._value ? this._value : '';
-        this.select.focus();
+        this._select.value = this._value ? this._value : '';
+        this._select.focus();
     }
 
     private disableEdit() {
@@ -177,7 +177,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     private async save(): Promise<void> {
-        this._value = this.select.value;
+        this._value = this._select.value;
         await this._onSave?.(this._value);
     }
     //#endregion

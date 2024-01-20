@@ -19,7 +19,7 @@ import { TFile } from 'obsidian';
  * Modal to create a new metadata file
  */
 export default class CreateNewMetadataModal extends BaseModalForm {
-    private fileCache = Global.getInstance().fileCache;
+    private _fileCache = Global.getInstance().fileCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.
@@ -121,7 +121,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         (result.data.subType as FileSubType | undefined) =
             PrjTypes.isValidFileSubType(result.data.subType);
 
-        const linkedFile = this.fileCache.findFileByLinkText(
+        const linkedFile = this._fileCache.findFileByLinkText(
             result.data.file as string,
             '',
         );

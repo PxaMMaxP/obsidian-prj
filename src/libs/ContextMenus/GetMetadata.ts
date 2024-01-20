@@ -8,10 +8,10 @@ import Helper from '../Helper';
 
 export default class GetMetadata {
     static instance: GetMetadata;
-    private app = Global.getInstance().app;
+    private _app = Global.getInstance().app;
     private logger = Global.getInstance().logger;
-    private plugin = Global.getInstance().plugin;
-    private metadataCache = Global.getInstance().metadataCache;
+    private _plugin = Global.getInstance().plugin;
+    private _metadataCache = Global.getInstance().metadataCache;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
@@ -36,7 +36,7 @@ export default class GetMetadata {
         if (this.instance && this.instance.eventsRegistered) {
             this.instance.logger.trace("Deconstructing 'GetMetadata' events");
 
-            this.instance.app.workspace.off(
+            this.instance._app.workspace.off(
                 'file-menu',
                 this.instance.bindContextMenu,
             );
@@ -54,7 +54,7 @@ export default class GetMetadata {
     private registerEvents() {
         if (!this.eventsRegistered) {
             this.logger.trace("Registering 'GetMetadata' events");
-            this.app.workspace.on('file-menu', this.bindContextMenu);
+            this._app.workspace.on('file-menu', this.bindContextMenu);
             this.eventsRegistered = true;
         }
     }
@@ -65,7 +65,7 @@ export default class GetMetadata {
     private registerCommands() {
         this.logger.trace("Registering 'GetMetadata' commands");
 
-        this.plugin.addCommand({
+        this._plugin.addCommand({
             id: 'get-metadata-file',
             name: Lng.gt('Show Metadata File'),
             callback: () => {
@@ -112,7 +112,7 @@ export default class GetMetadata {
     private getCorrespondingMetadataFile(
         file: TFile,
     ): FileMetadata | undefined {
-        return this.metadataCache.cache.find((metadata) => {
+        return this._metadataCache.cache.find((metadata) => {
             const type = metadata.metadata.frontmatter?.type as
                 | FileType
                 | undefined
@@ -135,7 +135,7 @@ export default class GetMetadata {
      * Opens the metadata file for the active (e.g. pdf) file
      */
     public async invoke() {
-        const workspace = this.app.workspace;
+        const workspace = this._app.workspace;
         const activeFile = workspace.getActiveFile();
 
         if (

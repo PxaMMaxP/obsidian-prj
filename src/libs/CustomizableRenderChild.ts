@@ -9,8 +9,8 @@ import { ILogger } from 'src/interfaces/ILogger';
  */
 export default class CustomizableRenderChild extends MarkdownRenderChild {
     private logger: ILogger | undefined;
-    private onUnload: (() => void) | undefined;
-    private onLoad: (() => void) | undefined;
+    private _onUnload: (() => void) | undefined;
+    private _onLoad: (() => void) | undefined;
 
     /**
      * Constructor of the `CustomizableRenderChild` class.
@@ -27,19 +27,19 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
     ) {
         super(container);
         this.logger = logger ?? undefined;
-        this.onLoad = onLoad;
-        this.onUnload = onUnload;
+        this._onLoad = onLoad;
+        this._onUnload = onUnload;
     }
 
     override onload(): void {
         this.logger?.trace('On Load');
-        this.onLoad?.();
+        this._onLoad?.();
         super.onload();
     }
 
     override onunload(): void {
         this.logger?.trace('On Unload');
-        this.onUnload?.();
+        this._onUnload?.();
         super.onunload();
     }
 }

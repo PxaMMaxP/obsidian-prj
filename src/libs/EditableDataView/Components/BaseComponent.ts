@@ -3,7 +3,7 @@ import Global from 'src/classes/Global';
 
 export default abstract class BaseComponent {
     public get container(): HTMLDivElement {
-        return this.shippingContainer;
+        return this._shippingContainer;
     }
     protected component: Component;
 
@@ -13,7 +13,7 @@ export default abstract class BaseComponent {
      */
     protected abstract editabilityEnabled: boolean;
     //#region HTML Elements
-    private shippingContainer: HTMLDivElement;
+    private _shippingContainer: HTMLDivElement;
     /**
      * The container that holds the input elements.
      * @remarks Has the CSS classes `editable-data-view` & `data-input-container`.
@@ -24,10 +24,10 @@ export default abstract class BaseComponent {
      * @remarks Has the CSS classes `editable-data-view` & `presentation-container`.
      */
     protected presentationContainer: HTMLElement;
-    private buttonContainer: HTMLElement;
-    private editButton: HTMLButtonElement;
-    private cancelButton: HTMLButtonElement | undefined = undefined;
-    private saveButton: HTMLButtonElement | undefined = undefined;
+    private _buttonContainer: HTMLElement;
+    private _editButton: HTMLButtonElement;
+    private _cancelButton: HTMLButtonElement | undefined = undefined;
+    private _saveButton: HTMLButtonElement | undefined = undefined;
     //#endregion
     //#region Callbacks
     /**
@@ -66,8 +66,12 @@ export default abstract class BaseComponent {
 
     constructor(component: Component) {
         this.component = component;
-        this.shippingContainer = document.createElement('div');
-        this.shippingContainer.classList.add('editable-data-view', 'container');
+        this._shippingContainer = document.createElement('div');
+
+        this._shippingContainer.classList.add(
+            'editable-data-view',
+            'container',
+        );
     }
 
     /**
@@ -84,20 +88,20 @@ export default abstract class BaseComponent {
             'editable-data-view',
             'presentation-container',
         );
-        this.shippingContainer.appendChild(this.presentationContainer);
+        this._shippingContainer.appendChild(this.presentationContainer);
 
         if (
             editabilityEnabled &&
             (Platform.isMobile ? Global.getInstance().settings.mobile : true)
         ) {
-            this.buttonContainer = document.createElement('div');
+            this._buttonContainer = document.createElement('div');
 
-            this.buttonContainer.classList.add(
+            this._buttonContainer.classList.add(
                 'editable-data-view',
                 'button-container',
             );
             this.createEditButton();
-            this.shippingContainer.appendChild(this.buttonContainer);
+            this._shippingContainer.appendChild(this._buttonContainer);
         }
     }
 
@@ -105,13 +109,13 @@ export default abstract class BaseComponent {
      * Creates the `edit` button and adds it to the `buttonContainer`.
      */
     private createEditButton(): void {
-        this.editButton = document.createElement('button');
-        this.buttonContainer.appendChild(this.editButton);
-        this.editButton.classList.add('editable-data-view');
-        this.editButton.classList.add('button');
-        setIcon(this.editButton, 'pen');
+        this._editButton = document.createElement('button');
+        this._buttonContainer.appendChild(this._editButton);
+        this._editButton.classList.add('editable-data-view');
+        this._editButton.classList.add('button');
+        setIcon(this._editButton, 'pen');
 
-        this.component.registerDomEvent(this.editButton, 'click', () =>
+        this.component.registerDomEvent(this._editButton, 'click', () =>
             this.enableEditMode(),
         );
     }
@@ -128,30 +132,30 @@ export default abstract class BaseComponent {
             'hidden',
         );
 
-        this.shippingContainer.insertBefore(
+        this._shippingContainer.insertBefore(
             this.dataInputContainer,
             this.presentationContainer,
         );
 
-        this.cancelButton = document.createElement('button');
-        this.buttonContainer.insertAfter(this.cancelButton, this.editButton);
-        this.cancelButton.classList.add('editable-data-view');
-        this.cancelButton.classList.add('button');
-        this.cancelButton.classList.add('hidden');
-        setIcon(this.cancelButton, 'x');
+        this._cancelButton = document.createElement('button');
+        this._buttonContainer.insertAfter(this._cancelButton, this._editButton);
+        this._cancelButton.classList.add('editable-data-view');
+        this._cancelButton.classList.add('button');
+        this._cancelButton.classList.add('hidden');
+        setIcon(this._cancelButton, 'x');
 
-        this.component.registerDomEvent(this.cancelButton, 'click', () =>
+        this.component.registerDomEvent(this._cancelButton, 'click', () =>
             this.disableEditMode(),
         );
 
-        this.saveButton = document.createElement('button');
-        this.buttonContainer.insertAfter(this.saveButton, this.cancelButton);
-        this.saveButton.classList.add('editable-data-view');
-        this.saveButton.classList.add('button');
-        this.saveButton.classList.add('hidden');
-        setIcon(this.saveButton, 'check');
+        this._saveButton = document.createElement('button');
+        this._buttonContainer.insertAfter(this._saveButton, this._cancelButton);
+        this._saveButton.classList.add('editable-data-view');
+        this._saveButton.classList.add('button');
+        this._saveButton.classList.add('hidden');
+        setIcon(this._saveButton, 'check');
 
-        this.component.registerDomEvent(this.saveButton, 'click', () =>
+        this.component.registerDomEvent(this._saveButton, 'click', () =>
             this.saveChanges(),
         );
     }
@@ -172,18 +176,18 @@ export default abstract class BaseComponent {
      */
     protected enableEditMode(): void {
         // If the `save` or the `cancel` button is not created, create them.
-        if (!this.cancelButton || !this.saveButton) {
+        if (!this._cancelButton || !this._saveButton) {
             this.createComponentsForEdit();
             this.onFirstEdit?.();
         }
 
         // Switch mode to Edit: hide the `edit` button and show the `save` and `cancel` buttons.
-        if (this.cancelButton && this.saveButton) {
+        if (this._cancelButton && this._saveButton) {
             this.presentationContainer.classList.add('hidden');
             this.dataInputContainer.classList.remove('hidden');
-            this.cancelButton.classList.remove('hidden');
-            this.saveButton.classList.remove('hidden');
-            this.editButton.classList.add('hidden');
+            this._cancelButton.classList.remove('hidden');
+            this._saveButton.classList.remove('hidden');
+            this._editButton.classList.add('hidden');
             this.onEnableEditCallback?.();
         }
     }
@@ -195,12 +199,12 @@ export default abstract class BaseComponent {
      */
     protected disableEditMode(): void {
         // Switch mode to View: hide the `save` and `cancel` buttons and show the `edit` button.
-        if (this.cancelButton && this.saveButton) {
+        if (this._cancelButton && this._saveButton) {
             this.presentationContainer.classList.remove('hidden');
             this.dataInputContainer.classList.add('hidden');
-            this.cancelButton.classList.add('hidden');
-            this.saveButton.classList.add('hidden');
-            this.editButton.classList.remove('hidden');
+            this._cancelButton.classList.add('hidden');
+            this._saveButton.classList.add('hidden');
+            this._editButton.classList.remove('hidden');
             this.onDisableEditCallback?.();
         }
     }
@@ -211,7 +215,7 @@ export default abstract class BaseComponent {
      */
     protected async saveChanges(): Promise<void> {
         // Run the callback and disable edit mode.
-        if (this.cancelButton && this.saveButton) {
+        if (this._cancelButton && this._saveButton) {
             await this.onSaveCallback?.();
             this.disableEditMode();
         }
@@ -227,7 +231,7 @@ export default abstract class BaseComponent {
      * - etc.
      */
     public then(callback: (container: HTMLDivElement) => void): BaseComponent {
-        callback(this.shippingContainer);
+        callback(this._shippingContainer);
 
         return this;
     }

@@ -20,7 +20,7 @@ export default abstract class TableBlockRenderComponent<
     protected logger = this.global.logger;
     protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
-    private activeFileDebounceTimer: NodeJS.Timeout;
+    private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
     protected processorSettings: IProcessorSettings;
@@ -220,9 +220,9 @@ export default abstract class TableBlockRenderComponent<
      */
     private onActiveFileDebounce(): void {
         this.logger.trace('Active file changed: Debouncing');
-        clearTimeout(this.activeFileDebounceTimer);
+        clearTimeout(this._activeFileDebounceTimer);
 
-        this.activeFileDebounceTimer = setTimeout(async () => {
+        this._activeFileDebounceTimer = setTimeout(async () => {
             this.onActiveFileFilter();
         }, 750);
     }

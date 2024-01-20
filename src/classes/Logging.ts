@@ -6,27 +6,27 @@ import { ILogger } from 'src/interfaces/ILogger';
  * Logging class; encapsulates console.log, console.debug, console.warn and console.error
  */
 export default class Logging implements ILogger {
-    private static instance: Logging;
-    private logLevel: LoggingLevel;
-    private logPrefix: string;
+    private static _instance: Logging;
+    private _logLevel: LoggingLevel;
+    private _logPrefix: string;
 
     /**
      * Creates a new Logging instance
      * @param logLevel The log level to use. Defaults to "info"
      */
     constructor(logLevel: LoggingLevel = 'info', logPrefix = '') {
-        this.logLevel = logLevel;
-        this.logPrefix = `${logPrefix}-`;
+        this._logLevel = logLevel;
+        this._logPrefix = `${logPrefix}-`;
 
-        if (this.logLevel === 'none') {
+        if (this._logLevel === 'none') {
             // eslint-disable-next-line no-console
             console.info('Logging disabled');
         }
-        Logging.instance = this;
+        Logging._instance = this;
     }
 
     public setLogLevel(logLevel: LoggingLevel) {
-        this.logLevel = logLevel;
+        this._logLevel = logLevel;
         // eslint-disable-next-line no-console
         console.info(`Log level set to ${logLevel}`);
     }
@@ -35,11 +35,11 @@ export default class Logging implements ILogger {
      * Returns the Logging instance
      */
     public static getInstance(): Logging {
-        if (!Logging.instance) {
-            Logging.instance = new Logging();
+        if (!Logging._instance) {
+            Logging._instance = new Logging();
         }
 
-        return Logging.instance;
+        return Logging._instance;
     }
 
     /**
@@ -150,27 +150,27 @@ export default class Logging implements ILogger {
     }
 
     private constructLogMessage(message?: any): string {
-        return `${this.logPrefix}${message}`;
+        return `${this._logPrefix}${message}`;
     }
 
     private logLevelActive(logLevel: LoggingLevel): boolean {
-        if (this.logLevel === 'none') {
+        if (this._logLevel === 'none') {
             return false;
         }
 
-        if (this.logLevel === 'trace') {
+        if (this._logLevel === 'trace') {
             return true;
         }
 
-        if (this.logLevel === 'debug') {
+        if (this._logLevel === 'debug') {
             return logLevel !== 'trace';
         }
 
-        if (this.logLevel === 'info') {
+        if (this._logLevel === 'info') {
             return logLevel !== 'trace' && logLevel !== 'debug';
         }
 
-        if (this.logLevel === 'warn') {
+        if (this._logLevel === 'warn') {
             return (
                 logLevel !== 'trace' &&
                 logLevel !== 'debug' &&
@@ -178,7 +178,7 @@ export default class Logging implements ILogger {
             );
         }
 
-        if (this.logLevel === 'error') {
+        if (this._logLevel === 'error') {
             return (
                 logLevel !== 'trace' &&
                 logLevel !== 'debug' &&

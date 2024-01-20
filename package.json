@@ -11,7 +11,10 @@
     "version:major": "\"node bump-version.mjs major\" && npm run postversion",
     "postversion": "npm run build && node copy-plugin-files.mjs release && git add manifest.json versions.json package.json",
     "compile:sass": "sass --no-source-map src/styles/main.scss build/styles.css",
-    "watch:sass": "sass --watch --no-source-map src/styles/main.scss:build/styles.css"
+    "watch:sass": "sass --watch --no-source-map src/styles/main.scss:build/styles.css",
+    "lint": "eslint --ext .ts .",
+    "lint-fix": "eslint --fix --ext .ts .",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",

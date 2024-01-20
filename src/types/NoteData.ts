@@ -1,5 +1,5 @@
-import IPrjData from "../interfaces/IPrjData";
-import { FileType } from "./PrjTypes";
+import IPrjData from '../interfaces/IPrjData';
+import { FileType } from './PrjTypes';
 
 export default class NoteData implements IPrjData {
     type: FileType | null | undefined;
@@ -10,15 +10,16 @@ export default class NoteData implements IPrjData {
 
     constructor(data: Partial<NoteData>) {
         if (!data) {
-            this.type = "Note";
+            this.type = 'Note';
+
             return;
         }
         this.title = data.title !== undefined ? data.title : undefined;
-        this.description = data.description !== undefined ? data.description : undefined;
+
+        this.description =
+            data.description !== undefined ? data.description : undefined;
         this.date = data.date !== undefined ? data.date : undefined;
         this.tags = data.tags !== undefined ? data.tags : undefined;
-        this.type = data.type !== undefined ? data.type : "Note";
+        this.type = data.type !== undefined ? data.type : 'Note';
     }
-
-
 }
