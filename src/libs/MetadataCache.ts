@@ -266,7 +266,7 @@ export default class MetadataCache {
                     );
 
                     // Changes in Kanban
-                    if (newMetadata.frontmatter?.subtype === 'Kanban') {
+                    if (newMetadata.frontmatter?.subType === 'Kanban') {
                         this._eventHandler.fireEvent(
                             'changes-in-kanban-event',
                             file,
