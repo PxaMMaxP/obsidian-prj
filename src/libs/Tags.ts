@@ -2,7 +2,6 @@
 
 import Global from 'src/classes/Global';
 
-
 /**
  * Represents a hierarchical tree structure for tags.
  */
@@ -11,7 +10,6 @@ export type TagTree = {
 };
 
 export default class Tags {
-
     /**
      * Checks if the tag is a valid tag array
      * @param tag The tag array to check
@@ -26,13 +24,14 @@ export default class Tags {
      * @param tags The tag/s to return the valid tags array from
      * @returns The valid tags array
      */
-    static getValidTags(tags: string | Array<string> | undefined): Array<string> {
+    static getValidTags(
+        tags: string | Array<string> | undefined,
+    ): Array<string> {
         let formattedTags: string[] = [];
 
         if (tags && typeof tags === 'string') {
             formattedTags = [tags];
-        }
-        else if (Array.isArray(tags)) {
+        } else if (Array.isArray(tags)) {
             formattedTags = [...tags];
         }
 
@@ -41,12 +40,15 @@ export default class Tags {
 
     /**
      * Creates an Obsidian tag link element.
-     * 
+     *
      * @param tagLabel - The label for the tag.
      * @param tag - The tag value.
      * @returns The created HTML anchor element.
      */
-    static createObsidianTagLink(tagLabel: string, tag: string): HTMLAnchorElement {
+    static createObsidianTagLink(
+        tagLabel: string,
+        tag: string,
+    ): HTMLAnchorElement {
         const obsidianLink = document.createElement('a');
         obsidianLink.href = `#${tag}`;
         obsidianLink.classList.add('tag');
@@ -61,15 +63,21 @@ export default class Tags {
      * Filters out the non specific tags from the given tags array
      * @param tags The tags array to filter out the non specific tags from
      * @returns The tags array without the non specific tags
-     * @example removeRedundantTags(["tag1", "tag2", "tag1/subtag1", "tag1/subtag2"]) => ["tag2", "tag1/subtag1", "tag1/subtag2"] 
+     * @example removeRedundantTags(["tag1", "tag2", "tag1/subtag1", "tag1/subtag2"]) => ["tag2", "tag1/subtag1", "tag1/subtag2"]
      */
     static filterOutNonSpecificTags(tags: Array<string>): Array<string> {
         let cleanedTags: Array<string> = [];
+
         if (this.isValidTag(tags)) {
-            cleanedTags = tags.filter(tag =>
-                !tags.some(otherTag => otherTag !== tag && otherTag.startsWith(tag + "/"))
+            cleanedTags = tags.filter(
+                (tag) =>
+                    !tags.some(
+                        (otherTag) =>
+                            otherTag !== tag && otherTag.startsWith(tag + '/'),
+                    ),
             );
         }
+
         return cleanedTags;
     }
 
@@ -85,13 +93,15 @@ export default class Tags {
             tag = `#${tag}`;
         }
 
-        const existFile = metadataCache.cache.find(file => {
+        const existFile = metadataCache.cache.find((file) => {
             const tags = file.metadata?.frontmatter?.tags;
+
             if (typeof tags === 'string') {
                 return tags === tag;
             } else if (Array.isArray(tags)) {
                 return tags.includes(tag);
             }
+
             return false;
         });
 
@@ -106,11 +116,11 @@ export default class Tags {
     static createTagTree(tags: Array<string>): TagTree {
         const tagTree: TagTree = {};
 
-        tags.forEach(tag => {
+        tags.forEach((tag) => {
             const parts = tag.split('/');
             let currentLevel = tagTree;
 
-            parts.forEach(part => {
+            parts.forEach((part) => {
                 if (!currentLevel[part]) {
                     currentLevel[part] = {};
                 }

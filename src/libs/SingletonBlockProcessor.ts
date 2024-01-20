@@ -1,11 +1,11 @@
-import { MarkdownPostProcessorContext } from "obsidian";
-import { ILogger } from "src/interfaces/ILogger";
-import CustomizableRenderChild from "./CustomizableRenderChild";
+import { MarkdownPostProcessorContext } from 'obsidian';
+import { ILogger } from 'src/interfaces/ILogger';
+import CustomizableRenderChild from './CustomizableRenderChild';
 
 /**
  * Type for the view state.
  */
-export type ViewState = "source" | "preview";
+export type ViewState = 'source' | 'preview';
 
 /**
  * Class for the singleton block processor.
@@ -16,21 +16,21 @@ export type ViewState = "source" | "preview";
  * ```ts
  * //const uid = Create a unique id for the block.
  * const singletonBlockProcessor = new SingletonBlockProcessor(uid, el, ctx);
- * 
+ *
  * const singleToneBlock = singletonBlockProcessor.singletoneContainer;
  * el.append(singleToneBlock);
- * 
+ *
  * if (!singletonBlockProcessor.checkForSiblingBlocks()) {
  *    // If the block is not the only one in the workspace leaf,
  *    // return and do nothing in your `MarkdownCodeBlockProcessor`.
  *    return;
  * }
- * 
+ *
  * // Append your main parent container to the singletone container.
  * // This `mainContainer` container will be moved between the corosponding containers.
  * const mainContainer = document.createElement('div');
  * singleToneBlock.append(mainContainer);
- * 
+ *
  * // Work with your main container from here..
  * ```
  */
@@ -50,7 +50,9 @@ export default class SingletonBlockProcessor {
      * - Register a component with **this** container.
      */
     public get singletoneContainer(): HTMLElement {
-        this.singletonContainer = this.singletonContainer ?? this.getSingletoneContainer();
+        this.singletonContainer =
+            this.singletonContainer ?? this.getSingletoneContainer();
+
         return this.singletonContainer;
     }
 
@@ -72,7 +74,9 @@ export default class SingletonBlockProcessor {
      * Get the current workspace leaf state.
      */
     private get workspaceLeafState(): string | undefined {
-        return this.workspaceLeafContent?.getAttribute('data-mode') ?? undefined;
+        return (
+            this.workspaceLeafContent?.getAttribute('data-mode') ?? undefined
+        );
     }
 
     /**
@@ -86,14 +90,22 @@ export default class SingletonBlockProcessor {
      * Get the source sibling block.
      */
     private get sourceSiblingBlock(): Element | undefined {
-        return this.workspaceLeafContent?.querySelector(`#${this.uid}[data-mode='source']`) ?? undefined;
+        return (
+            this.workspaceLeafContent?.querySelector(
+                `#${this.uid}[data-mode='source']`,
+            ) ?? undefined
+        );
     }
 
     /**
      * Get the preview sibling block.
      */
     private get previewSiblingBlock(): Element | undefined {
-        return this.workspaceLeafContent?.querySelector(`#${this.uid}[data-mode='preview']`) ?? undefined;
+        return (
+            this.workspaceLeafContent?.querySelector(
+                `#${this.uid}[data-mode='preview']`,
+            ) ?? undefined
+        );
     }
 
     /**
@@ -106,8 +118,8 @@ export default class SingletonBlockProcessor {
         uid: string,
         el: HTMLElement,
         ctx: MarkdownPostProcessorContext,
-        logger?: ILogger) {
-
+        logger?: ILogger,
+    ) {
         this.logger = logger ?? undefined;
         this.uid = uid;
         this.el = el;
@@ -133,13 +145,24 @@ export default class SingletonBlockProcessor {
     public checkForSiblingBlocks(): boolean {
         const blockViewState = this.codeBlockViewState;
         const viewState = this.workspaceLeafState;
-        if (blockViewState === viewState && (this.siblingBlocks && this.siblingBlocks.length == 1)) {
+
+        if (
+            blockViewState === viewState &&
+            this.siblingBlocks &&
+            this.siblingBlocks.length == 1
+        ) {
             return true;
         } else {
             const source = this.sourceSiblingBlock;
             const preview = this.previewSiblingBlock;
-            return !this.moveChildrenToCorrespondingViewState(blockViewState, source, preview);
+
+            return !this.moveChildrenToCorrespondingViewState(
+                blockViewState,
+                source,
+                preview,
+            );
         }
+
         return true;
     }
 
@@ -147,6 +170,7 @@ export default class SingletonBlockProcessor {
         if (!this.workspaceLeafContent) {
             return;
         }
+
         // If a sibling block is available, we dont need to create an observer
         // because one observer is enough for all sibling blocks.
         if (this.siblingBlocks && this.siblingBlocks.length === 1) {
@@ -164,22 +188,40 @@ export default class SingletonBlockProcessor {
         }
 
         // Create a observer component. To `disconnect` the observer on unload.
-        this.observerChild = new CustomizableRenderChild(this.singletoneContainer, undefined, this.onUnload, this.logger);
+        this.observerChild = new CustomizableRenderChild(
+            this.singletoneContainer,
+            undefined,
+            this.onUnload,
+            this.logger,
+        );
 
         this.observer = new MutationObserver((mutations) => {
-            this.logger?.trace("Observer detect changes:", mutations, `UID: ${this.uid}`);
+            this.logger?.trace(
+                'Observer detect changes:',
+                mutations,
+                `UID: ${this.uid}`,
+            );
+
             for (const mutation of mutations) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'data-mode') {
+                if (
+                    mutation.type === 'attributes' &&
+                    mutation.attributeName === 'data-mode'
+                ) {
                     const newViewState = this.workspaceLeafState;
                     const source = this.sourceSiblingBlock;
                     const preview = this.previewSiblingBlock;
-                    this.moveChildrenToCorrespondingViewState(newViewState, source, preview);
+
+                    this.moveChildrenToCorrespondingViewState(
+                        newViewState,
+                        source,
+                        preview,
+                    );
                 }
             }
         });
 
         this.observer.observe(this.workspaceLeafContent, {
-            attributes: true
+            attributes: true,
         });
 
         // Add the observer component to the context.
@@ -197,15 +239,18 @@ export default class SingletonBlockProcessor {
     private moveChildrenToCorrespondingViewState(
         blockViewState: string | undefined,
         source: Element | undefined,
-        preview: Element | undefined): boolean {
+        preview: Element | undefined,
+    ): boolean {
+        if (blockViewState === 'source' && source && preview) {
+            this.logger?.debug('Move preview to source', `UID: ${this.uid}`);
 
-        if (blockViewState === "source" && source && preview) {
-            this.logger?.debug("Move preview to source", `UID: ${this.uid}`);
             return this.moveChilds(preview, source);
-        } else if (blockViewState === "preview" && source && preview) {
-            this.logger?.debug("Move source to preview", `UID: ${this.uid}`);
+        } else if (blockViewState === 'preview' && source && preview) {
+            this.logger?.debug('Move source to preview', `UID: ${this.uid}`);
+
             return this.moveChilds(source, preview);
         }
+
         return false;
     }
 
@@ -217,16 +262,19 @@ export default class SingletonBlockProcessor {
      */
     private moveChilds(from: Element, to: Element): boolean {
         let elementsMoved = false;
+
         while (from.firstChild) {
             const child = from.firstChild;
+
             if (child.childNodes.length > 0) {
                 elementsMoved = true;
                 to.appendChild(child);
             } else {
-                this.logger?.warn("Child has no child nodes", child);
+                this.logger?.warn('Child has no child nodes', child);
                 from.removeChild(child);
             }
         }
+
         return elementsMoved;
     }
 
@@ -239,7 +287,12 @@ export default class SingletonBlockProcessor {
     private getSingletoneContainer(): HTMLElement {
         const singletoneContainer = document.createElement('div');
         singletoneContainer.id = this.uid;
-        singletoneContainer.setAttribute('data-mode', this.getCodeBlockViewState(true) ?? "none");
+
+        singletoneContainer.setAttribute(
+            'data-mode',
+            this.getCodeBlockViewState(true) ?? 'none',
+        );
+
         return singletoneContainer;
     }
 
@@ -251,12 +304,25 @@ export default class SingletonBlockProcessor {
     private getCodeBlockViewState(logging = false): ViewState | undefined {
         const sourceView = this.el.closest('.markdown-source-view');
         const readingView = this.el.closest('.markdown-reading-view');
+
         if (sourceView) {
-            (!logging) ? this.logger?.debug(`CodeBlock View state: 'source'`, `UID: ${this.uid}`) : undefined;
-            return "source";
+            !logging
+                ? this.logger?.debug(
+                      `CodeBlock View state: 'source'`,
+                      `UID: ${this.uid}`,
+                  )
+                : undefined;
+
+            return 'source';
         } else if (readingView) {
-            (!logging) ? this.logger?.debug(`CodeBlock View state: 'preview'`, `UID: ${this.uid}`) : undefined;
-            return "preview";
+            !logging
+                ? this.logger?.debug(
+                      `CodeBlock View state: 'preview'`,
+                      `UID: ${this.uid}`,
+                  )
+                : undefined;
+
+            return 'preview';
         }
 
         return undefined;

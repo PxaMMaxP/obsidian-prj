@@ -1,7 +1,7 @@
-import { Component, MarkdownRenderer } from "obsidian";
-import BaseComponent from "./BaseComponent";
-import Global from "src/classes/Global";
-import Helper from "src/libs/Helper";
+import { Component, MarkdownRenderer } from 'obsidian';
+import BaseComponent from './BaseComponent';
+import Global from 'src/classes/Global';
+import Helper from 'src/libs/Helper';
 
 export default class TextareaComponent extends BaseComponent {
     //#region base properties
@@ -14,7 +14,9 @@ export default class TextareaComponent extends BaseComponent {
     //#endregion
     //#region extended properties
     private _onPresentation: ((value: string) => Promise<void>) | undefined;
-    private _onMarkdownPresentation: ((value: string) => Promise<void>) | undefined;
+    private _onMarkdownPresentation:
+        | ((value: string) => Promise<void>)
+        | undefined;
     private _onSave: ((value: string) => Promise<void>) | undefined;
     private _value: string;
     private _placeholder: string;
@@ -26,7 +28,7 @@ export default class TextareaComponent extends BaseComponent {
 
     constructor(component: Component) {
         super(component);
-        this.onFinalize = this.build
+        this.onFinalize = this.build;
         this.onFirstEdit = this.buildInput;
         this.onEnableEditCallback = this.enableEdit;
         this.onSaveCallback = this.save;
@@ -40,6 +42,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public enableEditability() {
         this.editabilityEnabled = true;
+
         return this;
     }
 
@@ -50,6 +53,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public setValue(value: string) {
         this._value = value;
+
         return this;
     }
 
@@ -60,6 +64,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public setPlaceholder(placeholder: string) {
         this._placeholder = placeholder;
+
         return this;
     }
 
@@ -70,6 +75,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public setTitle(title: string) {
         this._title = title;
+
         return this;
     }
 
@@ -83,6 +89,7 @@ export default class TextareaComponent extends BaseComponent {
         this._onPresentation = async (value: string): Promise<void> => {
             this.presentationSpan.textContent = await formator(this._value);
         };
+
         return this;
     }
 
@@ -93,17 +100,26 @@ export default class TextareaComponent extends BaseComponent {
      * @remarks The formator is called when the component change in `not-edit` mode.
      * - The custom formator is ignored if this method is called!
      */
-    public setRenderMarkdown(path = "") {
+    public setRenderMarkdown(path = '') {
         this._onMarkdownPresentation = (value: string): Promise<void> => {
             if (Helper.isPossiblyMarkdown(value)) {
                 const app = Global.getInstance().app;
-                return MarkdownRenderer.render(app, value, this.presentationSpan, path, this.component);
+
+                return MarkdownRenderer.render(
+                    app,
+                    value,
+                    this.presentationSpan,
+                    path,
+                    this.component,
+                );
             } else {
-                this.presentationSpan.innerHTML = "";
+                this.presentationSpan.innerHTML = '';
                 this.presentationSpan.textContent = value;
+
                 return Promise.resolve();
             }
-        }
+        };
+
         return this;
     }
 
@@ -115,6 +131,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public onSave(callback: (value: string) => Promise<void>) {
         this._onSave = callback;
+
         return this;
     }
     //#endregion
@@ -128,6 +145,7 @@ export default class TextareaComponent extends BaseComponent {
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('textarea-presentation');
+
         if (this._onMarkdownPresentation) {
             this.presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
@@ -139,20 +157,25 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     private buildInput() {
-        this.component.registerDomEvent(this.presentationSpan, 'keydown', (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                this.disableEditMode();
-            } else if (event.key === 'Enter') {
-                event.preventDefault();
-                const selection = window.getSelection();
-                if (selection && selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    range.deleteContents();
-                    range.insertNode(document.createTextNode('\n'));
-                    range.collapse(false);
+        this.component.registerDomEvent(
+            this.presentationSpan,
+            'keydown',
+            (event: KeyboardEvent) => {
+                if (event.key === 'Escape') {
+                    this.disableEditMode();
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const selection = window.getSelection();
+
+                    if (selection && selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(document.createTextNode('\n'));
+                        range.collapse(false);
+                    }
                 }
-            }
-        });
+            },
+        );
     }
 
     private enableEdit() {

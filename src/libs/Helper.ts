@@ -1,6 +1,6 @@
-import { TFile, moment } from "obsidian";
-import Global from "src/classes/Global";
-import { FileType } from "src/types/PrjTypes";
+import { TFile, moment } from 'obsidian';
+import Global from 'src/classes/Global';
+import { FileType } from 'src/types/PrjTypes';
 
 export default class Helper {
     private static md5 = require('crypto-js/md5');
@@ -9,11 +9,15 @@ export default class Helper {
      * Extracts the date, filename, file extension and display text from a wikilink
      * @param wikilink Wikilink to extract the data from, eg. [[2021.01.01 - file.txt|Display text]]
      * @returns {WikilinkData} Object containing the date, filename, file extension and display text
-     * 
+     *
      */
-    static extractDataFromWikilink(wikilink: string | null | undefined): WikilinkData {
+    static extractDataFromWikilink(
+        wikilink: string | null | undefined,
+    ): WikilinkData {
         if (wikilink && typeof wikilink === 'string') {
-            const dismantledLinkMatch = wikilink.match(/\[\[(.+?)(?:\.(\w+))?(?:\|(.*))?\]\]/);
+            const dismantledLinkMatch = wikilink.match(
+                /\[\[(.+?)(?:\.(\w+))?(?:\|(.*))?\]\]/,
+            );
             let date = undefined;
 
             if (!dismantledLinkMatch) {
@@ -22,24 +26,31 @@ export default class Helper {
                     basename: undefined,
                     extension: undefined,
                     filename: undefined,
-                    displayText: undefined
+                    displayText: undefined,
                 };
             } else {
                 // Expected date format is YYYY.MM.DD
-                const dateMatch = dismantledLinkMatch[1].match(/(\d{4})\.(\d{2})\.(\d{2})/);
+                const dateMatch = dismantledLinkMatch[1].match(
+                    /(\d{4})\.(\d{2})\.(\d{2})/,
+                );
+
                 if (dateMatch) {
-                    date = new Date(`${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`);
+                    date = new Date(
+                        `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`,
+                    );
                 }
+
                 // If no file extension is given, use "md" as default. Links without a file extension are always markdown files.
                 if (!dismantledLinkMatch[2]) {
-                    dismantledLinkMatch[2] = "md"
+                    dismantledLinkMatch[2] = 'md';
                 }
+
                 return {
                     date: date,
                     basename: dismantledLinkMatch[1],
                     extension: dismantledLinkMatch[2],
                     filename: `${dismantledLinkMatch[1]}.${dismantledLinkMatch[2]}`,
-                    displayText: dismantledLinkMatch[3]
+                    displayText: dismantledLinkMatch[3],
                 };
             }
         } else {
@@ -48,7 +59,7 @@ export default class Helper {
                 basename: undefined,
                 extension: undefined,
                 filename: undefined,
-                displayText: undefined
+                displayText: undefined,
             };
         }
     }
@@ -63,18 +74,22 @@ export default class Helper {
      */
     static generateUID(input: string, length = 8): string {
         const hash = 'U' + this.md5(input).toString();
+
         return hash.substring(0, length);
     }
 
     static formatDate(date: string, format: string): string {
         const regexDate = /^\d{4}-\d{2}-\d{2}$/;
+
         if (!regexDate.test(date)) {
             return date;
         }
         const formatedDate = moment(date).format(format);
+
         if (formatedDate === 'Invalid date') {
             return date;
         }
+
         return formatedDate;
     }
 
@@ -84,7 +99,7 @@ export default class Helper {
      * @returns A promise that resolves after the given amount of milliseconds
      */
     static async sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     /**
@@ -98,19 +113,21 @@ export default class Helper {
         let regexMarkdownSymbols;
         const regexLineBreak = /\r?\n/;
         const lineBreak = regexLineBreak.test(text);
+
         if (lineBreak) {
             // If there is a line break, we need to check for the list symbol
             regexMarkdownSymbols = /[*_\-[\]=]/;
         } else {
             // If there is no line break, we do not need to check for the list symbol
             regexMarkdownSymbols = /[*_[\]=]/;
-
         }
+
         return regexMarkdownSymbols.test(text);
     }
 
     static containsHTML(text: string) {
         const htmlRegex = /<[^>]*>/;
+
         return htmlRegex.test(text);
     }
 
@@ -120,37 +137,56 @@ export default class Helper {
      * @param tagsToBeChecked The tags to be checked against
      * @returns Whether any tag from `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
      */
-    static isTagIncluded(tagsToCheck: string | string[], tagsToBeChecked: string | string[]): boolean {
-        const _tagsToCheck: string[] = Array.isArray(tagsToCheck) ?
-            tagsToCheck : (tagsToCheck ? [tagsToCheck] : []);
-        const _tagsToBeChecked: string[] = Array.isArray(tagsToBeChecked) ?
-            tagsToBeChecked : (tagsToBeChecked ? [tagsToBeChecked] : []);
+    static isTagIncluded(
+        tagsToCheck: string | string[],
+        tagsToBeChecked: string | string[],
+    ): boolean {
+        const _tagsToCheck: string[] = Array.isArray(tagsToCheck)
+            ? tagsToCheck
+            : tagsToCheck
+              ? [tagsToCheck]
+              : [];
 
-        return _tagsToCheck.some(tagToCheck =>
-            _tagsToBeChecked.some(tagToBeChecked =>
-                tagToBeChecked?.includes(tagToCheck)
-            )
+        const _tagsToBeChecked: string[] = Array.isArray(tagsToBeChecked)
+            ? tagsToBeChecked
+            : tagsToBeChecked
+              ? [tagsToBeChecked]
+              : [];
+
+        return _tagsToCheck.some((tagToCheck) =>
+            _tagsToBeChecked.some((tagToBeChecked) =>
+                tagToBeChecked?.includes(tagToCheck),
+            ),
         );
     }
 
-
     /**
      * Checks if a given file type or an array of file types is included in another given file type or an array of file types.
-     * 
+     *
      * @param typesToCheck The file type or array of file types to check.
      * @param typesToBeChecked The file type or array of file types to be checked against.
      * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
      */
-    static isTypeIncluded(typesToCheck: FileType | FileType[], typesToBeChecked: FileType | FileType[]): boolean {
-        const _typesToCheck: FileType[] = Array.isArray(typesToCheck) ?
-            typesToCheck : (typesToCheck ? [typesToCheck] : []);
-        const _typesToBeChecked: FileType[] = Array.isArray(typesToBeChecked) ?
-            typesToBeChecked : (typesToBeChecked ? [typesToBeChecked] : []);
+    static isTypeIncluded(
+        typesToCheck: FileType | FileType[],
+        typesToBeChecked: FileType | FileType[],
+    ): boolean {
+        const _typesToCheck: FileType[] = Array.isArray(typesToCheck)
+            ? typesToCheck
+            : typesToCheck
+              ? [typesToCheck]
+              : [];
 
-        return _typesToCheck.some(typeToCheck =>
-            _typesToBeChecked.some(typeToBeChecked =>
-                typeToBeChecked === typeToCheck
-            )
+        const _typesToBeChecked: FileType[] = Array.isArray(typesToBeChecked)
+            ? typesToBeChecked
+            : typesToBeChecked
+              ? [typesToBeChecked]
+              : [];
+
+        return _typesToCheck.some((typeToCheck) =>
+            _typesToBeChecked.some(
+                (typeToBeChecked) => typeToBeChecked === typeToCheck,
+            ),
         );
     }
 
@@ -161,14 +197,21 @@ export default class Helper {
      */
     static isPrjTaskManagementFile(file: TFile): boolean {
         const metadata = Global.getInstance().metadataCache.getEntry(file);
+
         if (!metadata) {
             return false;
         }
-        const type = metadata.metadata.frontmatter?.type as FileType | undefined | null;
+
+        const type = metadata.metadata.frontmatter?.type as
+            | FileType
+            | undefined
+            | null;
+
         if (!type) {
             return false;
         }
-        return ["Topic", "Project", "Task"].includes(type);
+
+        return ['Topic', 'Project', 'Task'].includes(type);
     }
 
     /**
@@ -178,6 +221,7 @@ export default class Helper {
      */
     static isEmoji(str: string) {
         const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u;
+
         return emojiRegex.test(str);
     }
 
@@ -196,6 +240,7 @@ export default class Helper {
 
         // Determine the prefix based on the input or date
         let prefixValue = '';
+
         if (prefix === 'year') {
             // Extract the last two digits of the current year
             const currentYear: number = new Date().getFullYear();
@@ -210,24 +255,33 @@ export default class Helper {
         }
 
         // Split the text into words and filter out empty words
-        const words: string[] = text.split(' ').filter(word => word.trim().length > 0);
+        const words: string[] = text
+            .split(' ')
+            .filter((word) => word.trim().length > 0);
         let acronym = '';
         // Determine the maximum number of characters per word
         let maxChars: number = Math.floor(length / words.length);
+
         // Ensure at least one character per word
         if (maxChars < 1) maxChars = 1;
+
         // Adjust maxChars if total length is insufficient
         if (maxChars * words.length < length) maxChars++;
 
         // Construct the acronym from the words
         for (let i = 0; i < words.length; i++) {
-            acronym += words[i].substring(0, Math.min(maxChars, words[i].length));
+            acronym += words[i].substring(
+                0,
+                Math.min(maxChars, words[i].length),
+            );
+
             // Stop if desired length is reached
             if (acronym.length >= length) break;
         }
 
         // Limit the acronym to the desired length
         acronym = acronym.substring(0, length);
+
         // Combine the prefix and the acronym
         return prefixValue + acronym;
     }
@@ -235,41 +289,52 @@ export default class Helper {
     static getActiveFile(): TFile | undefined {
         const workspace = Global.getInstance().app.workspace;
         const activeFile = workspace.getActiveFile();
+
         if (!activeFile) {
             return undefined;
         }
+
         return activeFile;
     }
 
     // Generate a random string
     static generateRandomString(length: number): string {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const characters =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
+
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * characters.length);
             result += characters.charAt(randomIndex);
         }
+
         return result;
     }
 
     static existTag(tag: string): boolean {
         const metadataCache = Global.getInstance().metadataCache.cache;
+
         const tagFound = metadataCache.find((value) => {
             const tags = value.metadata?.frontmatter?.tags;
+
             if (!tags) {
                 return false;
             }
+
             if (Array.isArray(tags)) {
                 return tags.includes(tag);
             } else {
                 return tags === tag;
             }
         });
+
         return tagFound !== undefined;
     }
 
     static async openFile(file: TFile): Promise<void> {
-        Global.getInstance().logger.trace(`Opening metadata file for ${file.name}`);
+        Global.getInstance().logger.trace(
+            `Opening metadata file for ${file.name}`,
+        );
         const workspace = Global.getInstance().app.workspace;
         const newLeaf = workspace.getLeaf(true);
         await newLeaf.openFile(file);
@@ -280,7 +345,7 @@ export default class Helper {
 
     /**
      * Sanitizes a filename by removing any characters that are not alphanumeric, hyphen, underscore, period, or space.
-     * 
+     *
      * @param filename - The filename to sanitize.
      * @returns The sanitized filename.
      */
@@ -292,11 +357,12 @@ export default class Helper {
         const workspace = Global.getInstance().app.workspace;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, deprecation/deprecation
         const activeLeaf = workspace.activeLeaf as any;
+
         if (activeLeaf) {
             try {
                 activeLeaf.rebuildView();
-            }
-            catch (error) {
+            } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error(error);
             }
         }
@@ -310,4 +376,3 @@ export type WikilinkData = {
     filename: string | undefined;
     displayText: string | undefined;
 };
-

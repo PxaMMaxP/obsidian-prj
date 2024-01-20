@@ -1,18 +1,20 @@
-import { DocumentModel } from "src/models/DocumentModel";
-import TableBlockRenderComponent, { BlockRenderSettings } from "./TableBlockRenderComponent";
-import { IProcessorSettings } from "../../interfaces/IProcessorSettings";
-import Search from "../Search";
-import Table, { Row, RowsState, TableHeader } from "../Table";
-import Lng from "src/classes/Lng";
-import MaxShownModelsInput from "./InnerComponents/MaxShownModelsInput";
-import SearchInput from "./InnerComponents/SearchInput";
-import Helper from "../Helper";
-import GeneralComponents from "./InnerComponents/GeneralComponents";
-import API from "src/classes/API";
-import { FileMetadata } from "../MetadataCache";
-import { NoteModel } from "src/models/NoteModel";
-import ProjectComponents from "./InnerComponents/ProjectComponents";
-import EditableDataView from "../EditableDataView/EditableDataView";
+import { DocumentModel } from 'src/models/DocumentModel';
+import TableBlockRenderComponent, {
+    BlockRenderSettings,
+} from './TableBlockRenderComponent';
+import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
+import Search from '../Search';
+import Table, { Row, RowsState, TableHeader } from '../Table';
+import Lng from 'src/classes/Lng';
+import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
+import SearchInput from './InnerComponents/SearchInput';
+import Helper from '../Helper';
+import GeneralComponents from './InnerComponents/GeneralComponents';
+import API from 'src/classes/API';
+import { FileMetadata } from '../MetadataCache';
+import { NoteModel } from 'src/models/NoteModel';
+import ProjectComponents from './InnerComponents/ProjectComponents';
+import EditableDataView from '../EditableDataView/EditableDataView';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -23,24 +25,28 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     protected settings: BlockRenderSettings = {
         tags: [],
         reactOnActiveFile: false,
-        filter: ["Note"],
+        filter: ['Note'],
         maxDocuments: this.global.settings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
-        sleepBetweenBatches: 10
+        sleepBetweenBatches: 10,
     };
 
     /**
      * The table headers.
      * @remarks The table headers are used to create the table.
-     * 
+     *
      */
     protected tableHeaders: TableHeader[] = [
-        { text: Lng.gt("Date"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("Notice"), headerClass: [], columnClass: [] },
-        { text: Lng.gt("Description"), headerClass: [], columnClass: ["font-xsmall"] },
-        { text: Lng.gt("Tags"), headerClass: [], columnClass: ["tags"] }
+        { text: Lng.gt('Date'), headerClass: [], columnClass: ['font-xsmall'] },
+        { text: Lng.gt('Notice'), headerClass: [], columnClass: [] },
+        {
+            text: Lng.gt('Description'),
+            headerClass: [],
+            columnClass: ['font-xsmall'],
+        },
+        { text: Lng.gt('Tags'), headerClass: [], columnClass: ['tags'] },
     ];
 
     constructor(settings: IProcessorSettings) {
@@ -66,18 +72,24 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         const documentsPromise = super.getModels(
             ['Note'],
             this.settings.tags,
-            (metadata: FileMetadata) => new NoteModel(metadata.file));
+            (metadata: FileMetadata) => new NoteModel(metadata.file),
+        );
         await super.draw();
         await this.buildTable();
         await this.buildHeader();
         this.grayOutHeader();
-        this.models = (await documentsPromise);
+        this.models = await documentsPromise;
 
-        API.documentModel.sortDocumentsByDateDesc(this.models as unknown as DocumentModel[]);
+        API.documentModel.sortDocumentsByDateDesc(
+            this.models as unknown as DocumentModel[],
+        );
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();
-        this.logger.debug(`Redraw Documents (for ${this.models.length} Docs.) runs for ${endTime - startTime}ms`);
+
+        this.logger.debug(
+            `Redraw Documents (for ${this.models.length} Docs.) runs for ${endTime - startTime}ms`,
+        );
     }
 
     /**
@@ -102,19 +114,21 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         const filterLabel = document.createElement('span');
         filterLabelContainer.appendChild(filterLabel);
         filterLabel.classList.add('filter-symbol');
-        filterLabel.textContent = Lng.gt("Filter");
+        filterLabel.textContent = Lng.gt('Filter');
 
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
             this.settings.maxDocuments,
             this.global.settings.defaultMaxShow,
-            this.onMaxDocumentsChange.bind(this));
+            this.onMaxDocumentsChange.bind(this),
+        );
         headerFilterButtons.appendChild(maxDocuments);
 
         const searchBox = SearchInput.create(
             this.component,
             this.onSearch.bind(this),
-            this.settings.searchText);
+            this.settings.searchText,
+        );
         headerFilterButtons.appendChild(searchBox);
     }
 
@@ -124,9 +138,12 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * @returns A promise which is resolved when the documents are filtered.
      * @remarks Runs the `onFilter` method.
      */
-    private async onMaxDocumentsChange(maxDocuments: number): Promise<undefined> {
+    private async onMaxDocumentsChange(
+        maxDocuments: number,
+    ): Promise<undefined> {
         this.settings.maxDocuments = maxDocuments;
         this.onFilter();
+
         return undefined;
     }
 
@@ -140,8 +157,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * - After the search is applied, the `onFilter` method is called.
      */
     private async onSearch(search: string, key: string): Promise<string> {
-        if (key === "Enter") {
-            if (search !== "") {
+        if (key === 'Enter') {
+            if (search !== '') {
                 this.settings.searchText = search;
                 this.settings.search = Search.parseSearchText(search);
                 this.onFilter();
@@ -150,19 +167,21 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
                 this.settings.search = undefined;
                 this.onFilter();
             }
-        } else if (key === "Escape") {
+        } else if (key === 'Escape') {
             this.settings.searchText = undefined;
             this.settings.search = undefined;
             this.onFilter();
-            return "";
+
+            return '';
         }
+
         return search;
     }
 
     /**
      * Filters the documents and shows/hides them in the table.
      * @remarks - The documents are filtered by the `filter` setting,
-     * searched by the `search` setting 
+     * searched by the `search` setting
      * and the number of documents is limited by the `maxDocuments` if no search is applied.
      */
     private async onFilter() {
@@ -180,11 +199,18 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             const rowUid = this.getUID(document);
             let hide = this.determineTagHideState(document);
             this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
-            this.logger.trace(`Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`);
+
+            this.logger.trace(
+                `Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`,
+            );
+
             if (visibleRows >= this.settings.maxDocuments) {
-                hide = true
+                hide = true;
             }
-            this.logger.trace(`Document ${rowUid} is hidden by max counts: ${hide}`);
+
+            this.logger.trace(
+                `Document ${rowUid} is hidden by max counts: ${hide}`,
+            );
 
             if (hide) {
                 rows.push({ rowUid, hidden: true });
@@ -195,7 +221,10 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
 
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
-                this.logger.trace(`Batchsize reached. Change rows: ${rows.length}`);
+
+                this.logger.trace(
+                    `Batchsize reached. Change rows: ${rows.length}`,
+                );
                 await this.table.changeShowHideStateRows(rows);
                 rows.length = 0;
                 sleepPromise = Helper.sleep(sleepBetweenBatches);
@@ -214,7 +243,10 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * - The batch size is defined in the `batchSize` parameter. Default is `settings.batchSize`.
      * - The sleep time between the batches is defined in the `sleepBetweenBatches` parameter. Default is `settings.sleepBetweenBatches`.
      */
-    private async addDocumentsToTable(batchSize = this.settings.batchSize, sleepBetweenBatches = this.settings.sleepBetweenBatches): Promise<void> {
+    private async addDocumentsToTable(
+        batchSize = this.settings.batchSize,
+        sleepBetweenBatches = this.settings.sleepBetweenBatches,
+    ): Promise<void> {
         let sleepPromise = Promise.resolve();
         const documentsLength = this.models.length;
         const rows: Row[] = [];
@@ -229,7 +261,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         let visibleRows = 0;
 
         for (let i = 0; i < documentsLength; i++) {
-            const document = i + 1 < documentsLength ? this.models[i + 1] : null;
+            const document =
+                i + 1 < documentsLength ? this.models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = document ? this.generateTableRow(document) : undefined;
@@ -242,8 +275,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
                 }
             }
 
-            if (row)
-                rows.push(row);
+            if (row) rows.push(row);
 
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
@@ -267,59 +299,75 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         // Row 0 -- Date
         const date = document.createDocumentFragment();
         rowData.push(date);
+
         GeneralComponents.createCellDate(
             date,
             this.component,
-            Lng.gt("DocumentDate"),
+            Lng.gt('DocumentDate'),
             this.global.settings.dateFormat,
-            () => noteModel.data.date ?? "na",
-            async (value: string) => noteModel.data.date = value);
+            () => noteModel.data.date ?? 'na',
+            async (value: string) => (noteModel.data.date = value),
+        );
 
         // Row 1 -- File Link & Title
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
-        new EditableDataView(fileLink, this.component)
-            .addLink(link => link
-                .setValue(noteModel.data.title ?? "na")
-                .setTitle("Note")
-                .setLinkType("file")
+
+        new EditableDataView(fileLink, this.component).addLink((link) =>
+            link
+                .setValue(noteModel.data.title ?? 'na')
+                .setTitle('Note')
+                .setLinkType('file')
                 .setFormator((value: string) => {
-                    return { href: `${noteModel.file.path}`, text: `${value}`, html: undefined };
+                    return {
+                        href: `${noteModel.file.path}`,
+                        text: `${value}`,
+                        html: undefined,
+                    };
                 })
                 .enableEditability()
                 .onSave((value: string) => {
                     noteModel.data.title = value;
+
                     return Promise.resolve();
-                }));
+                }),
+        );
 
         // Row 2 -- Description
         const description = document.createDocumentFragment();
         rowData.push(description);
+
         ProjectComponents.createSummary(
             description,
             this.component,
-            noteModel.data.description ?? "",
-            async (value: string) => noteModel.data.description = value);
+            noteModel.data.description ?? '',
+            async (value: string) => (noteModel.data.description = value),
+        );
 
         // Row 3 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
+
         GeneralComponents.createCellTags(
             tags,
             this.component,
-            noteModel.getTags());
-
+            noteModel.getTags(),
+        );
 
         const row = {
             rowUid,
             rowData,
             rowClassList,
-            hidden: false
+            hidden: false,
         };
+
         return row;
     }
 
-    private getHideState(document: DocumentModel, maxVisibleRows: number | undefined): boolean {
+    private getHideState(
+        document: DocumentModel,
+        maxVisibleRows: number | undefined,
+    ): boolean {
         let searchResult = false;
         let maxRows = false;
 
@@ -347,7 +395,9 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     private determineTagHideState(document: NoteModel): boolean {
-        return this.settings.reactOnActiveFile ? !Helper.isTagIncluded(this.settings.tags, document.getTags()) : false;
+        return this.settings.reactOnActiveFile
+            ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
+            : false;
     }
 
     public onActiveFileFilter() {
@@ -362,12 +412,11 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * - The table has the headers from the `tableHeaders` property.
      */
     private async buildTable(): Promise<void> {
-        this.table = new Table(this.tableHeaders, "document-table", undefined);
+        this.table = new Table(this.tableHeaders, 'document-table', undefined);
         this.tableContainer.appendChild(this.table.data.table);
     }
 
     public redraw(): Promise<void> {
         return super.redraw();
     }
-
 }

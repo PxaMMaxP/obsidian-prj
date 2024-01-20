@@ -1,5 +1,5 @@
-import { MarkdownRenderChild } from "obsidian";
-import { ILogger } from "src/interfaces/ILogger";
+import { MarkdownRenderChild } from 'obsidian';
+import { ILogger } from 'src/interfaces/ILogger';
 
 /**
  * Customizable Render Child class.
@@ -23,7 +23,8 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
         container: HTMLElement,
         onLoad: (() => void) | undefined,
         onUnload: (() => void) | undefined,
-        logger?: ILogger) {
+        logger?: ILogger,
+    ) {
         super(container);
         this.logger = logger ?? undefined;
         this.onLoad = onLoad;
@@ -31,13 +32,13 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
     }
 
     override onload(): void {
-        this.logger?.trace("On Load");
+        this.logger?.trace('On Load');
         this.onLoad?.();
         super.onload();
     }
 
     override onunload(): void {
-        this.logger?.trace("On Unload");
+        this.logger?.trace('On Unload');
         this.onUnload?.();
         super.onunload();
     }

@@ -5,7 +5,7 @@
 export interface ILogger {
     /**
      * Log a `trace` message.
-     * @param message The trace message to log. 
+     * @param message The trace message to log.
      * @param optionalParams Optional parameters: strings, objects, etc.
      */
     trace(message?: unknown, ...optionalParams: unknown[]): void;
@@ -37,5 +37,4 @@ export interface ILogger {
      * @param optionalParams Optional parameters: strings, objects, etc.
      */
     error(message?: unknown, ...optionalParams: unknown[]): void;
-
 }

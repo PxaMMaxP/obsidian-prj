@@ -1,4 +1,4 @@
-import { Component, MarkdownRenderChild } from "obsidian";
+import { Component, MarkdownRenderChild } from 'obsidian';
 
 /**
  * A suggestion.
@@ -67,6 +67,7 @@ export default class SuggestionComponent {
      */
     public setSuggestions(suggestions: Suggestions) {
         this._suggestions = suggestions;
+
         return this;
     }
 
@@ -78,20 +79,30 @@ export default class SuggestionComponent {
      */
     public setSuggester(suggester: (value: string) => Suggestions) {
         this._suggester = suggester;
+
         return this;
     }
 
     private setSuggestion() {
-
         let suggestion: Suggestion | undefined;
+
         if (!this._scrollMode) {
             // If the scroll mode is disabled, the first suggestion is shown.
             // The first suggestion is the suggestion that starts with the text in the input element. (case insensitive)
-            suggestion = this._activeSuggestions.filter(suggestion => suggestion.value.toLowerCase().startsWith(this._inputElement.textContent?.toLowerCase() ?? '')).first();
+            suggestion = this._activeSuggestions
+                .filter((suggestion) =>
+                    suggestion.value
+                        .toLowerCase()
+                        .startsWith(
+                            this._inputElement.textContent?.toLowerCase() ?? '',
+                        ),
+                )
+                .first();
             this._suggestionIndex = 0;
         } else {
             // In scroll mode, the suggestion at the index is displayed. This index can be changed beforehand using the arrow buttons.
             const index = this._suggestionIndex;
+
             if (index < 0) {
                 suggestion = this._activeSuggestions.last();
                 this._suggestionIndex = this._activeSuggestions.length - 1;
@@ -105,15 +116,29 @@ export default class SuggestionComponent {
         }
 
         if (suggestion) {
-            if (suggestion.value.toLowerCase().startsWith(this._inputElement.textContent?.toLowerCase() ?? '')) {
+            if (
+                suggestion.value
+                    .toLowerCase()
+                    .startsWith(
+                        this._inputElement.textContent?.toLowerCase() ?? '',
+                    )
+            ) {
                 // If the suggestion starts with the text in the input element, the text in the input element is adopted.
-                const suggestionText = suggestion.value.slice(this.inputTextLength);
+                const suggestionText = suggestion.value.slice(
+                    this.inputTextLength,
+                );
                 this.suggestionsContainer.innerText = suggestionText;
             } else {
                 // If the suggestion does not start with the text in the input element, the text in the input element is replaced with the suggestion.
                 const length = this._inputElement.textContent?.length ?? 1;
-                this._inputElement.textContent = suggestion.value.slice(0, length);
-                this.suggestionsContainer.innerText = suggestion.value.slice(length);
+
+                this._inputElement.textContent = suggestion.value.slice(
+                    0,
+                    length,
+                );
+
+                this.suggestionsContainer.innerText =
+                    suggestion.value.slice(length);
                 this.setInputCursorAbsolutePosition(length);
             }
         }
@@ -129,7 +154,9 @@ export default class SuggestionComponent {
      * Refreshes the active suggestions.
      */
     private refreshActiveSuggestions() {
-        this._activeSuggestions = this._suggester ? this._suggester(this._inputElement.textContent ?? '') : this._suggestions;
+        this._activeSuggestions = this._suggester
+            ? this._suggester(this._inputElement.textContent ?? '')
+            : this._suggestions;
     }
 
     /**
@@ -150,8 +177,17 @@ export default class SuggestionComponent {
 
         this.buildSuggestionsContainer();
 
-        this._suggestorChild.registerDomEvent(this._inputElement, 'input', this.onInput.bind(this));
-        this._suggestorChild.registerDomEvent(this._inputElement, 'keydown', this.onKeydown.bind(this));
+        this._suggestorChild.registerDomEvent(
+            this._inputElement,
+            'input',
+            this.onInput.bind(this),
+        );
+
+        this._suggestorChild.registerDomEvent(
+            this._inputElement,
+            'keydown',
+            this.onKeydown.bind(this),
+        );
     }
 
     /**
@@ -177,12 +213,12 @@ export default class SuggestionComponent {
      * - The 'Ctrl' + 'a' button is used to select the text in the input element.
      */
     private onKeydown(event: KeyboardEvent) {
-
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             // If the 'ArrowUp' or 'ArrowDown' button is pressed, the suggestions are scrolled through.
             event.preventDefault();
 
             this._scrollMode = true;
+
             if (event.key === 'ArrowUp') {
                 this._suggestionIndex++;
             } else if (event.key === 'ArrowDown') {
@@ -202,9 +238,9 @@ export default class SuggestionComponent {
             event.preventDefault();
 
             // If the cursor is at the end of the input element, the first character of the suggestions container is adopted.
-            this.adoptSuggestionCharacter() ?
-                this.setInputCursorAbsolutePosition(this.inputTextLength) :
-                this.setInputCursorRelativePosition(1);
+            this.adoptSuggestionCharacter()
+                ? this.setInputCursorAbsolutePosition(this.inputTextLength)
+                : this.setInputCursorRelativePosition(1);
 
             this.refreshActiveSuggestions();
         } else if (event.key === 'Tab') {
@@ -225,8 +261,18 @@ export default class SuggestionComponent {
      */
     private adoptSuggestion() {
         this._inputElement.textContent += this.suggestionsContainer.innerText;
-        const suggestion = this._activeSuggestions.find(suggestion => suggestion.value.toLowerCase().startsWith(this._inputElement.textContent?.toLowerCase() ?? ''))
-        this._inputElement.textContent = suggestion ? suggestion.value : this._inputElement.textContent;
+
+        const suggestion = this._activeSuggestions.find((suggestion) =>
+            suggestion.value
+                .toLowerCase()
+                .startsWith(
+                    this._inputElement.textContent?.toLowerCase() ?? '',
+                ),
+        );
+
+        this._inputElement.textContent = suggestion
+            ? suggestion.value
+            : this._inputElement.textContent;
         this.suggestionsContainer.innerText = '';
         this.setInputCursorAbsolutePosition('end');
     }
@@ -237,10 +283,15 @@ export default class SuggestionComponent {
      */
     private adoptSuggestionCharacter(): boolean {
         if (this.cursorPosition === this.inputTextLength) {
-            this._inputElement.textContent += this.suggestionsContainer.innerText.slice(0, 1);
-            this.suggestionsContainer.innerText = this.suggestionsContainer.innerText.slice(1);
+            this._inputElement.textContent +=
+                this.suggestionsContainer.innerText.slice(0, 1);
+
+            this.suggestionsContainer.innerText =
+                this.suggestionsContainer.innerText.slice(1);
+
             return true;
         }
+
         return false;
     }
 
@@ -256,10 +307,13 @@ export default class SuggestionComponent {
      */
     private get cursorPosition() {
         const selection = window.getSelection();
+
         if (selection && selection.rangeCount > 0) {
             const currentRange = selection.getRangeAt(0);
+
             return currentRange.endOffset;
         }
+
         return 0;
     }
 
@@ -269,7 +323,9 @@ export default class SuggestionComponent {
      * @remarks The position is clamped to the length of the input element and minimum 0.
      */
     private setInputCursorRelativePosition(relativPosition: number) {
-        this.setInputCursorAbsolutePosition(this.cursorPosition + relativPosition);
+        this.setInputCursorAbsolutePosition(
+            this.cursorPosition + relativPosition,
+        );
     }
 
     /**
@@ -284,8 +340,10 @@ export default class SuggestionComponent {
         const range = document.createRange();
 
         if (selection && selection.rangeCount > 0) {
-
-            const safePosition = Math.max(0, Math.min(position, this._inputElement.textContent?.length ?? 0));
+            const safePosition = Math.max(
+                0,
+                Math.min(position, this._inputElement.textContent?.length ?? 0),
+            );
 
             if (this._inputElement.firstChild) {
                 range.setStart(this._inputElement.firstChild, safePosition);
@@ -308,6 +366,7 @@ export default class SuggestionComponent {
         } else if (position === 'end') {
             position = Number.MAX_SAFE_INTEGER;
         }
+
         return position;
     }
 
@@ -316,7 +375,10 @@ export default class SuggestionComponent {
      * @param startPosition Start position of the selection.
      * @param endPosition End position of the selection.
      */
-    private selectText(startPosition: CursorPosition, endPosition: CursorPosition) {
+    private selectText(
+        startPosition: CursorPosition,
+        endPosition: CursorPosition,
+    ) {
         startPosition = this.getCursorPositionNumber(startPosition);
         endPosition = this.getCursorPositionNumber(endPosition);
 
@@ -324,8 +386,21 @@ export default class SuggestionComponent {
         const range = document.createRange();
 
         if (selection && this._inputElement.firstChild) {
-            const safeStartPosition = Math.max(0, Math.min(startPosition, this._inputElement.textContent?.length ?? 0));
-            const safeEndPosition = Math.max(0, Math.min(endPosition, this._inputElement.textContent?.length ?? 0));
+            const safeStartPosition = Math.max(
+                0,
+                Math.min(
+                    startPosition,
+                    this._inputElement.textContent?.length ?? 0,
+                ),
+            );
+
+            const safeEndPosition = Math.max(
+                0,
+                Math.min(
+                    endPosition,
+                    this._inputElement.textContent?.length ?? 0,
+                ),
+            );
 
             range.setStart(this._inputElement.firstChild, safeStartPosition);
             range.setEnd(this._inputElement.firstChild, safeEndPosition);
@@ -344,13 +419,24 @@ export default class SuggestionComponent {
      */
     private buildSuggestionsContainer() {
         this.suggestionsContainer = document.createElement('span');
-        this.suggestionsContainer.classList.add('editable-data-view', 'suggestions-container');
-        this._inputElement.parentElement?.appendChild(this.suggestionsContainer);
+
+        this.suggestionsContainer.classList.add(
+            'editable-data-view',
+            'suggestions-container',
+        );
+
+        this._inputElement.parentElement?.appendChild(
+            this.suggestionsContainer,
+        );
 
         // On click on the suggestions container, the cursor should be set to the end of the input element.
-        this._suggestorChild?.registerDomEvent(this.suggestionsContainer, 'click', () => {
-            this.setInputCursorAbsolutePosition('end');
-        });
+        this._suggestorChild?.registerDomEvent(
+            this.suggestionsContainer,
+            'click',
+            () => {
+                this.setInputCursorAbsolutePosition('end');
+            },
+        );
     }
 
     /**

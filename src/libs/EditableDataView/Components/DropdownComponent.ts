@@ -1,5 +1,5 @@
-import { Component } from "obsidian";
-import BaseComponent from "./BaseComponent";
+import { Component } from 'obsidian';
+import BaseComponent from './BaseComponent';
 
 export default class DropdownComponent extends BaseComponent {
     //#region base properties
@@ -12,13 +12,16 @@ export default class DropdownComponent extends BaseComponent {
     //#endregion
     //#region extended properties
     private _onPresentation: (value: string) => Promise<void> | undefined;
-    private _onSave: ((value: string) => Promise<void>);
+    private _onSave: (value: string) => Promise<void>;
     private _value: string;
-    private _options: { value: string; text: string; }[];
-    private get _selectedOption(): { value: string; text: string; } {
-        const selectedOption = this._options.find(o => o.value === this._value);
-        if (selectedOption)
-            return selectedOption;
+    private _options: { value: string; text: string }[];
+    private get _selectedOption(): { value: string; text: string } {
+        const selectedOption = this._options.find(
+            (o) => o.value === this._value,
+        );
+
+        if (selectedOption) return selectedOption;
+
         return { value: this._value, text: this._value };
     }
     private _title: string;
@@ -30,7 +33,7 @@ export default class DropdownComponent extends BaseComponent {
 
     constructor(component: Component) {
         super(component);
-        this.onFinalize = this.build
+        this.onFinalize = this.build;
         this.onFirstEdit = this.buildInput;
         this.onEnableEditCallback = this.enableEdit;
         this.onSaveCallback = this.save;
@@ -44,6 +47,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     public enableEditability() {
         this.editabilityEnabled = true;
+
         return this;
     }
 
@@ -54,6 +58,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     public setValue(value: string) {
         this._value = value;
+
         return this;
     }
 
@@ -62,8 +67,9 @@ export default class DropdownComponent extends BaseComponent {
      * @param options The options to set.
      * @returns The component itself.
      */
-    public setOptions(options: { value: string, text: string }[]) {
+    public setOptions(options: { value: string; text: string }[]) {
         this._options = options;
+
         return this;
     }
 
@@ -74,6 +80,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     public setTitle(title: string) {
         this._title = title;
+
         return this;
     }
 
@@ -84,9 +91,12 @@ export default class DropdownComponent extends BaseComponent {
      * @remarks - The formator is called when the component change in `not-edit` mode.
      * - `value` is the value of the selected option. (Not the text!)
      */
-    public setFormator(formator: (value: string) => { text: string, html?: DocumentFragment }) {
+    public setFormator(
+        formator: (value: string) => { text: string; html?: DocumentFragment },
+    ) {
         this._onPresentation = async (value: string): Promise<void> => {
             const { text, html } = formator(value);
+
             if (html) {
                 this.presentationSpan.innerHTML = '';
                 this.presentationSpan.appendChild(html);
@@ -94,6 +104,7 @@ export default class DropdownComponent extends BaseComponent {
                 this.presentationSpan.textContent = text;
             }
         };
+
         return this;
     }
 
@@ -106,19 +117,22 @@ export default class DropdownComponent extends BaseComponent {
      */
     public onSave(callback: (value: string) => Promise<void>) {
         this._onSave = callback;
+
         return this;
     }
     //#endregion
 
     private enableOptions() {
-        const optionFound = this._options.find(o => o.value === this._value);
+        const optionFound = this._options.find((o) => o.value === this._value);
+
         if (!optionFound) {
             const optionElement = document.createElement('option');
             optionElement.value = this._value;
             optionElement.textContent = `${this._value} (not in options)`;
             this.select.appendChild(optionElement);
         }
-        this._options.forEach(option => {
+
+        this._options.forEach((option) => {
             const optionElement = document.createElement('option');
             optionElement.value = option.value;
             optionElement.textContent = option.text;

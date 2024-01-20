@@ -1,12 +1,15 @@
 // Note: DocumentModel class
 
-import { TFile } from "obsidian";
-import { FileModel } from "./FileModel";
-import IPrjModel from "../interfaces/IPrjModel";
-import Global from "../classes/Global";
-import NoteData from "src/types/NoteData";
+import { TFile } from 'obsidian';
+import { FileModel } from './FileModel';
+import IPrjModel from '../interfaces/IPrjModel';
+import Global from '../classes/Global';
+import NoteData from 'src/types/NoteData';
 
-export class NoteModel extends FileModel<NoteData> implements IPrjModel<NoteData> {
+export class NoteModel
+    extends FileModel<NoteData>
+    implements IPrjModel<NoteData>
+{
     private fileCache = Global.getInstance().fileCache;
 
     get tags(): string[] {
@@ -15,8 +18,7 @@ export class NoteModel extends FileModel<NoteData> implements IPrjModel<NoteData
 
         if (tags && typeof tags === 'string') {
             formattedTags = [tags];
-        }
-        else if (Array.isArray(tags)) {
+        } else if (Array.isArray(tags)) {
             formattedTags = [...tags];
         }
 
@@ -38,10 +40,11 @@ export class NoteModel extends FileModel<NoteData> implements IPrjModel<NoteData
     }
 
     public override toString(): string {
-        let allText = this.data.title ?? "";
-        allText += this.data.description ?? "";
-        allText += this.data.date ?? "";
-        allText += this.data.tags ?? "";
+        let allText = this.data.title ?? '';
+        allText += this.data.description ?? '';
+        allText += this.data.date ?? '';
+        allText += this.data.tags ?? '';
+
         return allText;
     }
 
@@ -75,12 +78,10 @@ export class NoteModel extends FileModel<NoteData> implements IPrjModel<NoteData
 
         if (tags && typeof tags === 'string') {
             formattedTags = [tags];
-        }
-        else if (Array.isArray(tags)) {
+        } else if (Array.isArray(tags)) {
             formattedTags = [...tags];
         }
 
         return formattedTags;
     }
 }
-

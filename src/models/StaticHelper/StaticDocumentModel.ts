@@ -1,38 +1,47 @@
-import { TFile } from "obsidian";
-import Global from "src/classes/Global";
-import Lng from "src/classes/Lng";
-import Helper from "src/libs/Helper";
-import { DocumentModel } from "../DocumentModel";
-import path from "path";
-import Logging from "src/classes/Logging";
+import { TFile } from 'obsidian';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
+import Helper from 'src/libs/Helper';
+import { DocumentModel } from '../DocumentModel';
+import path from 'path';
+import Logging from 'src/classes/Logging';
 
 /**
  * Static API for DocumentModel
  */
 export class StaticDocumentModel {
-
     /**
      * Returns all documents
      * @returns {DocumentModel[]} List of all documents
      */
     public static getAllDocuments(): DocumentModel[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
-        const documents = metadataCache.filter(file => file.metadata?.frontmatter?.type === "Metadata").map(file => new DocumentModel(file.file));
+
+        const documents = metadataCache
+            .filter((file) => file.metadata?.frontmatter?.type === 'Metadata')
+            .map((file) => new DocumentModel(file.file));
+
         return documents;
     }
 
     /**
      * Retrieves all unique sender and recipient names from the metadata cache.
-     * 
+     *
      * @returns An array of strings representing the sender and recipient names.
      */
     public static getAllSenderRecipients(): string[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
-        const documents = metadataCache.filter(file => file.metadata?.frontmatter?.type === "Metadata")
-            .flatMap(file => [file.metadata?.frontmatter?.sender, file.metadata?.frontmatter?.recipient])
+
+        const documents = metadataCache
+            .filter((file) => file.metadata?.frontmatter?.type === 'Metadata')
+            .flatMap((file) => [
+                file.metadata?.frontmatter?.sender,
+                file.metadata?.frontmatter?.recipient,
+            ])
             .filter((v): v is string => v != null)
             .filter((v, index, self) => self.indexOf(v) === index)
             .sort();
+
         return documents;
     }
 
@@ -43,20 +52,25 @@ export class StaticDocumentModel {
      */
     public static generateMetadataFilename(model: DocumentModel): string {
         const newFileName: string[] = [];
+
         if (model.data.date) {
-            newFileName.push(`${Helper.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`);
+            newFileName.push(
+                `${Helper.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+            );
         }
+
         if (model.data.subType === 'Cluster') {
             newFileName.push(`Cluster`);
         }
+
         if (model.data.recipient) {
-            newFileName.push(`${Lng.gt("To")} ${model.data.recipient}`);
+            newFileName.push(`${Lng.gt('To')} ${model.data.recipient}`);
         }
+
         if (model.data.sender) {
-            newFileName.push(`${Lng.gt("From")} ${model.data.sender}`);
+            newFileName.push(`${Lng.gt('From')} ${model.data.sender}`);
         }
         newFileName.push(`${model.data.title}`);
-
 
         return Helper.sanitizeFilename(newFileName.join(' - '));
     }
@@ -70,11 +84,25 @@ export class StaticDocumentModel {
     public static getAllPDFsWithoutMetadata(): TFile[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
         const fileCache = Global.getInstance().app.vault.getFiles();
-        const setOfPDFsWithMetadata = new Set(metadataCache
-            .filter(file => file.metadata?.frontmatter?.type === "Metadata" && file.metadata?.frontmatter?.file)
-            .map(file => new DocumentModel(file.file).getLinkedFile())
-            .filter(file => file !== undefined && file.extension === "pdf"));
-        const listOfPDFWithoutMetadata = fileCache.filter(file => file.extension === "pdf" && !setOfPDFsWithMetadata.has(file));
+
+        const setOfPDFsWithMetadata = new Set(
+            metadataCache
+                .filter(
+                    (file) =>
+                        file.metadata?.frontmatter?.type === 'Metadata' &&
+                        file.metadata?.frontmatter?.file,
+                )
+                .map((file) => new DocumentModel(file.file).getLinkedFile())
+                .filter(
+                    (file) => file !== undefined && file.extension === 'pdf',
+                ),
+        );
+
+        const listOfPDFWithoutMetadata = fileCache.filter(
+            (file) =>
+                file.extension === 'pdf' && !setOfPDFsWithMetadata.has(file),
+        );
+
         return listOfPDFWithoutMetadata;
     }
 
@@ -88,6 +116,7 @@ export class StaticDocumentModel {
             if (a.data.date && b.data.date) {
                 const dateA = new Date(a.data.date);
                 const dateB = new Date(b.data.date);
+
                 return dateB.getTime() - dateA.getTime();
             } else if (a.data.date) {
                 return -1;
@@ -109,6 +138,7 @@ export class StaticDocumentModel {
             if (a.data.date && b.data.date) {
                 const dateA = new Date(a.data.date);
                 const dateB = new Date(b.data.date);
+
                 return dateA.getTime() - dateB.getTime();
             } else if (a.data.date) {
                 return 1;
@@ -130,27 +160,44 @@ export class StaticDocumentModel {
         const settings = Global.getInstance().settings;
 
         const document = new DocumentModel(file);
-        const desiredFilename = StaticDocumentModel.generateMetadataFilename(document);
+
+        const desiredFilename =
+            StaticDocumentModel.generateMetadataFilename(document);
         const defaultDocumentFolder = settings.documentSettings.defaultFolder;
-        const desiredFilePath = path.join(defaultDocumentFolder, `${desiredFilename}.md`);
+
+        const desiredFilePath = path.join(
+            defaultDocumentFolder,
+            `${desiredFilename}.md`,
+        );
 
         // Markdown file
         if (desiredFilePath.replace('\\', '/') !== document.file.path) {
-            logger.trace(`Moving file '${document.file.path}' to '${desiredFilePath}'`);
+            logger.trace(
+                `Moving file '${document.file.path}' to '${desiredFilePath}'`,
+            );
             await app.vault.rename(document.file, desiredFilePath);
-
         } else {
-            logger.trace(`File '${document.file.path}' is already in the correct folder`);
+            logger.trace(
+                `File '${document.file.path}' is already in the correct folder`,
+            );
         }
 
         // PDF file
         const pdfFile = document.getLinkedFile();
+
         if (!pdfFile) return;
 
-        const documentDate = document.data.date ? new Date(document.data.date) : undefined;
-        const defaultPdfFolder = documentDate ? settings.documentSettings.pdfFolder
-            .replace('{YYYY}', documentDate.getFullYear().toString())
-            .replace('{MM}', (documentDate.getMonth() + 1).toString().padStart(2, '0'))
+        const documentDate = document.data.date
+            ? new Date(document.data.date)
+            : undefined;
+
+        const defaultPdfFolder = documentDate
+            ? settings.documentSettings.pdfFolder
+                  .replace('{YYYY}', documentDate.getFullYear().toString())
+                  .replace(
+                      '{MM}',
+                      (documentDate.getMonth() + 1).toString().padStart(2, '0'),
+                  )
             : settings.documentSettings.pdfFolder;
 
         let desiredPdfFilePath: string | undefined;
@@ -158,24 +205,33 @@ export class StaticDocumentModel {
         // Check if file is already in the default folder
         // if not, move it there
         if (defaultPdfFolder && !pdfFile.path.contains(defaultPdfFolder)) {
-            desiredPdfFilePath = path.join(defaultPdfFolder, `${desiredFilename}.${pdfFile.extension}`);
-
+            desiredPdfFilePath = path.join(
+                defaultPdfFolder,
+                `${desiredFilename}.${pdfFile.extension}`,
+            );
         } else {
             // If file in default folder, rename it if necessary
             const pdfParentFolder = pdfFile.parent?.path;
+
             if (pdfParentFolder) {
-                desiredPdfFilePath = path.join(pdfParentFolder, `${desiredFilename}.${pdfFile.extension}`);
+                desiredPdfFilePath = path.join(
+                    pdfParentFolder,
+                    `${desiredFilename}.${pdfFile.extension}`,
+                );
 
                 if (desiredPdfFilePath.replace('\\', '/') === pdfFile.path) {
-                    logger.trace(`File '${pdfFile.path}' is already in the correct folder`);
-                    desiredPdfFilePath = undefined
+                    logger.trace(
+                        `File '${pdfFile.path}' is already in the correct folder`,
+                    );
+                    desiredPdfFilePath = undefined;
                 }
             }
-
         }
 
         if (desiredPdfFilePath) {
-            logger.trace(`Moving file '${pdfFile.path}' to '${desiredPdfFilePath}'`);
+            logger.trace(
+                `Moving file '${pdfFile.path}' to '${desiredPdfFilePath}'`,
+            );
             await app.vault.rename(pdfFile, desiredPdfFilePath);
             document.setLinkedFile(pdfFile);
         }

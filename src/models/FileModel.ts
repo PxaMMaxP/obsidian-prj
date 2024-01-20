@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TFile, FileManager } from "obsidian";
-import Global from "../classes/Global";
-import { TransactionModel } from "./TransactionModel";
-import { YamlKeyMap } from "../types/YamlKeyMap";
-import Logging from "src/classes/Logging";
+import { TFile, FileManager } from 'obsidian';
+import Global from '../classes/Global';
+import { TransactionModel } from './TransactionModel';
+import { YamlKeyMap } from '../types/YamlKeyMap';
+import Logging from 'src/classes/Logging';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
@@ -14,25 +14,27 @@ export class FileModel<T extends object> extends TransactionModel<T> {
     private _file: TFile | undefined;
     public get file(): TFile {
         if (this._file === undefined) {
-            this.logger.warn("File not set");
+            this.logger.warn('File not set');
         }
+
         return this._file as TFile;
     }
     /**
      * Sets the file of the model if not already set.
      * @param value The file to set.
      * @remarks - If the file is already set, a warning is logged and the file is not set.
-     * - If the given file is set, the `writeChanges` function is set. 
+     * - If the given file is set, the `writeChanges` function is set.
      * And the default transaction is finished. Changes between the file and the data object are written.
      */
     public set file(value: TFile) {
         if (this._file === undefined) {
             this._file = value;
+
             super.setWriteChanges((update) => {
                 return this.setFrontmatter(update as Record<string, unknown>);
             });
         } else {
-            this.logger.warn("File already set");
+            this.logger.warn('File already set');
         }
     }
     /**
@@ -66,8 +68,13 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * @param ctor The constructor of the data object.
      * @param yamlKeyMap The yaml key map to use.
      */
-    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T, yamlKeyMap: YamlKeyMap | undefined) {
+    constructor(
+        file: TFile | undefined,
+        ctor: new (data?: Partial<T>) => T,
+        yamlKeyMap: YamlKeyMap | undefined,
+    ) {
         super(undefined);
+
         if (file) {
             this.file = file;
         }
@@ -89,12 +96,14 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             return this.dataProxy;
         }
         const frontmatter = this.getMetadata();
+
         if (!frontmatter) {
             this.logger.trace('Creating empty object');
             const emptyObject = new this.ctor();
             // Save the default values to the changes object in `TransactionModel`
             this.changes = emptyObject;
             this.dataProxy = this.createProxy(emptyObject) as T;
+
             return this.dataProxy;
         }
 
@@ -122,6 +131,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      */
     protected set _data(values: Partial<T>) {
         const dataObject: T = new this.ctor(values);
+
         for (const key in dataObject) {
             if (values[key] !== undefined) {
                 this._data[key] = values[key];
@@ -158,13 +168,23 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      */
     private async setFrontmatter(value: Record<string, unknown>) {
         if (!this._file) return Promise.resolve();
+
         try {
-            await this.app.fileManager.processFrontMatter(this._file, (frontmatter) => {
-                this.updateNestedFrontmatterObjects(frontmatter, value);
-            });
-            this.logger.debug(`Frontmatter for file ${this._file.path} successfully updated.`);
+            await this.app.fileManager.processFrontMatter(
+                this._file,
+                (frontmatter) => {
+                    this.updateNestedFrontmatterObjects(frontmatter, value);
+                },
+            );
+
+            this.logger.debug(
+                `Frontmatter for file ${this._file.path} successfully updated.`,
+            );
         } catch (error) {
-            this.logger.error(`Error updating the frontmatter for file ${this._file.path}:`, error);
+            this.logger.error(
+                `Error updating the frontmatter for file ${this._file.path}:`,
+                error,
+            );
         }
     }
 
@@ -182,8 +202,9 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * @see {@link FileModel.resolveProxyValue}
      * @see {@link FileModel.updateKeyValue}
      */
-    private createProxy(obj: Partial<T>, path = ""): unknown {
+    private createProxy(obj: Partial<T>, path = ''): unknown {
         const existingProxy = this.proxyMap.get(obj);
+
         if (existingProxy) {
             return existingProxy;
         }
@@ -192,25 +213,35 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             get: (target, property, receiver) => {
                 const propertyKey = this.getPropertyKey(property);
                 const value = Reflect.get(target, property, receiver);
-                const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
+
+                const newPath = path
+                    ? `${path}.${propertyKey}`
+                    : `${propertyKey}`;
+
                 if (value && typeof value === 'object') {
                     return this.createProxy(value, newPath);
                 }
+
                 return value;
             },
             set: (target, property, value, receiver) => {
                 const propertyKey = this.getPropertyKey(property);
-                const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
+
+                const newPath = path
+                    ? `${path}.${propertyKey}`
+                    : `${propertyKey}`;
 
                 const resolvedValue = this.resolveProxyValue(value);
 
                 Reflect.set(target, property, resolvedValue, receiver);
                 this.updateKeyValue(newPath, resolvedValue);
+
                 return true;
             },
         });
 
         this.proxyMap.set(obj, proxy);
+
         return proxy;
     }
 
@@ -220,13 +251,17 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             return this.proxyMap.get(value as object);
         } else if (Array.isArray(value)) {
             // If the value is an array, recursively check each element
-            return value.map(item => this.resolveProxyValue(item));
+            return value.map((item) => this.resolveProxyValue(item));
         } else if (value && typeof value === 'object') {
             // If the value is an object, recursively check the properties
             return Object.fromEntries(
-                Object.entries(value).map(([key, val]) => [key, this.resolveProxyValue(val)])
+                Object.entries(value).map(([key, val]) => [
+                    key,
+                    this.resolveProxyValue(val),
+                ]),
             );
         }
+
         // Return only non-proxy values
         return value;
     }
@@ -258,10 +293,18 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         if (!this._file) return null;
         const cachedMetadata = this.metadataCache.getEntry(this._file);
 
-        if (cachedMetadata && cachedMetadata.metadata && cachedMetadata.metadata.frontmatter) {
-            return cachedMetadata.metadata.frontmatter as Record<string, unknown>;
+        if (
+            cachedMetadata &&
+            cachedMetadata.metadata &&
+            cachedMetadata.metadata.frontmatter
+        ) {
+            return cachedMetadata.metadata.frontmatter as Record<
+                string,
+                unknown
+            >;
         } else {
             this.logger.error(`No Metadata found for ${this._file.path}`);
+
             return null;
         }
     }
@@ -274,13 +317,25 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * @remarks - `null` clears the value of the key.
      * - `undefined` leaves the value of the key unchanged.
      */
-    private updateNestedFrontmatterObjects(frontmatter: Record<string, unknown>, updates: object) {
+    private updateNestedFrontmatterObjects(
+        frontmatter: Record<string, unknown>,
+        updates: object,
+    ) {
         Object.entries(updates).forEach(([key, value]) => {
             if (this.yamlKeyMap && this.yamlKeyMap[key]) {
                 key = this.yamlKeyMap[key];
             }
-            if (typeof value === 'object' && value !== undefined && value !== null && frontmatter[key]) {
-                this.updateNestedFrontmatterObjects(frontmatter[key] as Record<string, unknown>, value);
+
+            if (
+                typeof value === 'object' &&
+                value !== undefined &&
+                value !== null &&
+                frontmatter[key]
+            ) {
+                this.updateNestedFrontmatterObjects(
+                    frontmatter[key] as Record<string, unknown>,
+                    value,
+                );
             } else if (value !== undefined) {
                 frontmatter[key] = value;
             }

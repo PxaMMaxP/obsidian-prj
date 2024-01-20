@@ -1,10 +1,10 @@
 // Note: MetadataCache class
 
-import Logging from "src/classes/Logging";
-import Global from "../classes/Global";
-import { App, CachedMetadata, TFile } from "obsidian";
-import GenericEvents, { ICallback, IEvent } from "./GenericEvents";
-import PrjTypes from "src/types/PrjTypes";
+import Logging from 'src/classes/Logging';
+import Global from '../classes/Global';
+import { App, CachedMetadata, TFile } from 'obsidian';
+import GenericEvents, { ICallback, IEvent } from './GenericEvents';
+import PrjTypes from 'src/types/PrjTypes';
 
 /**
  * FileMetadata interface
@@ -12,7 +12,10 @@ import PrjTypes from "src/types/PrjTypes";
  * @property {TFile} file The file object
  * @property {CachedMetadata} metadata The cached metadata
  */
-export class FileMetadata { file: TFile; metadata: CachedMetadata }
+export class FileMetadata {
+    file: TFile;
+    metadata: CachedMetadata;
+}
 
 /**
  * Singleton class for caching metadata
@@ -21,7 +24,7 @@ export class FileMetadata { file: TFile; metadata: CachedMetadata }
 export default class MetadataCache {
     private eventHandler: GenericEvents<MetadataCacheEvents>;
     private app: App = Global.getInstance().app;
-    private logger = Logging.getLogger("MetadataCache");
+    private logger = Logging.getLogger('MetadataCache');
     private metadataCachePromise: Promise<void> | undefined = undefined;
     private metadataCache: Map<string, FileMetadata> | undefined = undefined;
     private metadataCacheArray: FileMetadata[] | undefined = undefined;
@@ -40,14 +43,17 @@ export default class MetadataCache {
      */
     public get cache(): FileMetadata[] {
         if (this.metadataCacheReady && this.metadataCache) {
-            if (this.metadataCacheArray)
-                return this.metadataCacheArray;
+            if (this.metadataCacheArray) return this.metadataCacheArray;
             else {
-                this.metadataCacheArray = Array.from(this.metadataCache.values());
+                this.metadataCacheArray = Array.from(
+                    this.metadataCache.values(),
+                );
+
                 return this.metadataCacheArray;
             }
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
+
             return [];
         }
     }
@@ -60,6 +66,7 @@ export default class MetadataCache {
         if (!MetadataCache.instance) {
             MetadataCache.instance = new MetadataCache();
         }
+
         return MetadataCache.instance;
     }
 
@@ -76,7 +83,7 @@ export default class MetadataCache {
 
         if (!this.metadataCache) {
             this.buildMetadataCache().then(() => {
-                this.logger.debug("Metadata cache built");
+                this.logger.debug('Metadata cache built');
                 this.registerEvents();
             });
         }
@@ -88,7 +95,10 @@ export default class MetadataCache {
      */
     static deconstructor() {
         if (!MetadataCache.instance) {
-            Global.getInstance().logger.error("Metadata cache instance not loaded");
+            Global.getInstance().logger.error(
+                'Metadata cache instance not loaded',
+            );
+
             return;
         }
 
@@ -96,16 +106,29 @@ export default class MetadataCache {
 
         if (instance.eventsRegistered) {
             instance.app.vault.off('rename', instance.renameEventHandler);
-            instance.app.metadataCache.off('changed', instance.changedEventHandler);
-            instance.app.metadataCache.off('deleted', instance.deleteEventHandler);
+
+            instance.app.metadataCache.off(
+                'changed',
+                instance.changedEventHandler,
+            );
+
+            instance.app.metadataCache.off(
+                'deleted',
+                instance.deleteEventHandler,
+            );
 
             instance.eventsRegistered = false;
 
-            Global.getInstance().logger.debug("Metadata cache events unregistered");
+            Global.getInstance().logger.debug(
+                'Metadata cache events unregistered',
+            );
+
             return;
         }
 
-        Global.getInstance().logger.debug("Metadata cache events not registered");
+        Global.getInstance().logger.debug(
+            'Metadata cache events not registered',
+        );
     }
 
     /**
@@ -123,7 +146,7 @@ export default class MetadataCache {
      */
     public async waitForCacheReady(): Promise<void> {
         while (!this.metadataCacheReady) {
-            await new Promise(resolve => setTimeout(resolve, 5));
+            await new Promise((resolve) => setTimeout(resolve, 5));
         }
     }
 
@@ -132,21 +155,30 @@ export default class MetadataCache {
      * @param eventName The name of the event: `prj-task-management-changed-status`
      * @param listener The listener function. The listener function receives the file object as an argument.
      */
-    public on(eventName: 'prj-task-management-changed-status', listener: (file: TFile) => void): void;
+    public on(
+        eventName: 'prj-task-management-changed-status',
+        listener: (file: TFile) => void,
+    ): void;
 
     /**
      * Register an event listener for the metadata cache. The event is emitted when the metadata of a document is changed.
      * @param eventName The name of the event: `document-changed-metadata`
      * @param listener The listener function. The listener function receives the file object as an argument.
      */
-    public on(eventName: 'document-changed-metadata', listener: (file: TFile) => void): void;
+    public on(
+        eventName: 'document-changed-metadata',
+        listener: (file: TFile) => void,
+    ): void;
 
     /**
      * Register an event listener for the metadata cache. The event is emitted when the metadata of a plugin file is changed.
      * @param eventName The name of the event: `prj-task-management-file-changed`
      * @param listener The listener function. The listener function receives the file object as an argument.
      */
-    public on(eventName: 'prj-task-management-file-changed', listener: (file: TFile) => void): void;
+    public on(
+        eventName: 'prj-task-management-file-changed',
+        listener: (file: TFile) => void,
+    ): void;
 
     /**
      * Register an event listener for the metadata cache.
@@ -156,21 +188,31 @@ export default class MetadataCache {
     public on<K extends keyof MetadataCacheEvents['events']>(
         eventName: K,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        listener: (file: MetadataCacheEvents['events'][K]['data']) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn> ? TReturn : void
+        listener: (
+            file: MetadataCacheEvents['events'][K]['data'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn>
+            ? TReturn
+            : void,
     ): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.eventHandler.registerEvent(eventName, listener as any);
     }
 
     /**
-     * Deregister an event listener for the metadata cache. 
+     * Deregister an event listener for the metadata cache.
      * @param eventName The name of the event
      * @param listener The listener function.
      */
     public off<K extends keyof MetadataCacheEvents['events']>(
         eventName: K,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        listener: (file: MetadataCacheEvents['events'][K]['data']) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn> ? TReturn : void
+        listener: (
+            file: MetadataCacheEvents['events'][K]['data'],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn>
+            ? TReturn
+            : void,
     ): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.eventHandler.deregisterEvent(eventName, listener as any);
@@ -182,27 +224,52 @@ export default class MetadataCache {
      * @param oldMetadata The old metadata
      * @param file The file object
      */
-    private async onChangedMetadata(newMetadata: CachedMetadata, oldMetadata: CachedMetadata, file: TFile) {
-        this.logger.trace(`Metadata changed for file ${file.path} and is processed.`);
+    private async onChangedMetadata(
+        newMetadata: CachedMetadata,
+        oldMetadata: CachedMetadata,
+        file: TFile,
+    ) {
+        this.logger.trace(
+            `Metadata changed for file ${file.path} and is processed.`,
+        );
+
         // Check if the file is plugin file
-        if (newMetadata.frontmatter?.type && PrjTypes.isValidFileType(newMetadata.frontmatter.type)) {
+        if (
+            newMetadata.frontmatter?.type &&
+            PrjTypes.isValidFileType(newMetadata.frontmatter.type)
+        ) {
             switch (newMetadata.frontmatter.type) {
-                case "Topic":
-                case "Project":
-                case "Task":
+                case 'Topic':
+                case 'Project':
+                case 'Task':
                     // Changed status
-                    if (newMetadata.frontmatter?.status !== oldMetadata.frontmatter?.status) {
-                        this.eventHandler.fireEvent('prj-task-management-changed-status', file);
+                    if (
+                        newMetadata.frontmatter?.status !==
+                        oldMetadata.frontmatter?.status
+                    ) {
+                        this.eventHandler.fireEvent(
+                            'prj-task-management-changed-status',
+                            file,
+                        );
                     }
-                    this.eventHandler.fireEvent('prj-task-management-file-changed', file);
+
+                    this.eventHandler.fireEvent(
+                        'prj-task-management-file-changed',
+                        file,
+                    );
                     break;
-                case "Metadata":
-                    this.eventHandler.fireEvent('document-changed-metadata', file);
+                case 'Metadata':
+                    this.eventHandler.fireEvent(
+                        'document-changed-metadata',
+                        file,
+                    );
                     break;
-                case "Note":
+                case 'Note':
                     break;
                 default:
-                    this.logger.error(`Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`);
+                    this.logger.error(
+                        `Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`,
+                    );
                     break;
             }
         }
@@ -217,7 +284,7 @@ export default class MetadataCache {
             if (this.metadataCache) {
                 this.metadataCacheArray = undefined;
             } else {
-                this.logger.error("Metadata cache not initialized");
+                this.logger.error('Metadata cache not initialized');
             }
         }
     }
@@ -232,14 +299,17 @@ export default class MetadataCache {
         this.metadataCache = new Map<string, FileMetadata>();
         const allFiles = this.app.vault.getFiles();
 
-        const addEntryPromises = allFiles.map(file => this.addEntry(file));
+        const addEntryPromises = allFiles.map((file) => this.addEntry(file));
 
         await Promise.all(addEntryPromises);
 
         this.metadataCacheReady = true;
 
         const endTime = Date.now();
-        this.logger.debug(`Metadata cache for ${allFiles.length} files built in ${endTime - startTime}ms`);
+
+        this.logger.debug(
+            `Metadata cache for ${allFiles.length} files built in ${endTime - startTime}ms`,
+        );
     }
 
     /**
@@ -252,19 +322,26 @@ export default class MetadataCache {
     public getEntry(file: TFile): FileMetadata | undefined {
         if (this.metadataCache) {
             const metadata = this.metadataCache.get(file.path);
+
             if (metadata) {
                 return metadata;
             } else {
                 this.addEntry(file);
                 const metadata = this.metadataCache.get(file.path);
+
                 if (metadata) {
                     return metadata;
                 }
-                this.logger.warn(`No metadata cache entry found for file ${file.path}`);
+
+                this.logger.warn(
+                    `No metadata cache entry found for file ${file.path}`,
+                );
+
                 return undefined;
             }
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
+
             return undefined;
         }
     }
@@ -278,14 +355,19 @@ export default class MetadataCache {
     public getEntryByPath(path: string): FileMetadata | undefined {
         if (this.metadataCache) {
             const metadata = this.metadataCache.get(path);
+
             if (metadata) {
                 return metadata;
             } else {
-                this.logger.warn(`No metadata cache entry found for file ${path}`);
+                this.logger.warn(
+                    `No metadata cache entry found for file ${path}`,
+                );
+
                 return undefined;
             }
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
+
             return undefined;
         }
     }
@@ -297,6 +379,7 @@ export default class MetadataCache {
     private async addEntry(file: TFile) {
         if (this.metadataCache) {
             const metadata = this.app.metadataCache.getFileCache(file);
+
             if (metadata) {
                 this.metadataCache.set(file.path, { file, metadata });
                 this.invalidateMetadataCacheArray();
@@ -304,7 +387,7 @@ export default class MetadataCache {
                 this.logger.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
         }
     }
 
@@ -317,7 +400,7 @@ export default class MetadataCache {
             this.metadataCache.delete(file.path);
             this.invalidateMetadataCacheArray();
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
         }
         this.logger.debug(`Metadata cache entry for file ${file.path} deleted`);
     }
@@ -329,18 +412,21 @@ export default class MetadataCache {
     private async updateEntry(file: TFile, cache: CachedMetadata) {
         if (this.metadataCache) {
             const entry = this.metadataCache.get(file.path);
+
             if (entry && cache) {
                 const oldMetadata = entry.metadata;
                 entry.metadata = cache;
                 this.onChangedMetadata(cache, oldMetadata, file);
                 this.invalidateMetadataCacheArray();
             } else if (!entry) {
-                this.logger.warn(`No metadata cache entry found for file ${file.path}`);
+                this.logger.warn(
+                    `No metadata cache entry found for file ${file.path}`,
+                );
             } else {
                 this.logger.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
         }
         this.logger.debug(`Metadata cache entry for file ${file.path} updated`);
     }
@@ -356,9 +442,12 @@ export default class MetadataCache {
             this.addEntry(newFile);
             this.invalidateMetadataCacheArray();
         } else {
-            this.logger.error("Metadata cache not initialized");
+            this.logger.error('Metadata cache not initialized');
         }
-        this.logger.debug(`Metadata cache entry for file ${oldPath} renamed to ${newFile.path}`);
+
+        this.logger.debug(
+            `Metadata cache entry for file ${oldPath} renamed to ${newFile.path}`,
+        );
     }
 
     /**
@@ -386,10 +475,21 @@ export default class MetadataCache {
      * @param data Changed complete file content
      * @param cache Cached metadata
      */
-    private changedEventHandler(file: TFile, data: string, cache: CachedMetadata) {
-        this.logger.trace(`File ${file.path} changed. Data-content:`, { data }, "Cache-metadata:", cache);
+    private changedEventHandler(
+        file: TFile,
+        data: string,
+        cache: CachedMetadata,
+    ) {
+        this.logger.trace(
+            `File ${file.path} changed. Data-content:`,
+            { data },
+            'Cache-metadata:',
+            cache,
+        );
+
         if (this.metadataCache) {
             const existingEntry = this.metadataCache.get(file.path);
+
             if (existingEntry) {
                 this.updateEntry(file, cache);
             } else {
@@ -408,19 +508,16 @@ export default class MetadataCache {
      */
     private registerEvents() {
         if (!this.eventsRegistered) {
-
             this.app.vault.on('rename', this.renameEventHandler);
             this.app.metadataCache.on('changed', this.changedEventHandler);
             this.app.metadataCache.on('deleted', this.deleteEventHandler);
 
             this.eventsRegistered = true;
 
-            this.logger.debug("Metadata cache events registered");
+            this.logger.debug('Metadata cache events registered');
         }
     }
-
 }
-
 
 interface MetadataCacheEvents extends ICallback {
     events: {

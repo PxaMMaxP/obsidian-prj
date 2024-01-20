@@ -1,4 +1,4 @@
-import { ILogger } from "src/interfaces/ILogger";
+import { ILogger } from 'src/interfaces/ILogger';
 
 /**
  * Interface for the callback.
@@ -23,7 +23,11 @@ export interface IEvent<TData, TReturn = void> {
  */
 type RegisteredEvent<T extends ICallback, K extends keyof T['events']> = {
     eventName: K;
-    callback: (data: T['events'][K]['data']) => T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown;
+    callback: (
+        data: T['events'][K]['data'],
+    ) => T['events'][K] extends IEvent<unknown, infer TReturn>
+        ? TReturn
+        : unknown;
 };
 
 /**
@@ -73,7 +77,11 @@ export default class GenericEvents<T extends ICallback> {
      */
     public registerEvent<K extends keyof T['events']>(
         eventName: K,
-        callback: (data: T['events'][K]['data']) => T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown
+        callback: (
+            data: T['events'][K]['data'],
+        ) => T['events'][K] extends IEvent<unknown, infer TReturn>
+            ? TReturn
+            : unknown,
     ): void {
         // Add the event to the _events array
         this._events.push({ eventName, callback });
@@ -87,16 +95,26 @@ export default class GenericEvents<T extends ICallback> {
      */
     public deregisterEvent<K extends keyof T['events']>(
         eventName: K,
-        callback: (data: T['events'][K]['data']) => T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown
+        callback: (
+            data: T['events'][K]['data'],
+        ) => T['events'][K] extends IEvent<unknown, infer TReturn>
+            ? TReturn
+            : unknown,
     ): void {
         // Delete the event from the _events array
         const initialLength = this._events.length;
-        this._events = this._events.filter(event => event.eventName !== eventName || event.callback !== callback);
+
+        this._events = this._events.filter(
+            (event) =>
+                event.eventName !== eventName || event.callback !== callback,
+        );
         const finalLength = this._events.length;
 
         if (finalLength === initialLength) {
             // No event was removed, log a warning
-            this.logger?.warn(`Event ${eventName.toString()} could not be deregistered`);
+            this.logger?.warn(
+                `Event ${eventName.toString()} could not be deregistered`,
+            );
         } else {
             // Event was removed, log a debug message
             this.logger?.debug(`Event ${eventName.toString()} deregistered`);
@@ -112,11 +130,16 @@ export default class GenericEvents<T extends ICallback> {
     public fireEvent<K extends keyof T['events']>(
         eventName: K,
         eventData: T['events'][K]['data'],
-        callback?: (result: T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown) => void
+        callback?: (
+            result: T['events'][K] extends IEvent<unknown, infer TReturn>
+                ? TReturn
+                : unknown,
+        ) => void,
     ): void {
         // Find the event in the _events array and execute the callback
-        this._events.filter(event => event.eventName === eventName)
-            .forEach(event => {
+        this._events
+            .filter((event) => event.eventName === eventName)
+            .forEach((event) => {
                 this._executeEventHandler(event.callback, eventData, callback);
                 this.logger?.debug(`Event ${eventName.toString()} fired`);
             });
@@ -129,21 +152,37 @@ export default class GenericEvents<T extends ICallback> {
      * @param callback The callback to execute when the event handler is executed.
      */
     private async _executeEventHandler<K extends keyof T['events']>(
-        handler: (data: T['events'][K]['data']) => T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown,
+        handler: (
+            data: T['events'][K]['data'],
+        ) => T['events'][K] extends IEvent<unknown, infer TReturn>
+            ? TReturn
+            : unknown,
         eventData: T['events'][K]['data'],
-        callback?: (result: T['events'][K] extends IEvent<unknown, infer TReturn> ? TReturn : unknown) => void
+        callback?: (
+            result: T['events'][K] extends IEvent<unknown, infer TReturn>
+                ? TReturn
+                : unknown,
+        ) => void,
     ): Promise<void> {
         try {
             // Execute the handler and call the callback with the result
             const result = await handler(eventData);
-            this.logger?.debug(`Event handler for ${handler.toString()} executed`);
+
+            this.logger?.debug(
+                `Event handler for ${handler.toString()} executed`,
+            );
+
             if (callback) {
                 callback(result);
-                this.logger?.debug(`Callback for ${handler.toString()} executed`);
+
+                this.logger?.debug(
+                    `Callback for ${handler.toString()} executed`,
+                );
             }
         } catch (error) {
-            this.logger?.error(`Error in event handler for ${handler.toString()}: ${error}`);
+            this.logger?.error(
+                `Error in event handler for ${handler.toString()}: ${error}`,
+            );
         }
     }
-
 }

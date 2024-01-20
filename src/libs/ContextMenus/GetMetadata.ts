@@ -1,10 +1,10 @@
-import { Menu, TAbstractFile, TFile } from "obsidian";
-import Global from "src/classes/Global";
-import Lng from "src/classes/Lng";
-import { DocumentModel } from "src/models/DocumentModel";
-import { FileType } from "src/types/PrjTypes";
-import { FileMetadata } from "../MetadataCache";
-import Helper from "../Helper";
+import { Menu, TAbstractFile, TFile } from 'obsidian';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
+import { DocumentModel } from 'src/models/DocumentModel';
+import { FileType } from 'src/types/PrjTypes';
+import { FileMetadata } from '../MetadataCache';
+import Helper from '../Helper';
 
 export default class GetMetadata {
     static instance: GetMetadata;
@@ -16,7 +16,7 @@ export default class GetMetadata {
     protected bindContextMenu = this.onContextMenu.bind(this);
 
     private constructor() {
-        this.logger.debug("Initializing GetMetadata");
+        this.logger.debug('Initializing GetMetadata');
         this.registerEvents();
         this.registerCommands();
     }
@@ -25,6 +25,7 @@ export default class GetMetadata {
         if (!GetMetadata.instance) {
             GetMetadata.instance = new GetMetadata();
         }
+
         return GetMetadata.instance;
     }
 
@@ -34,10 +35,16 @@ export default class GetMetadata {
     public static deconstructor() {
         if (this.instance && this.instance.eventsRegistered) {
             this.instance.logger.trace("Deconstructing 'GetMetadata' events");
-            this.instance.app.workspace.off('file-menu', this.instance.bindContextMenu);
+
+            this.instance.app.workspace.off(
+                'file-menu',
+                this.instance.bindContextMenu,
+            );
             this.instance.eventsRegistered = false;
         } else {
-            this.instance.logger.trace("No 'GetMetadata' events to deconstruct");
+            this.instance.logger.trace(
+                "No 'GetMetadata' events to deconstruct",
+            );
         }
     }
 
@@ -57,13 +64,14 @@ export default class GetMetadata {
      */
     private registerCommands() {
         this.logger.trace("Registering 'GetMetadata' commands");
+
         this.plugin.addCommand({
-            id: "get-metadata-file",
-            name: Lng.gt("Show Metadata File"),
+            id: 'get-metadata-file',
+            name: Lng.gt('Show Metadata File'),
             callback: () => {
                 GetMetadata.getInstance().invoke();
             },
-        })
+        });
     }
 
     /**
@@ -73,23 +81,25 @@ export default class GetMetadata {
      */
     private onContextMenu(menu: Menu, file: TAbstractFile) {
         // Allow only pdf files
-        if (!(file instanceof TFile) || !file.path.endsWith(".pdf")) {
+        if (!(file instanceof TFile) || !file.path.endsWith('.pdf')) {
             return;
         }
         const metadataFile = this.getCorrespondingMetadataFile(file);
+
         if (!metadataFile) {
             return;
         }
         const document = new DocumentModel(metadataFile.file);
+
         if (metadataFile) {
             menu.addSeparator();
+
             menu.addItem((item) => {
-                item.setTitle(Lng.gt("Show Metadata File"))
+                item.setTitle(Lng.gt('Show Metadata File'))
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
                         await Helper.openFile(document.file);
-                    }
-                    );
+                    });
             });
         }
     }
@@ -99,12 +109,24 @@ export default class GetMetadata {
      * @param file The document file
      * @returns The metadata file or undefined if not found
      */
-    private getCorrespondingMetadataFile(file: TFile): FileMetadata | undefined {
-        return this.metadataCache.cache.find(metadata => {
-            const type = metadata.metadata.frontmatter?.type as FileType | undefined | null;
-            const fileLink = metadata.metadata.frontmatter?.file as string | undefined | null;
-            if (type && fileLink && type === "Metadata") {
+    private getCorrespondingMetadataFile(
+        file: TFile,
+    ): FileMetadata | undefined {
+        return this.metadataCache.cache.find((metadata) => {
+            const type = metadata.metadata.frontmatter?.type as
+                | FileType
+                | undefined
+                | null;
+
+            const fileLink = metadata.metadata.frontmatter?.file as
+                | string
+                | undefined
+                | null;
+
+            if (type && fileLink && type === 'Metadata') {
                 return fileLink.contains(file.name);
+            } else {
+                return false;
             }
         });
     }
@@ -115,13 +137,21 @@ export default class GetMetadata {
     public async invoke() {
         const workspace = this.app.workspace;
         const activeFile = workspace.getActiveFile();
-        if (!activeFile || !(activeFile instanceof TFile) || !activeFile.path.endsWith(".pdf")) {
-            this.logger.warn("No active pdf file found.");
+
+        if (
+            !activeFile ||
+            !(activeFile instanceof TFile) ||
+            !activeFile.path.endsWith('.pdf')
+        ) {
+            this.logger.warn('No active pdf file found.');
+
             return;
         }
         const metadataFile = this.getCorrespondingMetadataFile(activeFile);
+
         if (!metadataFile) {
-            this.logger.warn("No metadata file to the active pdf file found.");
+            this.logger.warn('No metadata file to the active pdf file found.');
+
             return;
         }
         const document = new DocumentModel(metadataFile.file);

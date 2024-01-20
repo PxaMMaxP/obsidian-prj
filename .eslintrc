@@ -4,7 +4,8 @@
     "env": { "node": true },
     "plugins": [
       "@typescript-eslint",
-      "deprecation"
+      "deprecation",
+      "prettier"
     ],
     "extends": [
       "eslint:recommended",
@@ -16,11 +17,43 @@
         "project": "./tsconfig.json"
     },
     "rules": {
+      "prettier/prettier": "error",
+      "array-callback-return": ["error"],
+      "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "args": "none"
+      }
+    ],
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
       "@typescript-eslint/ban-ts-comment": "off",
       "no-prototype-builtins": "off",
       "@typescript-eslint/no-empty-function": "off",
-      "deprecation/deprecation": "error"
+      "deprecation/deprecation": "error",
+      "no-console": "error",
+      "@typescript-eslint/padding-line-between-statements": [
+      "warn",
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": [
+          "return",
+          "if",
+          "multiline-const",
+          "function",
+          "multiline-expression",
+          "multiline-let",
+          "block-like"
+        ]
+      },
+      {
+        "blankLine": "always",
+        "prev": ["function"],
+        "next": "*"
+      }
+    ]
     } 
   }

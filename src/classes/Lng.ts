@@ -1,5 +1,5 @@
 import Translations from '../translations/translations.json';
-import Global from "./Global";
+import Global from './Global';
 
 export default class Lng {
     /**
@@ -10,16 +10,18 @@ export default class Lng {
      * - Look at the `translations.json` file to see all available translations.
      */
     public static gt(key: string): string {
-        const logger = Global.getInstance().logger
+        const logger = Global.getInstance().logger;
         const lang = Global.getInstance().settings.language;
-        const translation = (Translations as Translations);
+        const translation = Translations as Translations;
         const language = translation.find((v) => v.lang === lang);
+
         if (language) {
             if (language.translations.hasOwnProperty(key)) {
                 return language.translations[key] as string;
             }
         }
         logger.warn(`Translation for key ${key} not found`);
+
         return key;
     }
 }

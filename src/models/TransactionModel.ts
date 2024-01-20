@@ -1,7 +1,7 @@
 // Note: TransactionModel class
 
-import Global from "src/classes/Global";
-import Logging from "src/classes/Logging";
+import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
 
 /**
  * A class that handles transactions.
@@ -36,7 +36,6 @@ export class TransactionModel<T> {
         }
     }
 
-
     /**
      * Sets the callback function for writing changes to the transaction model.
      * @param writeChanges The callback function that takes an update of type T and returns a Promise that resolves when the changes are written.
@@ -45,7 +44,14 @@ export class TransactionModel<T> {
      */
     public setWriteChanges(writeChanges: (update: T) => Promise<void>) {
         this.writeChanges = writeChanges;
-        if (this.isTransactionActive && !(Object.keys(this.changes).length === 0 && this.changes.constructor === Object)) {
+
+        if (
+            this.isTransactionActive &&
+            !(
+                Object.keys(this.changes).length === 0 &&
+                this.changes.constructor === Object
+            )
+        ) {
             this.finishTransaction();
         } else if (this.isTransactionActive) {
             this.abortTransaction();
@@ -61,11 +67,20 @@ export class TransactionModel<T> {
     protected callWriteChanges(update: T = this.changes as T): boolean {
         if (this.writeChanges) {
             this.writeChanges(update)
-                .then(() => { this.logger.debug("Changes written to file"); })
-                .catch((error) => { this.logger.error("Failed to write changes to file:", error); })
+                .then(() => {
+                    this.logger.debug('Changes written to file');
+                })
+                .catch((error) => {
+                    this.logger.error(
+                        'Failed to write changes to file:',
+                        error,
+                    );
+                });
+
             return true;
         } else {
-            this.logger.debug("No writeChanges function available");
+            this.logger.debug('No writeChanges function available');
+
             return false;
         }
     }
@@ -77,6 +92,7 @@ export class TransactionModel<T> {
     public startTransaction(): void {
         if (this.isTransactionActive) {
             this.logger.warn('Transaction already active');
+
             return;
         }
         this.transactionActive = true;
@@ -91,6 +107,7 @@ export class TransactionModel<T> {
     public finishTransaction(): void {
         if (!this.isTransactionActive) {
             this.logger.warn('No transaction active');
+
             return;
         }
         const writeChanges = this.callWriteChanges();
@@ -106,9 +123,11 @@ export class TransactionModel<T> {
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
             this.logger.warn('No transaction active');
+
             return;
         } else if (!this.writeChanges) {
-            this.logger.warn("No writeChanges function available");
+            this.logger.warn('No writeChanges function available');
+
             return;
         }
         this.changes = {};
