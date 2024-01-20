@@ -148,6 +148,8 @@ export default class MetadataCache {
      */
     public on(eventName: 'prj-task-management-file-changed', listener: (file: TFile) => void): void;
 
+    public on(eventName: 'changes-in-kanban', listener: (file: TFile) => void): void;
+
     /**
      * Register an event listener for the metadata cache.
      * @param eventName The name of the event
@@ -196,8 +198,8 @@ export default class MetadataCache {
                     }
                     this.eventHandler.fireEvent('prj-task-management-file-changed', file);
                     // Changes in Kanban
-                    if (newMetadata.frontmatter?.subtype === "Kanban") {
-                        this.eventHandler.fireEvent('changes-in-kanban', { file, newMetadata, oldMetadata });
+                    if (newMetadata.frontmatter?.subType === "Kanban") {
+                        this.eventHandler.fireEvent('changes-in-kanban', file);
                     }
                     break;
                 case "Metadata":
@@ -292,6 +294,17 @@ export default class MetadataCache {
             this.logger.error("Metadata cache not initialized");
             return undefined;
         }
+    }
+
+    public getBacklinks(file: TFile): TFile[] {
+        const filesWithBacklinks: TFile[] = [];
+        for (const [path, fileCache] of Object.entries(this.app.metadataCache.resolvedLinks)) {
+            if (fileCache[file.path]) {
+                const file = this.getEntryByPath(path);
+                file && filesWithBacklinks.push(file.file);
+            }
+        }
+        return filesWithBacklinks;
     }
 
     /**
@@ -431,13 +444,7 @@ interface MetadataCacheEvents extends ICallback {
         'prj-task-management-changed-status': IEvent<TFile, undefined | void>;
         'prj-task-management-file-changed': IEvent<TFile, undefined | void>;
         'document-changed-metadata': IEvent<TFile, undefined | void>;
-        'changes-in-kanban': IEvent<MetadataCacheEventArgs, undefined>;
+        'changes-in-kanban': IEvent<TFile, undefined>;
         // Add more events here
     };
-}
-
-export interface MetadataCacheEventArgs {
-    'file': TFile;
-    'newMetadata': CachedMetadata;
-    'oldMetadata': CachedMetadata;
 }

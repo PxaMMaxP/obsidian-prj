@@ -15,6 +15,7 @@ import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTas
 import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
+import KanbanSync from './libs/KanbanSync';
 
 export default class Prj extends Plugin {
 	public settings: PrjSettings;
@@ -68,6 +69,9 @@ export default class Prj extends Plugin {
 		Global.getInstance().metadataCache.on('document-changed-metadata', (file) => {
 			StaticDocumentModel.syncMetadataToFile(file);
 		});
+
+		//Register event Kanban Check
+		KanbanSync.registerEvent();
 
 		// Register rebuild View command:
 		this.addCommand({
