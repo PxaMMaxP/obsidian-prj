@@ -178,7 +178,12 @@ export default class MetadataCache {
      * @param listener The listener function. The listener function receives the file object as an argument.
      */
     public on(
-        eventName: 'prj-task-management-file-changed-event',
+        eventName: 'prj-task-management-file-changed',
+        listener: (file: TFile) => void,
+    ): void;
+
+    public on(
+        eventName: 'changes-in-kanban',
         listener: (file: TFile) => void,
     ): void;
 
@@ -274,10 +279,8 @@ export default class MetadataCache {
 
                     // Changes in Kanban
                     if (newMetadata.frontmatter?.subtype === 'Kanban') {
-                        this._eventHandler.fireEvent('changes-in-kanban', {
+                        this.eventHandler.fireEvent('changes-in-kanban', {
                             file,
-                            newMetadata,
-                            oldMetadata,
                         });
                     }
                     break;
@@ -393,6 +396,21 @@ export default class MetadataCache {
 
             return undefined;
         }
+    }
+
+    public getBacklinks(file: TFile): TFile[] {
+        const filesWithBacklinks: TFile[] = [];
+
+        for (const [path, fileCache] of Object.entries(
+            this.app.metadataCache.resolvedLinks,
+        )) {
+            if (fileCache[file.path]) {
+                const file = this.getEntryByPath(path);
+                file && filesWithBacklinks.push(file.file);
+            }
+        }
+
+        return filesWithBacklinks;
     }
 
     /**
@@ -544,16 +562,10 @@ export default class MetadataCache {
 
 interface MetadataCacheEvents extends ICallback {
     events: {
-        'prj-task-management-changed-status-event': IEvent<
-            TFile,
-            undefined | void
-        >;
-        'prj-task-management-file-changed-event': IEvent<
-            TFile,
-            undefined | void
-        >;
-        'document-changed-metadata-event': IEvent<TFile, undefined | void>;
-        'changes-in-kanban-event': IEvent<MetadataCacheEventArgs, undefined>;
+        'prj-task-management-changed-status': IEvent<TFile, undefined | void>;
+        'prj-task-management-file-changed': IEvent<TFile, undefined | void>;
+        'document-changed-metadata': IEvent<TFile, undefined | void>;
+        'changes-in-kanban': IEvent<TFile, undefined>;
         // Add more events here
     };
 }

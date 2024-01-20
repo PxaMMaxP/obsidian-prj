@@ -80,6 +80,9 @@ export default class Prj extends Plugin {
             },
         );
 
+        //Register event Kanban Check
+        KanbanSync.registerEvent();
+
         // Register rebuild View command:
         this.addCommand({
             id: 'rebuild-active-view',
