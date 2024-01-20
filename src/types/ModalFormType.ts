@@ -23,11 +23,16 @@ export interface IModalForm {
      * @returns A promise that resolves to the form data.
      * @see {@link IFormResult}
      */
-    openForm(config: FormConfiguration, options?: { values: IResultData }): Promise<IFormResult>;
+    openForm(
+        config: FormConfiguration,
+        options?: { values: IResultData },
+    ): Promise<IFormResult>;
 }
 
-export type ResultStatus = "ok" | "cancelled";
-export interface IResultData { [key: string]: string | string[] | number | boolean }
+export type ResultStatus = 'ok' | 'cancelled';
+export interface IResultData {
+    [key: string]: string | string[] | number | boolean;
+}
 
 export interface IFormResult {
     /**
@@ -75,7 +80,7 @@ export type FormConfiguration = {
      * @see {@link Field}
      */
     fields: Field[];
-}
+};
 
 /**
  * This interface defines the configuration object for a field of a modal form.
@@ -102,57 +107,67 @@ export type Field = {
      * @see {@link Input}
      */
     input: Input;
-}
+};
 
-export type Input = TextInput | TextareaInput | DateInput | DocumentBlock | Time | SliderInput | SelectInput | DataViewInput | ToggleInput | TagInput;
+export type Input =
+    | TextInput
+    | TextareaInput
+    | DateInput
+    | DocumentBlock
+    | Time
+    | SliderInput
+    | SelectInput
+    | DataViewInput
+    | ToggleInput
+    | TagInput;
 
 export type TextInput = {
     type: 'text';
-}
+};
 
 export type Time = {
     type: 'time';
-}
+};
 
 export type DocumentBlock = {
     type: 'document_block';
     body: string;
-}
+};
 
 export type TextareaInput = {
     type: 'textarea';
-}
+};
 
 export type DateInput = {
     type: 'date';
-}
+};
 
 export type SliderInput = {
     type: 'slider';
     min: number;
     max: number;
-}
+};
 
 export type SelectInput = {
     type: 'select';
     source: 'fixed';
     options: Option[];
-}
+};
 
 export type DataViewInput = {
     type: 'dataview';
     query: string;
-}
+};
 
 export type ToggleInput = {
     type: 'toggle';
-}
+};
 
 export type TagInput = {
     type: 'tag';
-}
+};
 
 export type Option = {
     value: string;
     label: string;
-}
+};

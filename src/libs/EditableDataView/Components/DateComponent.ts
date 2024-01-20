@@ -17,8 +17,8 @@ export default class DateComponent extends BaseComponent {
     private _title: string;
     //#endregion
     //#region HTML Elements
-    private presentationSpan: HTMLElement;
-    private input: HTMLInputElement;
+    private _presentationSpan: HTMLElement;
+    private _input: HTMLInputElement;
     //#endregion
 
     constructor(component: Component) {
@@ -90,41 +90,41 @@ export default class DateComponent extends BaseComponent {
 
     //#region Base Callbacks
     private build() {
-        this.presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this.presentationSpan);
+        this._presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this._presentationSpan);
 
-        this.presentationSpan.title = this._title;
-        this.presentationSpan.classList.add('editable-data-view');
-        this.presentationSpan.classList.add('date-presentation');
+        this._presentationSpan.title = this._title;
+        this._presentationSpan.classList.add('editable-data-view');
+        this._presentationSpan.classList.add('date-presentation');
 
-        this.presentationSpan.textContent = this._onPresentation
+        this._presentationSpan.textContent = this._onPresentation
             ? this._onPresentation(this._value)
             : this._value;
     }
 
     private buildInput() {
-        this.input = document.createElement('input');
-        this.dataInputContainer.appendChild(this.input);
-        this.input.type = 'date';
-        this.input.title = this._title;
-        this.input.classList.add('editable-data-view');
-        this.input.classList.add('date-input');
+        this._input = document.createElement('input');
+        this.dataInputContainer.appendChild(this._input);
+        this._input.type = 'date';
+        this._input.title = this._title;
+        this._input.classList.add('editable-data-view');
+        this._input.classList.add('date-input');
     }
 
     private enableEdit() {
-        this.input.value = this._value ? this._value : '';
-        this.input.focus();
-        this.input.select();
+        this._input.value = this._value ? this._value : '';
+        this._input.focus();
+        this._input.select();
     }
 
     private disableEdit() {
-        this.presentationSpan.textContent = this._onPresentation
+        this._presentationSpan.textContent = this._onPresentation
             ? this._onPresentation(this._value)
             : this._value;
     }
 
     private async save(): Promise<void> {
-        this._value = this.input.value;
+        this._value = this._input.value;
         await this._onSave?.(this._value);
     }
     //#endregion

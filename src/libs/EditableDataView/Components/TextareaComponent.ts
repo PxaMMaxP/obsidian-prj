@@ -23,7 +23,7 @@ export default class TextareaComponent extends BaseComponent {
     private _title: string;
     //#endregion
     //#region HTML Elements
-    private presentationSpan: HTMLElement;
+    private _presentationSpan: HTMLElement;
     //#endregion
 
     constructor(component: Component) {
@@ -87,7 +87,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     public setFormator(formator: (value: string) => Promise<string>) {
         this._onPresentation = async (value: string): Promise<void> => {
-            this.presentationSpan.textContent = await formator(this._value);
+            this._presentationSpan.textContent = await formator(this._value);
         };
 
         return this;
@@ -108,13 +108,13 @@ export default class TextareaComponent extends BaseComponent {
                 return MarkdownRenderer.render(
                     app,
                     value,
-                    this.presentationSpan,
+                    this._presentationSpan,
                     path,
                     this.component,
                 );
             } else {
-                this.presentationSpan.innerHTML = '';
-                this.presentationSpan.textContent = value;
+                this._presentationSpan.innerHTML = '';
+                this._presentationSpan.textContent = value;
 
                 return Promise.resolve();
             }
@@ -138,27 +138,27 @@ export default class TextareaComponent extends BaseComponent {
 
     //#region Base Callbacks
     private build() {
-        this.presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this.presentationSpan);
+        this._presentationSpan = document.createElement('span');
+        this.presentationContainer.appendChild(this._presentationSpan);
 
-        this.presentationSpan.contentEditable = 'false';
-        this.presentationSpan.title = this._title;
-        this.presentationSpan.classList.add('editable-data-view');
-        this.presentationSpan.classList.add('textarea-presentation');
+        this._presentationSpan.contentEditable = 'false';
+        this._presentationSpan.title = this._title;
+        this._presentationSpan.classList.add('editable-data-view');
+        this._presentationSpan.classList.add('textarea-presentation');
 
         if (this._onMarkdownPresentation) {
-            this.presentationSpan.textContent = null;
+            this._presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
             this._onPresentation(this._value);
         } else {
-            this.presentationSpan.textContent = this._value;
+            this._presentationSpan.textContent = this._value;
         }
     }
 
     private buildInput() {
         this.component.registerDomEvent(
-            this.presentationSpan,
+            this._presentationSpan,
             'keydown',
             (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
@@ -180,25 +180,25 @@ export default class TextareaComponent extends BaseComponent {
 
     private enableEdit() {
         this.presentationContainer.classList.remove('hidden');
-        this.presentationSpan.textContent = this._value;
-        this.presentationSpan.contentEditable = 'true';
-        this.presentationSpan.focus();
+        this._presentationSpan.textContent = this._value;
+        this._presentationSpan.contentEditable = 'true';
+        this._presentationSpan.focus();
     }
 
     private disableEdit() {
         if (this._onMarkdownPresentation) {
-            this.presentationSpan.textContent = null;
+            this._presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);
         } else if (this._onPresentation) {
             this._onPresentation(this._value);
         } else {
-            this.presentationSpan.textContent = this._value;
+            this._presentationSpan.textContent = this._value;
         }
-        this.presentationSpan.contentEditable = 'false';
+        this._presentationSpan.contentEditable = 'false';
     }
 
     private async save(): Promise<void> {
-        this._value = this.presentationSpan.textContent ?? '';
+        this._value = this._presentationSpan.textContent ?? '';
         await this._onSave?.(this._value);
     }
     //#endregion

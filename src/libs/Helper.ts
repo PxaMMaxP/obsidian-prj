@@ -3,7 +3,7 @@ import Global from 'src/classes/Global';
 import { FileType } from 'src/types/PrjTypes';
 
 export default class Helper {
-    private static md5 = require('crypto-js/md5');
+    private static _md5 = require('crypto-js/md5');
 
     /**
      * Extracts the date, filename, file extension and display text from a wikilink
@@ -73,7 +73,7 @@ export default class Helper {
      * - The UID is prefixed with a "U" to prevent the UID from starting with a number. The "U" counts to the length of the UID
      */
     static generateUID(input: string, length = 8): string {
-        const hash = 'U' + this.md5(input).toString();
+        const hash = 'U' + this._md5(input).toString();
 
         return hash.substring(0, length);
     }

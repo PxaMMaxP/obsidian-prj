@@ -20,14 +20,14 @@ import CustomizableRenderChild from '../CustomizableRenderChild';
 export default class HeaderBlockRenderComponent
     implements RedrawableBlockRenderComponent
 {
-    private app = Global.getInstance().app;
-    private global = Global.getInstance();
+    private _app = Global.getInstance().app;
+    private _global = Global.getInstance();
     private logger = Logging.getLogger('HeaderBlockRenderComponent');
-    private metadataCache = this.global.metadataCache;
+    private _metadataCache = this._global.metadataCache;
 
     private _processorSettings: IProcessorSettings;
-    private childComponent: CustomizableRenderChild;
-    private activeFileDebounceTimer: NodeJS.Timeout;
+    private _childComponent: CustomizableRenderChild;
+    private _activeFileDebounceTimer: NodeJS.Timeout;
 
     private _headerContainer: HTMLElement | undefined;
 
@@ -72,7 +72,7 @@ export default class HeaderBlockRenderComponent
      * The component of this HeaderBlockRenderComponent.
      */
     private get component(): CustomizableRenderChild {
-        return this.childComponent;
+        return this._childComponent;
     }
 
     /**
@@ -98,7 +98,7 @@ export default class HeaderBlockRenderComponent
      */
     private get frontmatter(): FrontMatterCache | undefined {
         return (
-            this.metadataCache.getEntryByPath(this.path)?.metadata
+            this._metadataCache.getEntryByPath(this.path)?.metadata
                 ?.frontmatter ?? undefined
         );
     }
@@ -118,14 +118,14 @@ export default class HeaderBlockRenderComponent
         this.onDocumentChangedMetadata =
             this.onDocumentChangedMetadata.bind(this);
 
-        this.childComponent = new CustomizableRenderChild(
+        this._childComponent = new CustomizableRenderChild(
             this.container,
             () => this.onLoad(),
             () => this.onUnload(),
             this.logger,
         );
-        this.childComponent.load();
-        this._processorSettings.ctx.addChild(this.childComponent);
+        this._childComponent.load();
+        this._processorSettings.ctx.addChild(this._childComponent);
         this.parseSettings();
     }
 
@@ -134,8 +134,8 @@ export default class HeaderBlockRenderComponent
      * @remarks This function is called when the block is loaded and register the `prj-task-management-file-changed` event.
      */
     private onLoad(): void {
-        this.metadataCache.on(
-            'prj-task-management-file-changed',
+        this._metadataCache.on(
+            'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
     }
@@ -145,8 +145,8 @@ export default class HeaderBlockRenderComponent
      * @remarks This function is called when the block is unloaded and unregister the `prj-task-management-file-changed` event.
      */
     private onUnload(): void {
-        this.metadataCache.off(
-            'prj-task-management-file-changed',
+        this._metadataCache.off(
+            'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
     }
@@ -211,7 +211,7 @@ export default class HeaderBlockRenderComponent
         titleDiv.classList.add('title');
 
         MarkdownRenderer.render(
-            this.app,
+            this._app,
             `# ${this.title}`,
             titleDiv,
             this.path,
@@ -230,7 +230,7 @@ export default class HeaderBlockRenderComponent
         statusDiv.classList.add('status');
 
         MarkdownRenderer.render(
-            this.app,
+            this._app,
             `${Lng.gt('Status')}: **${this.status}**`,
             statusDiv,
             this.path,
@@ -249,7 +249,7 @@ export default class HeaderBlockRenderComponent
         descriptionDiv.classList.add('description');
 
         MarkdownRenderer.render(
-            this.app,
+            this._app,
             `${this.description}`,
             descriptionDiv,
             this.path,
@@ -339,7 +339,7 @@ export default class HeaderBlockRenderComponent
                     if (option.value === 'true') {
                         // Register event to update the header when the active file changes
                         this.component.registerEvent(
-                            this.global.app.workspace.on(
+                            this._global.app.workspace.on(
                                 'active-leaf-change',
                                 () => this.onActiveFileChange.bind(this)(),
                             ),
@@ -359,7 +359,7 @@ export default class HeaderBlockRenderComponent
      * @private
      */
     private onActiveFileChange(): void {
-        const activeFile = this.global.app.workspace.getActiveFile();
+        const activeFile = this._global.app.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
             this.logger.trace('Active file changed: ', activeFile.path);
@@ -376,9 +376,9 @@ export default class HeaderBlockRenderComponent
      */
     private onActiveFileDebounce(): void {
         this.logger.trace('Active file changed: Debouncing');
-        clearTimeout(this.activeFileDebounceTimer);
+        clearTimeout(this._activeFileDebounceTimer);
 
-        this.activeFileDebounceTimer = setTimeout(async () => {
+        this._activeFileDebounceTimer = setTimeout(async () => {
             this.redraw();
         }, 750);
     }

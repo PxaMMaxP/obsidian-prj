@@ -21,7 +21,7 @@ import { FileMetadata } from '../MetadataCache';
  * @see {@link create} for details about creating a document block render component.
  */
 export default class DocumentBlockRenderComponent extends TableBlockRenderComponent<DocumentModel> {
-    private filterButtonDebounceTimer: NodeJS.Timeout;
+    private _filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
         tags: [],
         reactOnActiveFile: false,
@@ -190,9 +190,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     }
 
     private async onFilterDebounce(): Promise<void> {
-        clearTimeout(this.filterButtonDebounceTimer);
+        clearTimeout(this._filterButtonDebounceTimer);
 
-        this.filterButtonDebounceTimer = setTimeout(async () => {
+        this._filterButtonDebounceTimer = setTimeout(async () => {
             await this.onFilter();
         }, 750);
     }

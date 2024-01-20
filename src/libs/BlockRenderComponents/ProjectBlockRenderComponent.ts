@@ -23,7 +23,7 @@ import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjT
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<TaskData | TopicData | ProjectData>
 > {
-    private filterButtonDebounceTimer: NodeJS.Timeout;
+    private _filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
         tags: [],
         reactOnActiveFile: false,
@@ -332,9 +332,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private async onFilterDebounce(): Promise<void> {
-        clearTimeout(this.filterButtonDebounceTimer);
+        clearTimeout(this._filterButtonDebounceTimer);
 
-        this.filterButtonDebounceTimer = setTimeout(async () => {
+        this._filterButtonDebounceTimer = setTimeout(async () => {
             await this.onFilter();
         }, 750);
     }
