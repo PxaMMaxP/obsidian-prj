@@ -13,6 +13,11 @@ export default class KanbanSync {
     private _structedKanbanHeading: Heading[] | undefined;
     private _changedFile: TFile | undefined;
 
+    /**
+     * Creates an instance of the KanbanSync class.
+     * @param {TFile} kanbanFile The kanban file.
+     * @param {TFile} [changedFile] The changed corresponding Prj file (optional).
+     */
     constructor(kanbanFile: TFile, changedFile?: TFile) {
         this._kanbanFile = kanbanFile;
 
@@ -28,16 +33,27 @@ export default class KanbanSync {
         }
     }
 
+    /**
+     * Synchronizes the kanban file with other files based on the sync mode.
+     * If the sync mode is 'out', it syncs the files linked to the kanban.
+     */
     public async sync(): Promise<void> {
         this._structedKanbanHeading = new StructedKanbanHeadings(
             this._kanbanFile,
         ).getStructedKanban();
 
         if (this._syncMode === 'out') {
+            this.logger.debug(
+                `Syncing files linked to kanban ${this._kanbanFile.path}`,
+            );
             this.syncFiles();
         }
     }
 
+    /**
+     * Synchronizes the files in the Kanban board with their corresponding models,
+     * updating their status based on the headings' titles.
+     */
     private syncFiles(): void {
         this._structedKanbanHeading?.forEach((heading) => {
             const status: Status | undefined =
@@ -57,6 +73,9 @@ export default class KanbanSync {
         });
     }
 
+    /**
+     * Registers the event listeners for KanbanSync.
+     */
     public static registerEvent(): void {
         const metadataCache = Global.getInstance().metadataCache;
 
@@ -69,6 +88,10 @@ export default class KanbanSync {
         });
     }
 
+    /**
+     * Checks if a Kanban is linked to the given file and triggers synchronization for each linked Kanban.
+     * @param file - The file to check for linked Kanbans.
+     */
     public static checkIfKanbanIsLinkedEvent(file: TFile): void {
         const linkedFiles = this.getLinkedKanbanFiles(file);
 
@@ -77,6 +100,12 @@ export default class KanbanSync {
         }
     }
 
+    /**
+     * Retrieves the linked Kanban files for a given file.
+     *
+     * @param file - The file for which to retrieve the linked Kanban files.
+     * @returns An array of TFile objects representing the linked Kanban files.
+     */
     public static getLinkedKanbanFiles(file: TFile): TFile[] {
         const metadataCache = Global.getInstance().metadataCache;
         const linkedFiles = metadataCache.getBacklinks(file);
@@ -101,11 +130,20 @@ class StructedKanbanHeadings {
     private _metadata: CachedMetadata | undefined;
     private _metadataCache = Global.getInstance().metadataCache;
 
+    /**
+     * Creates a new instance of the KanbanSync class.
+     * @param file The TFile object representing the file.
+     */
     constructor(file: TFile) {
         this._file = file;
         this._metadata = this._metadataCache.getEntry(file)?.metadata;
     }
 
+    /**
+     * Retrieves the structured Kanban board.
+     *
+     * @returns An array of Heading objects representing the structured Kanban board.
+     */
     public getStructedKanban(): Heading[] {
         const headings = this.getHeadings();
 
@@ -116,6 +154,12 @@ class StructedKanbanHeadings {
         return headings;
     }
 
+    /**
+     * Retrieves the files associated with a given heading.
+     *
+     * @param heading The heading object.
+     * @returns An array of files associated with the heading.
+     */
     private getFilesFromHeading(heading: Heading): File[] {
         const files: File[] = [];
 
@@ -153,6 +197,10 @@ class StructedKanbanHeadings {
         return files;
     }
 
+    /**
+     * Retrieves the headings from the metadata.
+     * @returns An array of Heading objects.
+     */
     private getHeadings(): Heading[] {
         const metadataHeadings = this._metadata?.headings;
 
@@ -185,6 +233,9 @@ class StructedKanbanHeadings {
     }
 }
 
+/**
+ * Represents a heading in a document.
+ */
 type Heading = {
     title: string;
     startLine: number;
@@ -192,6 +243,9 @@ type Heading = {
     files?: File[] | undefined;
 };
 
+/**
+ * Represents a file in a heading with its associated line number.
+ */
 type File = {
     file: TFile;
     line: number;
