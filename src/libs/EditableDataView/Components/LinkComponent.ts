@@ -1,5 +1,5 @@
-import { Component } from "obsidian";
-import BaseComponent from "./BaseComponent";
+import { Component } from 'obsidian';
+import BaseComponent from './BaseComponent';
 
 export default class LinkComponent extends BaseComponent {
     //#region base properties
@@ -29,7 +29,7 @@ export default class LinkComponent extends BaseComponent {
 
     constructor(component: Component) {
         super(component);
-        this.onFinalize = this.build
+        this.onFinalize = this.build;
         this.onFirstEdit = this.buildInput;
         this.onEnableEditCallback = this.enableEdit;
         this.onSaveCallback = this.save;
@@ -43,6 +43,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public enableEditability() {
         this.editabilityEnabled = true;
+
         return this;
     }
 
@@ -53,6 +54,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setValue(value: string) {
         this._value = value;
+
         return this;
     }
 
@@ -63,6 +65,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setPlaceholder(placeholder: string) {
         this._placeholder = placeholder;
+
         return this;
     }
 
@@ -73,6 +76,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setSuggestions(suggestions: string[]) {
         this._suggestions = suggestions;
+
         return this;
     }
 
@@ -83,6 +87,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setTitle(title: string) {
         this._title = title;
+
         return this;
     }
 
@@ -93,6 +98,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setLinkType(type: 'tag' | 'file' | 'external') {
         this.linkType = type;
+
         return this;
     }
 
@@ -104,6 +110,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public setSuggester(suggester: (value: string) => string[]) {
         this._suggester = suggester;
+
         return this;
     }
 
@@ -113,15 +120,21 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component change in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => { href: string, text: string, html?: DocumentFragment }) {
+    public setFormator(
+        formator: (value: string) => {
+            href: string;
+            text: string;
+            html?: DocumentFragment;
+        },
+    ) {
         this._onPresentation = async (value: string): Promise<void> => {
             const linkContent = formator(value);
             this.link.href = linkContent.href;
+
             if (linkContent.html) {
                 this.link.innerHTML = '';
                 this.link.appendChild(linkContent.html);
-            }
-            else this.link.textContent = linkContent.text;
+            } else this.link.textContent = linkContent.text;
 
             switch (this.linkType) {
                 case 'tag':
@@ -136,9 +149,15 @@ export default class LinkComponent extends BaseComponent {
 
             if (this.input && this.label) {
                 this.input.value = linkContent.text ? linkContent.text : '';
-                this.label.dataset.value = linkContent.text ? linkContent.text : this._placeholder ? this._placeholder : '';
+
+                this.label.dataset.value = linkContent.text
+                    ? linkContent.text
+                    : this._placeholder
+                      ? this._placeholder
+                      : '';
             }
         };
+
         return this;
     }
 
@@ -150,6 +169,7 @@ export default class LinkComponent extends BaseComponent {
      */
     public onSave(callback: (value: string) => Promise<void>) {
         this._onSave = callback;
+
         return this;
     }
     //#endregion
@@ -157,7 +177,8 @@ export default class LinkComponent extends BaseComponent {
     private setSuggestionsList(suggestions: string[]) {
         if (!this.datalist) return;
         this.datalist.innerHTML = '';
-        suggestions.forEach(suggestion => {
+
+        suggestions.forEach((suggestion) => {
             const option = document.createElement('option');
             option.value = suggestion;
             this.datalist.appendChild(option);
@@ -204,20 +225,38 @@ export default class LinkComponent extends BaseComponent {
         this.input.classList.add('editable-data-view');
         this.input.classList.add('text-input');
         this.input.placeholder = this._placeholder ? this._placeholder : '';
+
         this.component.registerDomEvent(this.input, 'input', () => {
-            this.label.dataset.value = this.input.value ? this.input.value : this._placeholder ? this._placeholder : '';
-            if (this._suggester && this.label.dataset.value !== this._placeholder && this.label.dataset.value !== "")
+            this.label.dataset.value = this.input.value
+                ? this.input.value
+                : this._placeholder
+                  ? this._placeholder
+                  : '';
+
+            if (
+                this._suggester &&
+                this.label.dataset.value !== this._placeholder &&
+                this.label.dataset.value !== ''
+            )
                 this.setSuggestionsList(this._suggester(this.input.value));
         });
-        this.component.registerDomEvent(this.input, 'keydown', (event: KeyboardEvent) => {
-            if (event.key === 'Enter') {
-                this.saveChanges();
-            } else if (event.key === 'Escape') {
-                this.disableEditMode();
-            }
-        });
 
-        if ((this._suggestions && this._suggestions.length > 0) || this._suggester) {
+        this.component.registerDomEvent(
+            this.input,
+            'keydown',
+            (event: KeyboardEvent) => {
+                if (event.key === 'Enter') {
+                    this.saveChanges();
+                } else if (event.key === 'Escape') {
+                    this.disableEditMode();
+                }
+            },
+        );
+
+        if (
+            (this._suggestions && this._suggestions.length > 0) ||
+            this._suggester
+        ) {
             const id = Math.random().toString(36).substring(2, 10);
             this.input.setAttribute('list', id);
             this.datalist = document.createElement('datalist');

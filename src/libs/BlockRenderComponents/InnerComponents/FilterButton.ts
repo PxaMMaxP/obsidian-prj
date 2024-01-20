@@ -1,18 +1,17 @@
-import { Component, setIcon } from "obsidian";
-import Global from "src/classes/Global";
-import Lng from "src/classes/Lng";
+import { Component, setIcon } from 'obsidian';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
 
 /**
  * Max shown models input component class for `TableBlockRenderComponent`.
- * 
+ *
  * This class provides methods to create and manage a filter button component with a symbol.
  * It includes functionality for toggling the filter button and handling click events.
- * 
+ *
  * @see {@link create} for details about creating a filter button component.
  * @see {@link FilterCallback} for details about the filter callback.
  */
 export default class FilterButton {
-
     /**
      * Creates a new filter button.
      * @param component The component to register the events to.
@@ -31,13 +30,20 @@ export default class FilterButton {
         type: string,
         symbol: string,
         status: boolean,
-        onFilter: FilterCallback): DocumentFragment {
+        onFilter: FilterCallback,
+    ): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
 
         const filterButtonContainer = document.createElement('div');
         headerItemContainer.appendChild(filterButtonContainer);
 
-        const filter = FilterButton.createFilterButton(status, type, symbol, component, onFilter);
+        const filter = FilterButton.createFilterButton(
+            status,
+            type,
+            symbol,
+            component,
+            onFilter,
+        );
         filterButtonContainer.appendChild(filter);
 
         return headerItemContainer;
@@ -61,28 +67,41 @@ export default class FilterButton {
         type: string,
         symbol: string,
         component: Component,
-        filterCallback: FilterCallback): DocumentFragment {
+        filterCallback: FilterCallback,
+    ): DocumentFragment {
         const logger = Global.getInstance().logger;
         const filterButtonContainer = document.createDocumentFragment();
 
         const filter = document.createElement('a');
         filterButtonContainer.appendChild(filter);
         filter.classList.add('filter-symbol');
+
         if (!status) {
             filter.classList.add('filter-symbol-hide');
         }
         filter.title = Lng.gt(type);
-        filter.href = "#";
+        filter.href = '#';
         setIcon(filter, symbol);
 
-        component.registerDomEvent(filter, 'click', async (event: MouseEvent) => {
-            filter.classList.toggle('filter-symbol-hide');
-            try {
-                await filterCallback(type, filter.classList.contains('filter-symbol-hide'));
-            } catch (error) {
-                logger.error("The `onFilter` callback threw an error!", error);
-            }
-        });
+        component.registerDomEvent(
+            filter,
+            'click',
+            async (event: MouseEvent) => {
+                filter.classList.toggle('filter-symbol-hide');
+
+                try {
+                    await filterCallback(
+                        type,
+                        filter.classList.contains('filter-symbol-hide'),
+                    );
+                } catch (error) {
+                    logger.error(
+                        'The `onFilter` callback threw an error!',
+                        error,
+                    );
+                }
+            },
+        );
 
         return filterButtonContainer;
     }

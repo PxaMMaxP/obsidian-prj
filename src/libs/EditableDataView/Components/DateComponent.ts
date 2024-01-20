@@ -1,5 +1,5 @@
-import { Component } from "obsidian";
-import BaseComponent from "./BaseComponent";
+import { Component } from 'obsidian';
+import BaseComponent from './BaseComponent';
 
 export default class DateComponent extends BaseComponent {
     //#region base properties
@@ -12,7 +12,7 @@ export default class DateComponent extends BaseComponent {
     //#endregion
     //#region extended properties
     private _onPresentation: (value: string) => string;
-    private _onSave: ((value: string) => Promise<void>);
+    private _onSave: (value: string) => Promise<void>;
     private _value: string;
     private _title: string;
     //#endregion
@@ -23,7 +23,7 @@ export default class DateComponent extends BaseComponent {
 
     constructor(component: Component) {
         super(component);
-        this.onFinalize = this.build
+        this.onFinalize = this.build;
         this.onFirstEdit = this.buildInput;
         this.onEnableEditCallback = this.enableEdit;
         this.onSaveCallback = this.save;
@@ -37,6 +37,7 @@ export default class DateComponent extends BaseComponent {
      */
     public enableEditability(): DateComponent {
         this.editabilityEnabled = true;
+
         return this;
     }
 
@@ -47,6 +48,7 @@ export default class DateComponent extends BaseComponent {
      */
     public setValue(value: string): DateComponent {
         this._value = value;
+
         return this;
     }
 
@@ -57,6 +59,7 @@ export default class DateComponent extends BaseComponent {
      */
     public setTitle(title: string): DateComponent {
         this._title = title;
+
         return this;
     }
 
@@ -68,6 +71,7 @@ export default class DateComponent extends BaseComponent {
      */
     public setFormator(formator: (value: string) => string): DateComponent {
         this._onPresentation = formator;
+
         return this;
     }
 
@@ -79,6 +83,7 @@ export default class DateComponent extends BaseComponent {
      */
     public onSave(callback: (value: string) => Promise<void>) {
         this._onSave = callback;
+
         return this;
     }
     //#endregion
@@ -91,7 +96,10 @@ export default class DateComponent extends BaseComponent {
         this.presentationSpan.title = this._title;
         this.presentationSpan.classList.add('editable-data-view');
         this.presentationSpan.classList.add('date-presentation');
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+
+        this.presentationSpan.textContent = this._onPresentation
+            ? this._onPresentation(this._value)
+            : this._value;
     }
 
     private buildInput() {
@@ -110,7 +118,9 @@ export default class DateComponent extends BaseComponent {
     }
 
     private disableEdit() {
-        this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._value) : this._value;
+        this.presentationSpan.textContent = this._onPresentation
+            ? this._onPresentation(this._value)
+            : this._value;
     }
 
     private async save(): Promise<void> {

@@ -1,13 +1,17 @@
-import { App, TFile } from "obsidian";
-import Global from "src/classes/Global";
-import Logging from "src/classes/Logging";
-import { FormConfiguration, IFormResult, IModalForm } from "src/types/ModalFormType";
+import { App, TFile } from 'obsidian';
+import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
+import {
+    FormConfiguration,
+    IFormResult,
+    IModalForm,
+} from 'src/types/ModalFormType';
 
 export default abstract class BaseModalForm {
     protected app: App = Global.getInstance().app;
     protected settings = Global.getInstance().settings;
     protected global = Global.getInstance();
-    protected logger = Logging.getLogger("BaseModalForm");
+    protected logger = Logging.getLogger('BaseModalForm');
     protected modalFormApi: IModalForm | null | undefined = null;
 
     /**
@@ -15,7 +19,7 @@ export default abstract class BaseModalForm {
      */
     constructor() {
         if (this.modalFormApi === undefined) {
-            this.logger.error("ModalForms API not found");
+            this.logger.error('ModalForms API not found');
         } else {
             this.modalFormApi = this.setApi();
         }
@@ -27,18 +31,22 @@ export default abstract class BaseModalForm {
      * @remarks Log an error if the API is not available
      */
     protected isApiAvailable(): boolean {
-        if (this.modalFormApi === undefined) this.logger.error("ModalForms API not found");
+        if (this.modalFormApi === undefined)
+            this.logger.error('ModalForms API not found');
+
         if (this.modalFormApi === null) {
             this.modalFormApi = this.setApi();
         }
+
         if (this.modalFormApi === null) return false;
+
         return true;
     }
 
     protected getApi(): IModalForm {
         if (this.modalFormApi === undefined || this.modalFormApi === null) {
-            this.logger.error("ModalForms API not found");
-            throw new Error("ModalForms API not found");
+            this.logger.error('ModalForms API not found');
+            throw new Error('ModalForms API not found');
         } else {
             return this.modalFormApi;
         }
@@ -46,17 +54,23 @@ export default abstract class BaseModalForm {
 
     private setApi(): IModalForm | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const modalFormApi = (this.app as any).plugins.plugins.modalforms.api as IModalForm;
+        const modalFormApi = (this.app as any).plugins.plugins.modalforms
+            .api as IModalForm;
+
         if (!modalFormApi) {
-            this.logger.error("ModalForms API not found");
+            this.logger.error('ModalForms API not found');
+
             return undefined;
         } else {
-            this.logger.trace("ModalForms API found");
+            this.logger.trace('ModalForms API found');
+
             return modalFormApi;
         }
     }
 
-    public abstract evaluateForm(result: IFormResult): Promise<unknown | undefined>
+    public abstract evaluateForm(
+        result: IFormResult,
+    ): Promise<unknown | undefined>;
 
     public abstract openForm(): Promise<IFormResult | undefined>;
 
@@ -64,9 +78,17 @@ export default abstract class BaseModalForm {
 
     public static getTags(activeFile: TFile | undefined): string[] {
         const tags: string[] = [];
+
         if (activeFile) {
-            const cache = Global.getInstance().metadataCache.getEntry(activeFile);
-            if (cache && cache.metadata && cache.metadata.frontmatter && cache.metadata.frontmatter.tags) {
+            const cache =
+                Global.getInstance().metadataCache.getEntry(activeFile);
+
+            if (
+                cache &&
+                cache.metadata &&
+                cache.metadata.frontmatter &&
+                cache.metadata.frontmatter.tags
+            ) {
                 if (Array.isArray(cache.metadata.frontmatter.tags)) {
                     tags.push(...cache.metadata.frontmatter.tags);
                 } else {
@@ -74,6 +96,7 @@ export default abstract class BaseModalForm {
                 }
             }
         }
+
         return tags;
     }
 }

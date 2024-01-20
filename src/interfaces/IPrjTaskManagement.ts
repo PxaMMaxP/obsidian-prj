@@ -1,4 +1,11 @@
-import { Energy, FileSubType, FileType, HistoryEntries, Priority, Status } from "../types/PrjTypes";
+import {
+    Energy,
+    FileSubType,
+    FileType,
+    HistoryEntries,
+    Priority,
+    Status,
+} from '../types/PrjTypes';
 
 export default interface IPrjTaskManagement {
     type: FileType | null | undefined;

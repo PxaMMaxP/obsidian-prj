@@ -1,6 +1,6 @@
-import { Component } from "obsidian";
-import Global from "src/classes/Global";
-import Lng from "src/classes/Lng";
+import { Component } from 'obsidian';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
 
 /**
  * Search input component class for `TableBlockRenderComponent`.
@@ -24,7 +24,11 @@ export default class SearchInput {
      *  - `search-box-sizer` - The sizer of the search input component.
      *  - `search-box` - The search box of the search input component.
      */
-    public static create(component: Component, onSearch: SearchCallback, defaultText?: string): DocumentFragment {
+    public static create(
+        component: Component,
+        onSearch: SearchCallback,
+        defaultText?: string,
+    ): DocumentFragment {
         const logger = Global.getInstance().logger;
         const headerItemContainer = document.createDocumentFragment();
 
@@ -33,7 +37,9 @@ export default class SearchInput {
         searchLabelContainer.classList.add('filter-search');
 
         SearchInput.createSearchLabel(searchLabelContainer);
-        const searchBoxSizer = SearchInput.createSearchBoxSizer(searchLabelContainer);
+
+        const searchBoxSizer =
+            SearchInput.createSearchBoxSizer(searchLabelContainer);
         const searchBoxInput = SearchInput.createSearchBoxInput(searchBoxSizer);
 
         if (defaultText) {
@@ -44,32 +50,47 @@ export default class SearchInput {
         /**
          * Register input event to set the search box sizer value.
          */
-        component.registerDomEvent(searchBoxInput, 'input', async (event: InputEvent) => {
-            this.setSearchBoxSizerValue(searchBoxSizer, searchBoxInput.value);
-        });
+        component.registerDomEvent(
+            searchBoxInput,
+            'input',
+            async (event: InputEvent) => {
+                this.setSearchBoxSizerValue(
+                    searchBoxSizer,
+                    searchBoxInput.value,
+                );
+            },
+        );
 
         /**
          * Register keydown event to call the search callback.
          * @remarks - The return value of the callback is used to set the search box value and the search box sizer value.
          */
-        component.registerDomEvent(searchBoxInput, 'keydown', async (event: KeyboardEvent) => {
-            let value = searchBoxInput.value;
-            try {
-                value = await onSearch(searchBoxInput.value, event.key);
-            } catch (error) {
-                logger.error("The `onSearch` callback threw an error!", error);
-            } finally {
-                this.setSearchBoxSizerValue(searchBoxSizer, value);
-                this.setSearchBoxInputValue(searchBoxInput, value);
-            }
-        });
+        component.registerDomEvent(
+            searchBoxInput,
+            'keydown',
+            async (event: KeyboardEvent) => {
+                let value = searchBoxInput.value;
+
+                try {
+                    value = await onSearch(searchBoxInput.value, event.key);
+                } catch (error) {
+                    logger.error(
+                        'The `onSearch` callback threw an error!',
+                        error,
+                    );
+                } finally {
+                    this.setSearchBoxSizerValue(searchBoxSizer, value);
+                    this.setSearchBoxInputValue(searchBoxInput, value);
+                }
+            },
+        );
 
         return headerItemContainer;
     }
 
     /**
      * Creates the search label.
-     * @param searchLabelContainer The container to append the label to. 
+     * @param searchLabelContainer The container to append the label to.
      * @remarks - The label is a `HTMLSpanElement`.
      * - The label text is `Search`-value of the translation.
      * - The label element has the class `filter-text`.
@@ -78,7 +99,7 @@ export default class SearchInput {
         const filterLabel = document.createElement('span');
         searchLabelContainer.appendChild(filterLabel);
         filterLabel.classList.add('filter-text');
-        filterLabel.textContent = Lng.gt("Search") + ":";
+        filterLabel.textContent = Lng.gt('Search') + ':';
     }
 
     /**
@@ -92,6 +113,7 @@ export default class SearchInput {
         const searchBoxSizer = document.createElement('label');
         searchLabelContainer.appendChild(searchBoxSizer);
         searchBoxSizer.classList.add('search-box-sizer');
+
         return searchBoxSizer;
     }
 
@@ -108,9 +130,10 @@ export default class SearchInput {
         const searchBoxInput = document.createElement('input');
         searchBoxSizer.appendChild(searchBoxInput);
         searchBoxInput.classList.add('search-box');
-        searchBoxInput.type = "text";
-        searchBoxInput.placeholder = Lng.gt("Search");
-        searchBoxInput.value = "";
+        searchBoxInput.type = 'text';
+        searchBoxInput.placeholder = Lng.gt('Search');
+        searchBoxInput.value = '';
+
         return searchBoxInput;
     }
 
@@ -119,8 +142,11 @@ export default class SearchInput {
      * @param searchBoxSizer The search box sizer to set the value to.
      * @param value The value to set.
      */
-    private static setSearchBoxSizerValue(searchBoxSizer: HTMLElement, value: string) {
-        searchBoxSizer.dataset.value = "_" + value + "_";
+    private static setSearchBoxSizerValue(
+        searchBoxSizer: HTMLElement,
+        value: string,
+    ) {
+        searchBoxSizer.dataset.value = '_' + value + '_';
     }
 
     /**
@@ -128,7 +154,10 @@ export default class SearchInput {
      * @param searchBoxInput The search box input to set the value to.
      * @param value The value to set.
      */
-    private static setSearchBoxInputValue(searchBoxInput: HTMLInputElement, value: string) {
+    private static setSearchBoxInputValue(
+        searchBoxInput: HTMLInputElement,
+        value: string,
+    ) {
         searchBoxInput.value = value;
     }
 }
@@ -142,4 +171,7 @@ export default class SearchInput {
  * - Start search on `Enter` key.
  * - Clear search on `Escape` key.
  */
-type SearchCallback = (searchboxValue: string, eventKey: string) => Promise<string>;
+type SearchCallback = (
+    searchboxValue: string,
+    eventKey: string,
+) => Promise<string>;

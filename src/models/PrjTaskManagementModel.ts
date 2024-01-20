@@ -1,25 +1,25 @@
-import { TFile, moment } from "obsidian";
-import { FileModel } from "./FileModel";
-import IPrjModel from "../interfaces/IPrjModel";
-import IPrjData from "../interfaces/IPrjData";
-import IPrjTaskManagement from "../interfaces/IPrjTaskManagement";
-import PrjTypes, { Status } from "src/types/PrjTypes";
-import API from "src/classes/API";
-import TaskData from "src/types/TaskData";
-import ProjectData from "src/types/ProjectData";
-import TopicData from "src/types/TopicData";
+import { TFile, moment } from 'obsidian';
+import { FileModel } from './FileModel';
+import IPrjModel from '../interfaces/IPrjModel';
+import IPrjData from '../interfaces/IPrjData';
+import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
+import PrjTypes, { Status } from 'src/types/PrjTypes';
+import API from 'src/classes/API';
+import TaskData from 'src/types/TaskData';
+import ProjectData from 'src/types/ProjectData';
+import TopicData from 'src/types/TopicData';
 
-
-export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> extends FileModel<T> implements IPrjModel<T> {
-
+export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
+    extends FileModel<T>
+    implements IPrjModel<T>
+{
     get tags(): string[] {
         const tags = this.data.tags;
         let formattedTags: string[] = [];
 
         if (tags && typeof tags === 'string') {
             formattedTags = [tags];
-        }
-        else if (Array.isArray(tags)) {
+        } else if (Array.isArray(tags)) {
             formattedTags = [...tags];
         }
 
@@ -41,11 +41,12 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
     }
 
     public override toString(): string {
-        let allText = this.data.title ?? "";
-        allText += this.data.description ?? "";
-        allText += this.data.status ?? "";
-        allText += this.data.due ?? "";
-        allText += this.data.tags ?? "";
+        let allText = this.data.title ?? '';
+        allText += this.data.description ?? '';
+        allText += this.data.status ?? '';
+        allText += this.data.due ?? '';
+        allText += this.data.tags ?? '';
+
         return allText;
     }
 
@@ -70,44 +71,50 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
      */
     public changeStatus(newStatus: unknown): void {
         const status = PrjTypes.isValidStatus(newStatus);
+
         if (!status) return;
+
         if (this.data.status !== status) {
             let internalTransaction = false;
+
             if (!this.isTransactionActive) {
                 this.startTransaction();
                 internalTransaction = true;
             }
             this.data.status = status;
             this.addHistoryEntry(status);
-            if (internalTransaction)
-                this.finishTransaction();
+
+            if (internalTransaction) this.finishTransaction();
         }
     }
 
     public get urgency(): number {
-        return API.prjTaskManagementModel.calculateUrgency(this as (PrjTaskManagementModel<TaskData | TopicData | ProjectData>));
+        return API.prjTaskManagementModel.calculateUrgency(
+            this as PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        );
     }
 
     /**
      * Add a new history entry to the model.
-     * @param status The status to add to the history. If not provided, the current status of the model will be used. 
+     * @param status The status to add to the history. If not provided, the current status of the model will be used.
      * @remarks - This function will not start or finish a transaction.
      * - If no status is provided and the model has no status, an error will be logged and the function will return.
      */
     private addHistoryEntry(status?: Status | undefined): void {
         if (!status) {
-            if (this.data.status)
-                status = this.data.status;
+            if (this.data.status) status = this.data.status;
             else {
-                this.logger.error("No status aviable to add to history");
+                this.logger.error('No status aviable to add to history');
+
                 return;
             }
         }
-        if (!this.data.history)
-            this.data.history = [];
+
+        if (!this.data.history) this.data.history = [];
+
         this.data.history.push({
             status: status,
-            date: moment().format("YYYY-MM-DDTHH:mm")
+            date: moment().format('YYYY-MM-DDTHH:mm'),
         });
     }
 
@@ -121,12 +128,10 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement> ext
 
         if (tags && typeof tags === 'string') {
             formattedTags = [tags];
-        }
-        else if (Array.isArray(tags)) {
+        } else if (Array.isArray(tags)) {
             formattedTags = [...tags];
         }
 
         return formattedTags;
     }
-
 }

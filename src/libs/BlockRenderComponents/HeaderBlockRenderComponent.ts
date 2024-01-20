@@ -1,11 +1,11 @@
-import { FrontMatterCache, MarkdownRenderer, TFile } from "obsidian";
-import Global from "src/classes/Global";
-import Lng from "src/classes/Lng";
-import { IProcessorSettings } from "src/interfaces/IProcessorSettings";
-import Tags, { TagTree } from "../Tags";
-import Logging from "src/classes/Logging";
-import RedrawableBlockRenderComponent from "./RedrawableBlockRenderComponent";
-import CustomizableRenderChild from "../CustomizableRenderChild";
+import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
+import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
+import Tags, { TagTree } from '../Tags';
+import Logging from 'src/classes/Logging';
+import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
+import CustomizableRenderChild from '../CustomizableRenderChild';
 
 /**
  * Header Block Render Component class.
@@ -17,10 +17,12 @@ import CustomizableRenderChild from "../CustomizableRenderChild";
  * @remarks This header watches the `prj-task-management-file-changed` event
  * and redraws the header when the event is fired and the file is the file in which the block is located.
  */
-export default class HeaderBlockRenderComponent implements RedrawableBlockRenderComponent {
+export default class HeaderBlockRenderComponent
+    implements RedrawableBlockRenderComponent
+{
     private app = Global.getInstance().app;
     private global = Global.getInstance();
-    private logger = Logging.getLogger("HeaderBlockRenderComponent");
+    private logger = Logging.getLogger('HeaderBlockRenderComponent');
     private metadataCache = this.global.metadataCache;
 
     private _processorSettings: IProcessorSettings;
@@ -38,7 +40,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
 
     /**
      * Sets the path value.
-     * 
+     *
      * @param value - The new path value.
      */
     private set path(value: string) {
@@ -62,6 +64,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
             this._headerContainer = document.createElement('div');
             this._headerContainer.addClass('header-block-component');
         }
+
         return this._headerContainer;
     }
 
@@ -94,7 +97,10 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * The frontmatter of the Prj File.
      */
     private get frontmatter(): FrontMatterCache | undefined {
-        return this.metadataCache.getEntryByPath(this.path)?.metadata?.frontmatter ?? undefined;
+        return (
+            this.metadataCache.getEntryByPath(this.path)?.metadata
+                ?.frontmatter ?? undefined
+        );
     }
 
     /**
@@ -108,12 +114,16 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         this._processorSettings = settings;
         this.onUnload = this.onUnload.bind(this);
         this.redraw = this.redraw.bind(this);
-        this.onDocumentChangedMetadata = this.onDocumentChangedMetadata.bind(this);
+
+        this.onDocumentChangedMetadata =
+            this.onDocumentChangedMetadata.bind(this);
+
         this.childComponent = new CustomizableRenderChild(
             this.container,
             () => this.onLoad(),
             () => this.onUnload(),
-            this.logger);
+            this.logger,
+        );
         this.childComponent.load();
         this._processorSettings.ctx.addChild(this.childComponent);
         this.parseSettings();
@@ -124,7 +134,10 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * @remarks This function is called when the block is loaded and register the `prj-task-management-file-changed` event.
      */
     private onLoad(): void {
-        this.metadataCache.on('prj-task-management-file-changed', this.onDocumentChangedMetadata);
+        this.metadataCache.on(
+            'prj-task-management-file-changed',
+            this.onDocumentChangedMetadata,
+        );
     }
 
     /**
@@ -132,7 +145,10 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * @remarks This function is called when the block is unloaded and unregister the `prj-task-management-file-changed` event.
      */
     private onUnload(): void {
-        this.metadataCache.off('prj-task-management-file-changed', this.onDocumentChangedMetadata);
+        this.metadataCache.off(
+            'prj-task-management-file-changed',
+            this.onDocumentChangedMetadata,
+        );
     }
 
     /**
@@ -145,7 +161,9 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
             this.headerContainer?.empty();
             await this.build();
         } catch (error) {
-            this.logger.error(`Error while redrawing HeaderBlockRenderComponent: ${error}`);
+            this.logger.error(
+                `Error while redrawing HeaderBlockRenderComponent: ${error}`,
+            );
         }
     }
 
@@ -166,18 +184,21 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      */
     public async build(): Promise<void> {
         try {
-            if (this.title)
-                this.headerContainer.append(this.createTitle());
-            if (this.status)
-                this.headerContainer.append(this.createStatus());
+            if (this.title) this.headerContainer.append(this.createTitle());
+
+            if (this.status) this.headerContainer.append(this.createStatus());
+
             if (this.tags.length > 0)
                 this.headerContainer.append(this.createTags());
+
             if (this.description)
                 this.headerContainer.append(this.createDescription());
 
             this.container.append(this.headerContainer);
         } catch (error) {
-            this.logger.error(`Error while building HeaderBlockRenderComponent: ${error}`);
+            this.logger.error(
+                `Error while building HeaderBlockRenderComponent: ${error}`,
+            );
         }
     }
 
@@ -189,7 +210,13 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         const titleDiv = document.createElement('div');
         titleDiv.classList.add('title');
 
-        MarkdownRenderer.render(this.app, `# ${this.title}`, titleDiv, this.path, this.component);
+        MarkdownRenderer.render(
+            this.app,
+            `# ${this.title}`,
+            titleDiv,
+            this.path,
+            this.component,
+        );
 
         return this.createDocumentFragment(titleDiv);
     }
@@ -202,7 +229,13 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         const statusDiv = document.createElement('div');
         statusDiv.classList.add('status');
 
-        MarkdownRenderer.render(this.app, `${Lng.gt("Status")}: **${this.status}**`, statusDiv, this.path, this.component);
+        MarkdownRenderer.render(
+            this.app,
+            `${Lng.gt('Status')}: **${this.status}**`,
+            statusDiv,
+            this.path,
+            this.component,
+        );
 
         return this.createDocumentFragment(statusDiv);
     }
@@ -215,7 +248,13 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         const descriptionDiv = document.createElement('div');
         descriptionDiv.classList.add('description');
 
-        MarkdownRenderer.render(this.app, `${this.description}`, descriptionDiv, this.path, this.component);
+        MarkdownRenderer.render(
+            this.app,
+            `${this.description}`,
+            descriptionDiv,
+            this.path,
+            this.component,
+        );
 
         return this.createDocumentFragment(descriptionDiv);
     }
@@ -232,7 +271,11 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         for (const tag in tagTree) {
             const fullPath = path ? `${path}/${tag}` : tag;
             const li = document.createElement('li');
-            const tagLink = Tags.createObsidianTagLink(path ? tag : `#${tag}`, fullPath);
+
+            const tagLink = Tags.createObsidianTagLink(
+                path ? tag : `#${tag}`,
+                fullPath,
+            );
             li.appendChild(tagLink);
             const subTags = tagTree[tag];
             const hasSubTags = Object.keys(subTags).length > 0;
@@ -258,7 +301,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
         const labelDiv = document.createElement('div');
         tagsDiv.appendChild(labelDiv);
         labelDiv.classList.add('tag-label');
-        labelDiv.textContent = `${Lng.gt("Tags")}:`;
+        labelDiv.textContent = `${Lng.gt('Tags')}:`;
 
         const tagTree = Tags.createTagTree(this.tags);
         const tagsList = this.createDomList(tagTree);
@@ -275,6 +318,7 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
     private createDocumentFragment(element: HTMLElement): DocumentFragment {
         const documentFragment = new DocumentFragment();
         documentFragment.append(element);
+
         return documentFragment;
     }
 
@@ -283,14 +327,22 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * @remarks This function is called in the constructor.
      */
     private parseSettings(): void {
-        if (!this._processorSettings.options || this._processorSettings.options.length === 0) return;
-        this._processorSettings.options.forEach(option => {
+        if (
+            !this._processorSettings.options ||
+            this._processorSettings.options.length === 0
+        )
+            return;
+
+        this._processorSettings.options.forEach((option) => {
             switch (option.label) {
-                case "watchActiveFile":
-                    if (option.value === "true") {
+                case 'watchActiveFile':
+                    if (option.value === 'true') {
                         // Register event to update the header when the active file changes
                         this.component.registerEvent(
-                            this.global.app.workspace.on('active-leaf-change', () => this.onActiveFileChange.bind(this)())
+                            this.global.app.workspace.on(
+                                'active-leaf-change',
+                                () => this.onActiveFileChange.bind(this)(),
+                            ),
                         );
                     }
                     break;
@@ -308,8 +360,10 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      */
     private onActiveFileChange(): void {
         const activeFile = this.global.app.workspace.getActiveFile();
-        if (activeFile && !activeFile.path.contains("Ressourcen/Panels/")) {
-            this.logger.trace("Active file changed: ", activeFile.path);
+
+        if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
+            this.logger.trace('Active file changed: ', activeFile.path);
+
             if (this.path !== activeFile.path) {
                 this.path = activeFile.path;
                 this.onActiveFileDebounce();
@@ -321,11 +375,11 @@ export default class HeaderBlockRenderComponent implements RedrawableBlockRender
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this.logger.trace("Active file changed: Debouncing");
+        this.logger.trace('Active file changed: Debouncing');
         clearTimeout(this.activeFileDebounceTimer);
+
         this.activeFileDebounceTimer = setTimeout(async () => {
             this.redraw();
         }, 750);
     }
-
 }
