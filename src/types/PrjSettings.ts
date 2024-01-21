@@ -24,6 +24,10 @@ export interface PrjSettings {
         template: string;
         pdfFolder: string;
     };
+    noteSettings: {
+        defaultFolder: string;
+        template: string;
+    };
     prjSettings: {
         topicSymbol: string;
         topicFolder: string;
@@ -65,6 +69,10 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         defaultFolder: '',
         template: '',
         pdfFolder: '',
+    },
+    noteSettings: {
+        defaultFolder: '',
+        template: '',
     },
     prjSettings: {
         topicSymbol: 'album',
