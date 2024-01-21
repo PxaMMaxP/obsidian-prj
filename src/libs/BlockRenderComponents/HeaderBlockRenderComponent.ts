@@ -103,14 +103,14 @@ export default class HeaderBlockRenderComponent
     /**
      * The status of the Prj File.
      */
-    private get status(): string | undefined {
+    private get status(): Status | undefined {
         return this.model?.data.status ?? undefined;
     }
 
     /**
      * Sets the status of the Prj File.
      */
-    private set status(value: Status) {
+    private set status(value: Status | undefined) {
         if (this.model) this.model.changeStatus(value);
     }
 
@@ -149,7 +149,11 @@ export default class HeaderBlockRenderComponent
      * Sets the model of the Prj File.
      * @remarks This function is used to set the model to undefined.
      */
-    private set model(value: undefined) {
+    private set model(
+        value:
+            | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+            | undefined,
+    ) {
         this._model = value;
     }
 
