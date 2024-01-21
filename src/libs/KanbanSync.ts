@@ -29,7 +29,7 @@ export default class KanbanSync {
 
         this._kanbanMetadata =
             this._metadataCache.getEntry(kanbanFile)?.metadata;
-        this.logger.debug(`KanbanSync:`, this._kanbanMetadata);
+        this.logger.trace(`KanbanSync:`, this._kanbanMetadata);
 
         if (!changedFile) {
             this._syncMode = 'out';
