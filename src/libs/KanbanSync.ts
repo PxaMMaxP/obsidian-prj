@@ -3,10 +3,15 @@ import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
+import { remark } from 'remark';
+import { visit, EXIT } from 'unist-util-visit';
+import { Root } from 'remark-parse/lib';
+import { RootContent, ListItem, List } from 'mdast';
 
 export default class KanbanSync {
     private logger = Logging.getLogger('KanbanSync');
     private _metadataCache = Global.getInstance().metadataCache;
+    private _app: App = Global.getInstance().app;
     private _kanbanFile: TFile;
     private _kanbanMetadata: CachedMetadata | undefined;
     private _syncMode: 'in' | 'out' = 'out';
@@ -64,82 +69,37 @@ export default class KanbanSync {
      * @returns A Promise that resolves once the Kanban synchronization is complete.
      */
     private async syncKanban(): Promise<void> {
-        let fileToChange: File | undefined;
-        let oldState: Status | undefined;
-        const headings: Heading[] = [];
+        if (!this._changedFile) return;
 
-        /**
-         * Get all headings with valid status and find the changed file.
-         */
+        const linktext = this._app.metadataCache.fileToLinktext(
+            this._changedFile,
+            this._kanbanFile.path,
+        );
+        const changedFileLink = `[[${linktext}]]`;
+
+        let toHeading: string | undefined = undefined;
+
+        const newHeadingState =
+            StaticPrjTaskManagementModel.getCorospondingModel(this._changedFile)
+                ?.data.status;
+
         this._structedKanbanHeading?.forEach((heading) => {
             const status: Status | undefined =
                 PrjTypes.getValidStatusFromLanguage(heading.title);
 
-            if (!status) {
+            if (!status || newHeadingState !== status) {
                 return;
             }
 
-            const headingWithStatus = {
-                title: status,
-                startLine: heading.startLine,
-                endLine: heading.endLine,
-                files: [],
-            };
-            headings.push(headingWithStatus);
-
-            heading.files?.forEach((file) => {
-                if (file.file.path === this._changedFile?.path) {
-                    oldState = status;
-                    fileToChange = file;
-                }
-            });
+            toHeading = heading.title;
         });
 
-        if (fileToChange) {
-            this._structedKanban = new StructedKanban(this._kanbanFile);
+        if (!toHeading) return;
 
-            const newHeadingState =
-                StaticPrjTaskManagementModel.getCorospondingModel(
-                    fileToChange.file,
-                )?.data.status;
-
-            // Find the corresponding heading for the new state
-            const newHeading = headings.find((heading) => {
-                return heading.title === newHeadingState;
-            });
-
-            // If the state is the same, do nothing
-            if (newHeadingState === oldState) return;
-
-            if (!newHeading || !newHeadingState) {
-                return;
-            }
-
-            let newLine: number = newHeading?.startLine + 1 ?? 0;
-
-            if (newHeading.endLine === 'end') {
-                newHeading.endLine = Number.MAX_SAFE_INTEGER;
-            }
-
-            this._kanbanMetadata?.listItems?.forEach((listItem) => {
-                if (
-                    listItem.position.start.line >= newHeading.startLine &&
-                    newHeading.endLine &&
-                    newHeading.endLine !== 'end' &&
-                    listItem.position.start.line <= newHeading.endLine &&
-                    newLine <= listItem.position.start.line
-                ) {
-                    this.logger.debug('newLine set to: ', newLine);
-                    newLine = listItem.position.start.line + 1;
-                }
-            });
-
-            await this._structedKanban.loadFileAsLines();
-
-            this._structedKanban.moveLine(fileToChange.line, newLine);
-
-            await this._structedKanban.saveLinesToFile();
-        }
+        const structedKanban = new StructedKanban(this._kanbanFile);
+        await structedKanban.loadFile();
+        structedKanban.moveListItem(changedFileLink, toHeading);
+        await structedKanban.saveFile();
     }
 
     /**
@@ -159,7 +119,16 @@ export default class KanbanSync {
                     file.file,
                 );
 
-                model?.changeStatus(status);
+                if (model) {
+                    if (!model.data.title) {
+                        // If the title is not set, the file is a new file and the title and tags should be set
+                        model.data.title = file.file.basename;
+
+                        model.data.tags =
+                            this._kanbanMetadata?.frontmatter?.tags;
+                    }
+                    model.changeStatus(status);
+                }
             });
         });
     }
@@ -219,46 +188,185 @@ class StructedKanban {
     private logger = Logging.getLogger('StructedKanban');
     private _app: App = Global.getInstance().app;
     private _file: TFile;
-    private _content: string[];
+    private _contentFrontmatter: string;
+    private _contentMarkdown: string;
 
+    /**
+     * Creates a new instance of the KanbanSync class.
+     * @param file The TFile object representing the file.
+     */
     constructor(file: TFile) {
         this._file = file;
     }
 
-    public async loadFileAsLines(): Promise<void> {
-        this._content = (await this._app.vault.read(this._file)).split('\n');
+    /**
+     * Loads the file content and separates the frontmatter from the markdown content.
+     * @returns A promise that resolves once the file is loaded and separated.
+     */
+    public async loadFile(): Promise<void> {
+        const content = await this._app.vault.read(this._file);
+
+        const regex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+        const matches = content.match(regex);
+
+        if (matches) {
+            this._contentFrontmatter = matches[1];
+            this._contentMarkdown = matches[2];
+        }
     }
 
-    public async saveLinesToFile(): Promise<void> {
-        await this._app.vault.modify(this._file, this._content.join('\n'));
+    /**
+     * Saves the file with the specified content.
+     * @returns A promise that resolves when the file is saved.
+     */
+    public async saveFile(): Promise<void> {
+        const content = `---\n${this._contentFrontmatter}\n---\n${this._contentMarkdown}`;
+
+        await this._app.vault.modify(this._file, content);
     }
 
-    public moveLine(fromLine: number, toLine: number): void {
-        const lines = this._content;
+    /**
+     * Moves a list item to a specified heading.
+     *
+     * @param itemText - The text of the list item to be moved.
+     * @param toHeadingText - The text of the heading where the list item should be moved to.
+     */
+    public moveListItem(itemText: string, toHeadingText: string) {
+        const ast = remark().parse(this._contentMarkdown);
 
-        if (
-            fromLine < 0 ||
-            fromLine >= lines.length ||
-            toLine < 0 ||
-            toLine > lines.length
-        ) {
-            this.logger.warn('Zeilennummer außerhalb des gültigen Bereichs');
+        const listItemNode = this.getListItemByText(ast, itemText);
 
-            return;
+        const targetList = this.findOrCreateListUnderHeading(
+            ast,
+            toHeadingText,
+        );
+
+        if (listItemNode && targetList) {
+            targetList.children.push(listItemNode);
         }
 
-        // Remove the line from the array
-        const [removedLine] = lines.splice(fromLine, 1);
+        this._contentMarkdown = this.unescapeMarkdown(remark().stringify(ast));
+    }
 
-        // If the line was moved down, the line number must be reduced by one
-        if (fromLine < toLine) {
-            toLine--;
+    /**
+     * Removes the escape character from escaped markdown elements.
+     * @param text The text to unescape.
+     * @returns The unescaped text.
+     * @remarks This is a workaround for a bug in the markdown parser.
+     */
+    private unescapeMarkdown(text: string) {
+        // Replace * with - in unordered lists
+        text = text.replace(/^\*\s/gm, '- ');
+
+        // Remove the escape character from escaped checkboxes
+        text = text.replace(/\\\[([ x])\]/g, '[$1]');
+
+        // Remove the escape character from escaped links
+        text = text.replace(/\\\[\\\[(.*?)\]\]/g, '[[$1]]');
+
+        return text;
+    }
+
+    /**
+     * Retrieves a list item by searching for a specific text within the given AST.
+     * @param ast The root AST node to search within.
+     * @param textToFind The text to search for within the AST.
+     * @returns The found list item, or undefined if not found.
+     */
+    private getListItemByText(ast: Root, textToFind: string) {
+        let foundListItem: ListItem | undefined;
+        let currentParent: ListItem | undefined;
+        let curentlist: List | undefined;
+        let parentList: List | undefined;
+
+        visit(ast, (node, index, parent) => {
+            if (node.type === 'list') {
+                curentlist = node;
+            }
+
+            if (node.type === 'listItem') {
+                currentParent = node;
+            }
+
+            if (
+                node.type === 'text' &&
+                node.value.includes(textToFind) &&
+                currentParent
+            ) {
+                foundListItem = currentParent;
+                parentList = curentlist;
+
+                return EXIT;
+            }
+        });
+
+        // Remove the found list item from its parent list
+        if (parentList && foundListItem && Array.isArray(parentList.children)) {
+            const index = parentList.children.indexOf(foundListItem);
+
+            if (index > -1) {
+                parentList.children.splice(index, 1);
+            }
         }
 
-        // Insert the line at the new position
-        lines.splice(toLine, 0, removedLine);
+        return foundListItem;
+    }
 
-        this._content = lines;
+    private findOrCreateListUnderHeading(ast: Root, headingText: string) {
+        let targetHeadingIndex: number | null = null;
+        let nextHeadingIndex: number | null = null;
+        let foundList = null;
+
+        // Run trough the AST and find the target and the next heading
+        visit(ast, (node, index) => {
+            if (node.type === 'heading') {
+                if (
+                    node.children.some(
+                        (child) =>
+                            child.type === 'text' &&
+                            child.value === headingText,
+                    )
+                ) {
+                    targetHeadingIndex = index ?? null;
+                } else if (
+                    targetHeadingIndex !== null &&
+                    nextHeadingIndex === null
+                ) {
+                    nextHeadingIndex = index ?? null;
+                }
+            }
+
+            // If the target heading was found and the current node is a list, check if it is in the right position
+            if (
+                targetHeadingIndex !== null &&
+                node.type === 'list' &&
+                index &&
+                index > targetHeadingIndex &&
+                (nextHeadingIndex === null || index < nextHeadingIndex)
+            ) {
+                foundList = node;
+
+                return EXIT;
+            }
+        });
+
+        // If no list was found, create a new one
+        if (foundList === null && targetHeadingIndex !== null) {
+            const insertIndex = nextHeadingIndex ?? targetHeadingIndex + 1;
+
+            const newList: RootContent = {
+                type: 'list',
+                ordered: false,
+                children: [],
+                spread: false,
+            };
+
+            // Append the new list after the target heading or before the next heading
+            ast.children.splice(insertIndex, 0, newList);
+            foundList = newList;
+        }
+
+        return foundList;
     }
 }
 
