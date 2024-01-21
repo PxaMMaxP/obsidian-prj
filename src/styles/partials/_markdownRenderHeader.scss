@@ -2,13 +2,27 @@
 
 .header-block-component {
     .title {
-        h1 {
+        span {
+            font-variant: var(--h1-variant);
+            letter-spacing: -0.015em;
+            line-height: var(--h1-line-height);
+            font-size: var(--h1-size);
+            color: var(--h1-color);
+            font-weight: var(--h1-weight);
+            font-style: var(--h1-style);
+            font-family: var(--h1-font);
+            margin-block-start: var(--p-spacing);
+            margin-block-end: var(--p-spacing);
             margin-top: 0px;
             margin-bottom: 0px;
         }
     }
 
     .status {
+        .status-label {
+            white-space: pre-wrap;
+        }
+
         p {
             margin-top: 0px;
             margin-bottom: 0px;
@@ -36,7 +50,7 @@
             height: max-content;
         }
 
-        li > ul::before {
+        li>ul::before {
             display: none;
         }
 
@@ -65,14 +79,18 @@
             padding-left: 0px;
         }
 
-        ul li/**:hover**/>ul {
+        ul li
+
+        /**:hover**/
+        >ul {
             display: flex;
             flex-direction: column;
         }
 
         ul ul li {
             margin-right: 0;
-            margin-bottom: 5px;
+            margin-top: 5px;
+            margin-bottom: 0px;
         }
 
         ul ul li:before {
@@ -82,5 +100,3 @@
         }
     }
 }
-
-
