@@ -1,4 +1,4 @@
-import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
+import { FrontMatterCache, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
@@ -6,6 +6,13 @@ import Tags, { TagTree } from '../Tags';
 import Logging from 'src/classes/Logging';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
+import EditableDataView from '../EditableDataView/EditableDataView';
+import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
+import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import ProjectData from 'src/types/ProjectData';
+import TaskData from 'src/types/TaskData';
+import TopicData from 'src/types/TopicData';
+import { Status } from 'src/types/PrjTypes';
 
 /**
  * Header Block Render Component class.
@@ -24,6 +31,9 @@ export default class HeaderBlockRenderComponent
     private _global = Global.getInstance();
     private logger = Logging.getLogger('HeaderBlockRenderComponent');
     private _metadataCache = this._global.metadataCache;
+    private _model:
+        | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+        | undefined;
 
     private _processorSettings: IProcessorSettings;
     private _childComponent: CustomizableRenderChild;
@@ -45,6 +55,7 @@ export default class HeaderBlockRenderComponent
      */
     private set path(value: string) {
         this._processorSettings.source = value;
+        this._model = undefined;
     }
 
     /**
@@ -79,18 +90,78 @@ export default class HeaderBlockRenderComponent
      * The title of the Prj File.
      */
     private get title(): string | undefined {
-        return this.frontmatter?.title;
+        return this.model?.data.title ?? undefined;
+    }
+
+    /**
+     * Sets the title of the Prj File.
+     */
+    private set title(value: string | null | undefined) {
+        if (this.model) this.model.data.title = value;
     }
 
     /**
      * The status of the Prj File.
      */
-    private get status(): string | undefined {
-        return this.frontmatter?.status;
+    private get status(): Status | undefined {
+        return this.model?.data.status ?? undefined;
     }
 
+    /**
+     * Sets the status of the Prj File.
+     */
+    private set status(value: Status | undefined) {
+        if (this.model) this.model.changeStatus(value);
+    }
+
+    /**
+     * The description of the Prj File.
+     */
     private get description(): string | undefined {
-        return this.frontmatter?.description;
+        return this.model?.data.description ?? undefined;
+    }
+
+    /**
+     * Sets the description of the Prj File.
+     */
+    private set description(value: string | null | undefined) {
+        if (this.model) this.model.data.description = value;
+    }
+
+    /**
+     * The model of the Prj File.
+     */
+    private get model():
+        | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+        | undefined {
+        if (this._model) return this._model;
+
+        if (!this.file) return undefined;
+
+        this._model = StaticPrjTaskManagementModel.getCorospondingModel(
+            this.file,
+        );
+
+        return this._model;
+    }
+
+    /**
+     * Sets the model of the Prj File.
+     * @remarks This function is used to set the model to undefined.
+     */
+    private set model(
+        value:
+            | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+            | undefined,
+    ) {
+        this._model = value;
+    }
+
+    /**
+     * The file in which the block is located.
+     */
+    private get file(): TFile | undefined {
+        return this._metadataCache.getEntryByPath(this.path)?.file;
     }
 
     /**
@@ -118,6 +189,8 @@ export default class HeaderBlockRenderComponent
         this.onDocumentChangedMetadata =
             this.onDocumentChangedMetadata.bind(this);
 
+        this.onPathChanged = this.onPathChanged.bind(this);
+
         this._childComponent = new CustomizableRenderChild(
             this.container,
             () => this.onLoad(),
@@ -138,6 +211,8 @@ export default class HeaderBlockRenderComponent
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
+
+        this._metadataCache.on('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -149,6 +224,8 @@ export default class HeaderBlockRenderComponent
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
+
+        this._metadataCache.off('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -175,6 +252,17 @@ export default class HeaderBlockRenderComponent
      */
     private onDocumentChangedMetadata(file: TFile): void {
         if (file.path === this.path) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The `file-rename-event` event handler.
+     * @param file Contains `{ oldPath: string; newPath: string }` of the file which has changed.
+     */
+    private onPathChanged(file: { oldPath: string; newPath: string }): void {
+        if (file.oldPath === this.path) {
+            this.path = file.newPath;
             this.redraw();
         }
     }
@@ -210,12 +298,18 @@ export default class HeaderBlockRenderComponent
         const titleDiv = document.createElement('div');
         titleDiv.classList.add('title');
 
-        MarkdownRenderer.render(
-            this._app,
-            `# ${this.title}`,
-            titleDiv,
-            this.path,
-            this.component,
+        new EditableDataView(titleDiv, this._childComponent).addText((text) =>
+            text
+                .setValue(this.title ?? '')
+                .setTitle(Lng.gt('Title'))
+                .setPlaceholder(Lng.gt('Title'))
+                .enableEditability()
+                .setRenderMarkdown()
+                .onSave((value: string) => {
+                    this.title = value;
+
+                    return Promise.resolve();
+                }),
         );
 
         return this.createDocumentFragment(titleDiv);
@@ -229,12 +323,43 @@ export default class HeaderBlockRenderComponent
         const statusDiv = document.createElement('div');
         statusDiv.classList.add('status');
 
-        MarkdownRenderer.render(
-            this._app,
-            `${Lng.gt('Status')}: **${this.status}**`,
-            statusDiv,
-            this.path,
-            this.component,
+        const statusLabel = document.createElement('p');
+        statusLabel.classList.add('status-label');
+        statusLabel.innerText = `${Lng.gt('Status')}: `;
+
+        new EditableDataView(statusDiv, this._childComponent).addDropdown(
+            (dropdown) =>
+                dropdown
+                    .setOptions([
+                        { value: 'Active', text: Lng.gt('StatusActive') },
+                        { value: 'Waiting', text: Lng.gt('StatusWaiting') },
+                        { value: 'Later', text: Lng.gt('StatusLater') },
+                        { value: 'Someday', text: Lng.gt('StatusSomeday') },
+                        { value: 'Done', text: Lng.gt('StatusDone') },
+                    ])
+                    .setTitle(Lng.gt('Status'))
+                    .setValue(this.status ?? '')
+                    .onSave(async (value) => {
+                        this.status = value as Status;
+                    })
+                    .enableEditability()
+                    .setFormator((value: string) => {
+                        const status = Lng.gt(`Status${value}`);
+
+                        return { text: `${status}`, html: undefined };
+                    })
+                    .then((value) => {
+                        // Add status label
+                        value.firstChild
+                            ? value.insertBefore(statusLabel, value.firstChild)
+                            : value.appendChild(statusLabel);
+
+                        // Find presentation span (.textarea-presentation)
+                        // and add class cm-strong (bold)
+                        const presentationSpan =
+                            value.querySelector('.text-presentation');
+                        presentationSpan?.addClass('cm-strong');
+                    }),
         );
 
         return this.createDocumentFragment(statusDiv);
@@ -248,12 +373,19 @@ export default class HeaderBlockRenderComponent
         const descriptionDiv = document.createElement('div');
         descriptionDiv.classList.add('description');
 
-        MarkdownRenderer.render(
-            this._app,
-            `${this.description}`,
-            descriptionDiv,
-            this.path,
-            this.component,
+        new EditableDataView(descriptionDiv, this._childComponent).addTextarea(
+            (textarea) =>
+                textarea
+                    .setValue(this.description ?? '')
+                    .setTitle(Lng.gt('Description'))
+                    .setPlaceholder(Lng.gt('Description'))
+                    .enableEditability()
+                    .setRenderMarkdown()
+                    .onSave((value: string) => {
+                        this.description = value;
+
+                        return Promise.resolve();
+                    }),
         );
 
         return this.createDocumentFragment(descriptionDiv);

@@ -1,11 +1,18 @@
 import { Component, Platform, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 
+/**
+ * A cursor position.
+ * @remarks - The cursor position can be a number, 'start' or 'end'.
+ */
+export type CursorPosition = number | 'start' | 'end';
+
 export default abstract class BaseComponent {
     public get container(): HTMLDivElement {
         return this._shippingContainer;
     }
     protected component: Component;
+    public thenCallback: ((container: HTMLDivElement) => void) | undefined;
 
     /**
      * If `true`, the component will be created to allow editing.
@@ -231,8 +238,54 @@ export default abstract class BaseComponent {
      * - etc.
      */
     public then(callback: (container: HTMLDivElement) => void): BaseComponent {
-        callback(this._shippingContainer);
+        this.thenCallback = callback;
 
         return this;
+    }
+
+    /**
+     * Sets the cursor position in the input element.
+     * @param position Position to set the cursor to.
+     * @param input The input element.
+     * @remarks The position is clamped to the length of the input element.
+     */
+    protected setInputCursorAbsolutePosition(
+        position: CursorPosition,
+        input: HTMLElement,
+    ): void {
+        position = this.getCursorPositionNumber(position);
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        if (selection && selection.rangeCount > 0) {
+            const safePosition = Math.max(
+                0,
+                Math.min(position, input.textContent?.length ?? 0),
+            );
+
+            if (input.firstChild) {
+                range.setStart(input.firstChild, safePosition);
+                range.setEnd(input.firstChild, safePosition);
+            }
+
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+
+    /**
+     * Returns the cursor position as a number.
+     * @param position Position to convert. Can be a number, 'start' or 'end'.
+     * @returns The cursor position as a number.
+     */
+    private getCursorPositionNumber(position: CursorPosition): number {
+        if (position === 'start') {
+            position = 0;
+        } else if (position === 'end') {
+            position = Number.MAX_SAFE_INTEGER;
+        }
+
+        return position;
     }
 }

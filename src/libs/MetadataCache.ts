@@ -182,9 +182,24 @@ export default class MetadataCache {
         listener: (file: TFile) => void,
     ): void;
 
+    /**
+     * Register an event listener for the metadata cache. The event is emitted when a kanban file is changed.
+     * @param eventName The name of the event: `changes-in-kanban-event`
+     * @param listener The listener function. The listener function receives the file object as an argument.
+     */
     public on(
         eventName: 'changes-in-kanban-event',
         listener: (file: TFile) => void,
+    ): void;
+
+    /**
+     * Register an event listener for the metadata cache. The event is emitted when a file is renamed or moved.
+     * @param eventName The name of the event: `file-rename-event`
+     * @param listener The listener function. The listener function receives `{oldPath: string, newPath: string}` as an argument.
+     */
+    public on(
+        eventName: 'file-rename-event',
+        listener: (file: { oldPath: string; newPath: string }) => void,
     ): void;
 
     /**
@@ -491,6 +506,11 @@ export default class MetadataCache {
             this._metadataCache.delete(oldPath);
             this.addEntry(newFile);
             this.invalidateMetadataCacheArray();
+
+            this._eventHandler.fireEvent('file-rename-event', {
+                oldPath: oldPath,
+                newPath: newFile.path,
+            });
         } else {
             this.logger.error('Metadata cache not initialized');
         }
@@ -580,13 +600,11 @@ interface MetadataCacheEvents extends ICallback {
             undefined | void
         >;
         'document-changed-metadata-event': IEvent<TFile, undefined | void>;
-        'changes-in-kanban-event': IEvent<TFile, undefined>;
+        'changes-in-kanban-event': IEvent<TFile, undefined | void>;
+        'file-rename-event': IEvent<
+            { oldPath: string; newPath: string },
+            undefined | void
+        >;
         // Add more events here
     };
-}
-
-export interface MetadataCacheEventArgs {
-    file: TFile;
-    newMetadata: CachedMetadata;
-    oldMetadata: CachedMetadata;
 }
