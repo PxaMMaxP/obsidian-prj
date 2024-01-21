@@ -16,6 +16,7 @@ import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync';
+import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;
@@ -76,6 +77,8 @@ export default class Prj extends Plugin {
         CreateNewTaskModal.registerCommand();
         // Add Annotation Command
         AddAnnotationModal.registerCommand();
+        // Add new note Command
+        CreateNewNoteModal.registerCommand();
 
         // Change Status Command
         ChangeStatusModal.registerCommand();

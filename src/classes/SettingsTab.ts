@@ -344,6 +344,37 @@ export class SettingTab extends PluginSettingTab {
                     }),
             );
 
+        // Note Settings
+        new Setting(containerEl).setHeading().setName('Note Settings');
+
+        // Default Folder
+        new Setting(containerEl)
+            .setName('Default Folder')
+            .setDesc('The default folder for new Notes')
+            .addText((text) =>
+                text
+                    .setPlaceholder('')
+                    .setValue(this.plugin.settings.noteSettings.defaultFolder)
+                    .onChange(async (value) => {
+                        this.plugin.settings.noteSettings.defaultFolder = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        // Template file
+        new Setting(containerEl)
+            .setName('Template File')
+            .setDesc('The Template file for new Notes')
+            .addText((text) =>
+                text
+                    .setPlaceholder('')
+                    .setValue(this.plugin.settings.noteSettings.template)
+                    .onChange(async (value) => {
+                        this.plugin.settings.noteSettings.template = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
         // Project Settings
         new Setting(containerEl).setHeading().setName('Project Settings');
 
