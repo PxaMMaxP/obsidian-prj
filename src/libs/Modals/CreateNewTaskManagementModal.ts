@@ -5,11 +5,11 @@ import Helper from '../Helper';
 import Global from 'src/classes/Global';
 import PrjTypes from 'src/types/PrjTypes';
 import { TFile } from 'obsidian';
-import path from 'path';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import ProjectData from 'src/types/ProjectData';
 import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
+import { Path } from 'src/classes/Path';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {
@@ -179,7 +179,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             extension: `.md`,
             file: undefined as TFile | undefined,
             get fullPath() {
-                return path.join(
+                return Path.join(
                     this.filepath,
                     this.filename +
                         (this.postfix ? this.postfix : '') +

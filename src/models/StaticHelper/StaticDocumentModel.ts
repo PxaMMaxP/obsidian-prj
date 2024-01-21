@@ -3,8 +3,8 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import Helper from 'src/libs/Helper';
 import { DocumentModel } from '../DocumentModel';
-import path from 'path';
 import Logging from 'src/classes/Logging';
+import { Path } from 'src/classes/Path';
 
 /**
  * Static API for DocumentModel
@@ -165,7 +165,7 @@ export class StaticDocumentModel {
             StaticDocumentModel.generateMetadataFilename(document);
         const defaultDocumentFolder = settings.documentSettings.defaultFolder;
 
-        const desiredFilePath = path.join(
+        const desiredFilePath = Path.join(
             defaultDocumentFolder,
             `${desiredFilename}.md`,
         );
@@ -206,7 +206,7 @@ export class StaticDocumentModel {
         // Check if file is already in the default folder
         // if not, move it there
         if (defaultPdfFolder && !pdfFile.path.contains(defaultPdfFolder)) {
-            desiredPdfFilePath = path.join(
+            desiredPdfFilePath = Path.join(
                 defaultPdfFolder,
                 `${desiredFilename}.${pdfFile.extension}`,
             );
@@ -215,7 +215,7 @@ export class StaticDocumentModel {
             const pdfParentFolder = pdfFile.parent?.path;
 
             if (pdfParentFolder) {
-                desiredPdfFilePath = path.join(
+                desiredPdfFilePath = Path.join(
                     pdfParentFolder,
                     `${desiredFilename}.${pdfFile.extension}`,
                 );

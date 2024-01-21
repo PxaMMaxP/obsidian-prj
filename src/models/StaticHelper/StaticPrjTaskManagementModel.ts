@@ -8,9 +8,9 @@ import { PrjTaskManagementModel } from '../PrjTaskManagementModel';
 import { ProjectModel } from '../ProjectModel';
 import { TaskModel } from '../TaskModel';
 import { TopicModel } from '../TopicModel';
-import path from 'path';
 import Logging from 'src/classes/Logging';
 import Helper from 'src/libs/Helper';
+import { Path } from 'src/classes/Path';
 
 /**
  * Represents a static helper class for managing project task models.
@@ -255,7 +255,7 @@ export class StaticPrjTaskManagementModel {
 
             const newFileName = Helper.sanitizeFilename(`${title}.${ext}`);
 
-            const movePath = path.join(model.file.parent.path, newFileName);
+            const movePath = Path.join(model.file.parent.path, newFileName);
 
             logger.debug(`Renaming file ${model.file.path} to ${movePath}`);
             app.fileManager.renameFile(model.file, movePath);
@@ -307,9 +307,9 @@ export class StaticPrjTaskManagementModel {
             let movePath: string;
 
             if (model.data.status === 'Done') {
-                movePath = path.join(parentPath, 'Archiv', filename);
+                movePath = Path.join(parentPath, 'Archiv', filename);
             } else if (PrjTypes.isValidStatus(model.data.status)) {
-                movePath = path.join(parentPath, filename);
+                movePath = Path.join(parentPath, filename);
             } else {
                 return;
             }

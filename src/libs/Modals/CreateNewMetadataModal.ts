@@ -1,4 +1,3 @@
-import path from 'path';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { DocumentModel } from 'src/models/DocumentModel';
@@ -14,6 +13,7 @@ import Helper from '../Helper';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
 import { TFile } from 'obsidian';
+import { Path } from 'src/classes/Path';
 
 /**
  * Modal to create a new metadata file
@@ -156,7 +156,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
                 API.documentModel.generateMetadataFilename(document);
 
             const file = await this.app.vault.create(
-                path.join(folder, `${newFileName}.md`),
+                Path.join(folder, `${newFileName}.md`),
                 template,
             );
             document.file = file;
