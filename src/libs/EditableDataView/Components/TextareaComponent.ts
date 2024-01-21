@@ -183,6 +183,7 @@ export default class TextareaComponent extends BaseComponent {
         this._presentationSpan.textContent = this._value;
         this._presentationSpan.contentEditable = 'true';
         this._presentationSpan.focus();
+        this.setInputCursorAbsolutePosition('end', this._presentationSpan);
     }
 
     private disableEdit() {

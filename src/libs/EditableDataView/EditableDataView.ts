@@ -24,6 +24,7 @@ export default class EditableDataView {
         const textComponent = new TextComponent(this._component);
         configure(textComponent);
         textComponent.finalize();
+        textComponent.thenCallback?.(textComponent.container);
 
         this._container.append(textComponent.container);
 
@@ -36,6 +37,7 @@ export default class EditableDataView {
         const textComponent = new TextareaComponent(this._component);
         configure(textComponent);
         textComponent.finalize();
+        textComponent.thenCallback?.(textComponent.container);
 
         this._container.append(textComponent.container);
 
@@ -48,6 +50,7 @@ export default class EditableDataView {
         const linkComponent = new LinkComponent(this._component);
         configure(linkComponent);
         linkComponent.finalize();
+        linkComponent.thenCallback?.(linkComponent.container);
 
         this._container.appendChild(linkComponent.container);
 
@@ -60,6 +63,7 @@ export default class EditableDataView {
         const dateComponent = new DateComponent(this._component);
         configure(dateComponent);
         dateComponent.finalize();
+        dateComponent.thenCallback?.(dateComponent.container);
 
         this._container.append(dateComponent.container);
 
@@ -72,6 +76,7 @@ export default class EditableDataView {
         const dropdownComponent = new DropdownComponent(this._component);
         configure(dropdownComponent);
         dropdownComponent.finalize();
+        dropdownComponent.thenCallback?.(dropdownComponent.container);
 
         this._container.appendChild(dropdownComponent.container);
 

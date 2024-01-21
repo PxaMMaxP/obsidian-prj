@@ -227,6 +227,7 @@ export default class TextComponent extends BaseComponent {
         this._presentationSpan.contentEditable = 'true';
         this._presentationSpan.focus();
         this._suggestionComponent?.enableSuggestior();
+        this.setInputCursorAbsolutePosition('end', this._presentationSpan);
     }
 
     private disableEdit() {
