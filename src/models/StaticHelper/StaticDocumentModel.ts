@@ -175,7 +175,8 @@ export class StaticDocumentModel {
             logger.trace(
                 `Moving file '${document.file.path}' to '${desiredFilePath}'`,
             );
-            await app.vault.rename(document.file, desiredFilePath);
+            // fileManager.renameFile does autorenaming internal links
+            await app.fileManager.renameFile(document.file, desiredFilePath);
         } else {
             logger.trace(
                 `File '${document.file.path}' is already in the correct folder`,
@@ -232,8 +233,8 @@ export class StaticDocumentModel {
             logger.trace(
                 `Moving file '${pdfFile.path}' to '${desiredPdfFilePath}'`,
             );
-            await app.vault.rename(pdfFile, desiredPdfFilePath);
-            document.setLinkedFile(pdfFile);
+            // fileManager.renameFile does autorenaming internal links
+            await app.fileManager.renameFile(pdfFile, desiredPdfFilePath);
         }
     }
 }
