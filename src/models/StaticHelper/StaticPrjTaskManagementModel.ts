@@ -10,6 +10,7 @@ import { TaskModel } from '../TaskModel';
 import { TopicModel } from '../TopicModel';
 import path from 'path';
 import Logging from 'src/classes/Logging';
+import Helper from 'src/libs/Helper';
 
 /**
  * Represents a static helper class for managing project task models.
@@ -232,6 +233,35 @@ export class StaticPrjTaskManagementModel {
         }
     }
 
+    public static syncTitleToFilename(file: TFile) {
+        const model = StaticPrjTaskManagementModel.getCorospondingModel(file);
+
+        if (!model || model.data.type !== 'Task') {
+            return;
+        }
+
+        const title = model.data.title;
+
+        if (!title) {
+            return;
+        }
+
+        const filename = model.file.basename;
+        const ext = model.file.extension;
+
+        if (title !== filename && model.file.parent?.path) {
+            const app = Global.getInstance().app;
+            const logger = Logging.getLogger('StaticPrjTaskManagementModel');
+
+            const newFileName = Helper.sanitizeFilename(`${title}.${ext}`);
+
+            const movePath = path.join(model.file.parent.path, newFileName);
+
+            logger.debug(`Renaming file ${model.file.path} to ${movePath}`);
+            app.fileManager.renameFile(model.file, movePath);
+        }
+    }
+
     /**
      * Syncs the status of the model to the path.
      * @param file The file to sync the status for.
@@ -289,7 +319,8 @@ export class StaticPrjTaskManagementModel {
 
             if (movePath.replace('\\', '/') !== model.file.path) {
                 logger.debug(`Moving file ${model.file.path} to ${movePath}`);
-                app.vault.rename(model.file, movePath);
+                // fileManager.renameFile does autorenaming internal links
+                app.fileManager.renameFile(model.file, movePath);
             } else {
                 logger.debug(
                     `File ${model.file.path} is already in the correct folder`,

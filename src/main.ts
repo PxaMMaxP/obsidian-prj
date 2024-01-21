@@ -52,6 +52,21 @@ export default class Prj extends Plugin {
         // Get Metadata File Context Menu & Command
         GetMetadata.getInstance();
 
+        // Register Commands and Events
+        this.registerCommandsAndEvents();
+
+        /**
+         * Run rebuild active view after 500ms
+         * This is a workaround for the problem
+         * that the plugin is not loaded when the
+         * start page is loaded.
+         */
+        setTimeout(() => {
+            Helper.rebuildActiveView();
+        }, 500);
+    }
+
+    private registerCommandsAndEvents(): void {
         // Create New Metadata File Command
         CreateNewMetadataModal.registerCommand();
 
@@ -70,6 +85,14 @@ export default class Prj extends Plugin {
             'prj-task-management-changed-status-event',
             (file) => {
                 StaticPrjTaskManagementModel.syncStatusToPath(file);
+            },
+        );
+
+        //Register event on `tsk-file` change..
+        Global.getInstance().metadataCache.on(
+            'prj-task-management-file-changed-event',
+            (file) => {
+                StaticPrjTaskManagementModel.syncTitleToFilename(file);
             },
         );
 
@@ -92,16 +115,6 @@ export default class Prj extends Plugin {
                 Helper.rebuildActiveView();
             },
         });
-
-        /**
-         * Run rebuild active view after 500ms
-         * This is a workaround for the problem
-         * that the plugin is not loaded when the
-         * start page is loaded.
-         */
-        setTimeout(() => {
-            Helper.rebuildActiveView();
-        }, 500);
     }
 
     onunload() {
