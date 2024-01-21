@@ -130,4 +130,15 @@ export default class Tags {
 
         return tagTree;
     }
+
+    /**
+     * Returns an array of tag elements extracted from the given tag string.
+     * @param tag - The tag string to extract tag elements from.
+     * @returns An array of tag elements.
+     */
+    static getTagElements(tag: string) {
+        const tags = tag.split('/');
+
+        return tags;
+    }
 }
