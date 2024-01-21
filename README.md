@@ -1,4 +1,4 @@
-[![Release](https://github.com/PxaMMaxP/obsidian-prj/actions/workflows/CreateRelease.yml/badge.svg)](https://github.com/PxaMMaxP/obsidian-prj/actions/workflows/CreateRelease.yml)
+![Time](https://waka.mpassarello.de/api/badge/MaxP/interval:any/project:prj)
 
 # Prj
 
