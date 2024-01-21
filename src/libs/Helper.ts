@@ -344,13 +344,13 @@ export default class Helper {
     }
 
     /**
-     * Sanitizes a filename by removing any characters that are not alphanumeric, hyphen, underscore, period, or space.
+     * Sanitizes a filename by removing any characters that are not alphanumeric, hyphen, underscore, period, space, or umlauts.
      *
      * @param filename - The filename to sanitize.
      * @returns The sanitized filename.
      */
     static sanitizeFilename(filename: string): string {
-        return filename.replace(/[^a-zA-Z0-9-_. ]/g, '');
+        return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß]/g, '');
     }
 
     static rebuildActiveView(): void {
