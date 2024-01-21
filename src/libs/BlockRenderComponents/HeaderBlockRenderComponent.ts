@@ -55,6 +55,7 @@ export default class HeaderBlockRenderComponent
      */
     private set path(value: string) {
         this._processorSettings.source = value;
+        this._model = undefined;
     }
 
     /**
@@ -92,6 +93,9 @@ export default class HeaderBlockRenderComponent
         return this.model?.data.title ?? undefined;
     }
 
+    /**
+     * Sets the title of the Prj File.
+     */
     private set title(value: string | null | undefined) {
         if (this.model) this.model.data.title = value;
     }
@@ -103,14 +107,23 @@ export default class HeaderBlockRenderComponent
         return this.model?.data.status ?? undefined;
     }
 
+    /**
+     * Sets the status of the Prj File.
+     */
     private set status(value: Status) {
         if (this.model) this.model.changeStatus(value);
     }
 
+    /**
+     * The description of the Prj File.
+     */
     private get description(): string | undefined {
         return this.model?.data.description ?? undefined;
     }
 
+    /**
+     * Sets the description of the Prj File.
+     */
     private set description(value: string | null | undefined) {
         if (this.model) this.model.data.description = value;
     }
@@ -130,6 +143,14 @@ export default class HeaderBlockRenderComponent
         );
 
         return this._model;
+    }
+
+    /**
+     * Sets the model of the Prj File.
+     * @remarks This function is used to set the model to undefined.
+     */
+    private set model(value: undefined) {
+        this._model = value;
     }
 
     /**
@@ -164,6 +185,8 @@ export default class HeaderBlockRenderComponent
         this.onDocumentChangedMetadata =
             this.onDocumentChangedMetadata.bind(this);
 
+        this.onPathChanged = this.onPathChanged.bind(this);
+
         this._childComponent = new CustomizableRenderChild(
             this.container,
             () => this.onLoad(),
@@ -184,6 +207,8 @@ export default class HeaderBlockRenderComponent
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
+
+        this._metadataCache.on('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -195,6 +220,8 @@ export default class HeaderBlockRenderComponent
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
+
+        this._metadataCache.off('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -221,6 +248,17 @@ export default class HeaderBlockRenderComponent
      */
     private onDocumentChangedMetadata(file: TFile): void {
         if (file.path === this.path) {
+            this.redraw();
+        }
+    }
+
+    /**
+     * The `file-rename-event` event handler.
+     * @param file Contains `{ oldPath: string; newPath: string }` of the file which has changed.
+     */
+    private onPathChanged(file: { oldPath: string; newPath: string }): void {
+        if (file.oldPath === this.path) {
+            this.path = file.newPath;
             this.redraw();
         }
     }
