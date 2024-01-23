@@ -5,6 +5,7 @@ import Global from '../classes/Global';
 import { App, CachedMetadata, TFile } from 'obsidian';
 import GenericEvents, { ICallback, IEvent } from './GenericEvents';
 import PrjTypes from 'src/types/PrjTypes';
+import { PrjSettings } from 'src/types/PrjSettings';
 
 /**
  * FileMetadata interface
@@ -24,6 +25,7 @@ export class FileMetadata {
 export default class MetadataCache {
     private _eventHandler: GenericEvents<MetadataCacheEvents>;
     private _app: App = Global.getInstance().app;
+    private _settings: PrjSettings = Global.getInstance().settings;
     private logger = Logging.getLogger('MetadataCache');
     private _metadataCachePromise: Promise<void> | undefined = undefined;
     private _metadataCache: Map<string, FileMetadata> | undefined = undefined;
@@ -255,6 +257,14 @@ export default class MetadataCache {
             `Metadata changed for file ${file.path} and is processed.`,
         );
 
+        if (file.path.startsWith(this._settings.templateFolder)) {
+            this.logger.trace(
+                `No event emitted for file ${file.path} because it is a template file.`,
+            );
+
+            return;
+        }
+
         // Check if the file is plugin file
         if (
             newMetadata.frontmatter?.type &&
@@ -305,6 +315,31 @@ export default class MetadataCache {
                     break;
             }
         }
+    }
+
+    /**
+     * Handles the event when a file is renamed.
+     *
+     * @param oldPath The old path of the file.
+     * @param newFile The new file object representing the renamed file.
+     */
+    private async onRenamedFile(oldPath: string, newFile: TFile) {
+        this.logger.trace(
+            `File renamed from ${oldPath} to ${newFile.path} and is processed.`,
+        );
+
+        if (newFile.path.startsWith(this._settings.templateFolder)) {
+            this.logger.trace(
+                `No event emitted for file ${newFile.path} because it is a template file.`,
+            );
+
+            return;
+        }
+
+        this._eventHandler.fireEvent('file-rename-event', {
+            oldPath: oldPath,
+            newPath: newFile.path,
+        });
     }
 
     /**
@@ -506,11 +541,7 @@ export default class MetadataCache {
             this._metadataCache.delete(oldPath);
             this.addEntry(newFile);
             this.invalidateMetadataCacheArray();
-
-            this._eventHandler.fireEvent('file-rename-event', {
-                oldPath: oldPath,
-                newPath: newFile.path,
-            });
+            this.onRenamedFile(oldPath, newFile);
         } else {
             this.logger.error('Metadata cache not initialized');
         }
