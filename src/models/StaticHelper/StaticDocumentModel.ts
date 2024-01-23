@@ -192,20 +192,29 @@ export class StaticDocumentModel {
             ? new Date(document.data.date)
             : undefined;
 
+        const documentYear = documentDate
+            ? documentDate.getFullYear().toString()
+            : '';
+
+        const documentMonth = documentDate
+            ? (documentDate.getMonth() + 1).toString().padStart(2, '0')
+            : '';
+
         const defaultPdfFolder = documentDate
             ? settings.documentSettings.pdfFolder
-                  .replace('{YYYY}', documentDate.getFullYear().toString())
-                  .replace(
-                      '{MM}',
-                      (documentDate.getMonth() + 1).toString().padStart(2, '0'),
-                  )
-            : settings.documentSettings.pdfFolder;
+                  .replace('{YYYY}', documentYear)
+                  .replace('{MM}', documentMonth)
+            : undefined;
 
         let desiredPdfFilePath: string | undefined;
 
         // Check if file is already in the default folder
         // if not, move it there
-        if (defaultPdfFolder && !pdfFile.path.contains(defaultPdfFolder)) {
+        if (
+            !document.data.dontChangePdfPath &&
+            defaultPdfFolder &&
+            !pdfFile.path.contains(defaultPdfFolder)
+        ) {
             desiredPdfFilePath = Path.join(
                 defaultPdfFolder,
                 `${desiredFilename}.${pdfFile.extension}`,

@@ -283,6 +283,18 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         };
         form.fields.push(hide);
 
+        // Dont change PDF path
+        const dontChangePdfPath: Field = {
+            name: 'dontChangePdfPath',
+            label: Lng.gt('Dont change PDF Path'),
+            description: Lng.gt('Dont change PDF Path description'),
+            isRequired: false,
+            input: {
+                type: 'toggle',
+            },
+        };
+        form.fields.push(dontChangePdfPath);
+
         // Tags
         const tags: Field = {
             name: 'tags',

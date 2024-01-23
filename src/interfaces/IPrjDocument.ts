@@ -10,6 +10,7 @@ export default interface IPrjDocument {
     recipient: string | null | undefined;
     dateOfDelivery: string | null | undefined;
     hide: boolean | null | undefined;
+    dontChangePdfPath: boolean | null | undefined;
     file: string | null | undefined;
     relatedFiles: string[] | null | undefined;
     citationTitle: string | null | undefined;

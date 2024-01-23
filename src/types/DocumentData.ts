@@ -13,6 +13,7 @@ export default class DocumentData implements IPrjData, IPrjDocument {
     recipient: string | null | undefined;
     dateOfDelivery: string | null | undefined;
     hide: boolean | null | undefined;
+    dontChangePdfPath: boolean | null | undefined;
     file: string | null | undefined;
     relatedFiles: string[] | null | undefined;
     citationTitle: string | null | undefined;
@@ -41,6 +42,11 @@ export default class DocumentData implements IPrjData, IPrjDocument {
         this.dateOfDelivery =
             data.dateOfDelivery !== undefined ? data.dateOfDelivery : undefined;
         this.hide = data.hide !== undefined ? data.hide : undefined;
+
+        this.dontChangePdfPath =
+            data.dontChangePdfPath !== undefined
+                ? data.dontChangePdfPath
+                : undefined;
         this.file = data.file !== undefined ? data.file : undefined;
 
         this.relatedFiles =
