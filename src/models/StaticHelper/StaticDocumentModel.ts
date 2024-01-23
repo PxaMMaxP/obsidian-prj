@@ -171,7 +171,7 @@ export class StaticDocumentModel {
         );
 
         // Markdown file
-        if (desiredFilePath.replace('\\', '/') !== document.file.path) {
+        if (desiredFilePath !== document.file.path) {
             logger.trace(
                 `Moving file '${document.file.path}' to '${desiredFilePath}'`,
             );

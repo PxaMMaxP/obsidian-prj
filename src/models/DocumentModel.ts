@@ -164,6 +164,8 @@ export class DocumentModel
      * @returns TFile of the linked file
      */
     public getLinkedFile(): TFile | undefined {
+        if (!this.data.file) return undefined;
+
         const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
 
         const file = this._fileCache.findFileByLinkText(
