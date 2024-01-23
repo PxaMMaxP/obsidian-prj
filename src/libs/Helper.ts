@@ -350,7 +350,7 @@ export default class Helper {
      * @returns The sanitized filename.
      */
     static sanitizeFilename(filename: string): string {
-        return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß]/g, '');
+        return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß§]/g, '');
     }
 
     static rebuildActiveView(): void {
