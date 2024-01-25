@@ -293,6 +293,11 @@ export default class HeaderBlockRenderComponent
         }
     }
 
+    /**
+     * Creates a separator line as a DocumentFragment.
+     *
+     * @returns The created separator line as a DocumentFragment.
+     */
     private createSeparatorLine(): DocumentFragment {
         const separatorLineDiv = document.createElement('div');
 
