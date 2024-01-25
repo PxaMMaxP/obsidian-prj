@@ -14,6 +14,7 @@ import DocumentComponents from './InnerComponents/DocumentComponents';
 import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
+import Logging from 'src/classes/Logging';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -538,7 +539,12 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * - The table has the headers from the `tableHeaders` property.
      */
     private async buildTable(): Promise<void> {
-        this.table = new Table(this.tableHeaders, 'document-table', undefined);
+        this.table = new Table(
+            this.tableHeaders,
+            'document-table',
+            undefined,
+            Logging.getLogger('DocumentBlockRenderComponent/Table'),
+        );
         this.tableContainer.appendChild(this.table.data.table);
     }
 

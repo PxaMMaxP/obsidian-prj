@@ -15,6 +15,7 @@ import { FileMetadata } from '../MetadataCache';
 import { NoteModel } from 'src/models/NoteModel';
 import ProjectComponents from './InnerComponents/ProjectComponents';
 import EditableDataView from '../EditableDataView/EditableDataView';
+import Logging from 'src/classes/Logging';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -412,7 +413,12 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * - The table has the headers from the `tableHeaders` property.
      */
     private async buildTable(): Promise<void> {
-        this.table = new Table(this.tableHeaders, 'document-table', undefined);
+        this.table = new Table(
+            this.tableHeaders,
+            'document-table',
+            undefined,
+            Logging.getLogger('NoteBlockRenderComponent/Table'),
+        );
         this.tableContainer.appendChild(this.table.data.table);
     }
 

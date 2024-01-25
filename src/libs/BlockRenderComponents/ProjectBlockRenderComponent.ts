@@ -19,6 +19,7 @@ import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
 import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
+import Logging from 'src/classes/Logging';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<TaskData | TopicData | ProjectData>
@@ -107,7 +108,12 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private async buildTable(): Promise<void> {
-        this.table = new Table(this.tableHeaders, 'project-table', undefined);
+        this.table = new Table(
+            this.tableHeaders,
+            'project-table',
+            undefined,
+            Logging.getLogger('ProjectBlockRenderComponent/Table'),
+        );
         this.tableContainer.appendChild(this.table.data.table);
     }
 
