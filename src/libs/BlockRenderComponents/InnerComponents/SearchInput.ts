@@ -1,6 +1,6 @@
 import { Component } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 
 /**
  * Search input component class for `TableBlockRenderComponent`.
@@ -29,7 +29,7 @@ export default class SearchInput {
         onSearch: SearchCallback,
         defaultText?: string,
     ): DocumentFragment {
-        const logger = Global.getInstance().logger;
+        const logger = Logging.getLogger('SearchInput');
         const headerItemContainer = document.createDocumentFragment();
 
         const searchLabelContainer = document.createElement('div');

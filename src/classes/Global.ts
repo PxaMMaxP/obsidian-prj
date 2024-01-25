@@ -12,11 +12,7 @@ export default class Global {
     fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
-    /**
-     * @deprecated Use `Logging.getLogger('Prefix');` instead.
-     * @see Logging.getLogger
-     */
-    logger: Logging;
+    private logger = Logging.getLogger('Global');
 
     constructor(prj: Prj, app: App, settings: PrjSettings) {
         if (Global.instance) {
@@ -30,11 +26,7 @@ export default class Global {
         // Settings
         this.settings = settings;
 
-        // eslint-disable-next-line deprecation/deprecation
-        this.logger = new Logging(
-            this.settings.logLevel as LoggingLevel,
-            'Prj',
-        );
+        new Logging(this.settings.logLevel as LoggingLevel, 'Prj');
 
         // Singleton; before creating the cache instances, because they need the app instance
         Global.instance = this;
@@ -47,11 +39,9 @@ export default class Global {
     }
 
     public async awaitCacheInitialization() {
-        // eslint-disable-next-line deprecation/deprecation
         this.logger.debug('Waiting for cache initialization');
         await this.fileCache.waitForCacheReady();
         await this.metadataCache.waitForCacheReady();
-        // eslint-disable-next-line deprecation/deprecation
         this.logger.debug('Cache initialized');
     }
 

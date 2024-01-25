@@ -1,6 +1,6 @@
 import { Component, setIcon } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 
 /**
  * Max shown models input component class for `TableBlockRenderComponent`.
@@ -33,7 +33,7 @@ export default class MaxShownModelsInput {
         onChange: MaxShownModelsCallback,
     ): DocumentFragment {
         const headerItemContainer = document.createDocumentFragment();
-        const logger = Global.getInstance().logger;
+        const logger = Logging.getLogger('MaxShownModelsInput');
         let debounceTimer: NodeJS.Timeout;
 
         const maxShownModels: MaxShownModelNumber = {

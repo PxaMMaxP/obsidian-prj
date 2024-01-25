@@ -14,6 +14,7 @@ import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
 import { TFile } from 'obsidian';
 import { Path } from 'src/classes/Path';
+import Logging from 'src/classes/Logging';
 
 /**
  * Modal to create a new metadata file
@@ -34,7 +35,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'CreateNewMetadataModal' commands");
+        const logger = Logging.getLogger('CreateNewMetadataModal');
+        logger.trace("Registering 'CreateNewMetadataModal' commands");
 
         global.plugin.addCommand({
             id: 'create-new-metadata-file',

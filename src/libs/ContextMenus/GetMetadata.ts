@@ -5,11 +5,12 @@ import { DocumentModel } from 'src/models/DocumentModel';
 import { FileType } from 'src/types/PrjTypes';
 import { FileMetadata } from '../MetadataCache';
 import Helper from '../Helper';
+import Logging from 'src/classes/Logging';
 
 export default class GetMetadata {
     static instance: GetMetadata;
     private _app = Global.getInstance().app;
-    private logger = Global.getInstance().logger;
+    private logger = Logging.getLogger('GetMetadata');
     private _plugin = Global.getInstance().plugin;
     private _metadataCache = Global.getInstance().metadataCache;
     protected eventsRegistered = false;

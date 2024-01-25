@@ -9,6 +9,7 @@ import Lng from 'src/classes/Lng';
 import { FileType } from 'src/types/PrjTypes';
 import { FileMetadata } from '../MetadataCache';
 import { SearchTermsArray } from '../Search';
+import Logging from 'src/classes/Logging';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
@@ -17,7 +18,7 @@ export default abstract class TableBlockRenderComponent<
     //#region General properties
     protected global = Global.getInstance();
     protected globalSettings = Global.getInstance().settings;
-    protected logger = this.global.logger;
+    protected logger = Logging.getLogger('TableBlockRenderComponent');
     protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;

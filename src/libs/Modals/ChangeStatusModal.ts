@@ -8,6 +8,7 @@ import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
 import Global from 'src/classes/Global';
 import API from 'src/classes/API';
+import Logging from 'src/classes/Logging';
 
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
@@ -82,7 +83,8 @@ export default class ChangeStatusModal extends Modal {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'CreateNewMetadataModal' commands");
+        const logger = Logging.getLogger('ChangeStatusModal');
+        logger.trace("Registering 'CreateNewMetadataModal' commands");
 
         global.plugin.addCommand({
             id: 'change-prj-status',

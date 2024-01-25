@@ -14,6 +14,7 @@ import { NoteModel } from 'src/models/NoteModel';
 import NoteData from 'src/types/NoteData';
 import { StaticNoteModel } from 'src/models/StaticHelper/StaticNoteModel';
 import { Path } from 'src/classes/Path';
+import Logging from 'src/classes/Logging';
 
 /**
  * Modal to create a new metadata file
@@ -32,7 +33,8 @@ export default class CreateNewNoteModal extends BaseModalForm {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'CreateNewNoteModal' commands");
+        const logger = Logging.getLogger('CreateNewNoteModal');
+        logger.trace("Registering 'CreateNewNoteModal' commands");
 
         global.plugin.addCommand({
             id: 'create-new-note-file',

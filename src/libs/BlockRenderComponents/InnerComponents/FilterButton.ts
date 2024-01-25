@@ -1,6 +1,6 @@
 import { Component, setIcon } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 
 /**
  * Max shown models input component class for `TableBlockRenderComponent`.
@@ -69,7 +69,7 @@ export default class FilterButton {
         component: Component,
         filterCallback: FilterCallback,
     ): DocumentFragment {
-        const logger = Global.getInstance().logger;
+        const logger = Logging.getLogger('FilterButton');
         const filterButtonContainer = document.createDocumentFragment();
 
         const filter = document.createElement('a');

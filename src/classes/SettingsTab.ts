@@ -1,7 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import Prj from 'src/main';
-import Global from './Global';
-import { LoggingLevel } from './Logging';
+import Logging, { LoggingLevel } from './Logging';
 
 export class SettingTab extends PluginSettingTab {
     plugin: Prj;
@@ -34,7 +33,7 @@ export class SettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.logLevel = value;
 
-                        Global.getInstance().logger.setLogLevel(
+                        Logging.getInstance().setLogLevel(
                             value as LoggingLevel,
                         );
                         await this.plugin.saveSettings();

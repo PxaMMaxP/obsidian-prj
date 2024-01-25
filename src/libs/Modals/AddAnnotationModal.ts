@@ -3,6 +3,7 @@ import Lng from 'src/classes/Lng';
 import { Field, FormConfiguration, IFormResult } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
+import Logging from 'src/classes/Logging';
 
 /**
  * Modal to create a new metadata file
@@ -23,7 +24,8 @@ export default class AddAnnotationModal extends BaseModalForm {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'AddAnnotationModal' commands");
+        const logger = Logging.getLogger('AddAnnotationModal');
+        logger.trace("Registering 'AddAnnotationModal' commands");
 
         global.plugin.addCommand({
             id: 'add-annotation-modal',

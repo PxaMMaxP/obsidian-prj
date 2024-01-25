@@ -3,6 +3,7 @@ import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
 import Lng from 'src/classes/Lng';
 import Global from 'src/classes/Global';
 import Helper from '../Helper';
+import Logging from 'src/classes/Logging';
 
 export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
     protected override constructForm(): FormConfiguration {
@@ -62,7 +63,8 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'CreateNewTaskModal' commands");
+        const logger = Logging.getLogger('CreateNewTaskModal');
+        logger.trace("Registering 'CreateNewTaskModal' commands");
 
         global.plugin.addCommand({
             id: 'create-new-task-file',
