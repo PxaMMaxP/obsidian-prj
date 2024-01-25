@@ -1,4 +1,4 @@
-import { FrontMatterCache, TFile } from 'obsidian';
+import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
@@ -282,12 +282,29 @@ export default class HeaderBlockRenderComponent
             if (this.description)
                 this.headerContainer.append(this.createDescription());
 
+            if (this.headerContainer.childElementCount !== 0)
+                this.headerContainer.append(this.createSeparatorLine());
+
             this.container.append(this.headerContainer);
         } catch (error) {
             this.logger.error(
                 `Error while building HeaderBlockRenderComponent: ${error}`,
             );
         }
+    }
+
+    private createSeparatorLine(): DocumentFragment {
+        const separatorLineDiv = document.createElement('div');
+
+        MarkdownRenderer.render(
+            this._app,
+            `---`,
+            separatorLineDiv,
+            this.path,
+            this.component,
+        );
+
+        return this.createDocumentFragment(separatorLineDiv);
     }
 
     /**
