@@ -118,6 +118,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         }
 
         const mainTag = {
+            base: undefined as string | undefined,
             tag: undefined as string | undefined,
             postfix: undefined as number | undefined,
             get fullTag() {
@@ -129,8 +130,11 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         result.data.tags = (result.data.tags as string[]).map((tag, index) => {
             if (index === 0) {
                 if (tag.startsWith(baseTag)) {
+                    mainTag.base = tag;
                     mainTag.tag = `${tag}` + (acronym ? `/${acronym}` : '');
                 } else {
+                    mainTag.base = tag;
+
                     mainTag.tag =
                         `${baseTag}/${tag}` + (acronym ? `/${acronym}` : '');
                 }
@@ -149,12 +153,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             return tag;
         });
 
-        mainTag.tag ??
-            (() => {
-                this.logger.error('No main tag provided');
+        mainTag.base && result.data.tags.splice(1, 0, mainTag.base);
 
-                return;
-            })();
+        if (!mainTag.tag) {
+            this.logger.error('No main tag provided');
+
+            return;
+        }
 
         model.data.title = result.data.title as string;
 
@@ -167,8 +172,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         model.data.tags = result.data.tags as string[];
 
-        if (result.data.type !== 'Task')
-            model.data.aliases = [`#${mainTag.fullTag}`];
+        model.data.aliases = [`#${mainTag.fullTag}`];
 
         const modelFile = {
             filepath: `${modelFolderPath}`,
