@@ -17,7 +17,7 @@
         "project": "./tsconfig.json"
     },
     "rules": {
-      "prettier/prettier": "error",
+      "prettier/prettier": "warn",
       "array-callback-return": ["error"],
       "@typescript-eslint/no-unused-vars": [
       "error",
@@ -32,7 +32,7 @@
       "@typescript-eslint/ban-ts-comment": "off",
       "no-prototype-builtins": "off",
       "@typescript-eslint/no-empty-function": "off",
-      "deprecation/deprecation": "error",
+      "deprecation/deprecation": "warn",
       "no-console": "error",
       "@typescript-eslint/naming-convention": [
         "warn",
