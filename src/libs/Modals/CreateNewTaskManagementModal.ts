@@ -154,7 +154,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             return tag;
         });
 
-        mainTag.base && result.data.tags.splice(1, 0, mainTag.base);
+        mainTag.base &&
+            result.data.type === 'Task' &&
+            result.data.tags.splice(1, 0, mainTag.base);
 
         if (!mainTag.tag) {
             this.logger.error('No main tag provided');
