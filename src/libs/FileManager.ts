@@ -61,7 +61,7 @@ export default class FileManager {
         );
 
         try {
-            app.fileManager.renameFile(file, movePath);
+            await app.fileManager.renameFile(file, movePath);
         } catch (error) {
             logger.error(
                 `Renaming file ${file.path} to ${newFilename.filename} failed: `,
