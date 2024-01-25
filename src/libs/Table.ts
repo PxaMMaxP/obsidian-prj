@@ -1,11 +1,11 @@
-import Global from '../classes/Global';
+import Logging from 'src/classes/Logging';
 import Helper from './Helper';
 
 export default class Table {
     public get data(): StructedTable {
         return this._table;
     }
-    private logger = Global.getInstance().logger;
+    private logger = Logging.getLogger('Table');
     private _table: StructedTable;
     /**
      * A list of row placeholders

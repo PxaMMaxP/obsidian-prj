@@ -1,5 +1,6 @@
 import { TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
 import { FileType } from 'src/types/PrjTypes';
 
 export default class Helper {
@@ -332,9 +333,7 @@ export default class Helper {
     }
 
     static async openFile(file: TFile): Promise<void> {
-        Global.getInstance().logger.trace(
-            `Opening metadata file for ${file.name}`,
-        );
+        Logging.getLogger('Helper').trace(`Opening file for ${file.name}`);
         const workspace = Global.getInstance().app.workspace;
         const newLeaf = workspace.getLeaf(true);
         await newLeaf.openFile(file);

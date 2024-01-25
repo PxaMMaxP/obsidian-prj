@@ -53,8 +53,10 @@ export default class FileCache {
      * unregisters all events
      */
     static deconstructor() {
+        const logger = Logging.getLogger('FileCache');
+
         if (!FileCache.instance) {
-            Global.getInstance().logger.error('FileCache instance not loaded');
+            logger.error('FileCache instance not loaded');
 
             return;
         }
@@ -68,12 +70,12 @@ export default class FileCache {
 
             instance._eventsRegistered = false;
 
-            Global.getInstance().logger.debug('File cache events unregistered');
+            logger.debug('File cache events unregistered');
 
             return;
         }
 
-        Global.getInstance().logger.debug('File cache events not registered');
+        logger.debug('File cache events not registered');
     }
 
     /**
