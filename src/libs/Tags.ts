@@ -137,6 +137,7 @@ export default class Tags {
      * @returns An array of tag elements.
      */
     static getTagElements(tag: string) {
+        if (!tag || typeof tag !== 'string') return [];
         const tags = tag.split('/');
 
         return tags;
