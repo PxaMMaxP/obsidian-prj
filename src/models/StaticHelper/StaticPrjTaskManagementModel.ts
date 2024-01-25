@@ -259,7 +259,7 @@ export class StaticPrjTaskManagementModel {
             return;
         }
 
-        const filename: Filename = new Filename(automaticFilename);
+        const filename: Filename = new Filename(automaticFilename, 'md');
 
         FileManager.renameFile(file, filename);
     }
