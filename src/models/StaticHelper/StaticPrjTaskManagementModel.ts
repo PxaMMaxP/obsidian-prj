@@ -9,8 +9,8 @@ import { ProjectModel } from '../ProjectModel';
 import { TaskModel } from '../TaskModel';
 import { TopicModel } from '../TopicModel';
 import Logging from 'src/classes/Logging';
-import Helper from 'src/libs/Helper';
 import { Path } from 'src/classes/Path';
+import FileManager, { Filename } from 'src/libs/FileManager';
 
 /**
  * Represents a static helper class for managing project task models.
@@ -233,33 +233,35 @@ export class StaticPrjTaskManagementModel {
         }
     }
 
+    /**
+     * Synchronizes the title of the file with its filename.
+     * @param file - The file to synchronize the title and filename.
+     * @see {@link PrjTaskManagementModel.getAutomaticFilename}
+     */
     public static syncTitleToFilename(file: TFile) {
+        const logger = Logging.getLogger(
+            'StaticPrjTaskManagementModel/syncTitleToFilename',
+        );
+
         const model = StaticPrjTaskManagementModel.getCorospondingModel(file);
 
-        if (!model || model.data.type !== 'Task') {
+        if (!model) {
+            logger.warn(`No model found for file ${file.path}`);
+
             return;
         }
 
-        const title = model.data.title;
+        const automaticFilename = model.getAutomaticFilename();
 
-        if (!title) {
+        if (!automaticFilename) {
+            logger.warn(`No automatic filename found for file ${file.path}`);
+
             return;
         }
 
-        const filename = model.file.basename;
-        const ext = model.file.extension;
+        const filename: Filename = new Filename(automaticFilename);
 
-        if (title !== filename && model.file.parent?.path) {
-            const app = Global.getInstance().app;
-            const logger = Logging.getLogger('StaticPrjTaskManagementModel');
-
-            const newFileName = Helper.sanitizeFilename(`${title}.${ext}`);
-
-            const movePath = Path.join(model.file.parent.path, newFileName);
-
-            logger.debug(`Renaming file ${model.file.path} to ${movePath}`);
-            app.fileManager.renameFile(model.file, movePath);
-        }
+        FileManager.renameFile(file, filename);
     }
 
     /**
@@ -317,7 +319,7 @@ export class StaticPrjTaskManagementModel {
             const app = Global.getInstance().app;
             const logger = Logging.getLogger('StaticPrjTaskManagementModel');
 
-            if (movePath.replace('\\', '/') !== model.file.path) {
+            if (movePath !== model.file.path) {
                 logger.debug(`Moving file ${model.file.path} to ${movePath}`);
                 // fileManager.renameFile does autorenaming internal links
                 app.fileManager.renameFile(model.file, movePath);
