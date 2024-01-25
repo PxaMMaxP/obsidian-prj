@@ -10,6 +10,7 @@ import ProjectData from 'src/types/ProjectData';
 import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
 import { Path } from 'src/classes/Path';
+import Logging from 'src/classes/Logging';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {
@@ -413,7 +414,10 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
      */
     public static registerCommand(): void {
         const global = Global.getInstance();
-        global.logger.trace("Registering 'CreateTaskManagementModal' commands");
+
+        Logging.getLogger('CreateNewTaskManagementModal').trace(
+            "Registering 'CreateTaskManagementModal' commands",
+        );
 
         global.plugin.addCommand({
             id: 'create-new-task-management-file',
