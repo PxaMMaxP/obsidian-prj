@@ -1,7 +1,5 @@
-// Note: TransactionModel class
-
-import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
+import { ILogger } from 'src/interfaces/ILogger';
 
 /**
  * A class that handles transactions.
@@ -13,7 +11,7 @@ import Logging from 'src/classes/Logging';
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel<T> {
-    protected logger: Logging = Global.getInstance().logger;
+    protected logger: ILogger = Logging.getLogger('TransactionModel');
     private _transactionActive = false;
     protected changes: Partial<T> = {};
     /**

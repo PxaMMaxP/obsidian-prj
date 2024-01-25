@@ -6,11 +6,14 @@ import IPrjModel from '../interfaces/IPrjModel';
 import DocumentData from '../types/DocumentData';
 import Global from '../classes/Global';
 import Helper from '../libs/Helper';
+import Logging from 'src/classes/Logging';
+import { ILogger } from 'src/interfaces/ILogger';
 
 export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
 {
+    protected logger: ILogger = Logging.getLogger('DocumentModel');
     private _fileCache = Global.getInstance().fileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 

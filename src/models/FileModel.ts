@@ -4,12 +4,13 @@ import Global from '../classes/Global';
 import { TransactionModel } from './TransactionModel';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 import Logging from 'src/classes/Logging';
+import { ILogger } from 'src/interfaces/ILogger';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
     protected app = Global.getInstance().app;
     protected metadataCache = Global.getInstance().metadataCache;
-    protected logger: Logging = Global.getInstance().logger;
+    protected logger: ILogger = Logging.getLogger('FileModel');
 
     private _file: TFile | undefined;
     public get file(): TFile {

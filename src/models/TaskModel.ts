@@ -6,8 +6,12 @@ import ProjectData from 'src/types/ProjectData';
 import TopicData from 'src/types/TopicData';
 import Tags from 'src/libs/Tags';
 import { Status } from 'src/types/PrjTypes';
+import Logging from 'src/classes/Logging';
+import { ILogger } from 'src/interfaces/ILogger';
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
+    protected logger: ILogger = Logging.getLogger('TaskModel');
+
     public get relatedTasks(): TaskModel[] {
         this._relatedTasks = this._relatedTasks ?? this.getRelatedTasks();
 

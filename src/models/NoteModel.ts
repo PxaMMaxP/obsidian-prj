@@ -5,12 +5,15 @@ import { FileModel } from './FileModel';
 import IPrjModel from '../interfaces/IPrjModel';
 import Global from '../classes/Global';
 import NoteData from 'src/types/NoteData';
+import Logging from 'src/classes/Logging';
+import { ILogger } from 'src/interfaces/ILogger';
 
 export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
     private _fileCache = Global.getInstance().fileCache;
+    protected logger: ILogger = Logging.getLogger('NoteModel');
 
     get tags(): string[] {
         const tags = this.data.tags;
