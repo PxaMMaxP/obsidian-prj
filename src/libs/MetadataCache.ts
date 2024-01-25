@@ -98,10 +98,10 @@ export default class MetadataCache {
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
     static deconstructor() {
+        const logger = Logging.getLogger('MetadataCache');
+
         if (!MetadataCache.instance) {
-            Global.getInstance().logger.error(
-                'Metadata cache instance not loaded',
-            );
+            logger.error('Metadata cache instance not loaded');
 
             return;
         }
@@ -123,16 +123,12 @@ export default class MetadataCache {
 
             instance._eventsRegistered = false;
 
-            Global.getInstance().logger.debug(
-                'Metadata cache events unregistered',
-            );
+            logger.debug('Metadata cache events unregistered');
 
             return;
         }
 
-        Global.getInstance().logger.debug(
-            'Metadata cache events not registered',
-        );
+        logger.debug('Metadata cache events not registered');
     }
 
     /**
