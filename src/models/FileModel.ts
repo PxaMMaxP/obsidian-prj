@@ -5,6 +5,7 @@ import { TransactionModel } from './TransactionModel';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import Helper from 'src/libs/Helper';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
@@ -299,10 +300,12 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             cachedMetadata.metadata &&
             cachedMetadata.metadata.frontmatter
         ) {
-            return cachedMetadata.metadata.frontmatter as Record<
-                string,
-                unknown
-            >;
+            // Without the deep clone, the data object in the Obsidian Metadata Cache is changed
+            const clone = Helper.deepCloneFrontMatterCache(
+                cachedMetadata.metadata.frontmatter,
+            );
+
+            return clone as Record<string, unknown>;
         } else {
             this.logger.error(`No Metadata found for ${this._file.path}`);
 

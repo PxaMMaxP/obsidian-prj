@@ -1,4 +1,4 @@
-import { TFile, moment } from 'obsidian';
+import { FrontMatterCache, TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { FileType } from 'src/types/PrjTypes';
@@ -365,6 +365,40 @@ export default class Helper {
                 console.error(error);
             }
         }
+    }
+
+    /**
+     * Deep clones a FrontMatterCache object.
+     *
+     * @param obj - The object to be cloned.
+     * @returns The cloned object.
+     */
+    static deepCloneFrontMatterCache(obj: FrontMatterCache) {
+        if (obj === null || typeof obj !== 'object') {
+            // Der Wert ist nicht klonbar (z.B. primitiver Typ), also gibt ihn direkt zurück
+            return obj;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let clonedObj: { [key: string]: any };
+
+        if (Array.isArray(obj)) {
+            // Behandle Arrays
+            clonedObj = [];
+
+            obj.forEach((val, i) => {
+                clonedObj[i] = Helper.deepCloneFrontMatterCache(val);
+            });
+        } else {
+            // Behandle Objekte
+            clonedObj = {};
+
+            Object.keys(obj).forEach((key) => {
+                clonedObj[key] = Helper.deepCloneFrontMatterCache(obj[key]);
+            });
+        }
+
+        return clonedObj;
     }
 }
 
