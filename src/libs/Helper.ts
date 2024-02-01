@@ -79,8 +79,15 @@ export default class Helper {
         return hash.substring(0, length);
     }
 
+    /**
+     * Formats a date string according to the specified format.
+     * @param date - The date string to be formatted.
+     * @param format - The format string specifying the desired output format.
+     * @returns The formatted date string, or the original date string if it is not in a valid format.
+     */
     static formatDate(date: string, format: string): string {
-        const regexDate = /^\d{4}-\d{2}-\d{2}$/;
+        const regexDate =
+            /^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:\d{2}(\.\d{3})?)?)?)?$/;
 
         if (!regexDate.test(date)) {
             return date;
