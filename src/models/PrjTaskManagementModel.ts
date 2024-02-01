@@ -174,18 +174,23 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
                   Tags.getTagElements(this.getAliases().first()!)
                 : undefined;
 
-        if (!title || !aliases) {
-            this.logger.warn(
-                `No title or aliases found for file ${this.file?.path}`,
-            );
+        let filename: string;
+
+        if (!title) {
+            this.logger.warn(`No title found for file ${this.file?.path}`);
 
             return;
         }
 
+        if (!aliases) {
+            this.logger.info(`No aliases found for file ${this.file?.path}`);
+            filename = title;
+        } else {
+            filename = `${aliases.last()} - ${title}`;
+        }
+
         if (this.file.parent?.path) {
-            const newFileName = Helper.sanitizeFilename(
-                `${aliases.last()} - ${title}`,
-            );
+            const newFileName = Helper.sanitizeFilename(filename);
 
             this.logger.debug(
                 `New filename for ${this.file.path}: ${newFileName}`,

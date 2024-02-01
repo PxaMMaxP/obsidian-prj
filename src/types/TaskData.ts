@@ -11,7 +11,17 @@ import {
 export default class TaskData implements IPrjData, IPrjTaskManagement {
     type: 'Task' | null | undefined;
     subType: FileSubType | null | undefined;
-    title: string | null | undefined;
+    private _title: string | null | undefined;
+    public get title(): string | null | undefined {
+        if (!this._title && this.description) {
+            return this.description.split('\n')[0];
+        } else {
+            return this._title;
+        }
+    }
+    public set title(value: string | null | undefined) {
+        this._title = value;
+    }
     description: string | null | undefined;
     status: Status | null | undefined;
     priority: Priority | null | undefined;
@@ -30,7 +40,7 @@ export default class TaskData implements IPrjData, IPrjTaskManagement {
         }
         this.sort = data.sort !== undefined ? data.sort : undefined;
         this.aliases = data.aliases !== undefined ? data.aliases : undefined;
-        this.title = data.title !== undefined ? data.title : undefined;
+        this._title = data.title !== undefined ? data.title : undefined;
 
         this.description =
             data.description !== undefined ? data.description : undefined;

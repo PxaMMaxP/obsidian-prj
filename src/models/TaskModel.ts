@@ -64,6 +64,9 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
     }
 
     public override getAutomaticFilename(): string | undefined {
+        if (!this.data.title && this.data.description) {
+            this.data.title = this.data.description;
+        }
         const automaticFilename = super.getAutomaticFilename();
         const history = this.data.history?.first();
 
