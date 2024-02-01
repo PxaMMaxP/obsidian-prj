@@ -188,6 +188,19 @@ export class StaticDocumentModel {
 
         if (!pdfFile) return;
 
+        // Check if file is in ignore folders
+        if (
+            settings.documentSettings.ignorePdfFolders.some((folder) =>
+                pdfFile.path.startsWith(folder),
+            )
+        ) {
+            logger.trace(
+                `File '${pdfFile.path}' is in ignore folder, no action necessary`,
+            );
+
+            return;
+        }
+
         const documentDate = document.data.date
             ? new Date(document.data.date)
             : undefined;
