@@ -49,11 +49,7 @@ export default class FileManager {
 
         const movePath = Path.join(
             file.parent.path,
-            Helper.sanitizeFilename(
-                newFilename.extension !== 'md'
-                    ? newFilename.filename
-                    : newFilename.basename,
-            ),
+            Helper.sanitizeFilename(newFilename.filename),
         );
 
         logger.trace(
