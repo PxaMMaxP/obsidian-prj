@@ -8,6 +8,7 @@ import Tags from 'src/libs/Tags';
 import { Status } from 'src/types/PrjTypes';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import Helper from 'src/libs/Helper';
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');
@@ -60,5 +61,25 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
         });
 
         return relatedTasks;
+    }
+
+    public override getAutomaticFilename(): string | undefined {
+        const automaticFilename = super.getAutomaticFilename();
+        const history = this.data.history?.first();
+
+        if (!history) {
+            return automaticFilename;
+        }
+
+        const date = Helper.formatDate(
+            history.date,
+            this.global.settings.dateFormat,
+        );
+
+        const newFileName = Helper.sanitizeFilename(
+            `${date} - ${automaticFilename}`,
+        );
+
+        return newFileName;
     }
 }
