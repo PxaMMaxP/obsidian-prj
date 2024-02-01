@@ -23,6 +23,7 @@ export interface PrjSettings {
         defaultFolder: string;
         template: string;
         pdfFolder: string;
+        ignorePdfFolders: string[];
     };
     noteSettings: {
         defaultFolder: string;
@@ -69,6 +70,7 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         defaultFolder: '',
         template: '',
         pdfFolder: '',
+        ignorePdfFolders: [''],
     },
     noteSettings: {
         defaultFolder: '',

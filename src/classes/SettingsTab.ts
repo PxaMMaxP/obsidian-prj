@@ -147,6 +147,34 @@ export class SettingTab extends PluginSettingTab {
                     }),
             );
 
+        // Ignore PDF Folders
+        new Setting(containerEl)
+            .setName('Ignore PDF Folders')
+            .setDesc(
+                'The Folders to ignore for PDFs (Renaming, moving etc.) Newline separated.',
+            )
+            .addTextArea((text) =>
+                text
+                    .setPlaceholder('YourPDFFolder')
+                    .setValue(
+                        !Array.isArray(
+                            this.plugin.settings.documentSettings
+                                .ignorePdfFolders,
+                        ) ||
+                            this.plugin.settings.documentSettings
+                                .ignorePdfFolders.length === 0
+                            ? ''
+                            : this.plugin.settings.documentSettings.ignorePdfFolders.join(
+                                  '\n',
+                              ),
+                    )
+                    .onChange(async (value) => {
+                        this.plugin.settings.documentSettings.ignorePdfFolders =
+                            value.split('\n');
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
         // User information
         new Setting(containerEl).setHeading().setName('User Information');
 
