@@ -8,11 +8,10 @@ import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import ProjectData from 'src/types/ProjectData';
-import TaskData from 'src/types/TaskData';
-import TopicData from 'src/types/TopicData';
 import { Status } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
+import IPrjData from 'src/interfaces/IPrjData';
+import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 
 /**
  * Header Block Render Component class.
@@ -32,7 +31,7 @@ export default class HeaderBlockRenderComponent
     private logger = Logging.getLogger('HeaderBlockRenderComponent');
     private _metadataCache = this._global.metadataCache;
     private _model:
-        | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+        | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
         | undefined;
 
     private _processorSettings: IProcessorSettings;
@@ -132,7 +131,7 @@ export default class HeaderBlockRenderComponent
      * The model of the Prj File.
      */
     private get model():
-        | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+        | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
         | undefined {
         if (this._model) return this._model;
 
@@ -151,7 +150,7 @@ export default class HeaderBlockRenderComponent
      */
     private set model(
         value:
-            | PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+            | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
             | undefined,
     ) {
         this._model = value;

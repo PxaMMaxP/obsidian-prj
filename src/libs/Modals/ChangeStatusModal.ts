@@ -3,20 +3,15 @@ import Lng from 'src/classes/Lng';
 import { Status } from 'src/types/PrjTypes';
 import Helper from '../Helper';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import ProjectData from 'src/types/ProjectData';
-import TaskData from 'src/types/TaskData';
-import TopicData from 'src/types/TopicData';
 import Global from 'src/classes/Global';
 import API from 'src/classes/API';
 import Logging from 'src/classes/Logging';
+import IPrjData from 'src/interfaces/IPrjData';
+import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
-    model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>;
-    onSubmit: (
-        newStatus: Status,
-        file: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
-    ) => void;
+    model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>;
 
     constructor() {
         super(Global.getInstance().app);

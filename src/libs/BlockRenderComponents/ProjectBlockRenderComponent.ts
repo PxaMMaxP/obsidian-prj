@@ -19,9 +19,11 @@ import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
+import IPrjData from 'src/interfaces/IPrjData';
+import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
-    PrjTaskManagementModel<TaskData | TopicData | ProjectData>
+    PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
 > {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
@@ -224,7 +226,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private async generateTableRow(
-        model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
     ): Promise<Row> {
         const rowClassList: string[] = [];
         const rowData: DocumentFragment[] = [];
@@ -411,7 +413,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private getHideState(
-        model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
         maxVisibleRows: number | undefined,
     ): boolean {
         let searchResult = false;
@@ -449,7 +451,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private determineHideState(
-        model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
     ): boolean {
         if (
             this.settings.filter.includes('Topic') &&
@@ -476,7 +478,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private determineTagHideState(
-        document: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        document: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
     ): boolean {
         return this.settings.reactOnActiveFile
             ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
