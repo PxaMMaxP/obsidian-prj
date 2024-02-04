@@ -12,9 +12,6 @@ import Logging from 'src/classes/Logging';
 import Tags from 'src/libs/Tags';
 import Helper from 'src/libs/Helper';
 import Global from 'src/classes/Global';
-import { ProjectModel } from './ProjectModel';
-import { TaskModel } from './TaskModel';
-import { TopicModel } from './TopicModel';
 import { Path } from 'src/classes/Path';
 import FileManager, { Filename } from 'src/libs/FileManager';
 
@@ -228,44 +225,42 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     //#region Static API
 
     /**
+     * The model factories for the PrjTaskManagementModel class.
+     */
+    private static _modelFactories = new Map<
+        string,
+        (file: TFile) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+    >();
+
+    /**
+     * Registers a new model factory for the given type.
+     * @param type The type to register the factory for.
+     * @param factory The factory to register.
+     */
+    public static registerModelFactory(
+        type: string,
+        factory: (
+            file: TFile,
+        ) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+    ) {
+        PrjTaskManagementModel._modelFactories.set(type, factory);
+    }
+
+    /**
      * Retrieves the corresponding model based on the file type.
      * @param file The file for which to retrieve the corresponding model.
      * @returns The corresponding model if found, otherwise undefined.
      */
     public static getCorospondingModel(
         file: TFile,
-    ): PrjTaskManagementModel<TaskData | TopicData | ProjectData> | undefined {
+    ): PrjTaskManagementModel<IPrjData & IPrjTaskManagement> | undefined {
         const entry = Global.getInstance().metadataCache.getEntry(file);
 
-        if (!entry) {
-            return undefined;
-        }
+        if (!entry) return undefined;
         const type = entry.metadata.frontmatter?.type;
+        const factory = PrjTaskManagementModel._modelFactories.get(type);
 
-        if (!type) {
-            return undefined;
-        }
-
-        switch (type) {
-            case 'Topic':
-                return new TopicModel(
-                    entry.file,
-                ) as PrjTaskManagementModel<TopicData>;
-                break;
-            case 'Project':
-                return new ProjectModel(
-                    entry.file,
-                ) as PrjTaskManagementModel<ProjectData>;
-                break;
-            case 'Task':
-                return new TaskModel(
-                    entry.file,
-                ) as PrjTaskManagementModel<TaskData>;
-                break;
-            default:
-                return undefined;
-                break;
-        }
+        return factory ? factory(file) : undefined;
     }
 
     /**
