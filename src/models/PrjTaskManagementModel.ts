@@ -56,6 +56,10 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         return allText;
     }
 
+    /**
+     * Returns the corosponding symbol for the model from the settings.
+     * @returns The corosponding symbol for the model. (Lucide icon string)
+     */
     public getCorospondingSymbol(): string {
         switch (this.data.type) {
             case 'Topic':
@@ -67,6 +71,16 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
             default:
                 return 'x-circle';
         }
+    }
+
+    /**
+     * Returns the acronym of the title of the model.
+     * @returns The acronym of the title.
+     * @remarks - If the title is not available, an empty string is returned.
+     * - Override if the acronym should be generated differently!
+     */
+    public getAcronym(): string {
+        return Helper.generateAcronym(this.data.title as string);
     }
 
     /**
@@ -94,6 +108,9 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         }
     }
 
+    /**
+     * Returns the urgency of the model.
+     */
     public get urgency(): number {
         return API.prjTaskManagementModel.calculateUrgency(
             this as PrjTaskManagementModel<TaskData | TopicData | ProjectData>,

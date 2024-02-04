@@ -63,6 +63,10 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
         return relatedTasks;
     }
 
+    public override getAcronym(): string {
+        return Helper.generateAcronym(this.data.title as string, 4, 't');
+    }
+
     public override getAutomaticFilename(): string | undefined {
         if (!this.data.title && this.data.description) {
             this.data.title = this.data.description;

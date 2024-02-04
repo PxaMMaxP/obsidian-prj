@@ -64,7 +64,6 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         let modelFolderPath = '';
         let templateFilePath: string | undefined;
         let subTemplatePath: string | undefined;
-        let acronym: string | undefined;
 
         switch (result.data.type) {
             case 'Topic':
@@ -76,7 +75,6 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 templateFilePath =
                     this.global.settings.prjSettings.topicTemplate;
                 modelFolderPath = this.global.settings.prjSettings.topicFolder;
-                acronym = Helper.generateAcronym(result.data.title as string);
                 break;
             case 'Project':
                 model = new PrjTaskManagementModel<ProjectData>(
@@ -89,7 +87,6 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
                 modelFolderPath =
                     this.global.settings.prjSettings.projectFolder;
-                acronym = Helper.generateAcronym(result.data.title as string);
                 break;
             case 'Task':
                 model = new PrjTaskManagementModel<TaskData>(
@@ -101,12 +98,6 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                     this.global.settings.prjSettings.taskTemplate;
                 modelFolderPath = this.global.settings.prjSettings.taskFolder;
 
-                acronym = Helper.generateAcronym(
-                    result.data.title as string,
-                    3,
-                    't',
-                );
-
                 if (result.data.subtype && result.data.subtype !== '') {
                     subTemplatePath = result.data.subtype as string;
                 }
@@ -117,6 +108,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
                 return;
         }
+
+        model.data.title = result.data.title as string;
+        const acronym = model.getAcronym();
 
         const mainTag = {
             base: undefined as string | undefined,
@@ -163,8 +157,6 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
             return;
         }
-
-        model.data.title = result.data.title as string;
 
         model.data.description =
             (result.data.description as string) ?? undefined;
