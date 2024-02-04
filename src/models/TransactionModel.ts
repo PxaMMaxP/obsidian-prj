@@ -30,7 +30,7 @@ export class TransactionModel<T> {
      * A promise that resolves when the changes are written to the file.
      */
     private _writeChangesPromise: Promise<void> | undefined;
-    public get writeChangesPromise(): Promise<void> | undefined {
+    protected get writeChangesPromise(): Promise<void> | undefined {
         return this._writeChangesPromise;
     }
     private _transactionActive = false;
