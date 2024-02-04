@@ -9,7 +9,7 @@ export class TopicModel extends PrjTaskManagementModel<TopicData> {
 
     public static registerThisModelFactory(): void {
         // eslint-disable-next-line no-console
-        console.debug('Registering TopicModel');
+        console.debug('Registering `TopicModel` at `PrjTaskManagementModel`');
 
         PrjTaskManagementModel.registerModelFactory(
             'Topic',

@@ -13,7 +13,7 @@ export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
 
     public static registerThisModelFactory(): void {
         // eslint-disable-next-line no-console
-        console.debug('Registering ProjectModel');
+        console.debug('Registering `ProjectModel` at `PrjTaskManagementModel`');
 
         PrjTaskManagementModel.registerModelFactory(
             'Project',

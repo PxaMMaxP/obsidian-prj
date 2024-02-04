@@ -12,7 +12,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
 
     public static registerThisModelFactory(): void {
         // eslint-disable-next-line no-console
-        console.debug('Registering TaskModel');
+        console.debug('Registering `TaskModel` at `PrjTaskManagementModel`');
 
         PrjTaskManagementModel.registerModelFactory(
             'Task',
