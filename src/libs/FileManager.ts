@@ -3,6 +3,7 @@ import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import Helper from './Helper';
+import { ILogger } from 'src/interfaces/ILogger';
 
 /**
  * A class that handles file operations.
@@ -25,7 +26,6 @@ export default class FileManager {
         awaitPromise?: Promise<void>,
     ): Promise<boolean> {
         const logger = Logging.getLogger('FileManager/renameFile');
-        const app = Global.getInstance().app;
 
         if (!file || !file.parent?.path || !filename) {
             filename ?? logger.error('No new filename provided');
@@ -59,26 +59,130 @@ export default class FileManager {
             Helper.sanitizeFilename(newFilename.filename),
         );
 
-        logger.trace(
-            `Renaming file ${file.name} to ${newFilename.filename} in ${file.parent.path}`,
+        return await this.moveRenameFile(file, movePath, newFilename, logger);
+    }
+
+    /**
+     * Moves a file.
+     * @param file The file to move.
+     * @param path The new path of the file.
+     * @param filename The new filename.
+     * @param awaitPromise A promise that resolves when the previous changes are written to the file.
+     * @returns - true: Whether the moving was successful.
+     * - false: Whether the moving failed.
+     */
+    public static async moveFile(
+        file: TFile,
+        path: string,
+        filename?: Filename,
+        awaitPromise?: Promise<void>,
+    ): Promise<boolean> {
+        const logger = Logging.getLogger('FileManager/moveFile');
+
+        if (!file) {
+            file ?? logger.error('No file provided');
+
+            return false;
+        }
+
+        if (awaitPromise) {
+            logger.trace('Waiting for previous promise to resolve');
+            await awaitPromise;
+        }
+
+        const newFilename = new Filename(
+            filename?.basename ?? file.basename,
+            filename?.extension ?? file.extension,
         );
 
+        const movePath = Path.join(
+            path,
+            Helper.sanitizeFilename(newFilename.filename),
+        );
+
+        return await this.moveRenameFile(file, movePath, newFilename, logger);
+    }
+
+    /**
+     * Moves and renames a file.
+     * @param file The file to move and rename.
+     * @param path The new path of the file.
+     * @param filename The new filename.
+     * @param logger A logger to log the process.
+     * @returns - true: Whether the moving and renaming was successful.
+     * - false: Whether the moving and renaming failed.
+     */
+    private static async moveRenameFile(
+        file: TFile,
+        path: string,
+        filename: Filename,
+        logger?: ILogger,
+    ): Promise<boolean> {
+        const app = Global.getInstance().app;
+
+        if (path === file.path) {
+            logger?.debug(
+                `Moving/renaming file ${file.name} to ${path} is unnecessary`,
+            );
+
+            return true;
+        }
+
+        logger?.trace(`Moving/renaming file ${file.name} to ${path}`);
+
         try {
-            await app.fileManager.renameFile(file, movePath);
+            await app.fileManager.renameFile(file, path);
         } catch (error) {
-            logger.error(
-                `Renaming file ${file.path} to ${newFilename.filename} failed: `,
+            logger?.error(
+                `Moving/renaming file ${file.name} to ${path} failed: `,
                 error,
             );
 
             return false;
         }
 
-        logger.debug(
-            `Renamed file file ${file.name} to ${newFilename.filename} in ${file.parent.path}`,
-        );
+        logger?.debug(`Moved/renamed file ${file.name} to ${path} in ${path}`);
 
         return true;
+    }
+
+    /**
+     * Creates a new file.
+     * @param path The path of the new file.
+     * @param filename The filename of the new file.
+     * @param content The content of the new file.
+     * @returns - The new file if successful.
+     * - undefined if the creation failed.
+     */
+    public static async createFile(
+        path: string,
+        filename: Filename,
+        content?: string,
+    ): Promise<TFile | undefined> {
+        const app = Global.getInstance().app;
+        const logger = Logging.getLogger('FileManager/createFile');
+
+        const newFilename = new Filename(
+            filename.basename,
+            filename.extension ?? 'md',
+        );
+
+        const filePath = Path.join(
+            path,
+            Helper.sanitizeFilename(newFilename.filename),
+        );
+
+        try {
+            const file = await app.vault.create(filePath, content ?? '');
+
+            logger.debug(`Created file ${file.name} in ${path}`);
+
+            return file;
+        } catch (error) {
+            logger.error(`Creating file ${filePath} failed: `, error);
+
+            return undefined;
+        }
     }
 }
 
