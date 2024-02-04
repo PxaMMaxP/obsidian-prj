@@ -120,6 +120,8 @@ export default class KanbanSync {
                 );
 
                 if (model) {
+                    model.startTransaction();
+
                     if (!model.data.title) {
                         // If the title is not set, the file is a new file and the title and tags should be set
                         model.data.title = file.file.basename;
@@ -128,6 +130,8 @@ export default class KanbanSync {
                             this._kanbanMetadata?.frontmatter?.tags;
                     }
                     model.changeStatus(status);
+
+                    model.finishTransaction();
                 }
             });
         });
