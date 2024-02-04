@@ -1,9 +1,6 @@
 import { TFile } from 'obsidian';
 import TaskData from 'src/types/TaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
-import API from 'src/classes/API';
-import ProjectData from 'src/types/ProjectData';
-import TopicData from 'src/types/TopicData';
 import Tags from 'src/libs/Tags';
 import { Status } from 'src/types/PrjTypes';
 import Logging from 'src/classes/Logging';
@@ -24,16 +21,6 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
     constructor(file: TFile | undefined) {
         super(file, TaskData);
     }
-
-    public override get urgency(): number {
-        return API.prjTaskManagementModel.calculateUrgency(
-            this as PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
-        );
-    }
-
-    /**private calculateUrgency(): number {
-        const taskSiblings = this.getRelatedTasks((status) => status ? status !== 'Done' : false);
-    }**/
 
     private getRelatedTasks(
         status?: (status: Status | undefined) => boolean,

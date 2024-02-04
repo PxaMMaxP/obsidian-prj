@@ -18,7 +18,6 @@ import ProjectComponents from './InnerComponents/ProjectComponents';
 import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
-import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
 import Logging from 'src/classes/Logging';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
@@ -83,9 +82,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             ['Topic', 'Project', 'Task'],
             this.settings.tags,
             (metadata: FileMetadata) =>
-                StaticPrjTaskManagementModel.getCorospondingModel(
-                    metadata.file,
-                ),
+                API.prjTaskManagementModel.getCorospondingModel(metadata.file),
         );
         await super.draw();
         await this.buildTable();

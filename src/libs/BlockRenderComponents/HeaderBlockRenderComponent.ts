@@ -7,12 +7,12 @@ import Logging from 'src/classes/Logging';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import ProjectData from 'src/types/ProjectData';
 import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
 import { Status } from 'src/types/PrjTypes';
+import API from 'src/classes/API';
 
 /**
  * Header Block Render Component class.
@@ -138,7 +138,7 @@ export default class HeaderBlockRenderComponent
 
         if (!this.file) return undefined;
 
-        this._model = StaticPrjTaskManagementModel.getCorospondingModel(
+        this._model = API.prjTaskManagementModel.getCorospondingModel(
             this.file,
         );
 
