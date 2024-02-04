@@ -13,6 +13,7 @@ export default class FileManager {
      * Renames a file.
      * @param file The file to rename.
      * @param filename The new filename. If no extension is provided, the extension of the file is used.
+     * @param awaitPromise A promise that resolves when the previous changes are written to the file.
      * @returns - true: Whether the renaming was successful or unnecessary (if the filename is already correct).
      * - false: Whether the renaming failed.
      * @remarks - This function will not rename the file if the filename is already correct.
@@ -21,6 +22,7 @@ export default class FileManager {
     public static async renameFile(
         file: TFile,
         filename: Filename,
+        awaitPromise?: Promise<void>,
     ): Promise<boolean> {
         const logger = Logging.getLogger('FileManager/renameFile');
         const app = Global.getInstance().app;
@@ -31,6 +33,11 @@ export default class FileManager {
             file.parent?.path ?? logger.error('No parent path provided');
 
             return false;
+        }
+
+        if (awaitPromise) {
+            logger.trace('Waiting for previous promise to resolve');
+            await awaitPromise;
         }
 
         const newFilename = new Filename(
