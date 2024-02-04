@@ -10,6 +10,16 @@ import Helper from 'src/libs/Helper';
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');
 
+    public static registerThisModelFactory(): void {
+        // eslint-disable-next-line no-console
+        console.debug('Registering TaskModel');
+
+        PrjTaskManagementModel.registerModelFactory(
+            'Task',
+            (file: TFile) => new TaskModel(file),
+        );
+    }
+
     public get relatedTasks(): TaskModel[] {
         this._relatedTasks = this._relatedTasks ?? this.getRelatedTasks();
 

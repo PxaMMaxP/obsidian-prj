@@ -10,4 +10,14 @@ export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
     constructor(file: TFile | undefined) {
         super(file, ProjectData);
     }
+
+    public static registerThisModelFactory(): void {
+        // eslint-disable-next-line no-console
+        console.debug('Registering ProjectModel');
+
+        PrjTaskManagementModel.registerModelFactory(
+            'Project',
+            (file: TFile) => new ProjectModel(file),
+        );
+    }
 }

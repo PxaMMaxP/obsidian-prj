@@ -1,5 +1,5 @@
 import { PrjSettings } from 'src/types/PrjSettings';
-import { Plugin, TFile } from 'obsidian';
+import { Plugin } from 'obsidian';
 import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
@@ -15,7 +15,6 @@ import Lng from './classes/Lng';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync';
 import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
-import { PrjTaskManagementModel } from './models/PrjTaskManagementModel';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
@@ -42,21 +41,10 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log('Layout ready');
 
-        // Register PrjTskManagementModel factorys
-        PrjTaskManagementModel.registerModelFactory(
-            'Project',
-            (file: TFile) => new ProjectModel(file),
-        );
-
-        PrjTaskManagementModel.registerModelFactory(
-            'Task',
-            (file: TFile) => new TaskModel(file),
-        );
-
-        PrjTaskManagementModel.registerModelFactory(
-            'Topic',
-            (file: TFile) => new TopicModel(file),
-        );
+        // Register Model Factories
+        ProjectModel.registerThisModelFactory();
+        TaskModel.registerThisModelFactory();
+        TopicModel.registerThisModelFactory();
 
         new Global(this, this.app, this.settings);
         await Global.getInstance().awaitCacheInitialization();
