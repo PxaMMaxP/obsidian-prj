@@ -7,6 +7,8 @@ import Global from '../classes/Global';
 import NoteData from 'src/types/NoteData';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import Helper from 'src/libs/Helper';
+import Tags from 'src/libs/Tags';
 
 export class NoteModel
     extends FileModel<NoteData>
@@ -87,4 +89,42 @@ export class NoteModel
 
         return formattedTags;
     }
+
+    /**
+     * Static API for the NoteModel class.
+     */
+    //#region Static API
+    /**
+     * Generates a filename based on the provided NoteModel.
+     *
+     * @param model The NoteModel object used to generate the filename.
+     * @returns The generated filename as a string.
+     */
+    public static generateFilename(model: NoteModel): string {
+        const newFileName: string[] = [];
+
+        if (model.data.date) {
+            newFileName.push(
+                `${Helper.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+            );
+        }
+
+        if (model.data.tags) {
+            const tags = Tags.getValidTags(model.data.tags);
+            const firstTag = tags.first();
+
+            if (firstTag && firstTag !== undefined) {
+                const seperateTags = Tags.getTagElements(firstTag);
+                const lastTagElement = seperateTags.last();
+                lastTagElement && newFileName.push(lastTagElement);
+            }
+        }
+
+        if (model.data.title) {
+            newFileName.push(model.data.title);
+        }
+
+        return Helper.sanitizeFilename(newFileName.join(' - '));
+    }
+    //#endregion
 }

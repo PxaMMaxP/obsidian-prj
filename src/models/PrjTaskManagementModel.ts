@@ -13,7 +13,6 @@ import Tags from 'src/libs/Tags';
 import Helper from 'src/libs/Helper';
 import Global from 'src/classes/Global';
 import { Path } from 'src/classes/Path';
-import FileManager, { Filename } from 'src/libs/FileManager';
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     extends FileModel<T>
@@ -461,9 +460,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
             return;
         }
 
-        const filename: Filename = new Filename(automaticFilename, 'md');
-
-        FileManager.renameFile(file, filename, model.writeChangesPromise);
+        model.renameFile(automaticFilename);
     }
 
     /**
@@ -483,7 +480,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         }
         const settings = Global.getInstance().settings.prjSettings;
         let parentPath: string | undefined;
-        const filename = model.file.name;
 
         if (model.file.parent?.path) {
             switch (model.data.type) {
@@ -511,25 +507,14 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
             let movePath: string;
 
             if (model.data.status === 'Done') {
-                movePath = Path.join(parentPath, 'Archiv', filename);
+                movePath = Path.join(parentPath, 'Archiv');
             } else if (PrjTypes.isValidStatus(model.data.status)) {
-                movePath = Path.join(parentPath, filename);
+                movePath = parentPath;
             } else {
                 return;
             }
 
-            const app = Global.getInstance().app;
-            const logger = Logging.getLogger('StaticPrjTaskManagementModel');
-
-            if (movePath !== model.file.path) {
-                logger.debug(`Moving file ${model.file.path} to ${movePath}`);
-                // fileManager.renameFile does autorenaming internal links
-                app.fileManager.renameFile(model.file, movePath);
-            } else {
-                logger.debug(
-                    `File ${model.file.path} is already in the correct folder`,
-                );
-            }
+            model.moveFile(movePath);
         }
     }
 
