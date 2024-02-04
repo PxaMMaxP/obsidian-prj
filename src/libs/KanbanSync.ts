@@ -1,12 +1,12 @@
 import { App, CachedMetadata, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
-import { StaticPrjTaskManagementModel } from 'src/models/StaticHelper/StaticPrjTaskManagementModel';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
 import { remark } from 'remark';
 import { visit, EXIT } from 'unist-util-visit';
 import { Root } from 'remark-parse/lib';
 import { RootContent, ListItem, List } from 'mdast';
+import API from 'src/classes/API';
 
 export default class KanbanSync {
     private logger = Logging.getLogger('KanbanSync');
@@ -79,9 +79,9 @@ export default class KanbanSync {
 
         let toHeading: string | undefined = undefined;
 
-        const newHeadingState =
-            StaticPrjTaskManagementModel.getCorospondingModel(this._changedFile)
-                ?.data.status;
+        const newHeadingState = API.prjTaskManagementModel.getCorospondingModel(
+            this._changedFile,
+        )?.data.status;
 
         this._structedKanbanHeading?.forEach((heading) => {
             const status: Status | undefined =
@@ -115,7 +115,7 @@ export default class KanbanSync {
             }
 
             heading.files?.forEach((file) => {
-                const model = StaticPrjTaskManagementModel.getCorospondingModel(
+                const model = API.prjTaskManagementModel.getCorospondingModel(
                     file.file,
                 );
 

@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
@@ -14,12 +15,14 @@ import FileManager, { Filename } from 'src/libs/FileManager';
 
 /**
  * Represents a static helper class for managing project task models.
+ * @deprecated Use the PrjTaskManagementModel class or a subclass instead.
  */
 export class StaticPrjTaskManagementModel {
     /**
      * Retrieves the corresponding model based on the file type.
      * @param file The file for which to retrieve the corresponding model.
      * @returns The corresponding model if found, otherwise undefined.
+     * @deprecated Use the PrjTaskManagementModel.getCorospondingModel method instead.
      */
     public static getCorospondingModel(
         file: TFile,
@@ -72,6 +75,7 @@ export class StaticPrjTaskManagementModel {
      * - Both have the same status, sort by priority
      * - Fallback to sorting by last history entry
      * - Fallback to stop sorting
+     * @deprecated Use the PrjTaskManagementModel.sortModelsByUrgency method instead.
      */
     public static sortModelsByUrgency(
         models: PrjTaskManagementModel<TaskData | TopicData | ProjectData>[],
@@ -146,6 +150,7 @@ export class StaticPrjTaskManagementModel {
      * - `Later` = 1
      * - `Someday` = 0
      * - `undefined` = -1
+     * @deprecated Use the PrjTaskManagementModel.statusToNumber method instead.
      */
     private static statusToNumber(status: Status | undefined | null): number {
         switch (status) {
@@ -173,6 +178,7 @@ export class StaticPrjTaskManagementModel {
      * - Due date is in the next 3 days = 2
      * - Due date is in the next 7 days = 1
      * - Due date is in more the future = 0
+     * @deprecated Use the PrjTaskManagementModel.calculateUrgency method instead.
      */
     public static calculateUrgency(
         model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
@@ -215,6 +221,7 @@ export class StaticPrjTaskManagementModel {
      * Returns the date of the last history entry.
      * @param model The model to get the last history entry date from.
      * @returns The date of the last history entry.
+     * @deprecated Use the PrjTaskManagementModel.getLastHistoryDate method instead.
      */
     private static getLastHistoryDate(
         model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
@@ -237,6 +244,7 @@ export class StaticPrjTaskManagementModel {
      * Synchronizes the title of the file with its filename.
      * @param file - The file to synchronize the title and filename.
      * @see {@link PrjTaskManagementModel.getAutomaticFilename}
+     * @deprecated Use the PrjTaskManagementModel.syncTitleToFilename method instead.
      */
     public static syncTitleToFilename(file: TFile) {
         const logger = Logging.getLogger(
@@ -267,6 +275,7 @@ export class StaticPrjTaskManagementModel {
     /**
      * Syncs the status of the model to the path.
      * @param file The file to sync the status for.
+     * @deprecated Use the PrjTaskManagementModel.syncStatusToPath method instead.
      */
     public static syncStatusToPath(file: TFile) {
         const model = StaticPrjTaskManagementModel.getCorospondingModel(file);

@@ -11,12 +11,13 @@ import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
-import { StaticPrjTaskManagementModel } from './models/StaticHelper/StaticPrjTaskManagementModel';
-import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync';
 import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
+import { ProjectModel } from './models/ProjectModel';
+import { TaskModel } from './models/TaskModel';
+import { TopicModel } from './models/TopicModel';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;
@@ -39,6 +40,11 @@ export default class Prj extends Plugin {
     async onLayoutReady(): Promise<void> {
         // eslint-disable-next-line no-console
         console.log('Layout ready');
+
+        // Register Model Factories
+        ProjectModel.registerThisModelFactory();
+        TaskModel.registerThisModelFactory();
+        TopicModel.registerThisModelFactory();
 
         new Global(this, this.app, this.settings);
         await Global.getInstance().awaitCacheInitialization();
@@ -87,7 +93,7 @@ export default class Prj extends Plugin {
         Global.getInstance().metadataCache.on(
             'prj-task-management-changed-status-event',
             (file) => {
-                StaticPrjTaskManagementModel.syncStatusToPath(file);
+                API.prjTaskManagementModel.syncStatusToPath(file);
             },
         );
 
@@ -95,7 +101,7 @@ export default class Prj extends Plugin {
         Global.getInstance().metadataCache.on(
             'prj-task-management-file-changed-event',
             (file) => {
-                StaticPrjTaskManagementModel.syncTitleToFilename(file);
+                API.prjTaskManagementModel.syncTitleToFilename(file);
             },
         );
 
@@ -103,7 +109,7 @@ export default class Prj extends Plugin {
         Global.getInstance().metadataCache.on(
             'document-changed-metadata-event',
             (file) => {
-                StaticDocumentModel.syncMetadataToFile(file);
+                API.documentModel.syncMetadataToFile(file);
             },
         );
 
