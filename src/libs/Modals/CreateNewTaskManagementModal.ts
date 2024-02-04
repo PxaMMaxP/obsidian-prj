@@ -243,8 +243,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             }
         }
 
-        const file = await this.app.vault.create(modelFile.fullPath, template);
-        model.file = file;
+        await model.createFile(modelFile.fullPath, template);
 
         return model;
     }

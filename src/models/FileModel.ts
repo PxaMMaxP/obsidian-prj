@@ -1,11 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TFile, FileManager } from 'obsidian';
+import { TFile } from 'obsidian';
 import Global from '../classes/Global';
 import { TransactionModel } from './TransactionModel';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
+import FileManager, { Filename } from 'src/libs/FileManager';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
     protected global = Global.getInstance();
@@ -356,4 +357,70 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             }
         });
     }
+
+    //#region File Management
+    /**
+     * Renames the file of the model.
+     * @param newFilename The new filename to set.
+     * @returns A Promise that resolves to `true` if the file was renamed successfully, otherwise `false`.
+     */
+    public async renameFile(newFilename: string): Promise<boolean> {
+        const filename = new Filename(newFilename, 'md');
+
+        return FileManager.renameFile(
+            this.file,
+            filename,
+            this.writeChangesPromise,
+        );
+    }
+
+    /**
+     * Moves the file of the model.
+     * @param newPath The new path to move the file to.
+     * @param newFilename The new filename to set.
+     * @returns A Promise that resolves to `true` if the file was moved successfully, otherwise `false`.
+     */
+    public async moveFile(
+        newPath: string,
+        newFilename?: string,
+    ): Promise<boolean> {
+        const filename = newFilename
+            ? new Filename(newFilename, 'md')
+            : undefined;
+
+        return FileManager.moveFile(
+            this.file,
+            newPath,
+            filename,
+            this.writeChangesPromise,
+        );
+    }
+
+    /**
+     * Creates a new file for the model.
+     * @param path The path of the new file.
+     * @param filename The filename of the new file.
+     * @param content The content of the new file.
+     * @returns The new file if successful, otherwise `undefined`.
+     */
+    public async createFile(
+        path: string,
+        filename: string,
+        content?: string,
+    ): Promise<TFile | undefined> {
+        const newFilename = new Filename(filename, 'md');
+
+        const file = await FileManager.createFile(path, newFilename, content);
+
+        if (!file) return Promise.resolve(undefined);
+
+        this.file = file;
+
+        if (this.writeChangesPromise) {
+            await this.writeChangesPromise;
+        }
+
+        return file;
+    }
+    //#endregion
 }

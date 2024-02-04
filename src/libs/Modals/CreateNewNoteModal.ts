@@ -12,9 +12,8 @@ import Helper from '../Helper';
 import { TFile } from 'obsidian';
 import { NoteModel } from 'src/models/NoteModel';
 import NoteData from 'src/types/NoteData';
-import { StaticNoteModel } from 'src/models/StaticHelper/StaticNoteModel';
-import { Path } from 'src/classes/Path';
 import Logging from 'src/classes/Logging';
+import API from 'src/classes/API';
 
 /**
  * Modal to create a new metadata file
@@ -142,18 +141,13 @@ export default class CreateNewNoteModal extends BaseModalForm {
                 }
             }
 
-            const newFileName = StaticNoteModel.generateFilename(note);
+            const newFileName = API.noteModel.generateFilename(note);
 
-            const file = await this.app.vault.create(
-                Path.join(folder, `${newFileName}.md`),
-                template,
-            );
-            note.file = file;
+            await note.createFile(folder, newFileName, template);
         } else {
             // Existing file, rename it properly
-            const newFileName = StaticNoteModel.generateFilename(note);
-            const newFilePath = Path.join(folder, `${newFileName}.md`);
-            await this.app.fileManager.renameFile(note.file, newFilePath);
+            const newFileName = API.noteModel.generateFilename(note);
+            note.moveFile(folder, newFileName);
         }
 
         return note;

@@ -13,7 +13,6 @@ import Helper from '../Helper';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
 import { TFile } from 'obsidian';
-import { Path } from 'src/classes/Path';
 import Logging from 'src/classes/Logging';
 
 /**
@@ -157,11 +156,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             const newFileName =
                 API.documentModel.generateMetadataFilename(document);
 
-            const file = await this.app.vault.create(
-                Path.join(folder, `${newFileName}.md`),
-                template,
-            );
-            document.file = file;
+            await document.createFile(folder, newFileName, template);
         } else {
             // Existing file, rename it properly
             await API.documentModel.syncMetadataToFile(document.file);

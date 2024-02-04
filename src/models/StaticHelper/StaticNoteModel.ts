@@ -5,6 +5,7 @@ import Tags from 'src/libs/Tags';
 
 /**
  * Static API for StaticNoteModel
+ * @deprecated Use NoteModel instead.
  */
 export class StaticNoteModel {
     /**
@@ -12,6 +13,7 @@ export class StaticNoteModel {
      *
      * @param model The NoteModel object used to generate the filename.
      * @returns The generated filename as a string.
+     * @deprecated Use NoteModel.generateFilename instead.
      */
     public static generateFilename(model: NoteModel): string {
         const newFileName: string[] = [];

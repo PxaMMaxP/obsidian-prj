@@ -8,8 +8,8 @@ import Global from '../classes/Global';
 import Helper from '../libs/Helper';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
-import { Path } from 'src/classes/Path';
 import Lng from 'src/classes/Lng';
+import FileManager, { Filename } from 'src/libs/FileManager';
 
 export class DocumentModel
     extends FileModel<DocumentData>
@@ -378,7 +378,6 @@ export class DocumentModel
      */
     public static async syncMetadataToFile(file: TFile): Promise<void> {
         const logger = Logging.getLogger('SyncMetadataToFile');
-        const app = Global.getInstance().app;
         const settings = Global.getInstance().settings;
 
         const document = new DocumentModel(file);
@@ -386,23 +385,8 @@ export class DocumentModel
         const desiredFilename = this.generateMetadataFilename(document);
         const defaultDocumentFolder = settings.documentSettings.defaultFolder;
 
-        const desiredFilePath = Path.join(
-            defaultDocumentFolder,
-            `${desiredFilename}.md`,
-        );
-
         // Markdown file
-        if (desiredFilePath !== document.file.path) {
-            logger.trace(
-                `Moving file '${document.file.path}' to '${desiredFilePath}'`,
-            );
-            // fileManager.renameFile does autorenaming internal links
-            await app.fileManager.renameFile(document.file, desiredFilePath);
-        } else {
-            logger.trace(
-                `File '${document.file.path}' is already in the correct folder`,
-            );
-        }
+        await document.moveFile(defaultDocumentFolder, desiredFilename);
 
         // PDF file
         const pdfFile = document.getLinkedFile();
@@ -449,35 +433,15 @@ export class DocumentModel
             defaultPdfFolder &&
             !pdfFile.path.contains(defaultPdfFolder)
         ) {
-            desiredPdfFilePath = Path.join(
-                defaultPdfFolder,
-                `${desiredFilename}.${pdfFile.extension}`,
-            );
+            desiredPdfFilePath = defaultPdfFolder;
         } else {
             // If file in default folder, rename it if necessary
-            const pdfParentFolder = pdfFile.parent?.path;
-
-            if (pdfParentFolder) {
-                desiredPdfFilePath = Path.join(
-                    pdfParentFolder,
-                    `${desiredFilename}.${pdfFile.extension}`,
-                );
-
-                if (desiredPdfFilePath.replace('\\', '/') === pdfFile.path) {
-                    logger.trace(
-                        `File '${pdfFile.path}' is already in the correct folder`,
-                    );
-                    desiredPdfFilePath = undefined;
-                }
-            }
+            desiredPdfFilePath = pdfFile.parent?.path ?? undefined;
         }
 
         if (desiredPdfFilePath) {
-            logger.trace(
-                `Moving file '${pdfFile.path}' to '${desiredPdfFilePath}'`,
-            );
-            // fileManager.renameFile does autorenaming internal links
-            await app.fileManager.renameFile(pdfFile, desiredPdfFilePath);
+            const filename = new Filename(desiredFilename, pdfFile.extension);
+            FileManager.moveFile(pdfFile, desiredPdfFilePath, filename);
         }
     }
     //#endregion
