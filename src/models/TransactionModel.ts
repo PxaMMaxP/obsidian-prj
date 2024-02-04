@@ -2,6 +2,20 @@ import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 
 /**
+ * The type of return value of the `callWriteChanges` method.
+ */
+type WriteChangesReturnType = {
+    /**
+     * A promise that resolves when the changes are written to the file.
+     */
+    promise: Promise<void> | undefined;
+    /**
+     * A boolean that indicates whether the writeChanges function was called.
+     */
+    writeTriggerd: boolean;
+};
+
+/**
  * A class that handles transactions.
  * @remarks - A transaction is a set of changes that are applied to the model at once.
  * - This is useful when multiple changes need to be applied to the model, but the changes should only be written to the file once all changes have been applied.
@@ -12,21 +26,32 @@ import { ILogger } from 'src/interfaces/ILogger';
  */
 export class TransactionModel<T> {
     protected logger: ILogger = Logging.getLogger('TransactionModel');
+    /**
+     * A promise that resolves when the changes are written to the file.
+     */
+    private _writeChangesPromise: Promise<void> | undefined;
     private _transactionActive = false;
     protected changes: Partial<T> = {};
     /**
      * A function that writes the changes to the file.
      * @remarks - This function is called when the transaction is finished or without a active transaction immediately.
      * @param update The changes to write.
+     * @param previousPromise A promise that resolves when the previous changes are written to the file.
      */
-    protected writeChanges: ((update: T) => Promise<void>) | undefined;
+    protected writeChanges:
+        | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
+        | undefined;
 
     /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
      * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
      */
-    constructor(writeChanges: ((update: T) => Promise<void>) | undefined) {
+    constructor(
+        writeChanges:
+            | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
+            | undefined,
+    ) {
         if (writeChanges) {
             this.writeChanges = writeChanges;
         } else {
@@ -40,7 +65,12 @@ export class TransactionModel<T> {
      * @remarks - If a transaction is active, the transaction is finished after the callback function is set and the `changes` property is not empty.
      * - Else, if the transaction is active and the `changes` property is empty, the transaction is aborted.
      */
-    public setWriteChanges(writeChanges: (update: T) => Promise<void>) {
+    public setWriteChanges(
+        writeChanges: (
+            update: T,
+            previousPromise?: Promise<void>,
+        ) => Promise<void>,
+    ) {
         this.writeChanges = writeChanges;
 
         if (
@@ -59,12 +89,28 @@ export class TransactionModel<T> {
     /**
      * Calls the `writeChanges` function if it is available.
      * @param update The changes to write.
-     * @returns `true` if the `writeChanges` function is available, otherwise `false`.
+     * @returns An object with a promise that resolves when the changes are written to the file and a boolean that indicates whether the writeChanges function was called.
      * @remarks - If the `writeChanges` function is available, it will be called asynchronously (No waiting for the function to finish).
+     * - If the `writeChanges` function is not available, this method does nothing.
+     * @remarks - If the `writeChanges` function is called, the `changes` property is set to an empty object after the function is called
+     * and the `_writeChangesPromise` property is set to the promise that resolves when the changes are written to the file.
+     * - If the `writeChanges` function is not called, the `changes` property is not changed and the `_writeChangesPromise` property is set to itself or `undefined`.
      */
-    protected callWriteChanges(update: T = this.changes as T): boolean {
+    private callWriteChanges(
+        update: T = this.changes as T,
+    ): WriteChangesReturnType {
+        const writeChanges: WriteChangesReturnType = {
+            promise: undefined,
+            writeTriggerd: false,
+        };
+
         if (this.writeChanges) {
-            this.writeChanges(update)
+            const promise = this.writeChanges(
+                update,
+                this._writeChangesPromise,
+            );
+
+            promise
                 .then(() => {
                     this.logger.debug('Changes written to file');
                 })
@@ -75,12 +121,19 @@ export class TransactionModel<T> {
                     );
                 });
 
-            return true;
+            writeChanges.promise = promise;
+            writeChanges.writeTriggerd = true;
         } else {
             this.logger.debug('No writeChanges function available');
-
-            return false;
         }
+
+        this.changes = writeChanges.writeTriggerd ? {} : this.changes;
+
+        this._writeChangesPromise = writeChanges.promise
+            ? writeChanges.promise
+            : undefined;
+
+        return writeChanges;
     }
 
     /**
@@ -109,9 +162,8 @@ export class TransactionModel<T> {
             return;
         }
         const writeChanges = this.callWriteChanges();
-        this.changes = writeChanges ? {} : this.changes;
 
-        this._transactionActive = writeChanges
+        this._transactionActive = writeChanges.writeTriggerd
             ? false
             : this._transactionActive;
     }
@@ -154,8 +206,7 @@ export class TransactionModel<T> {
         });
 
         if (!this.isTransactionActive) {
-            const writeChanges = this.callWriteChanges();
-            this.changes = writeChanges ? {} : this.changes;
+            this.callWriteChanges();
         }
     }
 

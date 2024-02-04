@@ -32,8 +32,11 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         if (this._file === undefined) {
             this._file = value;
 
-            super.setWriteChanges((update) => {
-                return this.setFrontmatter(update as Record<string, unknown>);
+            super.setWriteChanges((update, previousPromise) => {
+                return this.setFrontmatter(
+                    update as Record<string, unknown>,
+                    previousPromise,
+                );
             });
         } else {
             this.logger.warn('File already set');
@@ -165,11 +168,19 @@ export class FileModel<T extends object> extends TransactionModel<T> {
     /**
      * Updates the key value pair in the frontmatter.
      * @param value The new value to set.
+     * @param previousPromise The previous promise to wait for. Implementing a self obtain Queue.
      * @remarks - Overwrites only the given values.
      * - If the file is not set, the frontmatter is not set.
      */
-    private async setFrontmatter(value: Record<string, unknown>) {
+    private async setFrontmatter(
+        value: Record<string, unknown>,
+        previousPromise?: Promise<void>,
+    ) {
         if (!this._file) return Promise.resolve();
+
+        if (previousPromise) {
+            await previousPromise;
+        }
 
         try {
             await this.app.fileManager.processFrontMatter(
@@ -300,7 +311,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             cachedMetadata.metadata &&
             cachedMetadata.metadata.frontmatter
         ) {
-            // Without the deep clone, the data object in the Obsidian Metadata Cache is changed
+            // Without the deep clone, the data object in the Obsidian Metadata Cache is changed: Problems with dataview..
             const clone = Helper.deepCloneFrontMatterCache(
                 cachedMetadata.metadata.frontmatter,
             );
