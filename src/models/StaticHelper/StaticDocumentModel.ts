@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
@@ -8,11 +9,13 @@ import { Path } from 'src/classes/Path';
 
 /**
  * Static API for DocumentModel
+ * @deprecated Use DocumentModel directly
  */
 export class StaticDocumentModel {
     /**
      * Returns all documents
      * @returns {DocumentModel[]} List of all documents
+     * @deprecated Use DocumentModel.getAllDocuments
      */
     public static getAllDocuments(): DocumentModel[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
@@ -28,6 +31,7 @@ export class StaticDocumentModel {
      * Retrieves all unique sender and recipient names from the metadata cache.
      *
      * @returns An array of strings representing the sender and recipient names.
+     * @deprecated Use DocumentModel.getAllSenderRecipients
      */
     public static getAllSenderRecipients(): string[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
@@ -49,6 +53,7 @@ export class StaticDocumentModel {
      * Generates a metadata filename based on the provided DocumentModel.
      * @param model The DocumentModel object.
      * @returns The generated metadata filename without extension.
+     * @deprecated Use DocumentModel.generateMetadataFilename
      */
     public static generateMetadataFilename(model: DocumentModel): string {
         const newFileName: string[] = [];
@@ -80,6 +85,7 @@ export class StaticDocumentModel {
      * @returns {TFile[]} List of PDFs without metadata files
      * @remarks - This function searches for all PDFs without a corresponding metadata file.
      * - The function uses the metadataCache and fileCache to find all PDFs without a metadata file.
+     * @deprecated Use DocumentModel.getAllPDFsWithoutMetadata
      */
     public static getAllPDFsWithoutMetadata(): TFile[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
@@ -110,6 +116,7 @@ export class StaticDocumentModel {
      * Sorts the documents by date descending
      * @param documents Array of DocumentModels to sort
      * @remarks This function sorts the array in place
+     * @deprecated Use DocumentModel.sortDocumentsByDateDesc
      */
     public static sortDocumentsByDateDesc(documents: DocumentModel[]): void {
         documents.sort((a, b) => {
@@ -132,6 +139,7 @@ export class StaticDocumentModel {
      * Sorts the documents by date ascending
      * @param documents Array of DocumentModels to sort
      * @remarks This function sorts the array in place
+     * @deprecated Use DocumentModel.sortDocumentsByDateAsc
      */
     public static sortDocumentsByDateAsc(documents: DocumentModel[]): void {
         documents.sort((a, b) => {
@@ -153,6 +161,7 @@ export class StaticDocumentModel {
     /**
      * Set the metadata and pfd file to the correct folder and filename
      * @param file The document/metadata file
+     * @deprecated Use DocumentModel.syncMetadataToFile
      */
     public static async syncMetadataToFile(file: TFile): Promise<void> {
         const logger = Logging.getLogger('SyncMetadataToFile');
