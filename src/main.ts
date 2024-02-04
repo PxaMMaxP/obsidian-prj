@@ -91,7 +91,7 @@ export default class Prj extends Plugin {
             },
         );
 
-        //Register event on `tsk-file` change..
+        //Register event on `task-file` change..
         Global.getInstance().metadataCache.on(
             'prj-task-management-file-changed-event',
             (file) => {
