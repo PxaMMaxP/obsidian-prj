@@ -1,10 +1,10 @@
 import { Component, MarkdownRenderer, TFile, setIcon } from 'obsidian';
+import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import Helper from 'src/libs/Helper';
 import { DocumentModel } from 'src/models/DocumentModel';
-import { StaticDocumentModel } from 'src/models/StaticHelper/StaticDocumentModel';
 
 export default class DocumentComponents {
     public static createCellSummary(
@@ -208,17 +208,17 @@ export default class DocumentComponents {
                 .setTitle(title)
                 .enableEditability()
                 .setSuggester((inputValue: string) => {
-                    const suggestions =
-                        StaticDocumentModel.getAllSenderRecipients()
-                            .filter((suggestion) =>
-                                suggestion
-                                    .toLowerCase()
-                                    .includes(inputValue.toLowerCase()),
-                            )
-                            .slice(0, 100)
-                            .map((suggestion) => {
-                                return { value: suggestion, label: suggestion };
-                            });
+                    const suggestions = API.documentModel
+                        .getAllSenderRecipients()
+                        .filter((suggestion) =>
+                            suggestion
+                                .toLowerCase()
+                                .includes(inputValue.toLowerCase()),
+                        )
+                        .slice(0, 100)
+                        .map((suggestion) => {
+                            return { value: suggestion, label: suggestion };
+                        });
 
                     return suggestions;
                 })

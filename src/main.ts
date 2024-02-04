@@ -11,7 +11,6 @@ import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
-import { StaticDocumentModel } from './models/StaticHelper/StaticDocumentModel';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync';
@@ -102,7 +101,7 @@ export default class Prj extends Plugin {
         Global.getInstance().metadataCache.on(
             'document-changed-metadata-event',
             (file) => {
-                StaticDocumentModel.syncMetadataToFile(file);
+                API.documentModel.syncMetadataToFile(file);
             },
         );
 
