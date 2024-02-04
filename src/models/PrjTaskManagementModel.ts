@@ -463,7 +463,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
         const filename: Filename = new Filename(automaticFilename, 'md');
 
-        FileManager.renameFile(file, filename);
+        FileManager.renameFile(file, filename, model.writeChangesPromise);
     }
 
     /**
