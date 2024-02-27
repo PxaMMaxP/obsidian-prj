@@ -490,6 +490,36 @@ export class SettingTab extends PluginSettingTab {
                     }),
             );
 
+        // Sub Templates
+        new Setting(containerEl)
+            .setName('Sub Templates')
+            .setDesc(
+                'The Project Sub Templates. \nOne per line and Label and File separated by a semicolon.',
+            )
+            .addTextArea((text) =>
+                text
+                    .setPlaceholder('Sub Templates')
+                    .setValue(
+                        this.plugin.settings.prjSettings.subProjectTemplates
+                            ?.map((value) => `${value.label};${value.template}`)
+                            .join('\n'),
+                    )
+                    .onChange(async (value) => {
+                        const lines = value.split('\n');
+
+                        this.plugin.settings.prjSettings.subProjectTemplates =
+                            lines.map((line) => {
+                                const parts = line.split(';');
+
+                                return {
+                                    label: parts[0],
+                                    template: parts[1],
+                                };
+                            });
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
         // Task Symbol
         new Setting(containerEl)
             .setName('Task Symbol')

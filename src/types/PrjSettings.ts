@@ -36,6 +36,7 @@ export interface PrjSettings {
         projectSymbol: string;
         projectFolder: string;
         projectTemplate: string;
+        subProjectTemplates: { label: string; template: string }[];
         taskSymbol: string;
         taskFolder: string;
         taskTemplate: string;
@@ -83,6 +84,7 @@ export const DEFAULT_SETTINGS: PrjSettings = {
         projectSymbol: 'layout-list',
         projectFolder: 'Projects/',
         projectTemplate: '',
+        subProjectTemplates: [],
         taskSymbol: 'clipboard',
         taskFolder: 'Tasks/',
         taskTemplate: '',
