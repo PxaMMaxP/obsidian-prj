@@ -87,6 +87,11 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
                 modelFolderPath =
                     this.global.settings.prjSettings.projectFolder;
+
+                if (result.data.subtype && result.data.subtype !== '') {
+                    subTemplatePath = result.data.subtype as string;
+                }
+                delete result.data.subtype;
                 break;
             case 'Task':
                 model = new PrjTaskManagementModel<TaskData>(
@@ -243,7 +248,11 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             }
         }
 
-        await model.createFile(modelFile.fullPath, template);
+        await model.createFile(
+            modelFile.filepath,
+            modelFile.filename,
+            template,
+        );
 
         return model;
     }
