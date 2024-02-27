@@ -18,6 +18,7 @@ import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
+import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;
@@ -81,6 +82,8 @@ export default class Prj extends Plugin {
         CreateNewTaskManagementModal.registerCommand();
         // Create new Task Command
         CreateNewTaskModal.registerCommand();
+        // Create new Project Command
+        CreateNewProjectModal.registerCommand();
         // Add Annotation Command
         AddAnnotationModal.registerCommand();
         // Add new note Command
