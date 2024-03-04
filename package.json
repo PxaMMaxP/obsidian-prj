@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sample-plugin",
-  "version": "0.0.65",
+  "version": "0.0.66",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
@@ -15,7 +15,8 @@
     "watch:sass": "sass --watch --no-source-map src/styles/main.scss:build/styles.css",
     "lint": "eslint --ext .ts .",
     "lint-fix": "eslint --fix --ext .ts .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "version:show": "node -e \"console.log(require('./package.json').version)\""
   },
   "keywords": [],
   "author": "",
