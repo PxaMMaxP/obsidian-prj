@@ -22,7 +22,7 @@ jobs:
               run: npm install
 
             - name: Build the Project
-              run: npm run build
+              run: npm run build:action
 
             - name: Get the version
               id: get_version
