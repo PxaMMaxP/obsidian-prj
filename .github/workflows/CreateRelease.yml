@@ -5,7 +5,7 @@ on:
         branches:
             - main
         paths:
-            - "manifest.json"
+            - 'manifest.json'
 
 jobs:
     build:
@@ -16,16 +16,13 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "20.8.0"
+                  node-version: '20.8.0'
 
             - name: Install Dependencies
               run: npm install
 
             - name: Build the Project
-              run: tsc -noEmit -skipLibCheck && node esbuild.config.mjs production
-
-            - name: Compile SASS to CSS
-              run: npx sass --no-source-map src/styles/main.scss build/styles.css
+              run: npm run build
 
             - name: Get the version
               id: get_version
