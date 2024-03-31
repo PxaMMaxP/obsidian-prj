@@ -167,6 +167,15 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         );
         headerFilterButtons.appendChild(doneFilterButton);
 
+        const shortHierarchyFilterButton = FilterButton.create(
+            this.component,
+            'ShortHierarchy',
+            'gantt-chart',
+            this.settings.filter.includes('ShortHierarchy'),
+            this.onFilterButton.bind(this),
+        );
+        headerFilterButtons.appendChild(shortHierarchyFilterButton);
+
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
             this.settings.maxDocuments,
@@ -480,9 +489,19 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private determineTagHideState(
         document: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
     ): boolean {
-        return this.settings.reactOnActiveFile
-            ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
-            : false;
+        if (this.settings.reactOnActiveFile) {
+            return !Helper.isTagIncluded(
+                this.settings.tags,
+                document.getTags(),
+            );
+        } else if (this.settings.filter.includes('ShortHierarchy')) {
+            return !Helper.isTagDirectlyBelow(
+                this.settings.tags,
+                document.getTags(),
+            );
+        } else {
+            return false;
+        }
     }
 
     public onActiveFileFilter() {
@@ -495,5 +514,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
  * @remarks - `Topic` includes all topics.
  * - `Project` includes all projects.
  * - `Task` includes all tasks.
+ * - `Done` includes all done tasks.
+ * - `ShortHierarchy` includes only models that are directly below the active file.
  */
-type FilteredModels = 'Topic' | 'Project' | 'Task' | 'Done';
+type FilteredModels = 'Topic' | 'Project' | 'Task' | 'Done' | 'ShortHierarchy';
