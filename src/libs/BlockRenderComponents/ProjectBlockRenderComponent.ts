@@ -167,14 +167,14 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         );
         headerFilterButtons.appendChild(doneFilterButton);
 
-        const shortHierarchyFilterButton = FilterButton.create(
+        const deepHierarchyFilterButton = FilterButton.create(
             this.component,
-            'ShortHierarchy',
+            'DeepHierarchy',
             'gantt-chart',
-            this.settings.filter.includes('ShortHierarchy'),
+            this.settings.filter.includes('DeepHierarchy'),
             this.onFilterButton.bind(this),
         );
-        headerFilterButtons.appendChild(shortHierarchyFilterButton);
+        headerFilterButtons.appendChild(deepHierarchyFilterButton);
 
         const maxDocuments = MaxShownModelsInput.create(
             this.component,
@@ -494,13 +494,13 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
                 this.settings.tags,
                 document.getTags(),
             );
-        } else if (this.settings.filter.includes('ShortHierarchy')) {
+        } else if (this.settings.filter.includes('DeepHierarchy')) {
+            return false;
+        } else {
             return !Helper.isTagDirectlyBelow(
                 this.settings.tags,
                 document.getTags(),
             );
-        } else {
-            return false;
         }
     }
 
@@ -515,6 +515,6 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
  * - `Project` includes all projects.
  * - `Task` includes all tasks.
  * - `Done` includes all done tasks.
- * - `ShortHierarchy` includes only models that are directly below the active file.
+ * - `DeepHierarchy` includes all models that are below the active file.
  */
-type FilteredModels = 'Topic' | 'Project' | 'Task' | 'Done' | 'ShortHierarchy';
+type FilteredModels = 'Topic' | 'Project' | 'Task' | 'Done' | 'DeepHierarchy';
