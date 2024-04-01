@@ -69,12 +69,13 @@ export default class Helper {
      * Generates a UID from the given input
      * @param input The input to generate the UID from
      * @param length The length of the UID
+     * @param sufix The sufix to add to the UID
      * @returns The generated UID with the given length
      * @remarks - This method uses the MD5 hash algorithm to generate the UID
      * - The UID is prefixed with a "U" to prevent the UID from starting with a number. The "U" counts to the length of the UID
      */
-    static generateUID(input: string, length = 8): string {
-        const hash = 'U' + this._md5(input).toString();
+    static generateUID(input: string, length = 8, sufix = 'U'): string {
+        const hash = sufix + this._md5(input).toString();
 
         return hash.substring(0, length);
     }

@@ -6,6 +6,7 @@ import { FileType, FileSubType } from './PrjTypes';
 export default class DocumentData implements IPrjData, IPrjDocument {
     type: FileType | null | undefined;
     subType: FileSubType | undefined;
+    uid: string | null | undefined;
     title: string | null | undefined;
     date: string | null | undefined;
     description: string | null | undefined;
@@ -29,6 +30,8 @@ export default class DocumentData implements IPrjData, IPrjDocument {
 
             return;
         }
+        this.uid = data.uid !== undefined ? data.uid : undefined;
+
         this.title = data.title !== undefined ? data.title : undefined;
         this.date = data.date !== undefined ? data.date : undefined;
 

@@ -228,6 +228,20 @@ export class DocumentModel
         return formattedTags;
     }
 
+    public getUID(): string {
+        if (this.data.uid === undefined || this.data.uid === '') {
+            const random = Math.floor(Math.random() * 1000);
+
+            this.data.uid = Helper.generateUID(
+                this.toString() + random.toString(),
+                4,
+                'U',
+            ).toUpperCase();
+        }
+
+        return this.data.uid ?? '';
+    }
+
     /**
      * Static API for the DocumentModel class.
      */
@@ -293,6 +307,10 @@ export class DocumentModel
             newFileName.push(`${Lng.gt('From')} ${model.data.sender}`);
         }
         newFileName.push(`${model.data.title}`);
+
+        if (model.getUID() != '') {
+            newFileName.push(`${model.getUID()}`);
+        }
 
         return Helper.sanitizeFilename(newFileName.join(' - '));
     }
