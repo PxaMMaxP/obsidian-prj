@@ -230,11 +230,12 @@ export default class HeaderBlockRenderComponent
     /**
      * Redraws the HeaderBlockRenderComponent.
      * @remarks - This function is called when the `prj-task-management-file-changed` event is fired.
-     * - The function emptys the `headerContainer` and calls the `build` function.
+     * - The function emptys the `headerContainer`, clear the stored `model` and calls the `build` function.
      */
     public async redraw(): Promise<void> {
         try {
             this.headerContainer?.empty();
+            this.model = undefined;
             await this.build();
         } catch (error) {
             this.logger.error(
