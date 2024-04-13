@@ -70,7 +70,8 @@ export default class Prj extends Plugin {
          * start page is loaded.
          */
         setTimeout(() => {
-            Helper.rebuildActiveView();
+            // Possibly no longer necessary with the current Obsidian version...
+            // Helper.rebuildActiveView();
         }, 500);
     }
 
