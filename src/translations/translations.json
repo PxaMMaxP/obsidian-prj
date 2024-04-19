@@ -2,6 +2,7 @@
     {
         "lang": "en",
         "translations": {
+            "Copy MD Link": "Copy Markdown Link",
             "Acronym": "Acronym",
             "Acronym description": "Acronym of the document.",
             "Add annotation": "Add annotation",
@@ -85,6 +86,7 @@
     {
         "lang": "de",
         "translations": {
+            "Copy MD Link": "Markdown Link kopieren",
             "Acronym": "Akronym",
             "Acronym description": "Akronym des Dokuments.",
             "Add annotation": "Anmerkung hinzufügen",
