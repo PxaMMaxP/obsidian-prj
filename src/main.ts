@@ -19,6 +19,7 @@ import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
 import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
+import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;
@@ -59,6 +60,9 @@ export default class Prj extends Plugin {
 
         // Get Metadata File Context Menu & Command
         GetMetadata.getInstance();
+
+        // Copy Markdown Link Context Menu
+        CopyMarkdownLink.getInstance();
 
         // Register Commands and Events
         this.registerCommandsAndEvents();
@@ -134,6 +138,7 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
         GetMetadata.deconstructor();
+        CopyMarkdownLink.deconstructor();
         Global.deconstructor();
     }
 
