@@ -512,8 +512,8 @@ export default class MetadataCache {
             if (entry && cache) {
                 const oldMetadata = entry.metadata;
                 entry.metadata = cache;
-                this.onChangedMetadata(cache, oldMetadata, file);
                 this.invalidateMetadataCacheArray();
+                this.onChangedMetadata(cache, oldMetadata, file);
             } else if (!entry) {
                 this.logger.warn(
                     `No metadata cache entry found for file ${file.path}`,
