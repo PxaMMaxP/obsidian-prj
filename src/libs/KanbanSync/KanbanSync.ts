@@ -118,7 +118,7 @@ export default class KanbanSync {
                 this._kanbanFile,
             );
             const newContent = kanbanMarkdownGenerator.generateMarkdownFile();
-            kanbanMarkdownGenerator.saveFile(newContent, false);
+            await kanbanMarkdownGenerator.saveFile(newContent, false);
         }
     }
 

@@ -22,7 +22,7 @@ export default class KanbanMarkdownGenerator {
      * @param content The content to save.
      * @param onlyLog If true, the file is not saved but only logged.
      */
-    public saveFile(content: string, onlyLog = false): void {
+    public async saveFile(content: string, onlyLog = false): Promise<void> {
         if (onlyLog) {
             this.logger.debug(
                 `Would save file ${this._file.path} with content: \n${content}`,
