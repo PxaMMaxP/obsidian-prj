@@ -1,4 +1,4 @@
-import { App, CachedMetadata, TFile } from 'obsidian';
+import { CachedMetadata, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import API from 'src/classes/API';
@@ -9,10 +9,15 @@ import PrjTypes from 'src/types/PrjTypes';
 
 export default class KanbanSync {
     private logger = Logging.getLogger('KanbanSync');
+
     private _metadataCache = Global.getInstance().metadataCache;
-    private _app: App = Global.getInstance().app;
     private _kanbanFile: TFile;
     private _kanbanMetadata: CachedMetadata | undefined;
+    /**
+     * The sync mode of the KanbanSync.
+     * - 'in': The sync mode is 'in' if the sync is triggered by a change in a Prj file.
+     * - 'out': The sync mode is 'out' if the sync is triggered by a change in the Kanban file.
+     */
     private _syncMode: 'in' | 'out' = 'out';
     private _kanbankBoard: KanbanBoard | undefined;
     private _changedFile: TFile | undefined;
@@ -37,6 +42,9 @@ export default class KanbanSync {
         }
     }
 
+    /**
+     * Loads the kanban file and parses it.
+     */
     private async loadKanbanFile(): Promise<void> {
         const kanbanParser = new KanbanParser(this._kanbanFile);
         this._kanbankBoard = await kanbanParser.parse();
@@ -103,26 +111,30 @@ export default class KanbanSync {
 
         this._kanbankBoard.moveItemToStatus(card, newHeadingState);
 
-        const kanbanMarkdownGenerator = new KanbanMarkdownGenerator(
-            this._kanbankBoard,
-            this._kanbanFile,
-        );
-        const newContent = kanbanMarkdownGenerator.generateMarkdownFile();
-        kanbanMarkdownGenerator.saveFile(newContent, false);
+        // Only save the file if the Kanban board has changed
+        if (this._kanbankBoard.kanbanChanged) {
+            const kanbanMarkdownGenerator = new KanbanMarkdownGenerator(
+                this._kanbankBoard,
+                this._kanbanFile,
+            );
+            const newContent = kanbanMarkdownGenerator.generateMarkdownFile();
+            kanbanMarkdownGenerator.saveFile(newContent, false);
+        }
     }
 
     /**
-     * Synchronizes the files based on the structured kanban headings.
+     * Synchronizes the files based on the loaded Kanban board.
      */
     private syncFiles(): void {
+        // Iterate over all valid statuses
         PrjTypes.statuses.forEach((status) => {
-            const cards = this._kanbankBoard?.getItemsPerStatus(status);
+            const cardItem = this._kanbankBoard?.getItemsPerStatus(status);
 
-            if (!cards) {
+            if (!cardItem) {
                 return;
             }
 
-            cards.forEach((card) => {
+            cardItem.forEach((card) => {
                 const file = card.linkedFile;
 
                 if (!file) {
@@ -136,7 +148,8 @@ export default class KanbanSync {
                     model.startTransaction();
 
                     if (!model.data.title) {
-                        // If the title is not set, the file is a new file and the title and tags should be set
+                        // If the title is not set,
+                        // the file is a new file and the title and tags should be set
                         model.data.title = file.basename;
 
                         model.data.tags =

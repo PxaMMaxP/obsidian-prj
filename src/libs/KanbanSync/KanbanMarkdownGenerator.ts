@@ -27,7 +27,9 @@ export default class KanbanMarkdownGenerator {
         } else {
             this._global.app.vault.modify(this._file, content);
 
-            this.logger.debug(`Saved file ${this._file.path}`);
+            this.logger.debug(
+                `Saved file ${this._file.path} with content: \n${content}`,
+            );
         }
     }
 
@@ -75,6 +77,10 @@ export default class KanbanMarkdownGenerator {
                         );
                     link = `[[${linktext}]]`;
                 }
+
+                this.logger.trace(
+                    `Generating item: - [${item.checked ? 'x' : ' '}] ${link}`,
+                );
 
                 return `- [${item.checked ? 'x' : ' '}] ${link}`;
             });
