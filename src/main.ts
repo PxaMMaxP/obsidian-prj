@@ -13,7 +13,7 @@ import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import Lng from './classes/Lng';
 import Helper from './libs/Helper';
-import KanbanSync from './libs/KanbanSync';
+import KanbanSync from './libs/KanbanSync/KanbanSync';
 import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
