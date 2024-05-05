@@ -109,7 +109,7 @@ export default class KanbanSync {
             return;
         }
 
-        this._kanbankBoard.moveItemToStatus(card, newHeadingState);
+        this._kanbankBoard.moveCardToStatus(card, newHeadingState);
 
         // Only save the file if the Kanban board has changed
         if (this._kanbankBoard.kanbanChanged) {
@@ -128,7 +128,7 @@ export default class KanbanSync {
     private syncFiles(): void {
         // Iterate over all valid statuses
         PrjTypes.statuses.forEach((status) => {
-            const cardItem = this._kanbankBoard?.getItemsPerStatus(status);
+            const cardItem = this._kanbankBoard?.getCardsPerStatus(status);
 
             if (!cardItem) {
                 return;

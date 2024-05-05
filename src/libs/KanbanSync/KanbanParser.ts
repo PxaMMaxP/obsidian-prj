@@ -2,7 +2,7 @@ import { TFile, App } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import PrjTypes from 'src/types/PrjTypes';
-import { KanbanBoard, KanbanCard, KanbanCardItem } from './KanbanModels';
+import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
 
 export default class KanbanParser {
     private logger = Logging.getLogger('KanbanParser');
@@ -70,14 +70,14 @@ export default class KanbanParser {
             this._contentKanbanSettings,
         );
 
-        return this.parseCards();
+        return this.parseLists();
     }
 
     /**
      * Parses the cards and their items from the markdown content.
      * @returns The parsed kanban board.
      */
-    private async parseCards(): Promise<KanbanBoard> {
+    private async parseLists(): Promise<KanbanBoard> {
         const regex = /^##\s(.+)((?:\n(?!##|\*\*\*|%%).*)*)/gm;
         const matches = this._contentMarkdown.matchAll(regex);
 
@@ -99,9 +99,9 @@ export default class KanbanParser {
 
             this.logger.trace(`Found heading '${title}' as status '${status}'`);
 
-            const heading = new KanbanCard(title, status, content);
-            await this.parseListItems(heading);
-            this._board.addCard(heading);
+            const list = new KanbanList(title, status, content);
+            await this.parseCards(list);
+            this._board.addList(list);
         }
 
         return this._board;
@@ -109,11 +109,11 @@ export default class KanbanParser {
 
     /**
      * Parses the list items from the markdown content of a card.
-     * @param card The card to parse the list items from.
+     * @param list The card to parse the list items from.
      */
-    private async parseListItems(card: KanbanCard): Promise<void> {
+    private async parseCards(list: KanbanList): Promise<void> {
         const regex = /^- \[(x| )\]\s(\[\[(.+)\]\])(?:(?:\n(?!-).*)*)/gm;
-        const matches = card.rawContent.matchAll(regex);
+        const matches = list.rawContent.matchAll(regex);
 
         for (const match of matches) {
             const checked = match[1] === 'x';
@@ -135,12 +135,8 @@ export default class KanbanParser {
                 );
             }
 
-            const listItem = new KanbanCardItem(
-                checked,
-                linkedFile,
-                itemContent,
-            );
-            card.addCardItem(listItem);
+            const card = new KanbanCard(checked, linkedFile, itemContent);
+            list.addCard(card);
         }
     }
 }

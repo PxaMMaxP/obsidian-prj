@@ -5,12 +5,15 @@ import { CompletedString, KanbanStatus } from './KanbanTypes';
 /**
  * Represents a kanban board.
  * Contains the *raw* frontmatter, markdown content, and kanban settings of the board.
- * Also contains the cards that are part of the board.
+ * Also contains the Lists that are part of the board.
  */
 export class KanbanBoard {
     private logger = Logging.getLogger('ParsedKanban');
 
-    public cards: KanbanCard[] = [];
+    /**
+     * Contains all lists that are part of the board.
+     */
+    public lists: KanbanList[] = [];
 
     private _kanbanChanged = false;
     /**
@@ -60,13 +63,13 @@ export class KanbanBoard {
 
     /**
      * Adds a new card to the board.
-     * @param card The card to add.
+     * @param list The card to add.
      */
-    public addCard(card: KanbanCard): void {
-        this.cards.push(card);
+    public addList(list: KanbanList): void {
+        this.lists.push(list);
 
         this.logger.trace(
-            `Added new KanbanCard with title '${card.title}' and status '${card.status}'`,
+            `Added new List with title '${list.title}' and status '${list.status}'`,
         );
     }
 
@@ -79,22 +82,20 @@ export class KanbanBoard {
         const cardItem = this.getCardItemPerFile(file);
 
         if (cardItem) {
-            return this.getStatusPerCardItem(cardItem);
+            return this.getStatusPerCard(cardItem);
         }
     }
 
     /**
      * Returns the status of the card item.
-     * @param item The card item to get the status for.
+     * @param card The card item to get the status for.
      * @returns The status of the card item or undefined if the item is not part of the board.
      */
-    public getStatusPerCardItem(
-        item: KanbanCardItem,
-    ): KanbanStatus | undefined {
-        for (const card of this.cards) {
-            if (card.items) {
-                if (card.items.includes(item)) {
-                    return card.status;
+    public getStatusPerCard(card: KanbanCard): KanbanStatus | undefined {
+        for (const listedCard of this.lists) {
+            if (listedCard.items) {
+                if (listedCard.items.includes(card)) {
+                    return listedCard.status;
                 }
             }
         }
@@ -103,14 +104,14 @@ export class KanbanBoard {
     }
 
     /**
-     * Returns the card item that is linked to the given file.
-     * @param file The file to get the card item for.
-     * @returns The card item that is linked to the given file or undefined if the file is not part of the board.
+     * Returns the card that is linked to the given file.
+     * @param file The file to get the card for.
+     * @returns The card that is linked to the given file or undefined if the file is not part of the board.
      */
-    public getCardItemPerFile(file: TFile): KanbanCardItem | undefined {
-        for (const card of this.cards) {
-            if (card.items) {
-                for (const item of card.items) {
+    public getCardItemPerFile(file: TFile): KanbanCard | undefined {
+        for (const listedCard of this.lists) {
+            if (listedCard.items) {
+                for (const item of listedCard.items) {
                     if (item.linkedFile === file) {
                         return item;
                     }
@@ -122,14 +123,14 @@ export class KanbanBoard {
     }
 
     /**
-     * Returns all items that are part of the given status.
-     * @param status The status of the items to return.
-     * @returns All items that are part of the given status.
+     * Returns all cards that are part of the given status.
+     * @param status The status of the cards to return.
+     * @returns All cards that are part of the given status.
      */
-    public getItemsPerStatus(status: KanbanStatus): KanbanCardItem[] {
-        const items: KanbanCardItem[] = [];
+    public getCardsPerStatus(status: KanbanStatus): KanbanCard[] {
+        const items: KanbanCard[] = [];
 
-        for (const card of this.cards) {
+        for (const card of this.lists) {
             if (card.status === status && card.items) {
                 items.push(...card.items);
             }
@@ -139,13 +140,13 @@ export class KanbanBoard {
     }
 
     /**
-     * Moves the item to the given status.
-     * @param item The item to move.
-     * @param status The status to move the item to.
-     * @remarks If the item is already in the given status, the move is skipped.
+     * Moves the card to the given status.
+     * @param card The card to move.
+     * @param status The status to move the card to.
+     * @remarks If the card is already in the given status, the move is skipped.
      */
-    public moveItemToStatus(item: KanbanCardItem, status: KanbanStatus): void {
-        const currentStatus = this.getStatusPerCardItem(item);
+    public moveCardToStatus(card: KanbanCard, status: KanbanStatus): void {
+        const currentStatus = this.getStatusPerCard(card);
 
         if (currentStatus === status) {
             this.logger.trace(
@@ -155,16 +156,16 @@ export class KanbanBoard {
             return;
         }
 
-        for (const card of this.cards) {
-            if (card.items) {
-                const index = card.items.indexOf(item);
+        for (const listedCard of this.lists) {
+            if (listedCard.items) {
+                const index = listedCard.items.indexOf(card);
 
                 if (index !== -1) {
-                    card.removeCardItem(item);
+                    listedCard.removeCard(card);
 
-                    for (const newCard of this.cards) {
+                    for (const newCard of this.lists) {
                         if (newCard.status === status) {
-                            newCard.addCardItem(item);
+                            newCard.addCard(card);
                             this._kanbanChanged = true;
 
                             return;
@@ -176,17 +177,14 @@ export class KanbanBoard {
     }
 
     /**
-     * Adds the card item to the given status.
-     * @param item The item to add.
+     * Adds the card to the list which has the given status.
+     * @param card The item to add.
      * @param status The status to add the item to.
      */
-    public addCardItemToStatus(
-        item: KanbanCardItem,
-        status: KanbanStatus,
-    ): void {
-        for (const card of this.cards) {
-            if (card.status === status) {
-                card.addCardItem(item);
+    public addCardToStatus(card: KanbanCard, status: KanbanStatus): void {
+        for (const listedCard of this.lists) {
+            if (listedCard.status === status) {
+                listedCard.addCard(card);
                 this._kanbanChanged = true;
 
                 return;
@@ -196,14 +194,14 @@ export class KanbanBoard {
 }
 
 /**
- * Represents a Card on a kanban board.
- * Contains the title of the card, the status of the card, and the items that are part of the card.
+ * Represents a List on a kanban board.
+ * Contains the title, the status, and the cards that are part of the list.
  */
-export class KanbanCard {
+export class KanbanList {
     private logger = Logging.getLogger('KanbanCard');
 
-    public get type(): 'heading' {
-        return 'heading';
+    public get type(): 'list' {
+        return 'list';
     }
     private _status: KanbanStatus;
     public get status(): KanbanStatus {
@@ -213,7 +211,7 @@ export class KanbanCard {
     public get title(): string {
         return this._title;
     }
-    public items?: KanbanCardItem[];
+    public items?: KanbanCard[];
 
     private _rawContent: string;
     public get rawContent(): string {
@@ -238,36 +236,36 @@ export class KanbanCard {
         }
 
         this.logger.trace(
-            `Created new KanbanCard with title '${title}' and status '${status}'`,
+            `Created new Kanban List with title '${title}' and status '${status}'`,
         );
     }
 
     /**
-     * Adds a new card item to the card.
-     * @param cardItem The card item to add.
+     * Adds a new Card to the kanban list.
+     * @param card The card to add.
      * @remarks If the card is completed, the card item is checked.
      */
-    public addCardItem(cardItem: KanbanCardItem): void {
+    public addCard(card: KanbanCard): void {
         if (!this.items) {
             this.items = [];
         }
 
         if (this.completed) {
-            cardItem.checked = true;
+            card.checked = true;
         } else {
-            cardItem.checked = false;
+            card.checked = false;
         }
 
-        this.items.push(cardItem);
+        this.items.push(card);
 
         this.logger.trace(
-            `Added new KanbanCardItem with checked '${cardItem.checked}', linkedFile '${cardItem.linkedFile}', and rawContent '${cardItem.rawContent}'`,
+            `Added new Kanban Card with checked '${card.checked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
         );
     }
 
-    public removeCardItem(cardItem: KanbanCardItem): void {
+    public removeCard(card: KanbanCard): void {
         if (this.items) {
-            const index = this.items.indexOf(cardItem);
+            const index = this.items.indexOf(card);
 
             if (index !== -1) {
                 this.items.splice(index, 1);
@@ -277,15 +275,15 @@ export class KanbanCard {
 }
 
 /**
- * Represents a list item belonging to a kanban card.
- * Cotains the checked state of the list item, the linked file, and the raw content of the list item.
+ * Represents a list item - Card - belonging to a kanban list.
+ * Cotains the checked state of the card, the linked file, and the raw content of the card.
  * @remarks If the linked file is null, the list item is not linked to a file.
  */
-export class KanbanCardItem {
+export class KanbanCard {
     private logger = Logging.getLogger('KanbanCardItem');
 
-    public get type(): 'listItem' {
-        return 'listItem';
+    public get type(): 'card' {
+        return 'card';
     }
     public checked: boolean;
 
