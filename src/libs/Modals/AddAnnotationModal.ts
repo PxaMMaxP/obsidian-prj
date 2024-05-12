@@ -81,17 +81,17 @@ export default class AddAnnotationModal extends BaseModalForm {
         const activeFile = Helper.getActiveFile();
 
         const template = `
->_${result.data.prefix}_
->==${result.data.citation}== 
->_${result.data.postfix}_
+>_${result.data.prefix ?? ' '}_
+>==${result.data.citation ?? ' '}== 
+>_${result.data.postfix ?? ' '}_
 >
 >Link: [[#^${id}|Zeige Zitat]]
 ><!-- [[${activeFile?.basename}#^${id}|ZitierterText]] -->
 >Kommentar: 
->**${result.data.comment}**
+>**${result.data.comment ?? ' '}**
 >
 >Stelle:
->##${result.data.place}
+>${result.data.place ? `##${result.data.place}` : ''}
 ^${id}
 `;
 
