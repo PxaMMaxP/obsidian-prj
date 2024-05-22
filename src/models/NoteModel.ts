@@ -44,13 +44,11 @@ export class NoteModel
         super(file, NoteData, undefined);
     }
 
+    /**
+     * Returns the metadata of the note as a string
+     */
     public override toString(): string {
-        let allText = this.data.title ?? '';
-        allText += this.data.description ?? '';
-        allText += this.data.date ?? '';
-        allText += this.data.tags ?? '';
-
-        return allText;
+        return this.data.toString?.() ?? '';
     }
 
     public getWikilink(text: string | undefined): string {

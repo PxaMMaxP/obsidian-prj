@@ -1,5 +1,7 @@
+import { toStringField } from 'src/classes/ToStringFieldDecorator';
 import IPrjData from '../interfaces/IPrjData';
 import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
+import BaseData from './BaseData';
 import {
     Status,
     Priority,
@@ -8,21 +10,42 @@ import {
     HistoryEntries,
 } from './PrjTypes';
 
-export default class TaskData implements IPrjData, IPrjTaskManagement {
+export default class TaskData
+    extends BaseData
+    implements IPrjData, IPrjTaskManagement
+{
     type: 'Task' | null | undefined;
+
     subType: FileSubType | null | undefined;
+
+    @toStringField
     title: string | null | undefined;
+
+    @toStringField
     description: string | null | undefined;
+
+    @toStringField
     status: Status | null | undefined;
+
     priority: Priority | null | undefined;
+
     energy: Energy | null | undefined;
+
+    @toStringField
     due: string | null | undefined;
+
+    @toStringField
     tags: string[] | string | null | undefined;
+
     history: HistoryEntries | null | undefined;
+
     aliases: string[] | null | undefined;
+
     sort: number | null | undefined;
 
     constructor(data: Partial<TaskData>) {
+        super();
+
         if (!data) {
             this.type = 'Task';
 
