@@ -26,7 +26,7 @@ jobs:
 
             - name: Get the version
               id: get_version
-              run: echo "VERSION=$(npm run version:show | tail -n 1)" >> $GITHUB_OUTPUT
+              run: echo "VERSION=$(npm run version:show | tail -n 1)" >> $GITHUB_ENV
               shell: bash
 
             - name: Get previous release tag
@@ -39,17 +39,17 @@ jobs:
                     previous_tag=$(git rev-list --max-parents=0 HEAD)
                   fi
                   echo "Previous tag: $previous_tag"
-                  echo "PREVIOUS_TAG=$previous_tag" >> $GITHUB_OUTPUT
+                  echo "PREVIOUS_TAG=$previous_tag" >> $GITHUB_ENV
               shell: bash
 
             - name: Generate release notes
               id: generate_notes
               run: |
-                  echo "Generating release notes from ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }} to HEAD..."
-                  notes=$(git log ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
+                  echo "Generating release notes from ${{ env.PREVIOUS_TAG }} to HEAD..."
+                  notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
                   echo "Release notes:"
                   echo "$notes"
-                  echo "NOTES=$notes" >> $GITHUB_OUTPUT
+                  echo "NOTES=$notes" >> $GITHUB_ENV
               shell: bash
 
             - name: Create Release
@@ -58,9 +58,9 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: ${{ steps.get_version.outputs.VERSION }}
-                  release_name: Release ${{ steps.get_version.outputs.VERSION }}
-                  body: ${{ steps.generate_notes.outputs.NOTES }}
+                  tag_name: ${{ env.VERSION }}
+                  release_name: Release ${{ env.VERSION }}
+                  body: ${{ env.NOTES }}
                   draft: false
                   prerelease: false
 
