@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sample-plugin",
-  "version": "0.3.18",
+  "version": "0.3.19",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
