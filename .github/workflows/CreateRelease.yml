@@ -50,10 +50,12 @@ jobs:
               id: generate_notes
               run: |
                   echo "Generating release notes from ${{ env.PREVIOUS_TAG }} to HEAD..."
-                  notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
+                  repo_url=$(git config --get remote.origin.url)
+                  notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- [\`%h\`]($repo_url/commit/%H): %s%n")
                   echo "Release notes:"
                   echo "$notes"
                   echo "NOTES<<EOF" >> $GITHUB_ENV
+                  echo "### Changes in this release" >> $GITHUB_ENV
                   echo "$notes" >> $GITHUB_ENV
                   echo "EOF" >> $GITHUB_ENV
               shell: bash
