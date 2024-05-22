@@ -6,12 +6,15 @@ on:
             - main
         paths:
             - 'manifest.json'
+        tags:
+            - 'v*.*.*'
 
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v4
               with:
                   fetch-depth: 0 # Ensures the full history is fetched
 
@@ -54,50 +57,20 @@ jobs:
                   notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- [\`%h\`]($repo_url/commit/%H): %s%n")
                   echo "Release notes:"
                   echo "$notes"
-                  echo "NOTES<<EOF" >> $GITHUB_ENV
-                  echo "### Changes in this release" >> $GITHUB_ENV
-                  echo "$notes" >> $GITHUB_ENV
-                  echo "EOF" >> $GITHUB_ENV
+                  echo "### Changes in this release" > release_notes.md
+                  echo "$notes" >> release_notes.md
               shell: bash
 
-            - name: Create Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Release
+              uses: softprops/action-gh-release@v2
+              if: startsWith(github.ref, 'refs/tags/')
               with:
+                  name: ${{ env.VERSION }}
                   tag_name: ${{ env.VERSION }}
-                  release_name: Release ${{ env.VERSION }}
-                  body: ${{ env.NOTES }}
-                  draft: false
-                  prerelease: false
-
-            - name: Upload Release Asset main.js
-              uses: actions/upload-release-asset@v1
+                  body_path: release_notes.md
+                  files: |
+                      ./build/main.js
+                      ./build/styles.css
+                      ./manifest.json
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/main.js
-                  asset_name: main.js
-                  asset_content_type: application/javascript
-
-            - name: Upload Release Asset styles.css
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/styles.css
-                  asset_name: styles.css
-                  asset_content_type: text/css
-
-            - name: Upload Release Asset manifest.json
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./manifest.json
-                  asset_name: manifest.json
-                  asset_content_type: application/json
