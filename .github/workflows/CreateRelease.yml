@@ -32,14 +32,23 @@ jobs:
             - name: Get previous release tag
               id: get_previous_release
               run: |
-                  previous_tag=$(git describe --tags --abbrev=0 HEAD^)
+                  echo "Fetching previous release tag..."
+                  previous_tag=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+                  if [ -z "$previous_tag" ]; then
+                    echo "No previous tag found, using initial commit."
+                    previous_tag=$(git rev-list --max-parents=0 HEAD)
+                  fi
+                  echo "Previous tag: $previous_tag"
                   echo "::set-output name=PREVIOUS_TAG::$previous_tag"
               shell: bash
 
             - name: Generate release notes
               id: generate_notes
               run: |
+                  echo "Generating release notes from ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }} to HEAD..."
                   notes=$(git log ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
+                  echo "Release notes:"
+                  echo "$notes"
                   echo "::set-output name=NOTES::$notes"
               shell: bash
 
