@@ -65,6 +65,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
 
         if (preset) {
             for (const [key, value] of Object.entries(preset)) {
+                if (typeof value === 'function') continue;
                 convertedPreset[key] = value ?? '';
             }
         }

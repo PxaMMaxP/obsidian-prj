@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TFile } from 'obsidian';
+import { App, TFile } from 'obsidian';
 import Global from '../classes/Global';
 import { TransactionModel } from './TransactionModel';
 import { YamlKeyMap } from '../types/YamlKeyMap';
@@ -7,18 +7,21 @@ import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
 import FileManager, { Filename } from 'src/libs/FileManager';
+import MetadataCache from 'src/libs/MetadataCache';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
-    protected global = Global.getInstance();
-    protected app = Global.getInstance().app;
-    protected metadataCache = Global.getInstance().metadataCache;
-    protected logger: ILogger = Logging.getLogger('FileModel');
+    protected global: Global;
+    protected app: App;
+    protected metadataCache: MetadataCache;
+    protected logger: ILogger;
 
     private _file: TFile | undefined;
     public get file(): TFile {
         if (this._file === undefined) {
-            this.logger.warn('File not set');
+            this.logger?.warn('File not set');
         }
+
+        this.logger?.trace('File get:', this._file);
 
         return this._file as TFile;
     }
@@ -33,6 +36,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         if (this._file === undefined) {
             this._file = value;
 
+            this.logger?.trace('File set:', this._file);
+
             super.setWriteChanges((update, previousPromise) => {
                 return this.setFrontmatter(
                     update as Record<string, unknown>,
@@ -40,7 +45,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
                 );
             });
         } else {
-            this.logger.warn('File already set');
+            this.logger?.warn('File already set');
         }
     }
     /**
@@ -55,7 +60,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * @see {@link FileModel._data}
      * @see {@link FileModel.createProxy}
      */
-    private _dataProxy: T;
+    private _dataProxy: T | undefined = undefined;
     /**
      * The proxy map to use.
      * @see {@link FileModel.createProxy}
@@ -78,10 +83,19 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         file: TFile | undefined,
         ctor: new (data?: Partial<T>) => T,
         yamlKeyMap: YamlKeyMap | undefined,
+        logger?: ILogger,
     ) {
         super(undefined);
 
+        this.logger = logger ?? Logging.getLogger('FileModel');
+
+        // Initialize the `global`, `app`, and `metadataCache` properties.
+        this.global = Global.getInstance();
+        this.app = this.global.app;
+        this.metadataCache = this.global.metadataCache;
+
         if (file) {
+            // Set the file and indirectly the `writeChanges` function.
             this.file = file;
         }
         this._ctor = ctor;
@@ -104,7 +118,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         const frontmatter = this.getMetadata();
 
         if (!frontmatter) {
-            this.logger.trace('Creating empty object');
+            this.logger?.trace('Creating empty object');
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
             this.changes = emptyObject;
@@ -191,11 +205,11 @@ export class FileModel<T extends object> extends TransactionModel<T> {
                 },
             );
 
-            this.logger.debug(
+            this.logger?.debug(
                 `Frontmatter for file ${this._file.path} successfully updated.`,
             );
         } catch (error) {
-            this.logger.error(
+            this.logger?.error(
                 `Error updating the frontmatter for file ${this._file.path}:`,
                 error,
             );
@@ -319,7 +333,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
 
             return clone as Record<string, unknown>;
         } else {
-            this.logger.error(`No Metadata found for ${this._file.path}`);
+            this.logger?.error(`No Metadata found for ${this._file.path}`);
 
             return null;
         }

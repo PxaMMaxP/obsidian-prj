@@ -10,13 +10,14 @@ import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Lng from 'src/classes/Lng';
 import FileManager, { Filename } from 'src/libs/FileManager';
+import FileCache from 'src/libs/FileCache';
 
 export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
 {
-    protected logger: ILogger = Logging.getLogger('DocumentModel');
-    private _fileCache = Global.getInstance().fileCache;
+    protected logger: ILogger;
+    private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     get tags(): string[] {
@@ -42,8 +43,11 @@ export class DocumentModel
         this._data = value;
     }
 
-    constructor(file: TFile | undefined) {
+    constructor(file: TFile | undefined, logger?: ILogger) {
         super(file, DocumentData, DocumentData.yamlKeyMap);
+
+        this.logger = logger ?? Logging.getLogger('DocumentModel');
+        this._fileCache = Global.getInstance().fileCache;
     }
 
     public get relatedFiles(): DocumentModel[] | null {
@@ -79,18 +83,11 @@ export class DocumentModel
         return this._relatedFiles;
     }
 
+    /**
+     * Returns the metadata of the document as a string
+     */
     public override toString(): string {
-        let allText = this.data.title ?? '';
-        allText += this.data.description ?? '';
-        allText += this.data.date ?? '';
-        allText += this.data.dateOfDelivery ?? '';
-        allText += this.data.file ?? '';
-        allText += this.data.tags ?? '';
-        allText += this.data.sender ?? '';
-        allText += this.data.recipient ?? '';
-        allText += this.data.relatedFiles ?? '';
-
-        return allText;
+        return this.data.toString?.() ?? '';
     }
 
     public getWikilink(text: string | undefined): string {

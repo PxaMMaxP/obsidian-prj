@@ -47,14 +47,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         super(file, ctor, undefined);
     }
 
+    /**
+     * Returns the metadata of the model as a string
+     */
     public override toString(): string {
-        let allText = this.data.title ?? '';
-        allText += this.data.description ?? '';
-        allText += this.data.status ?? '';
-        allText += this.data.due ?? '';
-        allText += this.data.tags ?? '';
-
-        return allText;
+        return this.data.toString?.() ?? '';
     }
 
     /**

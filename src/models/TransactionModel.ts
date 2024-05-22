@@ -12,7 +12,7 @@ type WriteChangesReturnType = {
     /**
      * A boolean that indicates whether the writeChanges function was called.
      */
-    writeTriggerd: boolean;
+    writeTriggered: boolean;
 };
 
 /**
@@ -25,7 +25,7 @@ type WriteChangesReturnType = {
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel<T> {
-    protected logger: ILogger = Logging.getLogger('TransactionModel');
+    protected logger: ILogger;
     /**
      * A promise that resolves when the changes are written to the file.
      */
@@ -46,6 +46,25 @@ export class TransactionModel<T> {
         | undefined;
 
     /**
+     * Returns whether a transaction is active.
+     * @returns `true` if a transaction is active, otherwise `false`.
+     */
+    public get isTransactionActive(): boolean {
+        return this._transactionActive;
+    }
+
+    /**
+     * Returns whether changes exist.
+     * @returns `true` if changes exist, otherwise `false`.
+     */
+    private get changesExisting(): boolean {
+        return !(
+            Object.keys(this.changes).length === 0 &&
+            this.changes.constructor === Object
+        );
+    }
+
+    /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
      * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
@@ -54,7 +73,10 @@ export class TransactionModel<T> {
         writeChanges:
             | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
             | undefined,
+        logger?: ILogger,
     ) {
+        this.logger = logger ?? Logging.getLogger('TransactionModel');
+
         if (writeChanges) {
             this.writeChanges = writeChanges;
         } else {
@@ -65,8 +87,7 @@ export class TransactionModel<T> {
     /**
      * Sets the callback function for writing changes to the transaction model.
      * @param writeChanges The callback function that takes an update of type T and returns a Promise that resolves when the changes are written.
-     * @remarks - If a transaction is active, the transaction is finished after the callback function is set and the `changes` property is not empty.
-     * - Else, if the transaction is active and the `changes` property is empty, the transaction is aborted.
+     * @remarks - If a transaction is active, and changes exist, the transaction is finished, else it is aborted.
      */
     public setWriteChanges(
         writeChanges: (
@@ -76,23 +97,19 @@ export class TransactionModel<T> {
     ) {
         this.writeChanges = writeChanges;
 
-        if (
-            this.isTransactionActive &&
-            !(
-                Object.keys(this.changes).length === 0 &&
-                this.changes.constructor === Object
-            )
-        ) {
-            this.finishTransaction();
-        } else if (this.isTransactionActive) {
-            this.abortTransaction();
+        if (this.isTransactionActive) {
+            if (this.changesExisting) {
+                this.finishTransaction();
+            } else {
+                this.abortTransaction();
+            }
         }
     }
 
     /**
      * Calls the `writeChanges` function if it is available.
-     * @param update The changes to write.
-     * @returns An object with a promise that resolves when the changes are written to the file and a boolean that indicates whether the writeChanges function was called.
+     * @param update The changes to write. Defaults to `this.changes` if not provided.
+     * @returns {WriteChangesReturnType} An object with a promise that resolves when the changes are written to the file and a boolean that indicates whether the writeChanges function was called.
      * @remarks - If the `writeChanges` function is available, it will be called asynchronously (No waiting for the function to finish).
      * - If the `writeChanges` function is not available, this method does nothing.
      * @remarks - If the `writeChanges` function is called, the `changes` property is set to an empty object after the function is called
@@ -104,7 +121,7 @@ export class TransactionModel<T> {
     ): WriteChangesReturnType {
         const writeChanges: WriteChangesReturnType = {
             promise: undefined,
-            writeTriggerd: false,
+            writeTriggered: false,
         };
 
         if (this.writeChanges) {
@@ -125,13 +142,15 @@ export class TransactionModel<T> {
                 });
 
             writeChanges.promise = promise;
-            writeChanges.writeTriggerd = true;
+            writeChanges.writeTriggered = true;
         } else {
-            this.logger.debug('No writeChanges function available');
+            this.logger.debug('No `writeChanges` function available');
         }
 
-        this.changes = writeChanges.writeTriggerd ? {} : this.changes;
+        // Reset changes if writeChanges was called
+        this.changes = writeChanges.writeTriggered ? {} : this.changes;
 
+        // Set the promise if writeChanges was called and the promise is available.
         this._writeChangesPromise = writeChanges.promise
             ? writeChanges.promise
             : undefined;
@@ -156,7 +175,7 @@ export class TransactionModel<T> {
      * Finishes a transaction
      * @remarks - If no transaction is active, this method does nothing and logs a warning.
      * - This method writes the changes to the file.
-     * @remarks - If the `writeChanges` method is not available, this method does nothing.
+     * @remarks - If the `writeChanges` method is not available, this method does nothing. The available changes are not discarded!
      */
     public finishTransaction(): void {
         if (!this.isTransactionActive) {
@@ -166,15 +185,15 @@ export class TransactionModel<T> {
         }
         const writeChanges = this.callWriteChanges();
 
-        this._transactionActive = writeChanges.writeTriggerd
+        this._transactionActive = writeChanges.writeTriggered
             ? false
             : this._transactionActive;
     }
 
     /**
-     * Aborts a transaction
+     * Aborts a transaction and discards all changes.
      * @remarks - If no transaction is active, this method does nothing and logs a warning.
-     * - This method discards all changes.
+     * - This method discards all changes!
      */
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
@@ -182,7 +201,7 @@ export class TransactionModel<T> {
 
             return;
         } else if (!this.writeChanges) {
-            this.logger.warn('No writeChanges function available');
+            this.logger.warn('No `writeChanges` function available');
 
             return;
         }
@@ -192,8 +211,9 @@ export class TransactionModel<T> {
 
     /**
      * Updates the value of the given key.
-     * @param key The key to update as path. Example: `data.title`
+     * @param key The key to update as path with dots as separator. Example: `data.title`.
      * @param value The value to set.
+     * @remarks If no transaction is active, the changes are written to the file immediately!
      */
     protected updateKeyValue(key: string, value: unknown): void {
         const keys = key.split('.');
@@ -211,13 +231,5 @@ export class TransactionModel<T> {
         if (!this.isTransactionActive) {
             this.callWriteChanges();
         }
-    }
-
-    /**
-     * Returns whether a transaction is active.
-     * @returns `true` if a transaction is active, otherwise `false`.
-     */
-    public get isTransactionActive(): boolean {
-        return this._transactionActive;
     }
 }

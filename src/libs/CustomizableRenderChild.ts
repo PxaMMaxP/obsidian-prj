@@ -31,12 +31,22 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
         this._onUnload = onUnload;
     }
 
+    /**
+     * Custom `onLoad` function.
+     * This function is called when the child is loaded.
+     * @remarks Calls the custom `onLoad` function if it is defined and then calls the base `onLoad` function.
+     */
     override onload(): void {
         this.logger?.trace('On Load');
         this._onLoad?.();
         super.onload();
     }
 
+    /**
+     * Custom `onUnload` function.
+     * This function is called when the child is unloaded.
+     * @remarks Calls the custom `onUnload` function if it is defined and then calls the base `onUnload` function.
+     */
     override onunload(): void {
         this.logger?.trace('On Unload');
         this._onUnload?.();
