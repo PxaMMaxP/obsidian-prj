@@ -1,7 +1,7 @@
 {
   "id": "prj",
   "name": "Prj Plugin",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "minAppVersion": "0.15.0",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "author": "M. Passarello",
