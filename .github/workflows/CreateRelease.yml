@@ -29,6 +29,20 @@ jobs:
               run: echo "::set-output name=VERSION::$(npm run version:show | tail -n 1)"
               shell: bash
 
+            - name: Get previous release tag
+              id: get_previous_release
+              run: |
+                  previous_tag=$(git describe --tags --abbrev=0 HEAD^)
+                  echo "::set-output name=PREVIOUS_TAG::$previous_tag"
+              shell: bash
+
+            - name: Generate release notes
+              id: generate_notes
+              run: |
+                  notes=$(git log ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
+                  echo "::set-output name=NOTES::$notes"
+              shell: bash
+
             - name: Create Release
               id: create_release
               uses: actions/create-release@v1
@@ -37,6 +51,7 @@ jobs:
               with:
                   tag_name: ${{ steps.get_version.outputs.VERSION }}
                   release_name: Release ${{ steps.get_version.outputs.VERSION }}
+                  body: ${{ steps.generate_notes.outputs.NOTES }}
                   draft: false
                   prerelease: false
 
