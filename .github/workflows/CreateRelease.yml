@@ -26,7 +26,7 @@ jobs:
 
             - name: Get the version
               id: get_version
-              run: echo "::set-output name=VERSION::$(npm run version:show | tail -n 1)"
+              run: echo "VERSION=$(npm run version:show | tail -n 1)" >> $GITHUB_OUTPUT
               shell: bash
 
             - name: Get previous release tag
@@ -39,7 +39,7 @@ jobs:
                     previous_tag=$(git rev-list --max-parents=0 HEAD)
                   fi
                   echo "Previous tag: $previous_tag"
-                  echo "::set-output name=PREVIOUS_TAG::$previous_tag"
+                  echo "PREVIOUS_TAG=$previous_tag" >> $GITHUB_OUTPUT
               shell: bash
 
             - name: Generate release notes
@@ -49,7 +49,7 @@ jobs:
                   notes=$(git log ${{ steps.get_previous_release.outputs.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
                   echo "Release notes:"
                   echo "$notes"
-                  echo "::set-output name=NOTES::$notes"
+                  echo "NOTES=$notes" >> $GITHUB_OUTPUT
               shell: bash
 
             - name: Create Release
