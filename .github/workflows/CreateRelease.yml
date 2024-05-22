@@ -28,7 +28,9 @@ jobs:
 
             - name: Get the version
               id: get_version
-              run: echo "VERSION=$(npm run version:show | tail -n 1)" >> $GITHUB_ENV
+              run: |
+                  VERSION=$(npm run version:show | tail -n 1)
+                  echo "VERSION=$VERSION" >> $GITHUB_ENV
               shell: bash
 
             - name: Get previous release tag
@@ -48,37 +50,25 @@ jobs:
               id: generate_notes
               run: |
                   echo "Generating release notes from ${{ env.PREVIOUS_TAG }} to HEAD..."
-                  git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n" > release_notes.txt
+                  notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- %s%n")
                   echo "Release notes:"
-                  cat release_notes.txt
+                  echo "$notes"
+                  echo "NOTES<<EOF" >> $GITHUB_ENV
+                  echo "$notes" >> $GITHUB_ENV
+                  echo "EOF" >> $GITHUB_ENV
+              shell: bash
 
             - name: Create Release
               id: create_release
-              uses: actions/github-script@v3
-              with:
-                  script: |
-                      const fs = require('fs');
-                      const releaseNotes = fs.readFileSync('release_notes.txt', 'utf8');
-                      const version = process.env.VERSION;
-                      const octokit = require('@octokit/rest')({
-                          auth: process.env.GITHUB_TOKEN
-                      });
-
-                      const { data: release } = await octokit.repos.createRelease({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          tag_name: version,
-                          name: `Release ${version}`,
-                          body: releaseNotes,
-                          draft: false,
-                          prerelease: false
-                      });
-
-                      core.setOutput('upload_url', release.upload_url);
-
+              uses: actions/create-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  VERSION: ${{ env.VERSION }}
+              with:
+                  tag_name: ${{ env.VERSION }}
+                  release_name: Release ${{ env.VERSION }}
+                  body: ${{ env.NOTES }}
+                  draft: false
+                  prerelease: false
 
             - name: Upload Release Asset main.js
               uses: actions/upload-release-asset@v1
