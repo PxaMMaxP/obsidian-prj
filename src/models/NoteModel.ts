@@ -46,6 +46,7 @@ export class NoteModel
 
     /**
      * Returns the metadata of the note as a string
+     * @deprecated Use `data.toString()` instead.
      */
     public override toString(): string {
         return this.data.toString?.() ?? '';

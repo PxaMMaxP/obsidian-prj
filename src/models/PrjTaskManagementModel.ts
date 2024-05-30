@@ -49,6 +49,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
     /**
      * Returns the metadata of the model as a string
+     * @deprecated Use `data.toString()` instead.
      */
     public override toString(): string {
         return this.data.toString?.() ?? '';
@@ -434,7 +435,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     /**
      * Synchronizes the title of the file with its filename.
      * @param file - The file to synchronize the title and filename.
-     * @see {@link PrjTaskManagementModel.getAutomaticFilename}
+     * @see {@link PrjTaskManagementModel.getAutomaticFilename()}
      */
     public static syncTitleToFilename(file: TFile) {
         const logger = Logging.getLogger(

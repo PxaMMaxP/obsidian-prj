@@ -85,6 +85,7 @@ export class DocumentModel
 
     /**
      * Returns the metadata of the document as a string
+     * @deprecated Use `data.toString()` instead.
      */
     public override toString(): string {
         return this.data.toString?.() ?? '';
@@ -230,7 +231,7 @@ export class DocumentModel
             const random = Math.floor(Math.random() * 1000);
 
             this.data.uid = Helper.generateUID(
-                this.toString() + random.toString(),
+                this._data?.toString?.() + random.toString(),
                 4,
                 'U',
             ).toUpperCase();
