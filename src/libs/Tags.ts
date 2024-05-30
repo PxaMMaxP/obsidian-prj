@@ -1,5 +1,6 @@
 // Note: TagLib class
 
+import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 
 /**
@@ -10,6 +11,34 @@ export type TagTree = {
 };
 
 export default class Tags {
+    /**
+     * Returns the tags from the file.
+     * @param file The file to get the tags from.
+     * @returns The tags from the file.
+     */
+    static getTagsFromFile(file: TFile | undefined): string[] {
+        const tags: string[] = [];
+
+        if (file) {
+            const cache = Global.getInstance().metadataCache.getEntry(file);
+
+            if (
+                cache &&
+                cache.metadata &&
+                cache.metadata.frontmatter &&
+                cache.metadata.frontmatter.tags
+            ) {
+                if (Array.isArray(cache.metadata.frontmatter.tags)) {
+                    tags.push(...cache.metadata.frontmatter.tags);
+                } else {
+                    tags.push(cache.metadata.frontmatter.tags);
+                }
+            }
+        }
+
+        return tags;
+    }
+
     /**
      * Checks if the tag is a valid tag array
      * @param tag The tag array to check
