@@ -5,7 +5,10 @@ import {
     FormConfiguration,
     IFormResult,
     IModalForm,
+    IResultData,
 } from 'src/types/ModalFormType';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Tags from 'src/libs/Tags';
 
 export default abstract class BaseModalForm {
     protected app: App = Global.getInstance().app;
@@ -76,6 +79,12 @@ export default abstract class BaseModalForm {
 
     protected abstract constructForm(): FormConfiguration;
 
+    /**
+     * Returns the tags from the file.
+     * @param activeFile The file to get the tags from.
+     * @returns The tags from the file.
+     * @deprecated Use {@link Tags.getTagsFromFile} instead
+     */
     public static getTags(activeFile: TFile | undefined): string[] {
         const tags: string[] = [];
 
@@ -98,5 +107,26 @@ export default abstract class BaseModalForm {
         }
 
         return tags;
+    }
+
+    /**
+     * Converts a preset object to an IResultData object
+     * @param preset The preset object to convert, like DocumentData etc.
+     * @returns The converted IResultData object
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected convertPresetToIResultData<T extends Record<string, any>>(
+        preset: Partial<T> | undefined,
+    ): IResultData {
+        const convertedPreset: IResultData = {};
+
+        if (preset) {
+            for (const [key, value] of Object.entries(preset)) {
+                if (typeof value === 'function') continue;
+                convertedPreset[key] = value ?? '';
+            }
+        }
+
+        return convertedPreset;
     }
 }

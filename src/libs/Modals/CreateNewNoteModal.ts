@@ -14,6 +14,7 @@ import { NoteModel } from 'src/models/NoteModel';
 import NoteData from 'src/types/NoteData';
 import Logging from 'src/classes/Logging';
 import API from 'src/classes/API';
+import Tags from '../Tags';
 
 /**
  * Modal to create a new metadata file
@@ -61,16 +62,12 @@ export default class CreateNewNoteModal extends BaseModalForm {
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewNoteModal' form");
-        const convertedPreset: IResultData = {};
 
-        if (preset) {
-            for (const [key, value] of Object.entries(preset)) {
-                if (typeof value === 'function') continue;
-                convertedPreset[key] = value ?? '';
-            }
-        }
+        const convertedPreset: IResultData =
+            this.convertPresetToIResultData(preset);
+
         const activeFile = Helper.getActiveFile();
-        const tags: string[] = BaseModalForm.getTags(activeFile);
+        const tags: string[] = Tags.getTagsFromFile(activeFile);
 
         if (convertedPreset) {
             if (convertedPreset.tags && Array.isArray(convertedPreset.tags)) {
