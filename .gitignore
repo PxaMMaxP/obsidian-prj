@@ -23,3 +23,6 @@ data.json
 .DS_Store
 
 diff-output.txt
+
+list_files.ps1
+Projekt.txt
