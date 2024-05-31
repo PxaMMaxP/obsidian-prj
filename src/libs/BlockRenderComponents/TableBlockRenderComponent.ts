@@ -8,8 +8,8 @@ import IPrjModel from 'src/interfaces/IPrjModel';
 import Lng from 'src/classes/Lng';
 import { FileType } from 'src/types/PrjTypes';
 import { FileMetadata } from '../MetadataCache';
-import { SearchTermsArray } from '../Search';
 import Logging from 'src/classes/Logging';
+import Search from '../Search/Search';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
@@ -315,7 +315,7 @@ export type BlockRenderSettings = {
      * Search terms array used to filter the models.
      * If undefined, no search filter is applied.
      */
-    search: SearchTermsArray | undefined;
+    search: Search | undefined;
 
     /**
      * The search text.
