@@ -11,6 +11,7 @@ import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
 import { Path } from 'src/classes/Path';
 import Logging from 'src/classes/Logging';
+import Tags from '../Tags';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {
@@ -23,7 +24,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         // Get active file to extract tags
         const activeFile = Helper.getActiveFile();
-        const tags: string[] = BaseModalForm.getTags(activeFile);
+        const tags: string[] = Tags.getTagsFromFile(activeFile);
 
         const form = this.constructForm();
 

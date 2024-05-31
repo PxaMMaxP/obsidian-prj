@@ -3,7 +3,6 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Search from '../Search';
 import Table, { Row, RowsState, TableHeader } from '../Table';
 import Lng from 'src/classes/Lng';
 import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
@@ -16,6 +15,7 @@ import { NoteModel } from 'src/models/NoteModel';
 import ProjectComponents from './InnerComponents/ProjectComponents';
 import EditableDataView from '../EditableDataView/EditableDataView';
 import Logging from 'src/classes/Logging';
+import Search from '../Search/Search';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -161,7 +161,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         if (key === 'Enter') {
             if (search !== '') {
                 this.settings.searchText = search;
-                this.settings.search = Search.parseSearchText(search);
+                this.settings.search = new Search(search);
+                this.settings.search.parse();
                 this.onFilter();
             } else {
                 this.settings.searchText = undefined;
@@ -373,8 +374,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         let maxRows = false;
 
         if (this.settings.search) {
-            const text = document.toString();
-            searchResult = Search.applySearchLogic(this.settings.search, text);
+            const text = document.data.toString?.();
+            searchResult = this.settings.search.applySearchLogic(text ?? '');
         }
 
         if (maxVisibleRows && maxVisibleRows > 0) {

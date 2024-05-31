@@ -8,6 +8,7 @@ export default class Search {
      * - term: The search term
      * - negate: Whether the term should be negated
      * - isOperator: Whether the term is an operator
+     * @deprecated This method is deprecated and will be removed in the future. Use the new `Search` class instead.
      */
     static parseSearchText(searchText: string): SearchTermsArray {
         searchText = searchText.toLowerCase();
@@ -92,6 +93,7 @@ export default class Search {
      * @param terms The search terms
      * @param textContent The text content to apply the search logic to
      * @returns Whether the text content matches the search terms (true or false)
+     * @deprecated This method is deprecated and will be removed in the future. Use the new `Search` class instead.
      */
     static applySearchLogic(
         terms: SearchTermsArray,

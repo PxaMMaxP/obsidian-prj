@@ -3,7 +3,6 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Search from '../Search';
 import Table, { Row, RowsState, TableHeader } from '../Table';
 import Lng from 'src/classes/Lng';
 import FilterButton from './InnerComponents/FilterButton';
@@ -15,6 +14,7 @@ import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
+import Search from '../Search/Search';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -226,7 +226,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         if (key === 'Enter') {
             if (search !== '') {
                 this.settings.searchText = search;
-                this.settings.search = Search.parseSearchText(search);
+                this.settings.search = new Search(search);
+                this.settings.search.parse();
                 this.onFilter();
             } else {
                 this.settings.searchText = undefined;
@@ -465,8 +466,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         let maxRows = false;
 
         if (this.settings.search) {
-            const text = document.toString();
-            searchResult = Search.applySearchLogic(this.settings.search, text);
+            const text = document.data.toString?.();
+            searchResult = this.settings.search.applySearchLogic(text ?? '');
         }
 
         if (maxVisibleRows && maxVisibleRows > 0) {
