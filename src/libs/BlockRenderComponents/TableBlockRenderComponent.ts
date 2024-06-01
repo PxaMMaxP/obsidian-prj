@@ -7,21 +7,21 @@ import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import IPrjModel from 'src/interfaces/IPrjModel';
 import Lng from 'src/classes/Lng';
 import { FileType } from 'src/types/PrjTypes';
-import { FileMetadata } from '../MetadataCache';
+import MetadataCache, { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
 import Search from '../Search/Search';
 import { ILogger } from 'src/interfaces/ILogger';
+import { PrjSettings } from 'src/types/PrjSettings';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
 > implements RedrawableBlockRenderComponent
 {
     //#region General properties
-    protected global = Global.getInstance();
-    protected globalSettings = Global.getInstance().settings;
+    protected global: Global;
+    protected globalSettings: PrjSettings;
     protected logger: ILogger;
-    protected metadataCache = this.global.metadataCache;
-    protected fileCache = this.global.fileCache;
+    protected metadataCache: MetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
@@ -45,7 +45,12 @@ export default abstract class TableBlockRenderComponent<
      * @param logger The logger to use. Defaults to the default logger `TableBlockRenderComponent`.
      */
     constructor(settings: IProcessorSettings, logger?: ILogger) {
+        // General properties
         this.logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
+        this.global = Global.getInstance();
+        this.globalSettings = this.global.settings;
+        this.metadataCache = this.global.metadataCache;
+
         this.processorSettings = settings;
         this.component = settings.component;
         this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
