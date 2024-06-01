@@ -10,6 +10,7 @@ import { FileType } from 'src/types/PrjTypes';
 import { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
 import Search from '../Search/Search';
+import { ILogger } from 'src/interfaces/ILogger';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
@@ -18,7 +19,7 @@ export default abstract class TableBlockRenderComponent<
     //#region General properties
     protected global = Global.getInstance();
     protected globalSettings = Global.getInstance().settings;
-    protected logger = Logging.getLogger('TableBlockRenderComponent');
+    protected logger: ILogger;
     protected metadataCache = this.global.metadataCache;
     protected fileCache = this.global.fileCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
@@ -38,7 +39,13 @@ export default abstract class TableBlockRenderComponent<
     protected tableContainer: HTMLElement;
     //#endregion
 
-    constructor(settings: IProcessorSettings) {
+    /**
+     * Creates a new TableBlockRenderComponent instance.
+     * @param settings The processor settings.
+     * @param logger The logger to use. Defaults to the default logger `TableBlockRenderComponent`.
+     */
+    constructor(settings: IProcessorSettings, logger?: ILogger) {
+        this.logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
         this.processorSettings = settings;
         this.component = settings.component;
         this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
@@ -183,7 +190,7 @@ export default abstract class TableBlockRenderComponent<
         const activeFile = this.global.app.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
-            this.logger.trace('Active file changed: ', activeFile.path);
+            this.logger?.trace('Active file changed: ', activeFile.path);
 
             const tags =
                 this.metadataCache.getEntry(activeFile)?.metadata?.frontmatter
@@ -220,7 +227,7 @@ export default abstract class TableBlockRenderComponent<
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this.logger.trace('Active file changed: Debouncing');
+        this.logger?.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
         this._activeFileDebounceTimer = setTimeout(async () => {
@@ -340,9 +347,9 @@ export default abstract class TableBlockRenderComponent<
 
             const rowUid = this.getUID(document);
             let hide = this.getHideState(document, undefined);
-            this.logger.trace(`Model ${rowUid} is hidden by state: ${hide}`);
+            this.logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);
 
-            this.logger.trace(
+            this.logger?.trace(
                 `Visible rows: ${visibleRows}; Max shown Models: ${this.settings.maxDocuments}`,
             );
 
@@ -350,7 +357,7 @@ export default abstract class TableBlockRenderComponent<
                 hide = true;
             }
 
-            this.logger.trace(
+            this.logger?.trace(
                 `Model ${rowUid} is hidden by max counts: ${hide}`,
             );
 
@@ -364,7 +371,7 @@ export default abstract class TableBlockRenderComponent<
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
 
-                this.logger.trace(
+                this.logger?.trace(
                     `Batchsize reached. Change rows: ${rows.length}`,
                 );
                 await this.table.changeShowHideStateRows(rows);
