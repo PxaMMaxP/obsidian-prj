@@ -14,7 +14,6 @@ export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
-    private _fileCache = Global.getInstance().fileCache;
     protected logger: ILogger = Logging.getLogger('NoteModel');
 
     get tags(): string[] {
