@@ -1,26 +1,27 @@
 import Global from 'src/classes/Global';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { Component, setIcon } from 'obsidian';
-import Table, { TableHeader } from '../Table';
+import Table, { RowsState, TableHeader } from '../Table';
 import Helper from '../Helper';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import IPrjModel from 'src/interfaces/IPrjModel';
 import Lng from 'src/classes/Lng';
 import { FileType } from 'src/types/PrjTypes';
-import { FileMetadata } from '../MetadataCache';
+import MetadataCache, { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
 import Search from '../Search/Search';
+import { ILogger } from 'src/interfaces/ILogger';
+import { PrjSettings } from 'src/types/PrjSettings';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
 > implements RedrawableBlockRenderComponent
 {
     //#region General properties
-    protected global = Global.getInstance();
-    protected globalSettings = Global.getInstance().settings;
-    protected logger = Logging.getLogger('TableBlockRenderComponent');
-    protected metadataCache = this.global.metadataCache;
-    protected fileCache = this.global.fileCache;
+    protected global: Global;
+    protected globalSettings: PrjSettings;
+    protected logger: ILogger;
+    protected metadataCache: MetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
@@ -38,7 +39,18 @@ export default abstract class TableBlockRenderComponent<
     protected tableContainer: HTMLElement;
     //#endregion
 
-    constructor(settings: IProcessorSettings) {
+    /**
+     * Creates a new TableBlockRenderComponent instance.
+     * @param settings The processor settings.
+     * @param logger The logger to use. Defaults to the default logger `TableBlockRenderComponent`.
+     */
+    constructor(settings: IProcessorSettings, logger?: ILogger) {
+        // General properties
+        this.logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
+        this.global = Global.getInstance();
+        this.globalSettings = this.global.settings;
+        this.metadataCache = this.global.metadataCache;
+
         this.processorSettings = settings;
         this.component = settings.component;
         this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
@@ -183,7 +195,7 @@ export default abstract class TableBlockRenderComponent<
         const activeFile = this.global.app.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
-            this.logger.trace('Active file changed: ', activeFile.path);
+            this.logger?.trace('Active file changed: ', activeFile.path);
 
             const tags =
                 this.metadataCache.getEntry(activeFile)?.metadata?.frontmatter
@@ -220,7 +232,7 @@ export default abstract class TableBlockRenderComponent<
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this.logger.trace('Active file changed: Debouncing');
+        this.logger?.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
         this._activeFileDebounceTimer = setTimeout(async () => {
@@ -284,6 +296,108 @@ export default abstract class TableBlockRenderComponent<
 
         return Promise.resolve(models);
     }
+
+    /**
+     * This method is called when the search box is used.
+     * @param searchQuery The search text.
+     * @param key The key that was pressed.
+     * @returns The search text.
+     * @remarks - If the `Enter` key was pressed, the search is applied.
+     * - If the `Escape` key was pressed, the search is reset.
+     * - After the search is applied, the {@link onFilter} method is called.
+     */
+    protected async onSearch(
+        searchQuery: string,
+        key: string,
+    ): Promise<string> {
+        if (key === 'Enter') {
+            if (searchQuery !== '') {
+                this.settings.searchText = searchQuery;
+                this.settings.search = new Search(searchQuery);
+                this.settings.search.parse();
+                this.onFilter();
+            } else {
+                this.settings.searchText = undefined;
+                this.settings.search = undefined;
+                this.onFilter();
+            }
+        } else if (key === 'Escape') {
+            this.settings.searchText = undefined;
+            this.settings.search = undefined;
+            this.onFilter();
+
+            return '';
+        }
+
+        return searchQuery;
+    }
+
+    /**
+     * Filters the models and shows/hides them in the table.
+     * @remarks - The models are filtered by the `filter` setting,
+     * searched by the `search` setting
+     * and the number of documents is limited by the `maxDocuments` if no search is applied.
+     */
+    protected async onFilter() {
+        this.grayOutHeader();
+        const batchSize = this.settings.batchSize;
+        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
+        let sleepPromise = Promise.resolve();
+        const documentsLength = this.models.length;
+        const rows: RowsState[] = [];
+        let visibleRows = 0;
+
+        for (let i = 0; i < documentsLength; i++) {
+            const document = this.models[i];
+
+            const rowUid = this.getUID(document);
+            let hide = this.getHideState(document, undefined);
+            this.logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);
+
+            this.logger?.trace(
+                `Visible rows: ${visibleRows}; Max shown Models: ${this.settings.maxDocuments}`,
+            );
+
+            if (visibleRows >= this.settings.maxDocuments) {
+                hide = true;
+            }
+
+            this.logger?.trace(
+                `Model ${rowUid} is hidden by max counts: ${hide}`,
+            );
+
+            if (hide) {
+                rows.push({ rowUid, hidden: true });
+            } else {
+                visibleRows++;
+                rows.push({ rowUid, hidden: false });
+            }
+
+            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
+                await sleepPromise;
+
+                this.logger?.trace(
+                    `Batchsize reached. Change rows: ${rows.length}`,
+                );
+                await this.table.changeShowHideStateRows(rows);
+                rows.length = 0;
+                sleepPromise = Helper.sleep(sleepBetweenBatches);
+            }
+        }
+
+        this.normalizeHeader();
+    }
+
+    /**
+     * Gets the hide state for the document.
+     * @param model - The document to get the hide state for.
+     * @param maxVisibleRows - The maximum number of visible rows.
+     * @returns True if the document should be hidden, false otherwise.
+     */
+    protected abstract getHideState(
+        model: T,
+        maxVisibleRows: number | undefined,
+    ): boolean;
 }
 
 export type BlockRenderSettings = {

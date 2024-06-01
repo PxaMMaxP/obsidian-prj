@@ -6,7 +6,7 @@ import TaskData from 'src/types/TaskData';
 import TopicData from 'src/types/TopicData';
 import ProjectData from 'src/types/ProjectData';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import Table, { Row, RowsState, TableHeader } from '../Table';
+import Table, { Row, TableHeader } from '../Table';
 import Lng from 'src/classes/Lng';
 import FilterButton from './InnerComponents/FilterButton';
 import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
@@ -20,7 +20,6 @@ import { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
-import Search from '../Search/Search';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
@@ -362,67 +361,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         return undefined;
     }
 
-    private async onSearch(search: string, key: string): Promise<string> {
-        if (key === 'Enter') {
-            if (search !== '') {
-                this.settings.searchText = search;
-                this.settings.search = new Search(search);
-                this.settings.search.parse();
-                this.onFilter();
-            } else {
-                this.settings.searchText = undefined;
-                this.settings.search = undefined;
-                this.onFilter();
-            }
-        } else if (key === 'Escape') {
-            this.settings.searchText = undefined;
-            this.settings.search = undefined;
-            this.onFilter();
-
-            return '';
-        }
-
-        return search;
-    }
-
-    private async onFilter() {
-        this.grayOutHeader();
-        const batchSize = this.settings.batchSize;
-        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
-        let sleepPromise = Promise.resolve();
-        const documentsLength = this.models.length;
-        const rows: RowsState[] = [];
-        let visibleRows = 0;
-
-        for (let i = 0; i < documentsLength; i++) {
-            const document = this.models[i];
-
-            const rowUid = this.getUID(document);
-            let hide = this.getHideState(document, undefined);
-
-            if (visibleRows >= this.settings.maxDocuments) {
-                hide = true;
-            }
-
-            if (hide) {
-                rows.push({ rowUid, hidden: true });
-            } else {
-                visibleRows++;
-                rows.push({ rowUid, hidden: false });
-            }
-
-            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
-                await sleepPromise;
-                this.table.changeShowHideStateRows(rows);
-                rows.length = 0;
-                sleepPromise = Helper.sleep(sleepBetweenBatches);
-            }
-        }
-
-        this.normalizeHeader();
-    }
-
-    private getHideState(
+    protected getHideState(
         model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
         maxVisibleRows: number | undefined,
     ): boolean {
