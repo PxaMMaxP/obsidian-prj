@@ -25,6 +25,11 @@ export default class SearchQuery {
         return this._elements;
     }
 
+    /**
+     * Determines if the query matches the given text.
+     * @param text The text to test.
+     * @returns {boolean} True if the query matches the text; otherwise, false.
+     */
     public matches(text: string): boolean {
         if (this._elements.length === 0) {
             return false;
@@ -32,7 +37,7 @@ export default class SearchQuery {
 
         text = text.toLowerCase();
 
-        // First test the terms
+        // First: test the terms
         const termResults: boolean[] = this._elements
             .filter((element) => !element.isOperator)
             .map((element) => {
@@ -42,7 +47,7 @@ export default class SearchQuery {
                 return term.negated ? !termMatch : termMatch;
             });
 
-        // Second test the operators
+        // Second: test the operators
         let result = termResults[0];
         let termIndex = 1;
 
