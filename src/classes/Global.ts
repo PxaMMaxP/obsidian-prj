@@ -5,6 +5,9 @@ import MetadataCache from '../libs/MetadataCache';
 import Logging, { LoggingLevel } from './Logging';
 import Prj from 'src/main';
 
+/**
+ * Represents the global instance for the plugin.
+ */
 export default class Global {
     static instance: Global;
     plugin: Prj;
@@ -14,6 +17,12 @@ export default class Global {
     settings: PrjSettings;
     private logger = Logging.getLogger('Global');
 
+    /**
+     * Creates a new instance of the Global class.
+     * @param prj - The Prj instance.
+     * @param app - The Obsidian App instance.
+     * @param settings - The plugin settings.
+     */
     constructor(prj: Prj, app: App, settings: PrjSettings) {
         if (Global.instance) {
             return Global.instance;
@@ -38,6 +47,9 @@ export default class Global {
         this.metadataCache = MetadataCache.getInstance();
     }
 
+    /**
+     * Waits for the cache to be initialized.
+     */
     public async awaitCacheInitialization() {
         this.logger.debug('Waiting for cache initialization');
         await this.fileCache.waitForCacheReady();
@@ -45,11 +57,23 @@ export default class Global {
         this.logger.debug('Cache initialized');
     }
 
+    /**
+     * Cleans up resources used by the Global instance.
+     */
     public static deconstructor() {
         FileCache.deconstructor();
         MetadataCache.deconstructor();
     }
 
+    /**
+     * Gets the global instance of the Global class.
+     * If the instance doesn't exist, it creates a new one.
+     * @param prj - The Prj instance.
+     * @param app - The Obsidian App instance.
+     * @param settings - The plugin settings.
+     * @returns The global instance of the Global class.
+     * @throws Error if the global instance is not initialized and no app is provided.
+     */
     static getInstance(
         prj: Prj | null = null,
         app: App | null = null,
