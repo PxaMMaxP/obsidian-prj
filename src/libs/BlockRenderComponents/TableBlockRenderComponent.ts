@@ -1,7 +1,7 @@
 import Global from 'src/classes/Global';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { Component, setIcon } from 'obsidian';
-import Table, { TableHeader } from '../Table';
+import Table, { RowsState, TableHeader } from '../Table';
 import Helper from '../Helper';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import IPrjModel from 'src/interfaces/IPrjModel';
@@ -284,6 +284,108 @@ export default abstract class TableBlockRenderComponent<
 
         return Promise.resolve(models);
     }
+
+    /**
+     * This method is called when the search box is used.
+     * @param searchQuery The search text.
+     * @param key The key that was pressed.
+     * @returns The search text.
+     * @remarks - If the `Enter` key was pressed, the search is applied.
+     * - If the `Escape` key was pressed, the search is reset.
+     * - After the search is applied, the {@link onFilter} method is called.
+     */
+    protected async onSearch(
+        searchQuery: string,
+        key: string,
+    ): Promise<string> {
+        if (key === 'Enter') {
+            if (searchQuery !== '') {
+                this.settings.searchText = searchQuery;
+                this.settings.search = new Search(searchQuery);
+                this.settings.search.parse();
+                this.onFilter();
+            } else {
+                this.settings.searchText = undefined;
+                this.settings.search = undefined;
+                this.onFilter();
+            }
+        } else if (key === 'Escape') {
+            this.settings.searchText = undefined;
+            this.settings.search = undefined;
+            this.onFilter();
+
+            return '';
+        }
+
+        return searchQuery;
+    }
+
+    /**
+     * Filters the models and shows/hides them in the table.
+     * @remarks - The models are filtered by the `filter` setting,
+     * searched by the `search` setting
+     * and the number of documents is limited by the `maxDocuments` if no search is applied.
+     */
+    protected async onFilter() {
+        this.grayOutHeader();
+        const batchSize = this.settings.batchSize;
+        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
+        let sleepPromise = Promise.resolve();
+        const documentsLength = this.models.length;
+        const rows: RowsState[] = [];
+        let visibleRows = 0;
+
+        for (let i = 0; i < documentsLength; i++) {
+            const document = this.models[i];
+
+            const rowUid = this.getUID(document);
+            let hide = this.getHideState(document, undefined);
+            this.logger.trace(`Model ${rowUid} is hidden by state: ${hide}`);
+
+            this.logger.trace(
+                `Visible rows: ${visibleRows}; Max shown Models: ${this.settings.maxDocuments}`,
+            );
+
+            if (visibleRows >= this.settings.maxDocuments) {
+                hide = true;
+            }
+
+            this.logger.trace(
+                `Model ${rowUid} is hidden by max counts: ${hide}`,
+            );
+
+            if (hide) {
+                rows.push({ rowUid, hidden: true });
+            } else {
+                visibleRows++;
+                rows.push({ rowUid, hidden: false });
+            }
+
+            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
+                await sleepPromise;
+
+                this.logger.trace(
+                    `Batchsize reached. Change rows: ${rows.length}`,
+                );
+                await this.table.changeShowHideStateRows(rows);
+                rows.length = 0;
+                sleepPromise = Helper.sleep(sleepBetweenBatches);
+            }
+        }
+
+        this.normalizeHeader();
+    }
+
+    /**
+     * Gets the hide state for the document.
+     * @param model - The document to get the hide state for.
+     * @param maxVisibleRows - The maximum number of visible rows.
+     * @returns True if the document should be hidden, false otherwise.
+     */
+    protected abstract getHideState(
+        model: T,
+        maxVisibleRows: number | undefined,
+    ): boolean;
 }
 
 export type BlockRenderSettings = {

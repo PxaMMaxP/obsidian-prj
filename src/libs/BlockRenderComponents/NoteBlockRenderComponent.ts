@@ -3,7 +3,7 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Table, { Row, RowsState, TableHeader } from '../Table';
+import Table, { Row, TableHeader } from '../Table';
 import Lng from 'src/classes/Lng';
 import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
 import SearchInput from './InnerComponents/SearchInput';
@@ -15,7 +15,6 @@ import { NoteModel } from 'src/models/NoteModel';
 import ProjectComponents from './InnerComponents/ProjectComponents';
 import EditableDataView from '../EditableDataView/EditableDataView';
 import Logging from 'src/classes/Logging';
-import Search from '../Search/Search';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -149,94 +148,6 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     * This method is called when the search box is used.
-     * @param search The search text.
-     * @param key The key that was pressed.
-     * @returns The search text.
-     * @remarks - If the `Enter` key was pressed, the search is applied.
-     * - If the `Escape` key was pressed, the search is reset.
-     * - After the search is applied, the `onFilter` method is called.
-     */
-    private async onSearch(search: string, key: string): Promise<string> {
-        if (key === 'Enter') {
-            if (search !== '') {
-                this.settings.searchText = search;
-                this.settings.search = new Search(search);
-                this.settings.search.parse();
-                this.onFilter();
-            } else {
-                this.settings.searchText = undefined;
-                this.settings.search = undefined;
-                this.onFilter();
-            }
-        } else if (key === 'Escape') {
-            this.settings.searchText = undefined;
-            this.settings.search = undefined;
-            this.onFilter();
-
-            return '';
-        }
-
-        return search;
-    }
-
-    /**
-     * Filters the documents and shows/hides them in the table.
-     * @remarks - The documents are filtered by the `filter` setting,
-     * searched by the `search` setting
-     * and the number of documents is limited by the `maxDocuments` if no search is applied.
-     */
-    private async onFilter() {
-        this.grayOutHeader();
-        const batchSize = this.settings.batchSize;
-        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
-        let sleepPromise = Promise.resolve();
-        const documentsLength = this.models.length;
-        const rows: RowsState[] = [];
-        let visibleRows = 0;
-
-        for (let i = 0; i < documentsLength; i++) {
-            const document = this.models[i];
-
-            const rowUid = this.getUID(document);
-            let hide = this.determineTagHideState(document);
-            this.logger.trace(`Document ${rowUid} is hidden by state: ${hide}`);
-
-            this.logger.trace(
-                `Visible rows: ${visibleRows}; Max shown Docs: ${this.settings.maxDocuments}`,
-            );
-
-            if (visibleRows >= this.settings.maxDocuments) {
-                hide = true;
-            }
-
-            this.logger.trace(
-                `Document ${rowUid} is hidden by max counts: ${hide}`,
-            );
-
-            if (hide) {
-                rows.push({ rowUid, hidden: true });
-            } else {
-                visibleRows++;
-                rows.push({ rowUid, hidden: false });
-            }
-
-            if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
-                await sleepPromise;
-
-                this.logger.trace(
-                    `Batchsize reached. Change rows: ${rows.length}`,
-                );
-                await this.table.changeShowHideStateRows(rows);
-                rows.length = 0;
-                sleepPromise = Helper.sleep(sleepBetweenBatches);
-            }
-        }
-
-        this.normalizeHeader();
-    }
-
-    /**
      * Adds the documents to the table.
      * @param batchSize The batch size.
      * @param sleepBetweenBatches The sleep time between the batches.
@@ -366,15 +277,15 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         return row;
     }
 
-    private getHideState(
-        document: DocumentModel,
+    protected getHideState(
+        model: NoteModel,
         maxVisibleRows: number | undefined,
     ): boolean {
         let searchResult = false;
         let maxRows = false;
 
         if (this.settings.search) {
-            const text = document.data.toString?.();
+            const text = model.data.toString?.();
             searchResult = this.settings.search.applySearchLogic(text ?? '');
         }
 
@@ -383,7 +294,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
-        const hide = false;
+        const hide = this.determineTagHideState(model);
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
