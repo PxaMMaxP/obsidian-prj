@@ -1,6 +1,6 @@
 {
   "name": "obsidian-prj-plugin",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
