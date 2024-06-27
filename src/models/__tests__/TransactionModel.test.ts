@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ILogger } from 'src/interfaces/ILogger';
 import { TransactionModel } from '../TransactionModel';
+import mockLogger from 'src/interfaces/__mocks__/ILogger.mock';
 
-// Mocking the ILogger interface
-const mockLogger: ILogger = {
-    debug: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    trace: jest.fn(),
-    info: jest.fn(),
-};
+jest.mock('src/interfaces/ILogger', () => ({
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    __esModule: true,
+    default: mockLogger,
+}));
 
 describe('TransactionModel', () => {
     let mockWriteChanges: jest.Mock;
