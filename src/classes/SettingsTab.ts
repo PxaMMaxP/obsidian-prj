@@ -135,7 +135,7 @@ export class SettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName('PDF Folder')
             .setDesc(
-                'The Folder where all PDFs are stored. {YYYY} is replaced with the current year and {MM} with the current month.',
+                'The Folder where all PDFs are stored. {YYYY} is replaced with the current year and {MM} with the current month. Additional you can use {TAG_FOLDER} for the custom tag folders in the next setting.',
             )
             .addText((text) =>
                 text
@@ -143,6 +143,66 @@ export class SettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.documentSettings.pdfFolder)
                     .onChange(async (value) => {
                         this.plugin.settings.documentSettings.pdfFolder = value;
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        // Custom Tag Folders
+        new Setting(containerEl)
+            .setName('Custom Tag Folders')
+            .setDesc(
+                'The Custom Tag Folders. \nOne per line and Tag (without #) and Folder separated by a semicolon.',
+            )
+            .addTextArea((text) =>
+                text
+                    .setPlaceholder('Custom Tag Folders')
+                    .setValue(
+                        this.plugin.settings.documentSettings.customTagFolders
+                            ?.map((value) => `${value.tag};${value.folder}`)
+                            .join('\n'),
+                    )
+                    .onChange(async (value) => {
+                        const lines = value.split('\n');
+
+                        this.plugin.settings.documentSettings.customTagFolders =
+                            lines.map((line) => {
+                                const parts = line.split(';');
+
+                                return {
+                                    tag: parts[0],
+                                    folder: parts[1],
+                                };
+                            });
+                        await this.plugin.saveSettings();
+                    }),
+            );
+
+        // Special PDF Folder (Tag to Folder)
+        new Setting(containerEl)
+            .setName('Special PDF Folder (Tag to Folder)')
+            .setDesc(
+                'The Special PDF Folders. \nOne per line and Tag (without #) and Folder separated by a semicolon.',
+            )
+            .addTextArea((text) =>
+                text
+                    .setPlaceholder('Special PDF Folders')
+                    .setValue(
+                        this.plugin.settings.documentSettings.specialPdfFolders
+                            ?.map((value) => `${value.tag};${value.folder}`)
+                            .join('\n'),
+                    )
+                    .onChange(async (value) => {
+                        const lines = value.split('\n');
+
+                        this.plugin.settings.documentSettings.specialPdfFolders =
+                            lines.map((line) => {
+                                const parts = line.split(';');
+
+                                return {
+                                    tag: parts[0],
+                                    folder: parts[1],
+                                };
+                            });
                         await this.plugin.saveSettings();
                     }),
             );
