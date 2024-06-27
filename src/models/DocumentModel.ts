@@ -434,11 +434,70 @@ export class DocumentModel
             ? (documentDate.getMonth() + 1).toString().padStart(2, '0')
             : '';
 
-        const defaultPdfFolder = documentDate
+        // Search for the correct and **first** tag folder
+        let tagFolder: string | undefined = undefined;
+        let specialTagFolder: string | undefined = undefined;
+
+        if (Array.isArray(document.data.tags)) {
+            // Tag Folder
+            // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
+            const foundTag = document.data.tags.find((tag) =>
+                settings.documentSettings.customTagFolders.some(
+                    (folder) => folder.tag === tag,
+                ),
+            );
+
+            if (foundTag) {
+                tagFolder = settings.documentSettings.customTagFolders.find(
+                    (folder) => folder.tag === foundTag,
+                )?.folder;
+            }
+
+            // Special Tag Folder
+            // `document.data.tags` is an Array, search for the first tag that matches a special tag folder
+            const foundSpecialTag = document.data.tags.find((tag) =>
+                settings.documentSettings.specialPdfFolders.some(
+                    (folder) => folder.tag === tag,
+                ),
+            );
+
+            if (foundSpecialTag) {
+                specialTagFolder =
+                    settings.documentSettings.specialPdfFolders.find(
+                        (folder) => folder.tag === foundSpecialTag,
+                    )?.folder;
+            }
+        } else if (document.data.tags) {
+            // `document.data.tags` is a string, search for the custom tag folder
+            tagFolder = settings.documentSettings.customTagFolders.find(
+                (folder) => folder.tag === document.data.tags,
+            )?.folder;
+
+            // `document.data.tags` is a string, search for the special tag folder
+            specialTagFolder = settings.documentSettings.specialPdfFolders.find(
+                (folder) => folder.tag === document.data.tags,
+            )?.folder;
+        }
+        // If no tag folder was found, use the default folder
+
+        let defaultPdfFolder = documentDate
             ? settings.documentSettings.pdfFolder
                   .replace('{YYYY}', documentYear)
                   .replace('{MM}', documentMonth)
             : undefined;
+
+        if (tagFolder) {
+            defaultPdfFolder = defaultPdfFolder?.replace(
+                '{TAG_FOLDER}',
+                tagFolder,
+            );
+        } else {
+            defaultPdfFolder = defaultPdfFolder?.replace('{TAG_FOLDER}/', '');
+        }
+
+        if (specialTagFolder) {
+            defaultPdfFolder = specialTagFolder;
+        }
 
         let desiredPdfFilePath: string | undefined;
 
