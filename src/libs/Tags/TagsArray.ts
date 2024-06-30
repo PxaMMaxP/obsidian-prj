@@ -1,4 +1,5 @@
 import { ILogger } from 'src/interfaces/ILogger';
+import Tag from './Tag';
 
 /**
  * Represents an array of tags.
@@ -16,58 +17,60 @@ export class TagsArray {
     /**
      * The tags array.
      */
-    private _tags: string[];
+    private _tags: Tag[];
 
     /**
      * Creates a new instance of the TagsArray class.
      * @param tags The tags to use for the creation. Can be a string, an array of strings, or undefined.
+     * @param logger The logger to use for logging messages.
      */
-    constructor(tags?: string | string[] | undefined, logger?: ILogger) {
+    constructor(tags?: string | string[], logger?: ILogger) {
         this.logger = logger ?? undefined;
+        this._tags = [];
 
-        if (typeof tags === 'string') {
-            this._tags = [tags];
-        } else if (Array.isArray(tags)) {
-            this._tags = tags;
-        } else {
-            this._tags = [];
-        }
+        this.add(tags);
     }
 
     /**
      * Adds a tag, multiple tags or nothing to the tags array.
-     * @param tag The tag to add.
+     * @param tag The tag or tags to add.
      */
     public add(tag: string | string[] | undefined): void {
         if (typeof tag === 'string') {
-            this._add(tag);
+            this.push(tag);
         } else if (Array.isArray(tag)) {
-            tag.forEach((t) => {
-                this._add(t);
-            });
+            this.push(...tag);
         } else {
             this.logger?.warn('No tags to add.');
         }
     }
 
     /**
-     * Adds a tag to the tags array if it doesn't exist.
-     * @param tag The tag to add.
+     * Adds one or more tags to the tags array if they don't exist.
+     * @param tags The tags to add.
      */
-    private _add(tag: string): void {
-        if (!this._tags.includes(tag)) {
-            this._tags.push(tag);
-        } else {
-            this.logger?.warn(`Tag '${tag}' already exists.`);
-        }
+    public push(...tags: string[]): void {
+        tags.forEach((tag) => {
+            if (
+                !this._tags.some(
+                    (existingTag) => existingTag.toString() === tag,
+                )
+            ) {
+                this._tags.push(new Tag(tag));
+            } else {
+                this.logger?.warn(`Tag '${tag}' already exists.`);
+            }
+        });
     }
 
     /**
      * Removes a tag from the tags array.
      * @param tag The tag to remove.
      */
-    remove(tag: string): void {
-        const index = this._tags.indexOf(tag);
+    public remove(tag: string): void {
+        const index = this._tags.findIndex(
+            (existingTag) => existingTag.toString() === tag,
+        );
 
         if (index !== -1) {
             this._tags.splice(index, 1);
@@ -81,7 +84,7 @@ export class TagsArray {
      * @returns All tags as an array of strings.
      */
     public getAll(): string[] {
-        return this._tags;
+        return this._tags.map((tag) => tag.toString());
     }
 
     /**
@@ -95,7 +98,7 @@ export class TagsArray {
     /**
      * Returns the number of tags.
      */
-    get length(): number {
+    public get length(): number {
         return this._tags.length;
     }
 
@@ -103,13 +106,16 @@ export class TagsArray {
      * Returns an iterator for the TagsArray class.
      * @returns An iterator object that iterates over the tags in the array.
      */
-    [Symbol.iterator](): Iterator<string> {
+    public [Symbol.iterator](): Iterator<string> {
         let index = 0;
 
         return {
             next: (): IteratorResult<string> => {
                 if (index < this._tags.length) {
-                    return { value: this._tags[index++], done: false };
+                    return {
+                        value: this._tags[index++].toString(),
+                        done: false,
+                    };
                 } else {
                     return { done: true, value: undefined };
                 }

@@ -125,8 +125,8 @@ describe('TagsArray', () => {
     // Additional Tests
     test('should not add duplicate tags when initialized with an array containing duplicates', () => {
         const tagsArray = new TagsArray(['tag1', 'tag1', 'tag2'], mockLogger);
-        expect(tagsArray.getAll()).toEqual(['tag1', 'tag1', 'tag2']);
-        expect(tagsArray.length).toBe(3); // Note: This test assumes the class does not deduplicate upon initialization.
+        expect(tagsArray.getAll()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.length).toBe(2);
     });
 
     test('should handle removing a tag from an empty array gracefully', () => {
