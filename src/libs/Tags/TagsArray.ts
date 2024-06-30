@@ -25,7 +25,7 @@ export class TagsArray {
      * @param logger The logger to use for logging messages.
      */
     constructor(tags?: string | string[], logger?: ILogger) {
-        this.logger = logger ?? undefined;
+        this.logger = logger;
         this._tags = [];
 
         this.add(tags);
