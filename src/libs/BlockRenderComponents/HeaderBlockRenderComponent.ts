@@ -2,7 +2,6 @@ import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import Tags from '../Tags';
 import { TagTree } from 'src/types/TagTree';
 import Logging from 'src/classes/Logging';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
@@ -13,6 +12,9 @@ import { Status } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import { Tags } from '../Tags/Tags';
+import { TagFactory } from '../Tags/TagFactory';
+import Tag from '../Tags/Tag';
 
 /**
  * Header Block Render Component class.
@@ -177,8 +179,12 @@ export default class HeaderBlockRenderComponent
     /**
      * The tags of the Prj File.
      */
-    private get tags(): Array<string> {
-        return Tags.getValidTags(this.frontmatter?.tags ?? []);
+    private get tags(): Tags {
+        return new Tags(
+            this.frontmatter?.tags,
+            this._metadataCache,
+            new TagFactory(),
+        );
     }
 
     constructor(settings: IProcessorSettings) {
@@ -423,20 +429,22 @@ export default class HeaderBlockRenderComponent
     private createDomList(tagTree: TagTree, path = ''): HTMLElement {
         const ul = document.createElement('ul');
 
-        for (const tag in tagTree) {
-            const fullPath = path ? `${path}/${tag}` : tag;
+        for (const tagString in tagTree) {
+            const fullTagString = path ? `${path}/${tagString}` : tagString;
+            const fullTag = new Tag(fullTagString, this._metadataCache);
+            const tag = new Tag(tagString, this._metadataCache);
             const li = document.createElement('li');
 
-            const tagLink = Tags.createObsidianTagLink(
-                path ? tag : `#${tag}`,
-                fullPath,
+            const tagLink = fullTag.getObsidianLink(
+                path ? fullTag.toString() : tag.tagWithHash,
             );
+
             li.appendChild(tagLink);
-            const subTags = tagTree[tag];
+            const subTags = tagTree[tagString];
             const hasSubTags = Object.keys(subTags).length > 0;
 
             if (hasSubTags) {
-                li.appendChild(this.createDomList(subTags, fullPath));
+                li.appendChild(this.createDomList(subTags, fullTagString));
             }
 
             ul.appendChild(li);
@@ -458,7 +466,7 @@ export default class HeaderBlockRenderComponent
         labelDiv.classList.add('tag-label');
         labelDiv.textContent = `${Lng.gt('Tags')}:`;
 
-        const tagTree = Tags.createTagTree(this.tags);
+        const tagTree = this.tags.getTagTree();
         const tagsList = this.createDomList(tagTree);
         tagsDiv.appendChild(tagsList);
 
