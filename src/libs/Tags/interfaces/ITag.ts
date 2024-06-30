@@ -11,6 +11,13 @@ export interface ITag {
     readonly exists: boolean;
 
     /**
+     * Gets the tag with a hash symbol.
+     * @returns The tag with a hash symbol.
+     * @remarks The tag is prefixed with a hash symbol if it doesn't already have one.
+     */
+    get tagWithHash(): string;
+
+    /**
      * Converts the value of the tag to uppercase.
      * @returns The value of the tag as an uppercase string.
      */

@@ -23,7 +23,7 @@ export default class Tag implements ITag {
      * @returns The tag with a hash symbol.
      * @remarks The tag is prefixed with a hash symbol if it doesn't already have one.
      */
-    private get tagWithHash(): string {
+    public get tagWithHash(): string {
         if (!this._tagWithHash) {
             this._tagWithHash = this._tag.startsWith('#')
                 ? this._tag
