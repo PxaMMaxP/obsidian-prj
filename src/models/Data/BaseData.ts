@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ToStringFieldSymbol } from 'src/classes/ToStringFieldDecorator';
-import { FieldConfigSymbol } from 'src/classes/FieldConfigDecorator';
+import { ToStringFieldSymbol } from 'src/classes/decorators/ToStringFieldDecorator';
+import { FieldConfigSymbol } from 'src/classes/decorators/FieldConfigDecorator';
 
 /**
  * An abstract base class that provides common functionality for data classes.

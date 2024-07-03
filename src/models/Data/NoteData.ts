@@ -1,6 +1,6 @@
-import { toStringField } from 'src/classes/ToStringFieldDecorator';
+import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import BaseData from './BaseData';
-import { fieldConfig } from 'src/classes/FieldConfigDecorator';
+import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import { FileType } from 'src/types/PrjTypes';
 

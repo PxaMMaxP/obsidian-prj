@@ -1,5 +1,5 @@
-import { toStringField } from 'src/classes/ToStringFieldDecorator';
-import { fieldConfig } from 'src/classes/FieldConfigDecorator';
+import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
+import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import BaseData from './BaseData';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { toStringField } from 'src/classes/ToStringFieldDecorator';
-import { fieldConfig } from 'src/classes/FieldConfigDecorator';
+import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
+import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import BaseData from './BaseData';
 import IPrjDocument from 'src/interfaces/IPrjDocument';
 import IPrjData from 'src/interfaces/IPrjData';
