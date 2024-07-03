@@ -2,7 +2,6 @@ import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import Tags, { TagTree } from '../Tags';
 import Logging from 'src/classes/Logging';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
@@ -12,6 +11,8 @@ import { Status } from 'src/types/PrjTypes';
 import API from 'src/classes/API';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import Tags from '../Tags';
+import { TagTree } from '../Tags/types/TagTree';
 
 /**
  * Header Block Render Component class.
