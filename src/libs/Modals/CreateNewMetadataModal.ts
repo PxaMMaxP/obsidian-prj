@@ -1,7 +1,6 @@
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { DocumentModel } from 'src/models/DocumentModel';
-import DocumentData from 'src/types/DocumentData';
 import {
     Field,
     FormConfiguration,
@@ -15,6 +14,7 @@ import API from 'src/classes/API';
 import { TFile } from 'obsidian';
 import Logging from 'src/classes/Logging';
 import Tags from '../Tags';
+import DocumentData from 'src/models/Data/DocumentData';
 
 /**
  * Modal to create a new metadata file

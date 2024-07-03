@@ -3,7 +3,6 @@
 import { TFile } from 'obsidian';
 import { FileModel } from './FileModel';
 import IPrjModel from '../interfaces/IPrjModel';
-import DocumentData from '../types/DocumentData';
 import Global from '../classes/Global';
 import Helper from '../libs/Helper';
 import Logging from 'src/classes/Logging';
@@ -11,6 +10,7 @@ import { ILogger } from 'src/interfaces/ILogger';
 import Lng from 'src/classes/Lng';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import FileCache from 'src/libs/FileCache';
+import DocumentData from './Data/DocumentData';
 
 export class DocumentModel
     extends FileModel<DocumentData>

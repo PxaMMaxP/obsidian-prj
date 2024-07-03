@@ -6,12 +6,12 @@ import Global from 'src/classes/Global';
 import PrjTypes from 'src/types/PrjTypes';
 import { TFile } from 'obsidian';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import ProjectData from 'src/types/ProjectData';
-import TaskData from 'src/types/TaskData';
-import TopicData from 'src/types/TopicData';
 import { Path } from 'src/classes/Path';
 import Logging from 'src/classes/Logging';
 import Tags from '../Tags';
+import ProjectData from 'src/models/Data/ProjectData';
+import TaskData from 'src/models/Data/TaskData';
+import TopicData from 'src/models/Data/TopicData';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {

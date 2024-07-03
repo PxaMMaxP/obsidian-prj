@@ -4,15 +4,15 @@ import IPrjModel from '../interfaces/IPrjModel';
 import IPrjData from '../interfaces/IPrjData';
 import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
-import TaskData from 'src/types/TaskData';
-import ProjectData from 'src/types/ProjectData';
-import TopicData from 'src/types/TopicData';
 import { ILogger } from 'src/interfaces/ILogger';
 import Logging from 'src/classes/Logging';
 import Tags from 'src/libs/Tags';
 import Helper from 'src/libs/Helper';
 import Global from 'src/classes/Global';
 import { Path } from 'src/classes/Path';
+import ProjectData from './Data/ProjectData';
+import TaskData from './Data/TaskData';
+import TopicData from './Data/TopicData';
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     extends FileModel<T>
@@ -112,7 +112,9 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     public get urgency(): number {
         return PrjTaskManagementModel.calculateUrgency(
-            this as PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+            this as unknown as PrjTaskManagementModel<
+                TaskData | TopicData | ProjectData
+            >,
         );
     }
 

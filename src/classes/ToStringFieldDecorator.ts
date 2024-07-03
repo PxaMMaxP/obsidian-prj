@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * A unique symbol used to mark properties that should be included in the toString output.
  */
-export const ToStringField = Symbol('ToStringField');
+export const ToStringFieldSymbol = Symbol('ToStringField');
 
 /**
  * A decorator function to mark class properties for inclusion in the toString output.
@@ -10,8 +11,8 @@ export const ToStringField = Symbol('ToStringField');
  * @param propertyKey - The name of the property being decorated.
  */
 export function toStringField(target: any, propertyKey: any): void {
-    if (!target.constructor[ToStringField]) {
-        target.constructor[ToStringField] = [];
+    if (!target.constructor[ToStringFieldSymbol]) {
+        target.constructor[ToStringFieldSymbol] = [];
     }
-    target.constructor[ToStringField].push(propertyKey);
+    target.constructor[ToStringFieldSymbol].push(propertyKey);
 }
