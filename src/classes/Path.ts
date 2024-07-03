@@ -19,6 +19,7 @@ export class Path {
 
                 return normalizedPart;
             })
+            .filter((part) => part.length > 0) // Removes empty parts
             .join('/') // Joins the parts using a slash as a separator
             .replace(/\/{2,}/g, '/'); // Removes double slashes
     }
