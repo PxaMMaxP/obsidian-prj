@@ -1,10 +1,11 @@
 import { ILogger } from 'src/interfaces/ILogger';
-import { TagTree } from 'src/types/TagTree';
+
 import { TFile } from 'obsidian';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag } from './interfaces/ITag';
 import { ITagFactory } from './interfaces/ITagFactory';
 import { ITags } from './interfaces/ITags';
+import { TagTree } from './types/TagTree';
 
 /**
  * Represents an array of tags.
@@ -19,6 +20,24 @@ export class Tags implements ITags {
     private _iTagFactory: ITagFactory;
 
     /**
+     * The tag helper. Used to check if an object is an instance of the `ITag` interface.
+     * @remarks Lazy loaded.
+     */
+    private static _tagHelper: ITag | undefined = undefined;
+
+    /**
+     * Checks if the object is an instance of the ITag interface.
+     * @param obj The object to check.
+     */
+    private isInstanceOfTag(obj: unknown): obj is ITag {
+        if (!Tags._tagHelper) {
+            Tags._tagHelper = this.createTag('');
+        }
+
+        return Tags._tagHelper.isInstanceOfTag(obj);
+    }
+
+    /**
      * The metadata cache.
      */
     private _metadataCache: IMetadataCache;
@@ -30,10 +49,22 @@ export class Tags implements ITags {
     private logger: ILogger | undefined = undefined;
 
     /**
+     * The tags array.
+     */
+    private _tags: ITag[] = [];
+
+    /**
+     * Gets the tags.
+     */
+    get values(): ITag[] {
+        return this._tags;
+    }
+
+    /**
      * Only the specific tags.
      * @remarks - Is lazy loaded.
      */
-    private _specificTags: Tags | undefined = undefined;
+    private _specificTags: ITag[] | undefined = undefined;
 
     /**
      * The specific tags.
@@ -41,14 +72,9 @@ export class Tags implements ITags {
      * If the tags array contains `["tag1", "tag2", "tag1/subtag1", "tag1/subtag2"]`,
      * the specific tags are `["tag2", "tag1/subtag1", "tag1/subtag2"]`.
      */
-    public get specificTags(): Tags {
+    public get specificTags(): ITag[] {
         if (!this._specificTags) {
-            this._specificTags = new Tags(
-                undefined,
-                this._metadataCache,
-                this._iTagFactory,
-                this.logger,
-            );
+            this._specificTags = [];
 
             this._tags.forEach((tag) => {
                 if (
@@ -58,7 +84,7 @@ export class Tags implements ITags {
                             existingTag.startsWith(tag + '/'),
                     )
                 ) {
-                    this._specificTags?.push(tag.toString());
+                    this._specificTags?.push(tag);
                 }
             });
         }
@@ -67,9 +93,11 @@ export class Tags implements ITags {
     }
 
     /**
-     * The tags array.
+     * Invalidates the specific tags.
      */
-    private _tags: ITag[] = [];
+    private invalidateSpecificTags(): void {
+        this._specificTags = undefined;
+    }
 
     /**
      * Creates a new instance of the TagsArray class.
@@ -93,28 +121,45 @@ export class Tags implements ITags {
     }
 
     /**
+     * Creates a tag from a tag value.
+     * @param tagValue The tag value.
+     * @returns The created tag.
+     */
+    private createTag(tagValue: string): ITag {
+        return this._iTagFactory.create(tagValue, this._metadataCache);
+    }
+
+    /**
      * Adds a tag, multiple tags or nothing to the tags array.
      * @param tag The tag or tags to add.
      * @returns Whether the tags were added.
+     * @remarks When adding, new `ITag` objects are always created for each tag.
      */
-    public add(tag: ITags | string | string[] | undefined | null): boolean {
+    public add(
+        tag: ITags | ITag | string | string[] | undefined | null,
+    ): boolean {
+        return this.push(...this.normalizeToTags(tag));
+    }
+
+    /**
+     * Normalizes different input types to an array of ITag-Objects.
+     * @param tag The input tag(s) to normalize.
+     * @returns An array of ITag-Objects.
+     */
+    private normalizeToTags(
+        tag: ITags | ITag | string | string[] | undefined | null,
+    ): ITag[] {
         if (this.isInstanceOfTags(tag)) {
-            this.push(...tag.getAll());
-
-            return true;
-        } else if (typeof tag === 'string') {
-            this.push(tag);
-
-            return true;
+            return tag.toStringArray().map((t) => this.createTag(t));
+        } else if (this.isInstanceOfTag(tag)) {
+            return [this.createTag(tag.value)];
         } else if (Array.isArray(tag)) {
-            this.push(...tag);
-
-            return true;
-        } else {
-            this.logger?.warn('No tags to add.');
-
-            return false;
+            return tag.map((t) => this.createTag(t));
+        } else if (typeof tag === 'string') {
+            return [this.createTag(tag)];
         }
+
+        return [];
     }
 
     /**
@@ -122,40 +167,39 @@ export class Tags implements ITags {
      * @param tags The tags to add.
      * @returns Whether the tags were added.
      */
-    public push(...tags: string[]): boolean {
+    public push(...tags: ITag[]): boolean {
+        let added = false;
+
         tags.forEach((tag) => {
-            if (
-                !this._tags.some(
-                    (existingTag) => existingTag.toString() === tag,
-                )
-            ) {
-                this._tags.push(
-                    this._iTagFactory.create(tag, this._metadataCache),
-                );
-
-                return true;
+            if (!this.includes(tag)) {
+                this._tags.push(tag);
+                added = true;
             } else {
-                this.logger?.warn(`Tag '${tag}' already exists.`);
-
-                return false;
+                this.logger?.warn(`Tag '${tag.value}' already exists.`);
             }
         });
 
-        return false;
+        if (added) {
+            this.invalidateSpecificTags();
+        } else {
+            this.logger?.warn('No tags added.');
+        }
+
+        return added;
     }
 
     /**
      * Removes a tag from the tags array.
      * @param tag The tag to remove.
      * @returns Whether the tag was removed.
+     * @remarks The search is not for the specific object, but for an equal (string comparison) tag.
      */
-    public remove(tag: string): boolean {
-        const index = this._tags.findIndex(
-            (existingTag) => existingTag.toString() === tag,
-        );
+    public remove(tag: ITag): boolean {
+        const index = this.findIndex(tag);
 
         if (index !== -1) {
             this._tags.splice(index, 1);
+            this.invalidateSpecificTags();
 
             return true;
         } else {
@@ -169,7 +213,7 @@ export class Tags implements ITags {
      * Returns all tags.
      * @returns All tags as an array of strings.
      */
-    public getAll(): string[] {
+    public toStringArray(): string[] {
         return this._tags.map((tag) => tag.toString());
     }
 
@@ -198,17 +242,35 @@ export class Tags implements ITags {
     }
 
     /**
+     * Checks if the tag exists in the tags array.
+     * @param tag The tag to check.
+     * @returns Whether the tag exists in the tags array.
+     */
+    public includes(tag: ITag): boolean {
+        return this._tags.some((existingTag) => existingTag.equals(tag));
+    }
+
+    /**
+     * Finds the index of the tag in the tags array.
+     * @param tag The tag to find.
+     * @returns The index of the tag in the tags array. If the tag is not found, -1 is returned.
+     */
+    public findIndex(tag: ITag): number {
+        return this._tags.findIndex((existingTag) => existingTag.equals(tag));
+    }
+
+    /**
      * Returns an iterator for the TagsArray class.
      * @returns An iterator object that iterates over the tags in the array.
      */
-    public [Symbol.iterator](): Iterator<string> {
+    public [Symbol.iterator](): Iterator<ITag> {
         let index = 0;
 
         return {
-            next: (): IteratorResult<string> => {
+            next: (): IteratorResult<ITag> => {
                 if (index < this._tags.length) {
                     return {
-                        value: this._tags[index++].toString(),
+                        value: this._tags[index++],
                         done: false,
                     };
                 } else {
@@ -252,19 +314,10 @@ export class Tags implements ITags {
         if (file) {
             const cache = this._metadataCache.getEntry(file);
 
-            if (
-                cache &&
-                cache.metadata &&
-                cache.metadata.frontmatter &&
-                cache.metadata.frontmatter.tags
-            ) {
-                if (Array.isArray(cache.metadata.frontmatter.tags)) {
-                    this.push(...cache.metadata.frontmatter.tags);
-                } else {
-                    this.push(cache.metadata.frontmatter.tags);
-                }
+            if (cache && cache.metadata && cache.metadata.frontmatter) {
+                return this.add(cache.metadata.frontmatter.tags);
             } else {
-                this.logger?.warn('No tags found in the file.');
+                this.logger?.warn('No metadata found in the file.');
 
                 return false;
             }
@@ -273,20 +326,13 @@ export class Tags implements ITags {
 
             return false;
         }
-
-        return true;
     }
 
     /**
      * Checks if the object is an instance of the ITags interface.
      * @param obj The object to check.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public isInstanceOfTags(obj: any): obj is ITags {
+    public isInstanceOfTags(obj: unknown): obj is ITags {
         return obj instanceof Tags;
-    }
-
-    public includes(tag: ITag): boolean {
-        return this._tags.some((existingTag) => existingTag.equals(tag));
     }
 }

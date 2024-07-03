@@ -1,42 +1,49 @@
 import { TFile } from 'obsidian';
-import { TagTree } from 'src/types/TagTree';
 import { ITag } from './ITag';
+import { TagTree } from '../types/TagTree';
 
 export interface ITags {
+    /**
+     * Gets the tags.
+     */
+    get values(): ITag[];
+
     /**
      * The specific tags.
      * - The specific tags are the tags without any redundant tags:
      * If the tags array contains `["tag1", "tag2", "tag1/subtag1", "tag1/subtag2"]`,
      * the specific tags are `["tag2", "tag1/subtag1", "tag1/subtag2"]`.
      */
-    get specificTags(): ITags;
+    get specificTags(): ITag[];
 
     /**
      * Adds a tag, multiple tags or nothing to the tags array.
      * @param tag The tag or tags to add.
      * @returns Whether the tags were added.
+     * @remarks When adding, new `ITag` objects are always created for each tag.
      */
-    add(tag: string | string[] | undefined): boolean;
+    add(tag: ITags | ITag | string | string[] | undefined | null): boolean;
 
     /**
      * Adds one or more tags to the tags array if they don't exist.
      * @param tags The tags to add.
      * @returns Whether the tags were added.
      */
-    push(...tags: string[]): boolean;
+    push(...tags: ITag[]): boolean;
 
     /**
      * Removes a tag from the tags array.
      * @param tag The tag to remove.
      * @returns Whether the tag was removed.
+     * @remarks The search is not for the specific object, but for an equal (string comparison) tag.
      */
-    remove(tag: string): boolean;
+    remove(tag: ITag): boolean;
 
     /**
      * Returns all tags.
      * @returns All tags as an array of strings.
      */
-    getAll(): string[];
+    toStringArray(): string[];
 
     /**
      * Returns all tags as a string.
@@ -57,10 +64,24 @@ export interface ITags {
     some(predicate: (tag: ITag) => boolean): boolean;
 
     /**
+     * Checks if the tag includes the specified tag.
+     * @param tag The tag to search for.
+     * @returns Whether the tag includes the specified tag.
+     */
+    includes(tag: ITag): boolean;
+
+    /**
+     * Finds the index of the tag in the tags array.
+     * @param tag The tag to find.
+     * @returns The index of the tag in the tags array. If the tag is not found, -1 is returned.
+     */
+    findIndex(tag: ITag): number;
+
+    /**
      * Returns an iterator for the TagsArray class.
      * @returns An iterator object that iterates over the tags in the array.
      */
-    [Symbol.iterator](): Iterator<string>;
+    [Symbol.iterator](): Iterator<ITag>;
 
     /**
      * Creates a tag tree from an array of tags.
@@ -80,13 +101,5 @@ export interface ITags {
      * Checks if the object is an instance of the ITags interface.
      * @param obj The object to check.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    isInstanceOfTags(obj: any): obj is ITags;
-
-    /**
-     * Checks if the tag includes the specified tag.
-     * @param tag The tag to search for.
-     * @returns Whether the tag includes the specified tag.
-     */
-    includes(tag: ITag): boolean;
+    isInstanceOfTags(obj: unknown): obj is ITags;
 }

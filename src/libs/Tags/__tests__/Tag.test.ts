@@ -23,8 +23,13 @@ describe('Tag', () => {
     });
 
     // Constructor Tests
-    test('should initialize with a string value', () => {
+    test('should initialize with a string value without hash', () => {
         const tag = new Tag('exampleTag', metadataCacheMock);
+        expect(tag.toString()).toBe('exampleTag');
+    });
+
+    test('should initialize with a string value with hash', () => {
+        const tag = new Tag('#exampleTag', metadataCacheMock);
         expect(tag.toString()).toBe('exampleTag');
     });
 
@@ -32,6 +37,11 @@ describe('Tag', () => {
     test('should return the string value with toString', () => {
         const tag = new Tag('exampleTag', metadataCacheMock);
         expect(tag.toString()).toBe('exampleTag');
+    });
+
+    test('should return the primitive string value with valueOf', () => {
+        const tag = new Tag('exampleTag', metadataCacheMock);
+        expect(tag.valueOf()).toBe('exampleTag');
     });
 
     test('should return the string value in uppercase with toUpperCase', () => {
@@ -61,7 +71,7 @@ describe('Tag', () => {
         expect(tag.toString() == 'exampleTag').toBe(true);
     });
 
-    test('should compare the Tag object with a object using ==', () => {
+    test('should compare the Tag object with an object using ==', () => {
         const tag = new Tag('exampleTag', metadataCacheMock);
         const equalTagString = new Tag('exampleTag', metadataCacheMock);
         expect(tag.equals(equalTagString)).toBe(true);
@@ -89,6 +99,21 @@ describe('Tag', () => {
             cache: [],
         } as unknown as IMetadataCache;
         const tag = new Tag('exampleTag', metadataCacheMockEmpty);
+        expect(tag.exists).toBe(false);
+    });
+
+    test('should cache the existence check result', () => {
+        const tag = new Tag('exampleTag', metadataCacheMock);
+        // Initial call should set the _exists value
+        expect(tag.exists).toBe(true);
+
+        // Manually set the _exists property to undefined to simulate a cache reset
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (tag as any)._exists = undefined;
+
+        // Modify the cache to check if the cached value is used
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (metadataCacheMock as any).cache = [];
         expect(tag.exists).toBe(false);
     });
 
@@ -145,5 +170,16 @@ describe('Tag', () => {
     test('should return an array of elements from the tag', () => {
         const tag = new Tag('exampleTag/subtag', metadataCacheMock);
         expect(tag.getElements()).toEqual(['exampleTag', 'subtag']);
+    });
+
+    // Test `isInstanceOfTag` method
+    test('should return true if object is instance of Tag', () => {
+        const tag = new Tag('exampleTag', metadataCacheMock);
+        expect(tag.isInstanceOfTag(tag)).toBe(true);
+    });
+
+    test('should return false if object is not instance of Tag', () => {
+        const tag = new Tag('exampleTag', metadataCacheMock);
+        expect(tag.isInstanceOfTag({})).toBe(false);
     });
 });

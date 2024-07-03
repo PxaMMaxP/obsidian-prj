@@ -88,7 +88,7 @@ export interface ITag {
     startsWith(searchString: string, position?: number): boolean;
 
     /**
-     * Checks if the object is an instance of the ITags interface.
+     * Checks if the object is an instance of the ITag interface.
      * @param obj The object to check.
      */
     isInstanceOfTag(obj: unknown): obj is ITag;

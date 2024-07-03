@@ -1,5 +1,5 @@
-import IMetadataCache from "src/interfaces/IMetadataCache";
-import { ITag } from "./ITag";
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { ITag } from './ITag';
 
 /**
  * Represents a tag factory.

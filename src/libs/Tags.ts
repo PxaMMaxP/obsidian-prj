@@ -2,7 +2,7 @@
 import Tag from 'src/libs/Tags/Tag';
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
-import { TagTree } from 'src/types/TagTree';
+import { TagTree } from './Tags/types/TagTree';
 
 /**
  * Provides methods to work with tags.
