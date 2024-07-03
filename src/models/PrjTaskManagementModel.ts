@@ -112,7 +112,9 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     public get urgency(): number {
         return PrjTaskManagementModel.calculateUrgency(
-            this as PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+            this as unknown as PrjTaskManagementModel<
+                TaskData | TopicData | ProjectData
+            >,
         );
     }
 
