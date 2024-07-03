@@ -16,21 +16,6 @@ export default abstract class BaseData<T> {
     }
 
     /**
-     * Returns the metadata of the document as a string.
-     * Only properties marked with the {@link ToStringFieldSymbol|@toStringField} decorator will be included in the output.
-     * @returns A string containing the concatenated values of the marked properties.
-     */
-    public toString(): string {
-        const fields = (this.constructor as any)[ToStringFieldSymbol] as (
-            | string
-            | symbol
-        )[];
-        const dataFields = fields.map((field) => (this as any)[field] ?? '');
-
-        return dataFields.join(' ');
-    }
-
-    /**
      * Initializes a new instance of the BaseData class.
      * @param data The optional data to merge into the current instance.
      */
@@ -54,5 +39,20 @@ export default abstract class BaseData<T> {
                 (this as unknown as T)[key] = config.defaultValue;
             }
         }
+    }
+
+    /**
+     * Returns the metadata of the document as a string.
+     * Only properties marked with the {@link ToStringFieldSymbol|@toStringField} decorator will be included in the output.
+     * @returns A string containing the concatenated values of the marked properties.
+     */
+    public toString(): string {
+        const fields = (this.constructor as any)[ToStringFieldSymbol] as (
+            | string
+            | symbol
+        )[];
+        const dataFields = fields.map((field) => (this as any)[field] ?? '');
+
+        return dataFields.join(' ');
     }
 }
