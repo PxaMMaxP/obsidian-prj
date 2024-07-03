@@ -2,9 +2,6 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import TaskData from 'src/types/TaskData';
-import TopicData from 'src/types/TopicData';
-import ProjectData from 'src/types/ProjectData';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import Table, { Row, TableHeader } from '../Table';
 import Lng from 'src/classes/Lng';
@@ -20,6 +17,9 @@ import { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import ProjectData from 'src/models/Data/ProjectData';
+import TaskData from 'src/models/Data/TaskData';
+import TopicData from 'src/models/Data/TopicData';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<IPrjData & IPrjTaskManagement>

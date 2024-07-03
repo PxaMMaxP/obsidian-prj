@@ -1,15 +1,15 @@
 import { toStringField } from 'src/classes/ToStringFieldDecorator';
 import { fieldConfig } from 'src/classes/FieldConfigDecorator';
-import IPrjData from '../interfaces/IPrjData';
-import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 import BaseData from './BaseData';
+import IPrjData from 'src/interfaces/IPrjData';
+import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import {
+    FileSubType,
     Status,
     Priority,
     Energy,
-    FileSubType,
     HistoryEntries,
-} from './PrjTypes';
+} from 'src/types/PrjTypes';
 
 export default class TaskData
     extends BaseData<TaskData>

@@ -4,11 +4,11 @@ import { TFile } from 'obsidian';
 import { FileModel } from './FileModel';
 import IPrjModel from '../interfaces/IPrjModel';
 import Global from '../classes/Global';
-import NoteData from 'src/types/NoteData';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
 import Tags from 'src/libs/Tags';
+import NoteData from './Data/NoteData';
 
 export class NoteModel
     extends FileModel<NoteData>

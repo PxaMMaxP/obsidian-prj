@@ -1,8 +1,8 @@
 import { toStringField } from 'src/classes/ToStringFieldDecorator';
-import IPrjData from '../interfaces/IPrjData';
 import BaseData from './BaseData';
 import { fieldConfig } from 'src/classes/FieldConfigDecorator';
-import { FileType } from './PrjTypes';
+import IPrjData from 'src/interfaces/IPrjData';
+import { FileType } from 'src/types/PrjTypes';
 
 export default class NoteData extends BaseData<NoteData> implements IPrjData {
     @fieldConfig('Note')
