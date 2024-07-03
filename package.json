@@ -20,7 +20,8 @@
     "test": "jest --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
     "test:verbose": "jest --verbose --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
     "test:watch": "jest --watch --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
-    "test:all": "jest --verbose"
+    "test:all": "jest --verbose",
+    "test:coverage": "jest --config jest.config.coverage.js --coverage --testPathIgnorePatterns=\\.performance\\.test\\.ts$"
   },
   "keywords": [],
   "author": "",
@@ -48,6 +49,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "eslint-plugin-prettier": "^5.1.3",
+    "jest-environment-jsdom": "^29.7.0",
     "js-yaml": "^4.1.0",
     "remark": "^15.0.1",
     "remark-parse": "^11.0.0",
