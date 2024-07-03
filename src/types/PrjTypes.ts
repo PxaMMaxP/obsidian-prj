@@ -59,47 +59,6 @@ export default class PrjTypes {
     ];
 
     /**
-     * An array of valid file subtypes.
-     */
-    public static readonly fileSubTypes: FileSubType[] = [
-        null,
-        'Cluster',
-        'Kanban',
-    ];
-
-    /**
-     * An array of valid task statuses.
-     */
-    public static readonly statuses: Status[] = [
-        'Active',
-        'Waiting',
-        'Later',
-        'Someday',
-        'Done',
-    ];
-
-    /**
-     * An array of valid task priorities.
-     */
-    public static readonly priorities: Priority[] = [0, 1, 2, 3];
-
-    /**
-     * An array of valid task energy levels.
-     */
-    public static readonly energies: Energy[] = [0, 1, 2, 3];
-
-    /**
-     * An array of valid urgency symbols.
-     */
-    public static readonly urgencySymbols: UrgencySymbols[] = [
-        '🔴',
-        '🟠',
-        '🟡',
-        '🟢',
-        '🔵',
-    ];
-
-    /**
      * Checks if a given value is a valid file type.
      * @param fileType - The value to check.
      * @returns The valid file type or undefined if the value is not valid.
@@ -115,6 +74,15 @@ export default class PrjTypes {
 
         return undefined;
     }
+
+    /**
+     * An array of valid file subtypes.
+     */
+    public static readonly fileSubTypes: FileSubType[] = [
+        null,
+        'Cluster',
+        'Kanban',
+    ];
 
     /**
      * Checks if a given value is a valid file subtype.
@@ -134,6 +102,17 @@ export default class PrjTypes {
 
         return undefined;
     }
+
+    /**
+     * An array of valid task statuses.
+     */
+    public static readonly statuses: Status[] = [
+        'Active',
+        'Waiting',
+        'Later',
+        'Someday',
+        'Done',
+    ];
 
     /**
      * Checks if a given value is a valid task status.
@@ -176,6 +155,11 @@ export default class PrjTypes {
     }
 
     /**
+     * An array of valid task priorities.
+     */
+    public static readonly priorities: Priority[] = [0, 1, 2, 3];
+
+    /**
      * Checks if a given value is a valid task priority.
      * @param priority - The value to check.
      * @returns The valid task priority or undefined if the value is not valid.
@@ -193,6 +177,11 @@ export default class PrjTypes {
     }
 
     /**
+     * An array of valid task energy levels.
+     */
+    public static readonly energies: Energy[] = [0, 1, 2, 3];
+
+    /**
      * Checks if a given value is a valid task energy level.
      * @param energy - The value to check.
      * @returns The valid task energy level or undefined if the value is not valid.
@@ -208,6 +197,17 @@ export default class PrjTypes {
 
         return undefined;
     }
+
+    /**
+     * An array of valid urgency symbols.
+     */
+    public static readonly urgencySymbols: UrgencySymbols[] = [
+        '🔴',
+        '🟠',
+        '🟡',
+        '🟢',
+        '🔵',
+    ];
 
     /**
      * Checks if a given value is a valid urgency symbol.
