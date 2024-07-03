@@ -16,7 +16,7 @@ export default class Logging implements ILogger {
      */
     constructor(logLevel: LoggingLevel = 'info', logPrefix = '') {
         this._logLevel = logLevel;
-        this._logPrefix = `${logPrefix}-`;
+        this._logPrefix = logPrefix ? `${logPrefix}-` : '';
 
         if (this._logLevel === 'none') {
             // eslint-disable-next-line no-console
