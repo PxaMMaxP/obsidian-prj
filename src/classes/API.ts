@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /* eslint-disable @typescript-eslint/naming-convention */
 import Global from 'src/classes/Global';
 import Helper from 'src/libs/Helper';
