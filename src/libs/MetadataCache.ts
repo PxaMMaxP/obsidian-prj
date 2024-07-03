@@ -3,9 +3,11 @@
 import Logging from 'src/classes/Logging';
 import Global from '../classes/Global';
 import { App, CachedMetadata, TFile } from 'obsidian';
-import GenericEvents, { ICallback, IEvent } from './GenericEvents';
+import GenericEvents, { IEvent } from './GenericEvents';
 import PrjTypes from 'src/types/PrjTypes';
 import { PrjSettings } from 'src/types/PrjSettings';
+import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
 
 /**
  * FileMetadata interface
@@ -22,8 +24,8 @@ export class FileMetadata {
  * Singleton class for caching metadata
  * @description This class is used to cache metadata for all files in the vault. It is used to speed up processing of dataview queries.
  */
-export default class MetadataCache {
-    private _eventHandler: GenericEvents<MetadataCacheEvents>;
+export default class MetadataCache implements IMetadataCache {
+    private _eventHandler: GenericEvents<IMetadataCacheEvents>;
     private _app: App = Global.getInstance().app;
     private _settings: PrjSettings = Global.getInstance().settings;
     private logger = Logging.getLogger('MetadataCache');
@@ -81,7 +83,7 @@ export default class MetadataCache {
         this.renameEventHandler = this.renameEventHandler.bind(this);
         this.deleteEventHandler = this.deleteEventHandler.bind(this);
 
-        this._eventHandler = new GenericEvents<MetadataCacheEvents>(
+        this._eventHandler = new GenericEvents<IMetadataCacheEvents>(
             this.logger,
         );
 
@@ -205,13 +207,17 @@ export default class MetadataCache {
      * @param eventName The name of the event
      * @param listener The listener function. The listener function receives the file object as an argument.
      */
-    public on<K extends keyof MetadataCacheEvents['events']>(
+    public on<K extends keyof IMetadataCacheEvents['events']>(
         eventName: K,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listener: (
-            file: MetadataCacheEvents['events'][K]['data'],
+            file: IMetadataCacheEvents['events'][K]['data'],
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn>
+        ) => IMetadataCacheEvents['events'][K] extends IEvent<
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any,
+            infer TReturn
+        >
             ? TReturn
             : void,
     ): void {
@@ -224,13 +230,17 @@ export default class MetadataCache {
      * @param eventName The name of the event
      * @param listener The listener function.
      */
-    public off<K extends keyof MetadataCacheEvents['events']>(
+    public off<K extends keyof IMetadataCacheEvents['events']>(
         eventName: K,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listener: (
-            file: MetadataCacheEvents['events'][K]['data'],
+            file: IMetadataCacheEvents['events'][K]['data'],
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) => MetadataCacheEvents['events'][K] extends IEvent<any, infer TReturn>
+        ) => IMetadataCacheEvents['events'][K] extends IEvent<
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            any,
+            infer TReturn
+        >
             ? TReturn
             : void,
     ): void {
@@ -614,24 +624,4 @@ export default class MetadataCache {
             this.logger.debug('Metadata cache events registered');
         }
     }
-}
-
-interface MetadataCacheEvents extends ICallback {
-    events: {
-        'prj-task-management-changed-status-event': IEvent<
-            TFile,
-            undefined | void
-        >;
-        'prj-task-management-file-changed-event': IEvent<
-            TFile,
-            undefined | void
-        >;
-        'document-changed-metadata-event': IEvent<TFile, undefined | void>;
-        'changes-in-kanban-event': IEvent<TFile, undefined | void>;
-        'file-rename-event': IEvent<
-            { oldPath: string; newPath: string },
-            undefined | void
-        >;
-        // Add more events here
-    };
 }
