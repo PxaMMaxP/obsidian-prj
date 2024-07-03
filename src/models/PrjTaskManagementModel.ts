@@ -9,10 +9,13 @@ import ProjectData from 'src/types/ProjectData';
 import TopicData from 'src/types/TopicData';
 import { ILogger } from 'src/interfaces/ILogger';
 import Logging from 'src/classes/Logging';
-import Tags from 'src/libs/Tags';
 import Helper from 'src/libs/Helper';
 import Global from 'src/classes/Global';
 import { Path } from 'src/classes/Path';
+import { Tags } from 'src/libs/Tags/Tags';
+import { TagFactory } from 'src/libs/Tags/TagFactory';
+import { ITags } from 'src/libs/Tags/interfaces/ITags';
+import Tag from 'src/libs/Tags/Tag';
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     extends FileModel<T>
@@ -20,20 +23,12 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 {
     protected logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
 
-    get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
+    get tags(): Tags {
+        return new Tags(this.data.tags, this.metadataCache, new TagFactory());
     }
-    set tags(value: string[]) {
-        this.data.tags = value;
+
+    set tags(value: ITags | string | string[] | undefined | null) {
+        this.data.tags = new Tags(value, this.metadataCache, new TagFactory());
     }
 
     public get data(): Partial<T> {
@@ -186,8 +181,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
         const aliases =
             this.getAliases().length > 0
-                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  Tags.getTagElements(this.getAliases().first()!)
+                ? new Tag(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      this.getAliases().first()!,
+                      this.metadataCache,
+                  ).getElements()
                 : undefined;
 
         let filename: string;

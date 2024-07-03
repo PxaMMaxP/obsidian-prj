@@ -11,6 +11,11 @@ export interface ITag {
     readonly exists: boolean;
 
     /**
+     * Gets the tag.
+     */
+    get value(): string;
+
+    /**
      * Gets the tag with a hash symbol.
      * @returns The tag with a hash symbol.
      * @remarks The tag is prefixed with a hash symbol if it doesn't already have one.
@@ -81,4 +86,10 @@ export interface ITag {
      * @param position The position to start the search.
      */
     startsWith(searchString: string, position?: number): boolean;
+
+    /**
+     * Checks if the object is an instance of the ITags interface.
+     * @param obj The object to check.
+     */
+    isInstanceOfTag(obj: unknown): obj is ITag;
 }

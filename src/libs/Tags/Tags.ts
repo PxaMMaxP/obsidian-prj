@@ -79,7 +79,7 @@ export class Tags implements ITags {
      * @param logger The logger to use for logging messages.
      */
     constructor(
-        tags: string | string[] | undefined,
+        tags: ITags | string | string[] | undefined | null,
         metadataCache: IMetadataCache,
         tagFactory: ITagFactory,
         logger?: ILogger,
@@ -97,8 +97,12 @@ export class Tags implements ITags {
      * @param tag The tag or tags to add.
      * @returns Whether the tags were added.
      */
-    public add(tag: string | string[] | undefined): boolean {
-        if (typeof tag === 'string') {
+    public add(tag: ITags | string | string[] | undefined | null): boolean {
+        if (this.isInstanceOfTags(tag)) {
+            this.push(...tag.getAll());
+
+            return true;
+        } else if (typeof tag === 'string') {
             this.push(tag);
 
             return true;
@@ -185,6 +189,15 @@ export class Tags implements ITags {
     }
 
     /**
+     * Checks if at least one tag in the tags array satisfies the provided testing function.
+     * @param predicate The function to test each tag.
+     * @returns `true` if the predicate function returns a truthy value for at least one tag; otherwise, `false`.
+     */
+    public some(predicate: (tag: ITag) => boolean): boolean {
+        return this._tags.some(predicate);
+    }
+
+    /**
      * Returns an iterator for the TagsArray class.
      * @returns An iterator object that iterates over the tags in the array.
      */
@@ -262,5 +275,18 @@ export class Tags implements ITags {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the object is an instance of the ITags interface.
+     * @param obj The object to check.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public isInstanceOfTags(obj: any): obj is ITags {
+        return obj instanceof Tags;
+    }
+
+    public includes(tag: ITag): boolean {
+        return this._tags.some((existingTag) => existingTag.equals(tag));
     }
 }

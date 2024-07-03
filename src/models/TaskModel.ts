@@ -1,11 +1,12 @@
 import { TFile } from 'obsidian';
 import TaskData from 'src/types/TaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
-import Tags from 'src/libs/Tags';
 import { Status } from 'src/types/PrjTypes';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
+import { Tags } from 'src/libs/Tags/Tags';
+import { TagFactory } from 'src/libs/Tags/TagFactory';
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');
@@ -36,9 +37,13 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
         status?: (status: Status | undefined) => boolean,
     ): TaskModel[] {
         const filesWithSameTags = this.metadataCache.cache.filter((file) => {
-            const fileTags = Tags.getValidTags(
+            const fileTags = new Tags(
                 file.metadata?.frontmatter?.tags,
+                this.metadataCache,
+                new TagFactory(),
+                this.logger,
             );
+
             const thisTags = this.tags;
 
             return (

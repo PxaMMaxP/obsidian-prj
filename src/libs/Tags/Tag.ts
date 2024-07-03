@@ -9,28 +9,32 @@ export default class Tag implements ITag {
     private _tag: string;
 
     /**
+     * Sets the tag.
+     * @param value The value of the tag.
+     * @remarks If the tag is prefixed with a hash symbol, the symbol is removed.
+     */
+    private set value(value: string) {
+        this._tag = value.startsWith('#') ? value.slice(1) : value;
+    }
+
+    /**
+     * Gets the tag.
+     */
+    public get value(): string {
+        return this._tag;
+    }
+
+    /**
      * The metadata cache.
      */
     private _metadataCache: IMetadataCache;
 
     /**
-     * The tag with a hash symbol.
-     */
-    private _tagWithHash: string | undefined = undefined;
-
-    /**
      * Gets the tag with a hash symbol.
-     * @returns The tag with a hash symbol.
-     * @remarks The tag is prefixed with a hash symbol if it doesn't already have one.
+     * @returns The tag prefixed with a hash symbol.
      */
     public get tagWithHash(): string {
-        if (!this._tagWithHash) {
-            this._tagWithHash = this._tag.startsWith('#')
-                ? this._tag
-                : `#${this._tag}`;
-        }
-
-        return this._tagWithHash;
+        return `#${this._tag}`;
     }
 
     /**
@@ -69,7 +73,7 @@ export default class Tag implements ITag {
      * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
      */
     constructor(value: string, metadataCache: IMetadataCache) {
-        this._tag = value;
+        this.value = value;
 
         this._metadataCache = metadataCache;
     }
@@ -79,7 +83,7 @@ export default class Tag implements ITag {
      * @returns The value of the tag as an uppercase string.
      */
     public toUpperCase(): string {
-        return this._tag.toUpperCase();
+        return this.value.toUpperCase();
     }
 
     /**
@@ -87,7 +91,7 @@ export default class Tag implements ITag {
      * @returns The value of the tag as a lowercase string.
      */
     public toLowerCase(): string {
-        return this._tag.toLowerCase();
+        return this.value.toLowerCase();
     }
 
     /**
@@ -96,7 +100,7 @@ export default class Tag implements ITag {
      * @returns The character at the specified index.
      */
     public charAt(index: number): string {
-        return this._tag.charAt(index);
+        return this.value.charAt(index);
     }
 
     /**
@@ -105,7 +109,7 @@ export default class Tag implements ITag {
      * @returns Whether the tag includes the specified substring.
      */
     public includes(substring: string): boolean {
-        return this._tag.includes(substring);
+        return this.value.includes(substring);
     }
 
     /**
@@ -114,7 +118,7 @@ export default class Tag implements ITag {
      * @remarks The elements are separated by a forward slash.
      */
     public getElements(): string[] {
-        return this._tag.split('/');
+        return this.value.split('/');
     }
 
     /**
@@ -138,7 +142,7 @@ export default class Tag implements ITag {
      * @returns The primitive string value of the tag.
      */
     public valueOf(): string {
-        return this._tag;
+        return this.value;
     }
 
     /**
@@ -146,7 +150,7 @@ export default class Tag implements ITag {
      * @returns The string representation of the tag.
      */
     public toString(): string {
-        return this._tag;
+        return this.value;
     }
 
     /**
@@ -155,7 +159,7 @@ export default class Tag implements ITag {
      * @returns Whether the tags are equal.
      */
     public equals(other: ITag): boolean {
-        return this._tag === other.toString();
+        return this.value === other.toString();
     }
 
     /**
@@ -164,6 +168,14 @@ export default class Tag implements ITag {
      * @param position The position to start the search.
      */
     startsWith(searchString: string, position?: number): boolean {
-        return this._tag.startsWith(searchString, position);
+        return this.value.startsWith(searchString, position);
+    }
+
+    /**
+     * Checks if the object is an instance of the ITag interface.
+     * @param obj The object to check.
+     */
+    public isInstanceOfTag(obj: unknown): obj is ITag {
+        return obj instanceof Tag;
     }
 }

@@ -1,4 +1,6 @@
 import { TFile } from 'obsidian';
+import { ITags } from 'src/libs/Tags/interfaces/ITags';
+import { Tags } from 'src/libs/Tags/Tags';
 
 export default interface IPrjModel<T> {
     get data(): Partial<T>;
@@ -7,8 +9,8 @@ export default interface IPrjModel<T> {
     get file(): TFile;
     set file(value: TFile);
 
-    get tags(): string[];
-    set tags(value: string[]);
+    get tags(): Tags;
+    set tags(value: ITags | string | string[] | undefined | null);
 
     toString(): string;
 }

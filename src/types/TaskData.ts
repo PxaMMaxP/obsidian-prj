@@ -9,6 +9,9 @@ import {
     FileSubType,
     HistoryEntries,
 } from './PrjTypes';
+import { Tags } from 'src/libs/Tags/Tags';
+import Global from 'src/classes/Global';
+import { TagFactory } from 'src/libs/Tags/TagFactory';
 
 export default class TaskData
     extends BaseData
@@ -35,7 +38,7 @@ export default class TaskData
     due: string | null | undefined;
 
     @toStringField
-    tags: string[] | string | null | undefined;
+    tags: Tags | string[] | string | null | undefined;
 
     history: HistoryEntries | null | undefined;
 
@@ -61,7 +64,21 @@ export default class TaskData
         this.priority = data.priority !== undefined ? data.priority : undefined;
         this.energy = data.energy !== undefined ? data.energy : undefined;
         this.due = data.due !== undefined ? data.due : undefined;
-        this.tags = data.tags !== undefined ? data.tags : undefined;
+
+        if (data.tags !== undefined && data.tags !== null) {
+            if (data.tags instanceof Tags) {
+                this.tags = data.tags;
+            } else {
+                this.tags = new Tags(
+                    data.tags,
+                    Global.getInstance().metadataCache,
+                    new TagFactory(),
+                );
+            }
+        } else {
+            this.tags = undefined;
+        }
+
         this.type = data.type !== undefined ? data.type : 'Task';
         this.subType = data.subType !== undefined ? data.subType : undefined;
         this.history = data.history !== undefined ? data.history : undefined;

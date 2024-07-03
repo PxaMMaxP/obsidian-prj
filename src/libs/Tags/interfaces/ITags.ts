@@ -1,5 +1,6 @@
 import { TFile } from 'obsidian';
 import { TagTree } from 'src/types/TagTree';
+import { ITag } from './ITag';
 
 export interface ITags {
     /**
@@ -49,6 +50,13 @@ export interface ITags {
     get length(): number;
 
     /**
+     * Checks if at least one tag in the tags array satisfies the provided testing function.
+     * @param predicate The function to test each tag.
+     * @returns `true` if the predicate function returns a truthy value for at least one tag; otherwise, `false`.
+     */
+    some(predicate: (tag: ITag) => boolean): boolean;
+
+    /**
      * Returns an iterator for the TagsArray class.
      * @returns An iterator object that iterates over the tags in the array.
      */
@@ -67,4 +75,18 @@ export interface ITags {
      * @returns Whether the tags were loaded.
      */
     loadTagsFromFile(file: TFile | undefined): boolean;
+
+    /**
+     * Checks if the object is an instance of the ITags interface.
+     * @param obj The object to check.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isInstanceOfTags(obj: any): obj is ITags;
+
+    /**
+     * Checks if the tag includes the specified tag.
+     * @param tag The tag to search for.
+     * @returns Whether the tag includes the specified tag.
+     */
+    includes(tag: ITag): boolean;
 }
