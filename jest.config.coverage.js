@@ -10,7 +10,8 @@ module.exports = {
     coverageReporters: ['text', 'lcov'],
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',
-        '!src/**/*.d.ts'
+        '!src/**/*.d.ts',
+        '!src/**/*.performance.test.ts'
     ],
     coverageThreshold: {
         global: {
