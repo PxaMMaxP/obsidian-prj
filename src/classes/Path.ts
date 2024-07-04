@@ -6,7 +6,7 @@ export class Path {
      * @returns The combined path
      * @remarks This function is used because Node.js's 'path' module is not available in Obsidian Mobile.
      */
-    static join(...paths: string[]): string {
+    public static join(...paths: string[]): string {
         return paths
             .map((part, index) => {
                 // Replaces all backslashes with slashes
@@ -22,5 +22,21 @@ export class Path {
             .filter((part) => part.length > 0) // Removes empty parts
             .join('/') // Joins the parts using a slash as a separator
             .replace(/\/{2,}/g, '/'); // Removes double slashes
+    }
+
+    /**
+     * Sanitizes a filename by removing any characters that are not
+     * - alphanumeric,
+     * - hyphen,
+     * - underscore,
+     * - period,
+     * - space
+     * - or umlauts.
+     *
+     * @param filename - The filename to sanitize.
+     * @returns The sanitized filename.
+     */
+    public static sanitizeFilename(filename: string): string {
+        return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß§]/g, '');
     }
 }

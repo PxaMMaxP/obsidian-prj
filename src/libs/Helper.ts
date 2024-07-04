@@ -1,3 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Tag from 'src/libs/Tags/Tag';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Path } from 'src/classes/Path';
 import { FrontMatterCache, TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
@@ -339,7 +343,13 @@ export default class Helper {
         return activeFile;
     }
 
-    // Generate a random string
+    /**
+     * Generates a random string of the specified length.
+     * @param length The length of the random string to generate.
+     * @returns The generated random string.
+     * @remarks The random string consists of uppercase and lowercase letters and digits.
+     * @deprecated This method will be removed in a future release.
+     */
     static generateRandomString(length: number): string {
         const characters =
             'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -353,6 +363,12 @@ export default class Helper {
         return result;
     }
 
+    /**
+     * Checks if the given tag exists in the metadata cache
+     * @param tag The tag to check
+     * @returns Whether the tag exists in the metadata cache
+     * @deprecated Use {@link Tag.exists} instead.
+     */
     static existTag(tag: string): boolean {
         const metadataCache = Global.getInstance().metadataCache.cache;
 
@@ -388,6 +404,7 @@ export default class Helper {
      *
      * @param filename - The filename to sanitize.
      * @returns The sanitized filename.
+     * @deprecated Use {@link Path.sanitizeFilename} instead.
      */
     static sanitizeFilename(filename: string): string {
         return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß§]/g, '');
