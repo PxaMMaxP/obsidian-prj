@@ -1,8 +1,29 @@
-import Translations from '../translations/translations.json';
-import Global from './Global';
-import Logging from './Logging';
+/* istanbul ignore file */
 
+import { Translations } from 'src/translations/Translations';
+import ITranslationService from '../libs/TranslationService/interfaces/ITranslationService';
+import { TranslationService } from '../libs/TranslationService/TranslationService';
+import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
+
+/**
+ * Wrapper class for the translation service to provide a compatibility layer eg. an In-Place-Replacement.
+ */
 export default class Lng {
+    private static _instance: ITranslationService | undefined;
+
+    private static get instance(): ITranslationService {
+        if (!Lng._instance) {
+            Lng._instance = new TranslationService(
+                Translations,
+                Global.getInstance().settings,
+                Logging.getLogger('Lng'),
+            );
+        }
+
+        return Lng._instance;
+    }
+
     /**
      * Returns a translation for the given key.
      * @param key The key to translate.
@@ -11,19 +32,7 @@ export default class Lng {
      * - Look at the `translations.json` file to see all available translations.
      */
     public static gt(key: string): string {
-        const logger = Logging.getLogger('Lng');
-        const lang = Global.getInstance().settings.language;
-        const translation = Translations as Translations;
-        const language = translation.find((v) => v.lang === lang);
-
-        if (language) {
-            if (language.translations.hasOwnProperty(key)) {
-                return language.translations[key] as string;
-            }
-        }
-        logger.warn(`Translation for key ${key} not found`);
-
-        return key;
+        return Lng.instance.get(key);
     }
 
     /**
@@ -34,25 +43,6 @@ export default class Lng {
      * - Look at the `translations.json` file to see all available translations.
      */
     public static gtAll(key: string): string[] {
-        const logger = Logging.getLogger('Lng');
-        const translations = Translations as Translations;
-        const translationStrings: string[] = [];
-
-        for (const language of translations) {
-            if (language.translations.hasOwnProperty(key)) {
-                translationStrings.push(language.translations[key]);
-            } else {
-                logger.warn(`Translation for key ${key} not found`);
-                translationStrings.push(key);
-            }
-        }
-
-        return translationStrings;
+        return Lng.instance.getAll(key);
     }
 }
-
-interface LanguageTranslations {
-    lang: string;
-    translations: Record<string, string>;
-}
-type Translations = LanguageTranslations[];
