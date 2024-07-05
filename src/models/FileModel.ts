@@ -84,7 +84,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         yamlKeyMap: YamlKeyMap | undefined,
         logger?: ILogger,
     ) {
-        super(undefined);
+        super(undefined, Logging.getLogger('TransactionModel'));
 
         this.logger = logger ?? Logging.getLogger('FileModel');
 
@@ -238,6 +238,10 @@ export class FileModel<T extends object> extends TransactionModel<T> {
 
         const proxy = new Proxy(obj, {
             get: (target, property, receiver) => {
+                if (property.toString().startsWith('_')) {
+                    return Reflect.get(target, property, receiver);
+                }
+
                 const propertyKey = this.getPropertyKey(property);
                 const value = Reflect.get(target, property, receiver);
 
@@ -252,6 +256,10 @@ export class FileModel<T extends object> extends TransactionModel<T> {
                 return value;
             },
             set: (target, property, value, receiver) => {
+                if (property.toString().startsWith('_')) {
+                    return Reflect.set(target, property, value, receiver);
+                }
+
                 const propertyKey = this.getPropertyKey(property);
 
                 const newPath = path
