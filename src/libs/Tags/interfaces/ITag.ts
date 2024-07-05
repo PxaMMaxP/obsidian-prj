@@ -1,12 +1,25 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
+
+/**
+ * Represents a ITag dependencie container.
+ */
+export interface ITagDependencies {
+    metadataCache: IMetadataCache;
+}
+
+/**
+ * Represents a tag constructor.
+ */
+export type TagConstructorType = typeof BaseTypeChecker & ITagConstructor;
 
 /**
  * Represents a tag constructor.
  */
 export interface ITagConstructor {
-    new (value: string, metadataCache: IMetadataCache): ITag;
+    new (value: string, dependencies: ITagDependencies): ITag;
 }
 
 /**

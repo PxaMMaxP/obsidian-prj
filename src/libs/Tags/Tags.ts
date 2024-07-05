@@ -3,7 +3,7 @@ import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './interfaces/ITag';
-import { ITags } from './interfaces/ITags';
+import { ITags, ITagsDependencies } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
 
 /**
@@ -12,7 +12,7 @@ import { TagTree } from './types/TagTree';
  * - The class also provides a method to convert all tags to a string.
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
-export class Tags extends BaseTypeChecker implements ITags {
+export default class Tags extends BaseTypeChecker implements ITags {
     /**
      * The dependency injection token for the `ITag` interface.
      */
@@ -89,14 +89,12 @@ export class Tags extends BaseTypeChecker implements ITags {
      */
     constructor(
         tags: ITags | ITag | string | string[] | undefined | null,
-        metadataCache: IMetadataCache,
-        tagClass: typeof BaseTypeChecker & ITagConstructor,
-        logger?: ILogger,
+        dependencies: ITagsDependencies,
     ) {
         super();
-        this._metadataCache = metadataCache;
-        this._tagClass = tagClass;
-        this.logger = logger;
+        this._metadataCache = dependencies.metadataCache;
+        this._tagClass = dependencies.tagClass;
+        this.logger = dependencies.logger;
         this._tags = [];
 
         this.add(tags);
@@ -108,10 +106,9 @@ export class Tags extends BaseTypeChecker implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return new (this._tagClass as ITagConstructor)(
-            tagValue,
-            this._metadataCache,
-        );
+        return new (this._tagClass as ITagConstructor)(tagValue, {
+            metadataCache: this._metadataCache,
+        });
     }
 
     /**

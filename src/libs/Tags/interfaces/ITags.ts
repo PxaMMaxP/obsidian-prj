@@ -5,12 +5,27 @@ import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './ITag';
 import { TagTree } from '../types/TagTree';
 
+/**
+ * Represents a ITags dependencie container.
+ */
+export interface ITagsDependencies {
+    metadataCache: IMetadataCache;
+    tagClass: typeof BaseTypeChecker & ITagConstructor;
+    logger?: ILogger;
+}
+
+/**
+ * Represents a tags constructor.
+ */
+export type TagsConstructorType = typeof BaseTypeChecker & ITagsConstructor;
+
+/**
+ * Represents a tags constructor.
+ */
 export interface ITagsConstructor {
     new (
         tags: ITags | ITag | string | string[] | undefined | null,
-        metadataCache: IMetadataCache,
-        tagClass: typeof BaseTypeChecker & ITagConstructor,
-        logger?: ILogger,
+        dependencies: ITagsDependencies,
     ): ITags;
 }
 

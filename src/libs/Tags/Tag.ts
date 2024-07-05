@@ -1,6 +1,6 @@
 import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag } from './interfaces/ITag';
+import { ITag, ITagDependencies } from './interfaces/ITag';
 
 /**
  * Represents a tag.
@@ -15,7 +15,7 @@ export default class Tag extends BaseTypeChecker implements ITag {
      * @remarks If the tag is prefixed with a hash symbol, the symbol is removed.
      */
     private set value(value: string) {
-        this._tag = value.startsWith('#') ? value.slice(1) : value;
+        this._tag = value?.startsWith('#') ? value.slice(1) : value || '';
     }
 
     /**
@@ -73,12 +73,12 @@ export default class Tag extends BaseTypeChecker implements ITag {
      * @param value The value of the tag.
      * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
      */
-    constructor(value: string, metadataCache: IMetadataCache) {
+    constructor(value: string, dependencies: ITagDependencies) {
         super();
 
         this.value = value;
 
-        this._metadataCache = metadataCache;
+        this._metadataCache = dependencies.metadataCache;
     }
 
     /**
