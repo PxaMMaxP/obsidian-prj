@@ -320,4 +320,25 @@ describe('Tags', () => {
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(mockLogger.warn).toHaveBeenCalledWith('No file provided.');
     });
+
+    // Test `first()` and `last()` methods
+    test('should return the first tag', () => {
+        const tagsArray = new Tags(['tag1', 'tag2'], dependencies);
+        expect(tagsArray.first()?.toString()).toBe('tag1');
+    });
+
+    test('should return undefined as first tag', () => {
+        const tagsArray = new Tags(undefined, dependencies);
+        expect(tagsArray.first()).toBe(undefined);
+    });
+
+    test('should return the last tag', () => {
+        const tagsArray = new Tags(['tag1', 'tag2'], dependencies);
+        expect(tagsArray.last()?.toString()).toBe('tag2');
+    });
+
+    test('should return undefined as last tag', () => {
+        const tagsArray = new Tags(undefined, dependencies);
+        expect(tagsArray.last()).toBe(undefined);
+    });
 });

@@ -263,6 +263,22 @@ export default class Tags extends BaseTypeChecker implements ITags {
     }
 
     /**
+     * Returns the first tag in the tags array.
+     * @returns The first tag in the tags array or `undefined` if the tags array is empty.
+     */
+    public first(): ITag | undefined {
+        return this._tags[0] ?? undefined;
+    }
+
+    /**
+     * Returns the last tag in the tags array.
+     * @returns The last tag in the tags array or `undefined` if the tags array is empty.
+     */
+    public last(): ITag | undefined {
+        return this._tags[this._tags.length - 1] ?? undefined;
+    }
+
+    /**
      * Creates a tag tree from an array of tags.
      * @returns The tag tree.
      */
