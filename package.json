@@ -20,7 +20,7 @@
     "test": "jest --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
     "test:verbose": "jest --verbose --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
     "test:watch": "jest --watch --onlyChanged --verbose --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
-    "test:all": "jest --verbose",
+    "test:performance": "jest --config jest.config.performance.js --runInBand --verbose",
     "test:coverage": "jest --config jest.config.coverage.js --coverage --testPathIgnorePatterns=\\.performance\\.test\\.ts$"
   },
   "keywords": [],
