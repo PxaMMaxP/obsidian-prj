@@ -1,6 +1,6 @@
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
-import Tag from 'src/libs/Tags/Tag';
+import NewTag from 'src/libs/Tags/Tag';
 import { TagTree } from './Tags/types/TagTree';
 
 /**
@@ -168,7 +168,7 @@ export default class Tags {
      * Returns an array of tag elements extracted from the given tag string.
      * @param tag - The tag string to extract tag elements from.
      * @returns An array of tag elements.
-     * @deprecated Use {@link Tag.getElements} instead.
+     * @deprecated Use {@link NewTag.getElements|Tag.getElements} instead.
      */
     static getTagElements(tag: string) {
         if (!tag || typeof tag !== 'string') return [];
