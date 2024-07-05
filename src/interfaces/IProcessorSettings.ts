@@ -4,7 +4,6 @@ import {
     MarkdownPostProcessorContext,
 } from 'obsidian';
 import { IProcessorOptions } from 'src/interfaces/IProcessorOptions';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 
 /**

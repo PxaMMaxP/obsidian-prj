@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { App, TFile } from 'obsidian';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';

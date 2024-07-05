@@ -6,7 +6,8 @@
       "@typescript-eslint",
       "deprecation",
       "prettier",
-      "import"
+      "import",
+      "jsdoc"
     ],
     "extends": [
       "eslint:recommended",
@@ -117,6 +118,13 @@
           "order": "asc",
           "caseInsensitive": true
         }
+      }
+    ],
+    "jsdoc/no-undefined-types": [
+      "warn",
+      {
+        "disableReporting": true,
+        "markVariablesAsUsed": true
       }
     ]
     } 

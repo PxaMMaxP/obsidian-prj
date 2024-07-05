@@ -3,7 +3,6 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import Helper from 'src/libs/Helper';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { FileType, Status, UrgencySymbols } from 'src/types/PrjTypes';
 

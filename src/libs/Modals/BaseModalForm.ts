@@ -1,7 +1,6 @@
 import { App, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Tags from 'src/libs/Tags';
 import {
     FormConfiguration,

@@ -1,6 +1,5 @@
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Tag from 'src/libs/Tags/Tag';
 import { TagTree } from './Tags/types/TagTree';
 
