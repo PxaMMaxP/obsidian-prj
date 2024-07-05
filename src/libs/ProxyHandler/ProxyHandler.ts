@@ -105,6 +105,13 @@ export default class ProxyHandler<T extends object> {
         const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
 
         if (value && typeof value === 'object') {
+            // Check if value is already a proxy
+            const existingProxy = this._proxyMap.get(value);
+
+            if (existingProxy) {
+                return existingProxy;
+            }
+
             return this.createProxy(value as Partial<T>, newPath);
         }
 
@@ -130,7 +137,11 @@ export default class ProxyHandler<T extends object> {
         path: string,
     ): boolean {
         if (this.isPrivate(property)) {
-            return Reflect.set(target, property, value, receiver);
+            target[property as keyof Partial<T>] = value as
+                | T[keyof T]
+                | undefined;
+
+            return true;
         }
 
         const propertyKey = this.getPropertyKey(property);
@@ -138,20 +149,11 @@ export default class ProxyHandler<T extends object> {
         const resolvedValue = this.resolveProxyValue(value);
 
         try {
-            const result = Reflect.set(
-                target,
-                property,
-                resolvedValue,
-                receiver,
-            );
+            target[property as keyof Partial<T>] = resolvedValue as
+                | T[keyof T]
+                | undefined;
 
-            if (!result) {
-                throw new TypeError(
-                    `Failed to set property ${propertyKey} on path ${newPath}`,
-                );
-            }
-
-            const updatedValue = Reflect.get(target, property, receiver);
+            const updatedValue = target[property as keyof Partial<T>];
             this.updateKeyValue(newPath, updatedValue);
 
             return true;
@@ -221,13 +223,11 @@ export default class ProxyHandler<T extends object> {
         if (Array.isArray(value)) {
             return value.map((item) => this.resolveProxyValue(item));
         } else if (value && typeof value === 'object') {
-            return Object.fromEntries(
-                Reflect.ownKeys(value).map((key) => [
-                    key,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    this.resolveProxyValue((value as any)[key]),
-                ]),
+            const entries = Object.entries(value as object).map(
+                ([key, val]) => [key, this.resolveProxyValue(val)],
             );
+
+            return Object.fromEntries(entries);
         }
 
         return value;

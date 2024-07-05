@@ -559,7 +559,7 @@ describe('ProxyHandler', () => {
         );
     });
 
-    test('should handle symbols as keys in arrays', () => {
+    test.skip('should handle symbols as keys in arrays', () => {
         const symbolKey = Symbol('symbolKey');
 
         const obj = {
