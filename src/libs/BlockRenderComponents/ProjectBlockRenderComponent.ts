@@ -319,7 +319,12 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        GeneralComponents.createCellTags(tags, this.component, model.getTags());
+
+        GeneralComponents.createCellTags(
+            tags,
+            this.component,
+            model.data.tags?.toStringArray() ?? [],
+        );
 
         const hide = this.getHideState(model, this.settings.maxDocuments);
 
@@ -432,14 +437,14 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         if (this.settings.reactOnActiveFile) {
             return !Helper.isTagIncluded(
                 this.settings.tags,
-                document.getTags(),
+                document.data.tags?.toStringArray() ?? [],
             );
         } else if (this.settings.filter.includes('DeepHierarchy')) {
             return false;
         } else {
             return !Helper.isTagDirectlyBelow(
                 this.settings.tags,
-                document.getTags(),
+                document.data.tags?.toStringArray() ?? [],
             );
         }
     }
