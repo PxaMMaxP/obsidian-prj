@@ -7,6 +7,7 @@ import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileCache from 'src/libs/FileCache';
 import FileManager, { Filename } from 'src/libs/FileManager';
+import Tags from 'src/libs/Tags/Tags';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -21,20 +22,20 @@ export class DocumentModel
     private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
+    /**
+     * The tags of the document.
+     * @deprecated Use the `data.tags` property instead.
+     */
     get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
+        return this.data.tags?.toStringArray() ?? [];
     }
+
+    /**
+     * The tags of the document.
+     * @deprecated Use the `data.tags` property instead.
+     */
     set tags(value: string[]) {
-        this.data.tags = value;
+        this.data.tags = value as unknown as Tags;
     }
 
     public get data(): Partial<DocumentData> {
@@ -213,6 +214,7 @@ export class DocumentModel
     /**
      * Returns the tags of the document as an array of strings
      * @returns Array of strings containing the tags
+     * @deprecated Use `data.tags` instead.
      */
     public getTags(): string[] {
         const tags = this.data.tags;
@@ -439,47 +441,35 @@ export class DocumentModel
         let tagFolder: string | undefined = undefined;
         let specialTagFolder: string | undefined = undefined;
 
-        if (Array.isArray(document.data.tags)) {
-            // Tag Folder
-            // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
-            const foundTag = document.data.tags.find((tag) =>
-                settings.documentSettings.customTagFolders.some(
-                    (folder) => folder.tag === tag,
-                ),
-            );
+        const tagArray = document.data.tags?.toStringArray() ?? [];
 
-            if (foundTag) {
-                tagFolder = settings.documentSettings.customTagFolders.find(
-                    (folder) => folder.tag === foundTag,
-                )?.folder;
-            }
+        // Tag Folder
+        // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
+        const foundTag = tagArray.find((tag) =>
+            settings.documentSettings.customTagFolders.some(
+                (folder) => folder.tag === tag,
+            ),
+        );
 
-            // Special Tag Folder
-            // `document.data.tags` is an Array, search for the first tag that matches a special tag folder
-            const foundSpecialTag = document.data.tags.find((tag) =>
-                settings.documentSettings.specialPdfFolders.some(
-                    (folder) => folder.tag === tag,
-                ),
-            );
-
-            if (foundSpecialTag) {
-                specialTagFolder =
-                    settings.documentSettings.specialPdfFolders.find(
-                        (folder) => folder.tag === foundSpecialTag,
-                    )?.folder;
-            }
-        } else if (document.data.tags) {
-            // `document.data.tags` is a string, search for the custom tag folder
+        if (foundTag) {
             tagFolder = settings.documentSettings.customTagFolders.find(
-                (folder) => folder.tag === document.data.tags,
-            )?.folder;
-
-            // `document.data.tags` is a string, search for the special tag folder
-            specialTagFolder = settings.documentSettings.specialPdfFolders.find(
-                (folder) => folder.tag === document.data.tags,
+                (folder) => folder.tag === foundTag,
             )?.folder;
         }
-        // If no tag folder was found, use the default folder
+
+        // Special Tag Folder
+        // `document.data.tags` is an Array, search for the first tag that matches a special tag folder
+        const foundSpecialTag = tagArray.find((tag) =>
+            settings.documentSettings.specialPdfFolders.some(
+                (folder) => folder.tag === tag,
+            ),
+        );
+
+        if (foundSpecialTag) {
+            specialTagFolder = settings.documentSettings.specialPdfFolders.find(
+                (folder) => folder.tag === foundSpecialTag,
+            )?.folder;
+        }
 
         let defaultPdfFolder = documentDate
             ? settings.documentSettings.pdfFolder

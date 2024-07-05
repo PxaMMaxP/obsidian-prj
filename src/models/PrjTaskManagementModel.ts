@@ -4,7 +4,8 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags';
+import { TagDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
+import Tag from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
 import ProjectData from './Data/ProjectData';
 import TaskData from './Data/TaskData';
@@ -20,18 +21,18 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 {
     protected logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
 
+    /**
+     * The tags of the model.
+     * @deprecated Use the `data.tags` property instead.
+     */
     get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
+        return this.data.tags?.toStringArray() ?? [];
     }
+
+    /**
+     * The tags of the model.
+     * @deprecated Use the `data.tags` property instead.
+     */
     set tags(value: string[]) {
         this.data.tags = value;
     }
@@ -145,6 +146,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     /**
      * Returns the tags of the model as an array of strings
      * @returns Array of strings containing the tags
+     * @deprecated Use `data.tags` instead.
      */
     public getTags(): string[] {
         const tags = this.data.tags;
@@ -188,8 +190,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
         const aliases =
             this.getAliases().length > 0
-                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  Tags.getTagElements(this.getAliases().first()!)
+                ? new Tag(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      this.getAliases().first()!,
+                      TagDefaultDependencies,
+                  ).getElements()
                 : undefined;
 
         let filename: string;

@@ -5,7 +5,7 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags';
+import Tags from 'src/libs/Tags/Tags';
 import NoteData from './Data/NoteData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -30,7 +30,7 @@ export class NoteModel
         return formattedTags;
     }
     set tags(value: string[]) {
-        this.data.tags = value;
+        this.data.tags = value as unknown as Tags;
     }
 
     public get data(): Partial<NoteData> {
@@ -109,12 +109,10 @@ export class NoteModel
         }
 
         if (model.data.tags) {
-            const tags = Tags.getValidTags(model.data.tags);
-            const firstTag = tags.first();
+            const firstTag = model.data.tags.first();
 
             if (firstTag && firstTag !== undefined) {
-                const seperateTags = Tags.getTagElements(firstTag);
-                const lastTagElement = seperateTags.last();
+                const lastTagElement = firstTag.getElements().last();
                 lastTagElement && newFileName.push(lastTagElement);
             }
         }
