@@ -11,7 +11,9 @@ import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import Tags from '../Tags';
+import { TagDefaultDependencies } from '../Tags/DefaultDependencies';
+import Tag from '../Tags/Tag';
+import Tags from '../Tags/Tags';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {
@@ -22,9 +24,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewTaskManagementModal' form");
 
-        // Get active file to extract tags
-        const activeFile = Helper.getActiveFile();
-        const tags: string[] = Tags.getTagsFromFile(activeFile);
+        const tags: string[] = this.getTagsFromActiveFile();
 
         const form = this.constructForm();
 
@@ -122,7 +122,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             base: undefined as string | undefined,
             tag: undefined as string | undefined,
             postfix: undefined as number | undefined,
-            get fullTag() {
+            get fullTag(): string {
                 return this.tag + (this.postfix ? this.postfix : '');
             },
         };
@@ -140,7 +140,10 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                         `${baseTag}/${tag}` + (acronym ? `/${acronym}` : '');
                 }
 
-                while (acronym && Helper.existTag(mainTag.fullTag)) {
+                while (
+                    acronym &&
+                    new Tag(mainTag.fullTag, TagDefaultDependencies).exists
+                ) {
                     if (!mainTag.postfix) {
                         mainTag.postfix = 0;
                     }
@@ -171,7 +174,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         model.data.energy = PrjTypes.isValidEnergy(result.data.energy);
         model.data.due = (result.data.dueDate as string) ?? undefined;
 
-        model.data.tags = result.data.tags as string[];
+        model.data.tags = result.data.tags as unknown as Tags;
 
         model.data.aliases = [`#${mainTag.fullTag}`];
 
