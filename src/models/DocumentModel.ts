@@ -11,6 +11,7 @@ import Lng from 'src/classes/Lng';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import FileCache from 'src/libs/FileCache';
 import DocumentData from './Data/DocumentData';
+import { Path } from 'src/classes/Path';
 
 export class DocumentModel
     extends FileModel<DocumentData>
@@ -310,7 +311,7 @@ export class DocumentModel
             newFileName.push(`${model.getUID()}`);
         }
 
-        return Helper.sanitizeFilename(newFileName.join(' - '));
+        return Path.sanitizeFilename(newFileName.join(' - '));
     }
 
     /**

@@ -2,7 +2,6 @@ import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import Helper from './Helper';
 import { ILogger } from 'src/interfaces/ILogger';
 
 /**
@@ -56,7 +55,7 @@ export default class FileManager {
 
         const movePath = Path.join(
             file.parent.path,
-            Helper.sanitizeFilename(newFilename.filename),
+            Path.sanitizeFilename(newFilename.filename),
         );
 
         return await this.moveRenameFile(file, movePath, newFilename, logger);
@@ -97,7 +96,7 @@ export default class FileManager {
 
         const movePath = Path.join(
             path,
-            Helper.sanitizeFilename(newFilename.filename),
+            Path.sanitizeFilename(newFilename.filename),
         );
 
         return await this.moveRenameFile(file, movePath, newFilename, logger);
@@ -169,7 +168,7 @@ export default class FileManager {
 
         const filePath = Path.join(
             path,
-            Helper.sanitizeFilename(newFilename.filename),
+            Path.sanitizeFilename(newFilename.filename),
         );
 
         try {

@@ -208,7 +208,7 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         }
 
         if (this.file.parent?.path) {
-            const newFileName = Helper.sanitizeFilename(filename);
+            const newFileName = Path.sanitizeFilename(filename);
 
             this.logger.debug(
                 `New filename for ${this.file.path}: ${newFileName}`,

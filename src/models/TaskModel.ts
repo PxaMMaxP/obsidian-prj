@@ -6,6 +6,7 @@ import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
 import TaskData from './Data/TaskData';
+import { Path } from 'src/classes/Path';
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');
@@ -81,7 +82,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
             this.global.settings.dateFormat,
         );
 
-        const newFileName = Helper.sanitizeFilename(
+        const newFileName = Path.sanitizeFilename(
             `${date} - ${automaticFilename}`,
         );
 

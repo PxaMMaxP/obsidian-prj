@@ -9,6 +9,7 @@ import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
 import Tags from 'src/libs/Tags';
 import NoteData from './Data/NoteData';
+import { Path } from 'src/classes/Path';
 
 export class NoteModel
     extends FileModel<NoteData>
@@ -122,7 +123,7 @@ export class NoteModel
             newFileName.push(model.data.title);
         }
 
-        return Helper.sanitizeFilename(newFileName.join(' - '));
+        return Path.sanitizeFilename(newFileName.join(' - '));
     }
     //#endregion
 }

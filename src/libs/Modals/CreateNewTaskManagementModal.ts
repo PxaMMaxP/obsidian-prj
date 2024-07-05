@@ -192,7 +192,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 );
             },
         };
-        modelFile.filename = Helper.sanitizeFilename(modelFile.filename);
+        modelFile.filename = Path.sanitizeFilename(modelFile.filename);
 
         /**
          * Check if file already exists and add postfix if needed.
