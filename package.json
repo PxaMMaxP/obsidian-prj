@@ -14,7 +14,7 @@
     "compile:sass": "sass --no-source-map src/styles/main.scss build/styles.css",
     "watch:sass": "sass --watch --no-source-map src/styles/main.scss:build/styles.css",
     "lint": "eslint --ext .ts .",
-    "lint-fix": "eslint --fix --ext .ts .",
+    "lint:fix": "eslint --fix --ext .ts .",
     "format": "prettier --write .",
     "version:show": "node -e \"console.log(require('./package.json').version)\"",
     "test": "jest --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
