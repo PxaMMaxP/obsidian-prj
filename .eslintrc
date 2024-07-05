@@ -5,7 +5,8 @@
     "plugins": [
       "@typescript-eslint",
       "deprecation",
-      "prettier"
+      "prettier",
+      "import"
     ],
     "extends": [
       "eslint:recommended",
@@ -101,6 +102,21 @@
         "blankLine": "always",
         "prev": ["function"],
         "next": "*"
+      }
+    ],
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          ["builtin", "external"],
+          [ "internal", "index"],
+          [ "parent", "sibling" ] 
+        ],
+        "newlines-between": "never",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
       }
     ]
     } 
