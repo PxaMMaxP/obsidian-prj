@@ -91,28 +91,21 @@ export default class ProxyHandler<T extends object> {
     private handleGet(
         target: Partial<T>,
         property: string | symbol,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         receiver: any,
         path: string,
     ): unknown {
         if (this.isPrivate(property)) {
-            return Reflect.get(target, property, receiver);
+            return target[property as keyof Partial<T>];
         }
 
         const propertyKey = this.getPropertyKey(property);
-        const value = Reflect.get(target, property, receiver);
-
-        const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
+        const value = target[property as keyof Partial<T>];
 
         if (value && typeof value === 'object') {
-            // Check if value is already a proxy
-            const existingProxy = this._proxyMap.get(value);
-
-            if (existingProxy) {
-                return existingProxy;
-            }
-
-            return this.createProxy(value as Partial<T>, newPath);
+            return this.createProxy(
+                value as Partial<T>,
+                path ? `${path}.${propertyKey}` : `${propertyKey}`,
+            );
         }
 
         return value;
@@ -152,9 +145,7 @@ export default class ProxyHandler<T extends object> {
             target[property as keyof Partial<T>] = resolvedValue as
                 | T[keyof T]
                 | undefined;
-
-            const updatedValue = target[property as keyof Partial<T>];
-            this.updateKeyValue(newPath, updatedValue);
+            this.updateKeyValue(newPath, target[property as keyof Partial<T>]);
 
             return true;
         } catch (error) {
@@ -183,14 +174,7 @@ export default class ProxyHandler<T extends object> {
         const newPath = path ? `${path}.${propertyKey}` : `${propertyKey}`;
 
         try {
-            const result = Reflect.deleteProperty(target, property);
-
-            if (!result) {
-                throw new TypeError(
-                    `Failed to delete property ${propertyKey} on path ${newPath}`,
-                );
-            }
-
+            delete target[property as keyof Partial<T>];
             this._updateKeyValue(newPath, undefined);
 
             return true;
@@ -223,11 +207,14 @@ export default class ProxyHandler<T extends object> {
         if (Array.isArray(value)) {
             return value.map((item) => this.resolveProxyValue(item));
         } else if (value && typeof value === 'object') {
-            const entries = Object.entries(value as object).map(
-                ([key, val]) => [key, this.resolveProxyValue(val)],
-            );
+            const result: Record<string | symbol, unknown> = {};
+            const entries = Object.entries(value as object);
 
-            return Object.fromEntries(entries);
+            for (const [key, val] of entries) {
+                result[key] = this.resolveProxyValue(val);
+            }
+
+            return result;
         }
 
         return value;
