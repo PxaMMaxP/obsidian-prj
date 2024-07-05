@@ -2,10 +2,10 @@ import { ILogger } from 'src/interfaces/ILogger';
 
 import { TFile } from 'obsidian';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag } from './interfaces/ITag';
-import { ITagFactory } from './interfaces/ITagFactory';
+import { ITag, ITagConstructor } from './interfaces/ITag';
 import { ITags } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 
 /**
  * Represents an array of tags.
@@ -13,29 +13,11 @@ import { TagTree } from './types/TagTree';
  * - The class also provides a method to convert all tags to a string.
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
-export class Tags implements ITags {
+export class Tags extends BaseTypeChecker implements ITags {
     /**
-     * The tag factory for the `ITag` interface.
+     * The dependency injection token for the `ITag` interface.
      */
-    private _iTagFactory: ITagFactory;
-
-    /**
-     * The tag helper. Used to check if an object is an instance of the `ITag` interface.
-     * @remarks Lazy loaded.
-     */
-    private static _tagHelper: ITag | undefined = undefined;
-
-    /**
-     * Checks if the object is an instance of the ITag interface.
-     * @param obj The object to check.
-     */
-    private isInstanceOfTag(obj: unknown): obj is ITag {
-        if (!Tags._tagHelper) {
-            Tags._tagHelper = this.createTag('');
-        }
-
-        return Tags._tagHelper.isInstanceOfTag(obj);
-    }
+    private _tagClass: typeof BaseTypeChecker & ITagConstructor;
 
     /**
      * The metadata cache.
@@ -107,13 +89,14 @@ export class Tags implements ITags {
      * @param logger The logger to use for logging messages.
      */
     constructor(
-        tags: ITags | string | string[] | undefined | null,
+        tags: ITags | ITag | string | string[] | undefined | null,
         metadataCache: IMetadataCache,
-        tagFactory: ITagFactory,
+        tagClass: typeof BaseTypeChecker & ITagConstructor,
         logger?: ILogger,
     ) {
+        super();
         this._metadataCache = metadataCache;
-        this._iTagFactory = tagFactory;
+        this._tagClass = tagClass;
         this.logger = logger;
         this._tags = [];
 
@@ -126,7 +109,10 @@ export class Tags implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return this._iTagFactory.create(tagValue, this._metadataCache);
+        return new (this._tagClass as ITagConstructor)(
+            tagValue,
+            this._metadataCache,
+        );
     }
 
     /**
@@ -151,7 +137,7 @@ export class Tags implements ITags {
     ): ITag[] {
         if (this.isInstanceOfTags(tag)) {
             return tag.toStringArray().map((t) => this.createTag(t));
-        } else if (this.isInstanceOfTag(tag)) {
+        } else if (this._tagClass.isInstanceOf(tag)) {
             return [this.createTag(tag.value)];
         } else if (Array.isArray(tag)) {
             return tag.map((t) => this.createTag(t));

@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+
+/**
+ * Represents a tag constructor.
+ */
+export interface ITagConstructor {
+    new (value: string, metadataCache: IMetadataCache): ITag;
+}
+
 /**
  * Represents a tag.
  */
@@ -86,10 +95,4 @@ export interface ITag {
      * @param position The position to start the search.
      */
     startsWith(searchString: string, position?: number): boolean;
-
-    /**
-     * Checks if the object is an instance of the ITag interface.
-     * @param obj The object to check.
-     */
-    isInstanceOfTag(obj: unknown): obj is ITag;
 }

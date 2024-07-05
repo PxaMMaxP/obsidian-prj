@@ -1,6 +1,18 @@
 import { TFile } from 'obsidian';
-import { ITag } from './ITag';
+import { ITag, ITagConstructor } from './ITag';
 import { TagTree } from '../types/TagTree';
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import { ILogger } from 'src/interfaces/ILogger';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+
+export interface ITagsConstructor {
+    new (
+        tags: ITags | ITag | string | string[] | undefined | null,
+        metadataCache: IMetadataCache,
+        tagClass: typeof BaseTypeChecker & ITagConstructor,
+        logger?: ILogger,
+    ): ITags;
+}
 
 export interface ITags {
     /**
@@ -96,10 +108,4 @@ export interface ITags {
      * @returns Whether the tags were loaded.
      */
     loadTagsFromFile(file: TFile | undefined): boolean;
-
-    /**
-     * Checks if the object is an instance of the ITags interface.
-     * @param obj The object to check.
-     */
-    isInstanceOfTags(obj: unknown): obj is ITags;
 }

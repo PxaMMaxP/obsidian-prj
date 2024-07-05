@@ -175,11 +175,10 @@ describe('Tag', () => {
     // Test `isInstanceOfTag` method
     test('should return true if object is instance of Tag', () => {
         const tag = new Tag('exampleTag', metadataCacheMock);
-        expect(tag.isInstanceOfTag(tag)).toBe(true);
+        expect(Tag.isInstanceOf(tag)).toBe(true);
     });
 
     test('should return false if object is not instance of Tag', () => {
-        const tag = new Tag('exampleTag', metadataCacheMock);
-        expect(tag.isInstanceOfTag({})).toBe(false);
+        expect(Tag.isInstanceOf({})).toBe(false);
     });
 });

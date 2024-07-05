@@ -1,11 +1,12 @@
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag } from './interfaces/ITag';
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 
 /**
  * Represents a tag.
  * @remarks The class extends the String class and provides additional methods to work with tags.
  */
-export default class Tag implements ITag {
+export default class Tag extends BaseTypeChecker implements ITag {
     private _tag: string;
 
     /**
@@ -73,6 +74,8 @@ export default class Tag implements ITag {
      * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
      */
     constructor(value: string, metadataCache: IMetadataCache) {
+        super();
+
         this.value = value;
 
         this._metadataCache = metadataCache;
@@ -169,13 +172,5 @@ export default class Tag implements ITag {
      */
     startsWith(searchString: string, position?: number): boolean {
         return this.value.startsWith(searchString, position);
-    }
-
-    /**
-     * Checks if the object is an instance of the ITag interface.
-     * @param obj The object to check.
-     */
-    public isInstanceOfTag(obj: unknown): obj is ITag {
-        return obj instanceof Tag;
     }
 }
