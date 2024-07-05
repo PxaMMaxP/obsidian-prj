@@ -1,7 +1,7 @@
 import { Component, MarkdownRenderer } from 'obsidian';
-import BaseComponent from './BaseComponent';
 import Global from 'src/classes/Global';
 import Helper from 'src/libs/Helper';
+import BaseComponent from './BaseComponent';
 import SuggestionComponent, { Suggestions } from './SuggestionComponent';
 
 export default class TextComponent extends BaseComponent {

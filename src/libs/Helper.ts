@@ -1,10 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Tag from 'src/libs/Tags/Tag';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Path } from 'src/classes/Path';
 import { FrontMatterCache, TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Path } from 'src/classes/Path';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Tag from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
 
 export default class Helper {

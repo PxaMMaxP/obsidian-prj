@@ -1,13 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { App, TFile } from 'obsidian';
-import Global from '../classes/Global';
-import { TransactionModel } from './TransactionModel';
-import { YamlKeyMap } from '../types/YamlKeyMap';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
-import Helper from 'src/libs/Helper';
 import FileManager, { Filename } from 'src/libs/FileManager';
+import Helper from 'src/libs/Helper';
 import MetadataCache from 'src/libs/MetadataCache';
+import { TransactionModel } from './TransactionModel';
+import Global from '../classes/Global';
+import { YamlKeyMap } from '../types/YamlKeyMap';
 
 export class FileModel<T extends object> extends TransactionModel<T> {
     protected global: Global;

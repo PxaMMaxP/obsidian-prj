@@ -1,15 +1,15 @@
 // Note: DocumentModel class
 
 import { TFile } from 'obsidian';
-import { FileModel } from './FileModel';
-import IPrjModel from '../interfaces/IPrjModel';
-import Global from '../classes/Global';
 import Logging from 'src/classes/Logging';
+import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
 import Tags from 'src/libs/Tags';
 import NoteData from './Data/NoteData';
-import { Path } from 'src/classes/Path';
+import { FileModel } from './FileModel';
+import Global from '../classes/Global';
+import IPrjModel from '../interfaces/IPrjModel';
 
 export class NoteModel
     extends FileModel<NoteData>

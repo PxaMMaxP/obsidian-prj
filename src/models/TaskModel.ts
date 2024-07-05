@@ -1,12 +1,12 @@
 import { TFile } from 'obsidian';
-import { PrjTaskManagementModel } from './PrjTaskManagementModel';
-import Tags from 'src/libs/Tags';
-import { Status } from 'src/types/PrjTypes';
 import Logging from 'src/classes/Logging';
+import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
+import Tags from 'src/libs/Tags';
+import { Status } from 'src/types/PrjTypes';
 import TaskData from './Data/TaskData';
-import { Path } from 'src/classes/Path';
+import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');

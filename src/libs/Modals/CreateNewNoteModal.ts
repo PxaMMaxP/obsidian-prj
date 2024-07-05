@@ -1,5 +1,11 @@
+import { TFile } from 'obsidian';
+import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
+import DocumentData from 'src/models/Data/DocumentData';
+import NoteData from 'src/models/Data/NoteData';
+import { NoteModel } from 'src/models/NoteModel';
 import {
     Field,
     FormConfiguration,
@@ -8,13 +14,7 @@ import {
 } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import { TFile } from 'obsidian';
-import { NoteModel } from 'src/models/NoteModel';
-import Logging from 'src/classes/Logging';
-import API from 'src/classes/API';
 import Tags from '../Tags';
-import NoteData from 'src/models/Data/NoteData';
-import DocumentData from 'src/models/Data/DocumentData';
 
 /**
  * Modal to create a new metadata file

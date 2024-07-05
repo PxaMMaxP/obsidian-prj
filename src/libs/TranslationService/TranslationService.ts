@@ -1,7 +1,7 @@
 import { ILogger } from 'src/interfaces/ILogger';
+import { PrjSettings } from 'src/types/PrjSettings';
 import ILanguageTranslations from './interfaces/ILanguageTranslations';
 import ITranslationService from './interfaces/ITranslationService';
-import { PrjSettings } from 'src/types/PrjSettings';
 
 export class TranslationService implements ITranslationService {
     static instance: TranslationService | undefined;

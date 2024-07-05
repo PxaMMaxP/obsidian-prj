@@ -1,13 +1,13 @@
 // Note: MetadataCache class
 
-import Logging from 'src/classes/Logging';
-import Global from '../classes/Global';
 import { App, CachedMetadata, TFile } from 'obsidian';
-import GenericEvents, { IEvent } from './GenericEvents';
-import PrjTypes from 'src/types/PrjTypes';
-import { PrjSettings } from 'src/types/PrjSettings';
-import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
+import Logging from 'src/classes/Logging';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
+import { PrjSettings } from 'src/types/PrjSettings';
+import PrjTypes from 'src/types/PrjTypes';
+import GenericEvents, { IEvent } from './GenericEvents';
+import Global from '../classes/Global';
 
 /**
  * FileMetadata interface

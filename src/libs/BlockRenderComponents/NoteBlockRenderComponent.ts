@@ -1,20 +1,20 @@
+import API from 'src/classes/API';
+import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 import { DocumentModel } from 'src/models/DocumentModel';
+import { NoteModel } from 'src/models/NoteModel';
+import GeneralComponents from './InnerComponents/GeneralComponents';
+import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
+import ProjectComponents from './InnerComponents/ProjectComponents';
+import SearchInput from './InnerComponents/SearchInput';
 import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Table, { Row, TableHeader } from '../Table';
-import Lng from 'src/classes/Lng';
-import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
-import SearchInput from './InnerComponents/SearchInput';
-import Helper from '../Helper';
-import GeneralComponents from './InnerComponents/GeneralComponents';
-import API from 'src/classes/API';
-import { FileMetadata } from '../MetadataCache';
-import { NoteModel } from 'src/models/NoteModel';
-import ProjectComponents from './InnerComponents/ProjectComponents';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import Logging from 'src/classes/Logging';
+import Helper from '../Helper';
+import { FileMetadata } from '../MetadataCache';
+import Table, { Row, TableHeader } from '../Table';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.

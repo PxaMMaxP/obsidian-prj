@@ -1,17 +1,17 @@
 // Note: DocumentModel class
 
 import { TFile } from 'obsidian';
-import { FileModel } from './FileModel';
-import IPrjModel from '../interfaces/IPrjModel';
-import Global from '../classes/Global';
-import Helper from '../libs/Helper';
-import Logging from 'src/classes/Logging';
-import { ILogger } from 'src/interfaces/ILogger';
 import Lng from 'src/classes/Lng';
-import FileManager, { Filename } from 'src/libs/FileManager';
-import FileCache from 'src/libs/FileCache';
-import DocumentData from './Data/DocumentData';
+import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import { ILogger } from 'src/interfaces/ILogger';
+import FileCache from 'src/libs/FileCache';
+import FileManager, { Filename } from 'src/libs/FileManager';
+import DocumentData from './Data/DocumentData';
+import { FileModel } from './FileModel';
+import Global from '../classes/Global';
+import IPrjModel from '../interfaces/IPrjModel';
+import Helper from '../libs/Helper';
 
 export class DocumentModel
     extends FileModel<DocumentData>

@@ -1,9 +1,9 @@
-import { PrjSettings } from 'src/types/PrjSettings';
 import { App } from 'obsidian';
+import Prj from 'src/main';
+import { PrjSettings } from 'src/types/PrjSettings';
+import Logging, { LoggingLevel } from './Logging';
 import FileCache from '../libs/FileCache';
 import MetadataCache from '../libs/MetadataCache';
-import Logging, { LoggingLevel } from './Logging';
-import Prj from 'src/main';
 
 /**
  * Represents the global instance for the plugin.

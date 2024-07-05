@@ -1,17 +1,17 @@
 /* eslint-disable no-case-declarations */
 // Note: MarkdownBlockProcessor Class
 
-import { MarkdownPostProcessorContext, MarkdownRenderChild } from 'obsidian';
 import * as yaml from 'js-yaml';
-import Global from '../classes/Global';
-import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
-import { IProcessorSettings } from '../interfaces/IProcessorSettings';
-import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
+import { MarkdownPostProcessorContext, MarkdownRenderChild } from 'obsidian';
 import Logging from 'src/classes/Logging';
-import Helper from './Helper';
-import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';
-import SingletonBlockProcessor from './SingletonBlockProcessor';
+import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
 import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRenderComponent';
+import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';
+import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
+import Helper from './Helper';
+import SingletonBlockProcessor from './SingletonBlockProcessor';
+import Global from '../classes/Global';
+import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 
 class MdRenderChild extends MarkdownRenderChild {
     constructor(container: HTMLElement) {

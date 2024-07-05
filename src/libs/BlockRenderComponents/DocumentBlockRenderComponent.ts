@@ -1,19 +1,19 @@
+import API from 'src/classes/API';
+import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 import { DocumentModel } from 'src/models/DocumentModel';
+import DocumentComponents from './InnerComponents/DocumentComponents';
+import FilterButton from './InnerComponents/FilterButton';
+import GeneralComponents from './InnerComponents/GeneralComponents';
+import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
+import SearchInput from './InnerComponents/SearchInput';
 import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Table, { Row, TableHeader } from '../Table';
-import Lng from 'src/classes/Lng';
-import FilterButton from './InnerComponents/FilterButton';
-import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
-import SearchInput from './InnerComponents/SearchInput';
 import Helper from '../Helper';
-import DocumentComponents from './InnerComponents/DocumentComponents';
-import GeneralComponents from './InnerComponents/GeneralComponents';
-import API from 'src/classes/API';
 import { FileMetadata } from '../MetadataCache';
-import Logging from 'src/classes/Logging';
+import Table, { Row, TableHeader } from '../Table';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.

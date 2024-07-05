@@ -1,25 +1,25 @@
-import TableBlockRenderComponent, {
-    BlockRenderSettings,
-} from './TableBlockRenderComponent';
-import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import Table, { Row, TableHeader } from '../Table';
-import Lng from 'src/classes/Lng';
-import FilterButton from './InnerComponents/FilterButton';
-import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
-import SearchInput from './InnerComponents/SearchInput';
-import Helper from '../Helper';
-import { Priority, Status } from 'src/types/PrjTypes';
-import ProjectComponents from './InnerComponents/ProjectComponents';
-import GeneralComponents from './InnerComponents/GeneralComponents';
 import API from 'src/classes/API';
-import { FileMetadata } from '../MetadataCache';
+import Lng from 'src/classes/Lng';
 import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import ProjectData from 'src/models/Data/ProjectData';
 import TaskData from 'src/models/Data/TaskData';
 import TopicData from 'src/models/Data/TopicData';
+import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { Priority, Status } from 'src/types/PrjTypes';
+import FilterButton from './InnerComponents/FilterButton';
+import GeneralComponents from './InnerComponents/GeneralComponents';
+import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
+import ProjectComponents from './InnerComponents/ProjectComponents';
+import SearchInput from './InnerComponents/SearchInput';
+import TableBlockRenderComponent, {
+    BlockRenderSettings,
+} from './TableBlockRenderComponent';
+import Helper from '../Helper';
+import { FileMetadata } from '../MetadataCache';
+import Table, { Row, TableHeader } from '../Table';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<IPrjData & IPrjTaskManagement>

@@ -2,8 +2,8 @@ import { Component } from 'obsidian';
 import DateComponent from './Components/DateComponent';
 import DropdownComponent from './Components/DropdownComponent';
 import LinkComponent from './Components/LinkComponent';
-import TextComponent from './Components/TextComponent';
 import TextareaComponent from './Components/TextareaComponent';
+import TextComponent from './Components/TextComponent';
 
 export default class EditableDataView {
     private _container: HTMLElement | DocumentFragment;

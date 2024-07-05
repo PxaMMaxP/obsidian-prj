@@ -1,17 +1,17 @@
-import Global from 'src/classes/Global';
-import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { Component, setIcon } from 'obsidian';
-import Table, { RowsState, TableHeader } from '../Table';
-import Helper from '../Helper';
-import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
-import IPrjModel from 'src/interfaces/IPrjModel';
+import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { FileType } from 'src/types/PrjTypes';
-import MetadataCache, { FileMetadata } from '../MetadataCache';
 import Logging from 'src/classes/Logging';
-import Search from '../Search/Search';
 import { ILogger } from 'src/interfaces/ILogger';
+import IPrjModel from 'src/interfaces/IPrjModel';
 import { PrjSettings } from 'src/types/PrjSettings';
+import { FileType } from 'src/types/PrjTypes';
+import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
+import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
+import Helper from '../Helper';
+import MetadataCache, { FileMetadata } from '../MetadataCache';
+import Search from '../Search/Search';
+import Table, { RowsState, TableHeader } from '../Table';
 
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,

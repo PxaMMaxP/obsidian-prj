@@ -1,11 +1,11 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 import { DocumentModel } from 'src/models/DocumentModel';
 import { FileType } from 'src/types/PrjTypes';
-import { FileMetadata } from '../MetadataCache';
 import Helper from '../Helper';
-import Logging from 'src/classes/Logging';
+import { FileMetadata } from '../MetadataCache';
 
 export default class GetMetadata {
     static instance: GetMetadata;

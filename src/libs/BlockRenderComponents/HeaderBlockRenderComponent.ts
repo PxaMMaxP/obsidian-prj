@@ -1,16 +1,16 @@
 import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
+import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import Logging from 'src/classes/Logging';
+import IPrjData from 'src/interfaces/IPrjData';
+import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
+import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Status } from 'src/types/PrjTypes';
-import API from 'src/classes/API';
-import IPrjData from 'src/interfaces/IPrjData';
-import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import Tags from '../Tags';
 import { TagTree } from '../Tags/types/TagTree';
 

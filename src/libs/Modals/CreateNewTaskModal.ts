@@ -1,9 +1,9 @@
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
-import Lng from 'src/classes/Lng';
-import Global from 'src/classes/Global';
 import Helper from '../Helper';
-import Logging from 'src/classes/Logging';
 
 export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
     protected override constructForm(): FormConfiguration {

@@ -1,11 +1,11 @@
 import { CachedMetadata, TFile } from 'obsidian';
+import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
-import API from 'src/classes/API';
+import PrjTypes from 'src/types/PrjTypes';
+import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';
 import KanbanParser from './KanbanParser';
-import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
-import PrjTypes from 'src/types/PrjTypes';
 
 export default class KanbanSync {
     private logger = Logging.getLogger('KanbanSync');

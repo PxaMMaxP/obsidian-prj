@@ -1,5 +1,5 @@
-import Helper from './Helper';
 import { ILogger } from 'src/interfaces/ILogger';
+import Helper from './Helper';
 
 export default class Table {
     public get data(): StructedTable {

@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
-import { FileModel } from './FileModel';
-import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import { YamlKeyMap } from 'src/types/YamlKeyMap';
+import { FileModel } from './FileModel';
 
 /**
  * Base class for models that are stored in files.

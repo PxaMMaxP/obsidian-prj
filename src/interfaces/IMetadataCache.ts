@@ -1,7 +1,7 @@
 import { TFile } from 'obsidian';
+import { IEvent } from 'src/libs/GenericEvents';
 import IFileMetadata from './IFileMetadata';
 import { IMetadataCacheEvents } from './IMetadataCacheEvents';
-import { IEvent } from 'src/libs/GenericEvents';
 
 export default interface IMetadataCache {
     get cache(): IFileMetadata[];

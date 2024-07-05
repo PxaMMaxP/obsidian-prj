@@ -1,18 +1,18 @@
 import { TFile, moment } from 'obsidian';
-import { FileModel } from './FileModel';
-import IPrjModel from '../interfaces/IPrjModel';
-import IPrjData from '../interfaces/IPrjData';
-import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
-import PrjTypes, { Status } from 'src/types/PrjTypes';
-import { ILogger } from 'src/interfaces/ILogger';
-import Logging from 'src/classes/Logging';
-import Tags from 'src/libs/Tags';
-import Helper from 'src/libs/Helper';
 import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import { ILogger } from 'src/interfaces/ILogger';
+import Helper from 'src/libs/Helper';
+import Tags from 'src/libs/Tags';
+import PrjTypes, { Status } from 'src/types/PrjTypes';
 import ProjectData from './Data/ProjectData';
 import TaskData from './Data/TaskData';
 import TopicData from './Data/TopicData';
+import { FileModel } from './FileModel';
+import IPrjData from '../interfaces/IPrjData';
+import IPrjModel from '../interfaces/IPrjModel';
+import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 
 export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     extends FileModel<T>

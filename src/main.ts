@@ -1,25 +1,25 @@
-import { PrjSettings } from 'src/types/PrjSettings';
 import { Plugin } from 'obsidian';
-import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { SettingTab } from 'src/classes/SettingsTab';
-import { DEFAULT_SETTINGS } from './types/PrjSettings';
-import Global from './classes/Global';
-import GetMetadata from './libs/ContextMenus/GetMetadata';
+import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
+import { PrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
-import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
-import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
-import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
-import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
-import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
+import Global from './classes/Global';
 import Lng from './classes/Lng';
+import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
+import GetMetadata from './libs/ContextMenus/GetMetadata';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
+import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
+import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
+import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
 import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
+import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
+import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
+import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
-import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
-import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
+import { DEFAULT_SETTINGS } from './types/PrjSettings';
 
 export default class Prj extends Plugin {
     public settings: PrjSettings;

@@ -1,8 +1,8 @@
+import { TFile } from 'obsidian';
+import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
 import { KanbanBoard, KanbanList } from './KanbanModels';
-import Global from 'src/classes/Global';
 import { ArchivedString, CompletedString } from './KanbanTypes';
-import { TFile } from 'obsidian';
 
 export default class KanbanMarkdownGenerator {
     private logger = Logging.getLogger('KanbanMarkdownGenerator');

@@ -1,11 +1,10 @@
-import { ILogger } from 'src/interfaces/ILogger';
-
 import { TFile } from 'obsidian';
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './interfaces/ITag';
 import { ITags } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 
 /**
  * Represents an array of tags.

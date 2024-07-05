@@ -1,5 +1,9 @@
+import { TFile } from 'obsidian';
+import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import Logging from 'src/classes/Logging';
+import DocumentData from 'src/models/Data/DocumentData';
 import { DocumentModel } from 'src/models/DocumentModel';
 import {
     Field,
@@ -7,14 +11,10 @@ import {
     IFormResult,
     IResultData,
 } from 'src/types/ModalFormType';
+import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
-import API from 'src/classes/API';
-import { TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
 import Tags from '../Tags';
-import DocumentData from 'src/models/Data/DocumentData';
 
 /**
  * Modal to create a new metadata file

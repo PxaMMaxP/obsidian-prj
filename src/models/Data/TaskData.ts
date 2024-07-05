@@ -1,6 +1,5 @@
-import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
-import BaseData from './BaseData';
+import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import {
@@ -10,6 +9,7 @@ import {
     Energy,
     HistoryEntries,
 } from 'src/types/PrjTypes';
+import BaseData from './BaseData';
 
 export default class TaskData
     extends BaseData<TaskData>

@@ -1,10 +1,10 @@
 /* istanbul ignore file */
 
+import Global from 'src/classes/Global';
+import Logging from 'src/classes/Logging';
 import { Translations } from 'src/translations/Translations';
 import ITranslationService from '../libs/TranslationService/interfaces/ITranslationService';
 import { TranslationService } from '../libs/TranslationService/TranslationService';
-import Global from 'src/classes/Global';
-import Logging from 'src/classes/Logging';
 
 /**
  * Wrapper class for the translation service to provide a compatibility layer eg. an In-Place-Replacement.

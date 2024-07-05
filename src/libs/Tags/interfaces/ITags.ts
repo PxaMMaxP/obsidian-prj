@@ -1,9 +1,9 @@
 import { TFile } from 'obsidian';
-import { ITag, ITagConstructor } from './ITag';
-import { TagTree } from '../types/TagTree';
 import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { ITag, ITagConstructor } from './ITag';
+import { TagTree } from '../types/TagTree';
 
 export interface ITagsConstructor {
     new (

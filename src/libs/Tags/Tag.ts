@@ -1,6 +1,6 @@
+import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag } from './interfaces/ITag';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
 
 /**
  * Represents a tag.

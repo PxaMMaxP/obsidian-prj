@@ -1,13 +1,13 @@
 import { Modal, Setting } from 'obsidian';
-import Lng from 'src/classes/Lng';
-import { Status } from 'src/types/PrjTypes';
-import Helper from '../Helper';
-import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import Global from 'src/classes/Global';
 import API from 'src/classes/API';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
 import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { Status } from 'src/types/PrjTypes';
+import Helper from '../Helper';
 
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;

@@ -1,17 +1,17 @@
-import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
-import BaseModalForm from './BaseModalForm';
-import Lng from 'src/classes/Lng';
-import Helper from '../Helper';
-import Global from 'src/classes/Global';
-import PrjTypes from 'src/types/PrjTypes';
 import { TFile } from 'obsidian';
-import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Path } from 'src/classes/Path';
+import Global from 'src/classes/Global';
+import Lng from 'src/classes/Lng';
 import Logging from 'src/classes/Logging';
-import Tags from '../Tags';
+import { Path } from 'src/classes/Path';
 import ProjectData from 'src/models/Data/ProjectData';
 import TaskData from 'src/models/Data/TaskData';
 import TopicData from 'src/models/Data/TopicData';
+import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
+import PrjTypes from 'src/types/PrjTypes';
+import BaseModalForm from './BaseModalForm';
+import Helper from '../Helper';
+import Tags from '../Tags';
 
 export default class CreateNewTaskManagementModal extends BaseModalForm {
     constructor() {

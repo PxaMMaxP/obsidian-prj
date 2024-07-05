@@ -1,10 +1,9 @@
-import { ILogger } from 'src/interfaces/ILogger';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
-
-import { Tags } from '../Tags';
-import { ITag, ITagConstructor } from '../interfaces/ITag';
 import { TFile } from 'obsidian';
 import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import { ILogger } from 'src/interfaces/ILogger';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { ITag, ITagConstructor } from '../interfaces/ITag';
+import { Tags } from '../Tags';
 
 describe('Tags', () => {
     let mockLogger: ILogger;

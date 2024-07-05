@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
-import BaseData from './BaseData';
-import IPrjDocument from 'src/interfaces/IPrjDocument';
+import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
+import IPrjDocument from 'src/interfaces/IPrjDocument';
 import { FileType, FileSubType } from 'src/types/PrjTypes';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
+import BaseData from './BaseData';
 
 /**
  * Represents the data of a document.
