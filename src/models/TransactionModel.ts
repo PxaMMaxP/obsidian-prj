@@ -1,4 +1,3 @@
-import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 
 /**
@@ -25,7 +24,7 @@ type WriteChangesReturnType = {
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel<T> {
-    protected logger: ILogger;
+    protected logger: ILogger | undefined;
     /**
      * A promise that resolves when the changes are written to the file.
      */
@@ -75,7 +74,7 @@ export class TransactionModel<T> {
             | undefined,
         logger?: ILogger,
     ) {
-        this.logger = logger ?? Logging.getLogger('TransactionModel');
+        this.logger = logger;
 
         if (writeChanges) {
             this.writeChanges = writeChanges;
@@ -132,10 +131,10 @@ export class TransactionModel<T> {
 
             promise
                 .then(() => {
-                    this.logger.debug('Changes written to file');
+                    this.logger?.debug('Changes written to file');
                 })
                 .catch((error) => {
-                    this.logger.error(
+                    this.logger?.error(
                         'Failed to write changes to file:',
                         error,
                     );
@@ -144,7 +143,7 @@ export class TransactionModel<T> {
             writeChanges.promise = promise;
             writeChanges.writeTriggered = true;
         } else {
-            this.logger.debug('No `writeChanges` function available');
+            this.logger?.debug('No `writeChanges` function available');
         }
 
         // Reset changes if writeChanges was called
@@ -164,7 +163,7 @@ export class TransactionModel<T> {
      */
     public startTransaction(): void {
         if (this.isTransactionActive) {
-            this.logger.warn('Transaction already active');
+            this.logger?.warn('Transaction already active');
 
             return;
         }
@@ -179,7 +178,7 @@ export class TransactionModel<T> {
      */
     public finishTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger.warn('No transaction active');
+            this.logger?.warn('No transaction active');
 
             return;
         }
@@ -197,11 +196,11 @@ export class TransactionModel<T> {
      */
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger.warn('No transaction active');
+            this.logger?.warn('No transaction active');
 
             return;
         } else if (!this.writeChanges) {
-            this.logger.warn('No `writeChanges` function available');
+            this.logger?.warn('No `writeChanges` function available');
 
             return;
         }
