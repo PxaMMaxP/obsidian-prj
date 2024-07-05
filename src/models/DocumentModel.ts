@@ -7,7 +7,6 @@ import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileCache from 'src/libs/FileCache';
 import FileManager, { Filename } from 'src/libs/FileManager';
-import Tags from 'src/libs/Tags/Tags';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -21,22 +20,6 @@ export class DocumentModel
     protected logger: ILogger;
     private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
-
-    /**
-     * The tags of the document.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    get tags(): string[] {
-        return this.data.tags?.toStringArray() ?? [];
-    }
-
-    /**
-     * The tags of the document.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    set tags(value: string[]) {
-        this.data.tags = value as unknown as Tags;
-    }
 
     public get data(): Partial<DocumentData> {
         return this._data;
@@ -85,14 +68,6 @@ export class DocumentModel
         return this._relatedFiles;
     }
 
-    /**
-     * Returns the metadata of the document as a string
-     * @deprecated Use `data.toString()` instead.
-     */
-    public override toString(): string {
-        return this.data.toString?.() ?? '';
-    }
-
     public getWikilink(text: string | undefined): string {
         if (text) {
             return `[[${this.file.name}|${text}]]`;
@@ -125,15 +100,6 @@ export class DocumentModel
         }
 
         return 'x-circle';
-    }
-
-    /**
-     * Returns the description of the document
-     * @returns String containing the description
-     * @deprecated Use `data.description` instead.
-     */
-    public getDescription(): string {
-        return this.data.description ?? '';
     }
 
     /**
@@ -209,24 +175,6 @@ export class DocumentModel
         this.data.file = link;
 
         return link;
-    }
-
-    /**
-     * Returns the tags of the document as an array of strings
-     * @returns Array of strings containing the tags
-     * @deprecated Use `data.tags` instead.
-     */
-    public getTags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
     }
 
     public getUID(): string {

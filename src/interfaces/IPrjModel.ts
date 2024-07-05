@@ -6,18 +6,4 @@ export default interface IPrjModel<T> {
 
     get file(): TFile;
     set file(value: TFile);
-
-    /**
-     * The tags of the document.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    get tags(): string[];
-
-    /**
-     * The tags of the document.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    set tags(value: string[]);
-
-    toString(): string;
 }

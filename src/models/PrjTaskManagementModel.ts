@@ -21,22 +21,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 {
     protected logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
 
-    /**
-     * The tags of the model.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    get tags(): string[] {
-        return this.data.tags?.toStringArray() ?? [];
-    }
-
-    /**
-     * The tags of the model.
-     * @deprecated Use the `data.tags` property instead.
-     */
-    set tags(value: string[]) {
-        this.data.tags = value;
-    }
-
     public get data(): Partial<T> {
         return this._data;
     }
@@ -46,14 +30,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
     constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
         super(file, ctor, undefined);
-    }
-
-    /**
-     * Returns the metadata of the model as a string
-     * @deprecated Use `data.toString()` instead.
-     */
-    public override toString(): string {
-        return this.data.toString?.() ?? '';
     }
 
     /**
@@ -141,24 +117,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
             status: status,
             date: moment().format('YYYY-MM-DDTHH:mm'),
         });
-    }
-
-    /**
-     * Returns the tags of the model as an array of strings
-     * @returns Array of strings containing the tags
-     * @deprecated Use `data.tags` instead.
-     */
-    public getTags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
     }
 
     /**
