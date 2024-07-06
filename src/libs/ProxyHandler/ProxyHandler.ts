@@ -91,6 +91,7 @@ export default class ProxyHandler<T extends object> {
     private handleGet(
         target: Partial<T>,
         property: string | symbol,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         receiver: any,
         path: string,
     ): unknown {
