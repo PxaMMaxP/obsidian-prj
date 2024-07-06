@@ -42,6 +42,23 @@ export default abstract class BaseData<T> {
     }
 
     /**
+     * Gets the default data for the current data model `T`.
+     */
+    public get defaultData(): Partial<T> {
+        const defaultData: Partial<T> = {};
+
+        for (const config of this.fieldConfig) {
+            const key = config.key;
+
+            if (config.defaultValue !== undefined) {
+                defaultData[key] = config.defaultValue;
+            }
+        }
+
+        return defaultData;
+    }
+
+    /**
      * Returns the metadata of the document as a string.
      * Only properties marked with the {@link ToStringFieldSymbol|@toStringField} decorator will be included in the output.
      * @returns A string containing the concatenated values of the marked properties.

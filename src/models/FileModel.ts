@@ -5,11 +5,13 @@ import FileManager, { Filename } from 'src/libs/FileManager';
 import Helper from 'src/libs/Helper';
 import MetadataCache from 'src/libs/MetadataCache';
 import ProxyHandler from 'src/libs/ProxyHandler/ProxyHandler';
+import BaseData from './Data/BaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 
-export class FileModel<T extends object> extends TransactionModel<T> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class FileModel<T extends BaseData<any>> extends TransactionModel<T> {
     protected global: Global;
     protected app: App;
     protected metadataCache: MetadataCache;
@@ -119,7 +121,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             this.logger?.trace('Creating empty object');
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
-            // this.changes = emptyObject; // Todo: Find a way to really only assign the standard values to `changes`.
+            this.changes = emptyObject.defaultData;
             this._dataProxy = this._proxyHandler.createProxy(emptyObject) as T;
 
             return this._dataProxy;
