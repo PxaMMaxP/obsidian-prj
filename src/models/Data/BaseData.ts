@@ -11,7 +11,10 @@ export default abstract class BaseData<T> {
      * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
      * @remarks Will be used to determine which fields to merge and their default values when calling {@link mergeData}.
      */
-    protected get fieldConfig(): { key: keyof T; defaultValue?: any }[] {
+    protected get fieldConfig(): {
+        key: keyof T | string | number | symbol;
+        defaultValue?: any;
+    }[] {
         return (this.constructor as any)[FieldConfigSymbol] || [];
     }
 
@@ -31,7 +34,7 @@ export default abstract class BaseData<T> {
      */
     protected mergeData(data?: Partial<T>): void {
         for (const config of this.fieldConfig) {
-            const key = config.key;
+            const key = config.key as keyof T;
 
             if (data && data[key] !== undefined) {
                 (this as unknown as T)[key] = data[key] as T[keyof T];
@@ -43,12 +46,13 @@ export default abstract class BaseData<T> {
 
     /**
      * Gets the default data for the current data model `T`.
+     * @returns The default data for the current data model.
      */
     public get defaultData(): Partial<T> {
         const defaultData: Partial<T> = {};
 
         for (const config of this.fieldConfig) {
-            const key = config.key;
+            const key = config.key as keyof T;
 
             if (config.defaultValue !== undefined) {
                 defaultData[key] = config.defaultValue;
