@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './ITag';
@@ -10,14 +10,14 @@ import { TagTree } from '../types/TagTree';
  */
 export interface ITagsDependencies {
     metadataCache: IMetadataCache;
-    tagClass: typeof BaseTypeChecker & ITagConstructor;
+    tagClass: typeof BaseComplexDataType & ITagConstructor;
     logger?: ILogger;
 }
 
 /**
  * Represents a tags constructor.
  */
-export type TagsConstructorType = typeof BaseTypeChecker & ITagsConstructor;
+export type TagsConstructorType = typeof BaseComplexDataType & ITagsConstructor;
 
 /**
  * Represents a tags constructor.
@@ -29,7 +29,7 @@ export interface ITagsConstructor {
     ): ITags;
 }
 
-export interface ITags {
+export interface ITags extends BaseComplexDataType {
     /**
      * Gets the tags.
      */

@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './interfaces/ITag';
@@ -12,11 +12,11 @@ import { TagTree } from './types/TagTree';
  * - The class also provides a method to convert all tags to a string.
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
-export default class Tags extends BaseTypeChecker implements ITags {
+export default class Tags extends BaseComplexDataType implements ITags {
     /**
      * The dependency injection token for the `ITag` interface.
      */
-    private _tagClass: typeof BaseTypeChecker & ITagConstructor;
+    private _tagClass: typeof BaseComplexDataType & ITagConstructor;
 
     /**
      * The metadata cache.
@@ -32,7 +32,7 @@ export default class Tags extends BaseTypeChecker implements ITags {
     /**
      * The tags array.
      */
-    private _tags: ITag[] = [];
+    private _tags: (typeof BaseComplexDataType & ITag)[] = [];
 
     /**
      * Gets the tags.
@@ -154,7 +154,7 @@ export default class Tags extends BaseTypeChecker implements ITags {
 
         tags.forEach((tag) => {
             if (!this.includes(tag)) {
-                this._tags.push(tag);
+                this._tags.push(tag as typeof BaseComplexDataType & ITag);
                 added = true;
             } else {
                 this.logger?.warn(`Tag '${tag.value}' already exists.`);
@@ -332,5 +332,14 @@ export default class Tags extends BaseTypeChecker implements ITags {
      */
     public isInstanceOfTags(obj: unknown): obj is ITags {
         return obj instanceof Tags;
+    }
+
+    public getFrontmatterObject():
+        | Record<string, unknown>
+        | Array<unknown>
+        | string
+        | null
+        | undefined {
+        return this._tags.map((tag) => tag.getFrontmatterObject());
     }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 
 /**
@@ -13,7 +13,7 @@ export interface ITagDependencies {
 /**
  * Represents a tag constructor.
  */
-export type TagConstructorType = typeof BaseTypeChecker & ITagConstructor;
+export type TagConstructorType = typeof BaseComplexDataType & ITagConstructor;
 
 /**
  * Represents a tag constructor.
@@ -25,7 +25,7 @@ export interface ITagConstructor {
 /**
  * Represents a tag.
  */
-export interface ITag {
+export interface ITag extends BaseComplexDataType {
     /**
      * Gets whether the tag exists in the cache.
      * @returns Whether the tag exists in the cache.

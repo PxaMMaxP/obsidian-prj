@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from '../interfaces/ITag';
@@ -9,7 +9,7 @@ import Tags from '../Tags';
 describe('Tags', () => {
     let mockLogger: ILogger;
     let mockMetadataCache: IMetadataCache;
-    let MockTagClass: typeof BaseTypeChecker & ITagConstructor;
+    let MockTagClass: typeof BaseComplexDataType & ITagConstructor;
     let dependencies: ITagsDependencies;
     let dependenciesWithoutLogger: ITagsDependencies;
 
@@ -34,6 +34,14 @@ describe('Tags', () => {
             constructor(value: string, metadataCache: IMetadataCache) {
                 this.value = value;
                 this.metadataCache = metadataCache;
+            }
+            getFrontmatterObject():
+                | Record<string, unknown>
+                | Array<unknown>
+                | string
+                | null
+                | undefined {
+                throw new Error('Method not implemented.');
             }
             exists: boolean;
 
@@ -86,7 +94,7 @@ describe('Tags', () => {
             }
         }
 
-        MockTagClass = MockTag as unknown as typeof BaseTypeChecker &
+        MockTagClass = MockTag as unknown as typeof BaseComplexDataType &
             ITagConstructor;
 
         dependencies = {

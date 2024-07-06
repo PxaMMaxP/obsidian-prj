@@ -1,4 +1,4 @@
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagDependencies } from './interfaces/ITag';
 
@@ -6,7 +6,7 @@ import { ITag, ITagDependencies } from './interfaces/ITag';
  * Represents a tag.
  * @remarks The class extends the String class and provides additional methods to work with tags.
  */
-export default class Tag extends BaseTypeChecker implements ITag {
+export default class Tag extends BaseComplexDataType implements ITag {
     private _tag: string;
 
     /**
@@ -172,5 +172,14 @@ export default class Tag extends BaseTypeChecker implements ITag {
      */
     startsWith(searchString: string, position?: number): boolean {
         return this.value.startsWith(searchString, position);
+    }
+
+    public getFrontmatterObject():
+        | Record<string, unknown>
+        | Array<unknown>
+        | string
+        | null
+        | undefined {
+        return this._tag.toString();
     }
 }
