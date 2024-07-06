@@ -7,6 +7,7 @@ import Helper from 'src/libs/Helper';
 import { TagDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
 import Tag from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
+import BaseData from './Data/BaseData';
 import ProjectData from './Data/ProjectData';
 import TaskData from './Data/TaskData';
 import TopicData from './Data/TopicData';
@@ -15,7 +16,9 @@ import IPrjData from '../interfaces/IPrjData';
 import IPrjModel from '../interfaces/IPrjModel';
 import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 
-export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
+export class PrjTaskManagementModel<
+        T extends IPrjData & IPrjTaskManagement & BaseData<unknown>,
+    >
     extends FileModel<T>
     implements IPrjModel<T>
 {
@@ -191,7 +194,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     private static _modelFactories = new Map<
         string,
-        (file: TFile) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+        (
+            file: TFile,
+        ) => PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >
     >();
 
     /**
@@ -203,7 +210,9 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         type: string,
         factory: (
             file: TFile,
-        ) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        ) => PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
     ) {
         PrjTaskManagementModel._modelFactories.set(type, factory);
     }
@@ -215,7 +224,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     public static getCorospondingModel(
         file: TFile,
-    ): PrjTaskManagementModel<IPrjData & IPrjTaskManagement> | undefined {
+    ):
+        | PrjTaskManagementModel<
+              IPrjData & IPrjTaskManagement & BaseData<unknown>
+          >
+        | undefined {
         const entry = Global.getInstance().metadataCache.getEntry(file);
 
         if (!entry) return undefined;

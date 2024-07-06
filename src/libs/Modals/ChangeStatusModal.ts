@@ -5,13 +5,16 @@ import Lng from 'src/classes/Lng';
 import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
+import BaseData from 'src/models/Data/BaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 import Helper from '../Helper';
 
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
-    model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>;
+    model: PrjTaskManagementModel<
+        IPrjData & IPrjTaskManagement & BaseData<unknown>
+    >;
 
     constructor() {
         super(Global.getInstance().app);

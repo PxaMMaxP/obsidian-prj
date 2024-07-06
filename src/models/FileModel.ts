@@ -10,8 +10,9 @@ import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class FileModel<T extends BaseData<any>> extends TransactionModel<T> {
+export class FileModel<
+    T extends BaseData<unknown>,
+> extends TransactionModel<T> {
     protected global: Global;
     protected app: App;
     protected metadataCache: MetadataCache;
