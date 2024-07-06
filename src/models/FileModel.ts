@@ -195,7 +195,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             await previousPromise;
         }
 
-        this.logger?.debug(`Updating with:`, value);
+        this.logger?.trace(`Updating with:`, value);
 
         try {
             await this.app.fileManager.processFrontMatter(
