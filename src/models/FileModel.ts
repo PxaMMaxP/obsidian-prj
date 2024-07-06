@@ -92,7 +92,7 @@ export class FileModel<T extends BaseData<any>> extends TransactionModel<T> {
         this.app = this.global.app;
         this.metadataCache = this.global.metadataCache;
 
-        this._proxyHandler = new ProxyHandler(this.logger, this.updateKeyValue);
+        this._proxyHandler = new ProxyHandler(undefined, this.updateKeyValue);
 
         if (file) {
             // Set the file and indirectly the `writeChanges` function.
