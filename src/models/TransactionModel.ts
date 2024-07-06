@@ -1,3 +1,4 @@
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 
 /**
@@ -75,6 +76,9 @@ export class TransactionModel<T> {
         logger?: ILogger,
     ) {
         this.logger = logger;
+
+        // Bind the updateKeyValue method to the instance; its required for the ProxyHandler Delegate.
+        this.updateKeyValue = this.updateKeyValue.bind(this);
 
         if (writeChanges) {
             this.writeChanges = writeChanges;
@@ -220,7 +224,14 @@ export class TransactionModel<T> {
 
         keys.forEach((k, index) => {
             if (index === keys.length - 1) {
-                current[k] = value;
+                // Check if the value is a complex data type and get the frontmatter object if it is
+                if (value instanceof BaseComplexDataType) {
+                    current[k] = (
+                        value as BaseComplexDataType
+                    ).getFrontmatterObject();
+                } else {
+                    current[k] = value;
+                }
             } else {
                 current[k] = current[k] || {};
                 current = current[k] as Record<string, unknown>;
