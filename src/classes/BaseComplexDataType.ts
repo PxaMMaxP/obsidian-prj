@@ -1,7 +1,11 @@
+import { TransactionModel } from '../models/TransactionModel';
+
 /**
  * Represents a abstract class which provides methods
  * - to determine whether the specified object is an instance of the current class.
  * - to get the frontmatter object.
+ * @see {@link TransactionModel.updateKeyValue}
+ *      for an example of how the {@link BaseComplexDataType.getFrontmatterObject} methode is used.
  */
 export default abstract class BaseComplexDataType {
     /**
