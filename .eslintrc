@@ -136,7 +136,7 @@
     "jsdoc/check-tag-names": [
       "warn",
       {
-        "definedTags": ["remarks"]
+        "definedTags": ["remarks", "jest-environment"]
       }
     ]
     },
