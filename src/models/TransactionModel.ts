@@ -224,7 +224,7 @@ export class TransactionModel<T> {
 
         keys.forEach((k, index) => {
             if (index === keys.length - 1) {
-                // Check if the value is a complex data type and get the frontmatter object if it is
+                // Check if the value is a custom complex data type and get the frontmatter object if it is
                 if (value instanceof BaseComplexDataType) {
                     current[k] = (
                         value as BaseComplexDataType
