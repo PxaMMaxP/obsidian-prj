@@ -5,10 +5,10 @@ import PrjTypes from 'src/types/PrjTypes';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
 
 /**
- *
+ * The KanbanParser class is responsible for parsing a kanban board from a Kanban Markdown file.
  */
 export default class KanbanParser {
-    private logger = Logging.getLogger('KanbanParser');
+    private _logger = Logging.getLogger('KanbanParser');
     private _file: TFile;
     private _app: App = Global.getInstance().app;
 
@@ -20,8 +20,8 @@ export default class KanbanParser {
     private _board: KanbanBoard;
 
     /**
-     *
-     * @param file
+     * Creates an instance of the KanbanParser class.
+     * @param file The file to parse the kanban board from.
      */
     constructor(file: TFile) {
         this._file = file;
@@ -43,14 +43,14 @@ export default class KanbanParser {
             this._contentMarkdown = matches[2];
             this._contentKanbanSettings = matches[3];
 
-            this.logger.trace(
+            this._logger.trace(
                 `Separated frontmatter, markdown content and kanban settings for file ${this._file.path}`,
             );
             this._fileLoaded = true;
 
             return true;
         } else {
-            this.logger.error(
+            this._logger.error(
                 `Could not separate frontmatter,markdown content and kanban settings for file ${this._file.path}`,
             );
 
@@ -98,13 +98,15 @@ export default class KanbanParser {
                     : PrjTypes.getValidStatusFromLanguage(title);
 
             if (!status) {
-                this.logger.error(
+                this._logger.error(
                     `Skipping heading '${title}' as it is not a valid status or 'Archiv'`,
                 );
                 continue;
             }
 
-            this.logger.trace(`Found heading '${title}' as status '${status}'`);
+            this._logger.trace(
+                `Found heading '${title}' as status '${status}'`,
+            );
 
             const list = new KanbanList(title, status, content);
             await this.parseCards(list);
@@ -133,11 +135,11 @@ export default class KanbanParser {
             );
 
             if (!linkedFile) {
-                this.logger.warn(
+                this._logger.warn(
                     `No file found for list item '${itemContent}' linked to '${linkedFilePath}`,
                 );
             } else {
-                this.logger.trace(
+                this._logger.trace(
                     `Found list item '${itemContent}' linked to '${linkedFile.path}'`,
                 );
             }

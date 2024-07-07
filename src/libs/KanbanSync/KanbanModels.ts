@@ -8,7 +8,7 @@ import { CompletedString, KanbanStatus } from './KanbanTypes';
  * Also contains the Lists that are part of the board.
  */
 export class KanbanBoard {
-    private logger = Logging.getLogger('ParsedKanban');
+    private _logger = Logging.getLogger('ParsedKanban');
 
     /**
      * Contains all lists that are part of the board.
@@ -48,10 +48,10 @@ export class KanbanBoard {
     }
 
     /**
-     *
-     * @param contentFrontmatter
-     * @param contentMarkdown
-     * @param contentKanbanSettings
+     * Creates a new instance of the KanbanBoard.
+     * @param contentFrontmatter The *raw* frontmatter of the board.
+     * @param contentMarkdown The *raw* markdown content of the board.
+     * @param contentKanbanSettings The *raw* kanban settings of the board.
      */
     constructor(
         contentFrontmatter: string,
@@ -62,7 +62,7 @@ export class KanbanBoard {
         this._contentMarkdown = contentMarkdown;
         this._contentKanbanSettings = contentKanbanSettings;
 
-        this.logger.trace(
+        this._logger.trace(
             `Created new KanbanBoard with contentFrontmatter '${contentFrontmatter}', contentMarkdown '${contentMarkdown}', and contentKanbanSettings '${contentKanbanSettings}'`,
         );
     }
@@ -74,7 +74,7 @@ export class KanbanBoard {
     public addList(list: KanbanList): void {
         this.lists.push(list);
 
-        this.logger.trace(
+        this._logger.trace(
             `Added new List with title '${list.title}' and status '${list.status}'`,
         );
     }
@@ -155,7 +155,7 @@ export class KanbanBoard {
         const currentStatus = this.getStatusPerCard(card);
 
         if (currentStatus === status) {
-            this.logger.trace(
+            this._logger.trace(
                 `Item is already in status '${status}', skipping move`,
             );
 
@@ -204,24 +204,24 @@ export class KanbanBoard {
  * Contains the title, the status, and the cards that are part of the list.
  */
 export class KanbanList {
-    private logger = Logging.getLogger('KanbanCard');
+    private _logger = Logging.getLogger('KanbanCard');
 
     /**
-     *
+     * The type of the list.
      */
     public get type(): 'list' {
         return 'list';
     }
     private _status: KanbanStatus;
     /**
-     *
+     * The status of the list.
      */
     public get status(): KanbanStatus {
         return this._status;
     }
     private _title: string;
     /**
-     *
+     * The title of the list.
      */
     public get title(): string {
         return this._title;
@@ -230,7 +230,7 @@ export class KanbanList {
 
     private _rawContent: string;
     /**
-     *
+     * The raw content of the list.
      */
     public get rawContent(): string {
         return this._rawContent;
@@ -238,17 +238,17 @@ export class KanbanList {
 
     private _completed: boolean;
     /**
-     *
+     * Returns whether the list is completed.
      */
     public get completed(): boolean {
         return this._completed;
     }
 
     /**
-     *
-     * @param title
-     * @param status
-     * @param content
+     * Creates a new instance of the Kanban List.
+     * @param title The title of the list.
+     * @param status The status of the list.
+     * @param content The raw content of the list.
      */
     constructor(title: string, status: KanbanStatus, content: string) {
         this._title = title;
@@ -262,7 +262,7 @@ export class KanbanList {
             this._completed = false;
         }
 
-        this.logger.trace(
+        this._logger.trace(
             `Created new Kanban List with title '${title}' and status '${status}'`,
         );
     }
@@ -285,14 +285,14 @@ export class KanbanList {
 
         this.items.push(card);
 
-        this.logger.trace(
+        this._logger.trace(
             `Added new Kanban Card with checked '${card.checked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
         );
     }
 
     /**
-     *
-     * @param card
+     * Removes a card from the list.
+     * @param card The card to remove.
      */
     public removeCard(card: KanbanCard): void {
         if (this.items) {
@@ -311,10 +311,10 @@ export class KanbanList {
  * @remarks If the linked file is null, the list item is not linked to a file.
  */
 export class KanbanCard {
-    private logger = Logging.getLogger('KanbanCardItem');
+    private _logger = Logging.getLogger('KanbanCardItem');
 
     /**
-     *
+     * The type of the card.
      */
     public get type(): 'card' {
         return 'card';
@@ -323,7 +323,7 @@ export class KanbanCard {
 
     private _linkedFile: TFile | null;
     /**
-     *
+     * The linked file of the card.
      */
     public get linkedFile(): TFile | null {
         return this._linkedFile;
@@ -331,17 +331,17 @@ export class KanbanCard {
 
     private _rawContent: string;
     /**
-     *
+     * The raw content of the card.
      */
     public get rawContent(): string {
         return this._rawContent;
     }
 
     /**
-     *
-     * @param checked
-     * @param linkedFile
-     * @param content
+     * Creates a new instance of the KanbanCardItem.
+     * @param checked The checked state of the card.
+     * @param linkedFile The linked file of the card.
+     * @param content The raw content of the card.
      */
     constructor(
         checked: boolean | null,
@@ -352,7 +352,7 @@ export class KanbanCard {
         this._linkedFile = linkedFile;
         this._rawContent = content;
 
-        this.logger.trace(
+        this._logger.trace(
             `Created new KanbanCardItem with checked '${checked}', linkedFile '${linkedFile}', and content '${content}'`,
         );
     }

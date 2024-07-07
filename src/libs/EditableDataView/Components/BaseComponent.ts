@@ -8,11 +8,11 @@ import Global from 'src/classes/Global';
 export type CursorPosition = number | 'start' | 'end';
 
 /**
- *
+ * The base class for all components that should be editable.
  */
 export default abstract class BaseComponent {
     /**
-     *
+     * The main container of the component.
      */
     public get container(): HTMLDivElement {
         return this._shippingContainer;
@@ -78,8 +78,8 @@ export default abstract class BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param component
+     * Creates a new instance of the base component.
+     * @param component The component that should be created.
      */
     constructor(component: Component) {
         this.component = component;

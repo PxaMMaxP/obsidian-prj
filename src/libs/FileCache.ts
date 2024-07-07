@@ -10,7 +10,7 @@ import Global from '../classes/Global';
  */
 export default class FileCache {
     private _app: App = Global.getInstance().app;
-    private logger = Logging.getLogger('FileCache');
+    private _logger = Logging.getLogger('FileCache');
     private _fileCachePromise: Promise<void> | null = null;
     private _fileCache: Map<string, TFile | null> | null = null;
     private _duplicateNames: Map<string, Array<TFile>> | null = null;
@@ -39,7 +39,7 @@ export default class FileCache {
     constructor() {
         if (!this._fileCache) {
             this.buildFileCache().then(() => {
-                this.logger.debug('File Cache built');
+                this._logger.debug('File Cache built');
             });
         }
         this.createEventHandler = this.createEventHandler.bind(this);
@@ -115,7 +115,7 @@ export default class FileCache {
 
         const endTime = Date.now();
 
-        this.logger.debug(
+        this._logger.debug(
             `File cache for ${allFiles.length} files built in ${endTime - startTime}ms`,
         );
     }
@@ -128,7 +128,7 @@ export default class FileCache {
      */
     private addEntry(file: TFile) {
         if (!this._fileCache) {
-            this.logger.error('File cache not available');
+            this._logger.error('File cache not available');
 
             return false;
         }
@@ -157,13 +157,13 @@ export default class FileCache {
         const fileName = file.first()?.name;
 
         if (!fileName) {
-            this.logger.error('File name not available');
+            this._logger.error('File name not available');
 
             return false;
         }
 
         if (!this._duplicateNames) {
-            this.logger.error('Duplicate cache not available');
+            this._logger.error('Duplicate cache not available');
 
             return false;
         }
@@ -187,14 +187,16 @@ export default class FileCache {
      */
     private removeDuplicateEntry(file: TFile, oldPath: string | null = null) {
         if (!this._duplicateNames) {
-            this.logger.error('Duplicate cache not available');
+            this._logger.error('Duplicate cache not available');
 
             return false;
         }
         const duplicateEntry = this._duplicateNames.get(file.name);
 
         if (!duplicateEntry) {
-            this.logger.error('File ${file.name} not found in duplicate cache');
+            this._logger.error(
+                'File ${file.name} not found in duplicate cache',
+            );
 
             return false;
         }
@@ -204,7 +206,9 @@ export default class FileCache {
         if (index > -1) {
             duplicateEntry.splice(index, 1);
         } else {
-            this.logger.error(`File ${file.name} not found in duplicate cache`);
+            this._logger.error(
+                `File ${file.name} not found in duplicate cache`,
+            );
 
             return false;
         }
@@ -220,7 +224,7 @@ export default class FileCache {
      */
     private removeEntry(file: TFile) {
         if (!this._fileCache) {
-            this.logger.error('File cache not available');
+            this._logger.error('File cache not available');
 
             return false;
         }
@@ -230,7 +234,7 @@ export default class FileCache {
         if (existingFile) {
             this._fileCache.delete(file.name);
         } else if (existingFile === undefined) {
-            this.logger.warn(`File ${file.name} not found in cache`);
+            this._logger.warn(`File ${file.name} not found in cache`);
 
             return false;
         } else if (existingFile === null) {
@@ -249,14 +253,14 @@ export default class FileCache {
      */
     private renameEntry(file: TFile, oldPath: string) {
         if (!this._fileCache) {
-            this.logger.error('File cache not available');
+            this._logger.error('File cache not available');
 
             return false;
         }
         const oldFileName = this.getFileNameFromPath(oldPath);
 
         if (!oldFileName) {
-            this.logger.error('Old file name not available');
+            this._logger.error('Old file name not available');
 
             return false;
         }
@@ -267,7 +271,7 @@ export default class FileCache {
             this._fileCache.delete(oldFileName);
             state &&= this.addEntry(file);
         } else if (existingFile === undefined) {
-            this.logger.warn(`File ${oldFileName} not found in cache`);
+            this._logger.warn(`File ${oldFileName} not found in cache`);
             state &&= this.addEntry(file);
         } else if (existingFile === null) {
             state &&= this.removeDuplicateEntry(file, oldPath);
@@ -290,11 +294,11 @@ export default class FileCache {
         }
 
         if (state) {
-            this.logger.debug(
+            this._logger.debug(
                 `File ${file.name} create in file cache event handler success`,
             );
         } else {
-            this.logger.error(
+            this._logger.error(
                 `Error creating file ${file.name} in file cache event handler`,
             );
         }
@@ -313,7 +317,9 @@ export default class FileCache {
             const oldFileName = oldPath.split('/').last();
 
             if (!oldFileName) {
-                this.logger.error('Cannot extract old file name from the path');
+                this._logger.error(
+                    'Cannot extract old file name from the path',
+                );
 
                 return;
             }
@@ -321,11 +327,11 @@ export default class FileCache {
         }
 
         if (state) {
-            this.logger.debug(
+            this._logger.debug(
                 `File ${file.name} renamed in file cache event handler success`,
             );
         } else {
-            this.logger.error(
+            this._logger.error(
                 `Error renaming file ${file.name} in file cache event handler`,
             );
         }
@@ -344,11 +350,11 @@ export default class FileCache {
         }
 
         if (state) {
-            this.logger.debug(
+            this._logger.debug(
                 `File ${file.name} delete in file cache event handler success`,
             );
         } else {
-            this.logger.error(
+            this._logger.error(
                 `Error deleting file ${file.name} in file cache event handler`,
             );
         }
@@ -368,7 +374,7 @@ export default class FileCache {
 
             this._eventsRegistered = true;
 
-            this.logger.debug('File cache events registered');
+            this._logger.debug('File cache events registered');
         }
     }
 
@@ -382,7 +388,7 @@ export default class FileCache {
         const oldFileName = filePath.split('/').last();
 
         if (!oldFileName) {
-            this.logger.error('Cannot extract old file name from the path');
+            this._logger.error('Cannot extract old file name from the path');
 
             return;
         }
@@ -406,7 +412,7 @@ export default class FileCache {
             const duplicateEntry = this._duplicateNames?.get(fileName);
 
             if (!duplicateEntry) {
-                this.logger.error(
+                this._logger.error(
                     `File ${fileName} not found in duplicate cache`,
                 );
 
@@ -448,7 +454,7 @@ export default class FileCache {
         const fileName = this.getFileNameFromPath(filePath);
 
         if (!fileName) {
-            this.logger.error('File name not available');
+            this._logger.error('File name not available');
 
             return undefined;
         }
