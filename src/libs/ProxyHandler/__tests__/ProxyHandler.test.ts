@@ -1348,6 +1348,46 @@ describe('ProxyHandler', () => {
         }).toThrow();
     });
 
+    test('Should handle private (underscore) properties on reading correct', () => {
+        type TestObject = {
+            _test: string;
+            test: () => string;
+        };
+
+        const testObject = {
+            _test: 'result',
+            test() {
+                return this._test ?? 'fail';
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(proxy.test).toBeInstanceOf(Function);
+        expect(proxy.test()).toBe('result');
+    });
+
+    test('Should handle private (underscore) properties on writing correct', () => {
+        type TestObject = {
+            _test: string;
+            test: () => string;
+        };
+
+        const testObject = {
+            _test: 'fail',
+            test() {
+                this._test = 'result';
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test();
+
+        expect(proxy.test).toBeInstanceOf(Function);
+        expect(proxy._test).toBe('result');
+    });
+
     test('Should handle circular references correctly', () => {
         type TestObject = {
             name: string;

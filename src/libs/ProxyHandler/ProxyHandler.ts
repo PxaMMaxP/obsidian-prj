@@ -122,12 +122,7 @@ export default class ProxyHandler<T extends object> {
     ): unknown {
         const propertyKey = this.getPropertyKey(property);
 
-        /* istanbul ignore if  */
         if (this.isPrivate(property)) {
-            this.logger?.error(
-                'The `isPrivate`-Path is used in the `handleGet` method!',
-            );
-
             return target[property as keyof Partial<T>];
         }
 
@@ -170,12 +165,7 @@ export default class ProxyHandler<T extends object> {
     ): boolean {
         const propertyKey = this.getPropertyKey(property);
 
-        /* istanbul ignore if  */
         if (this.isPrivate(propertyKey)) {
-            this.logger?.error(
-                'The `isPrivate`-Path is used in the `handleSet` method!',
-            );
-
             target[property as keyof Partial<T>] = value as
                 | T[keyof T]
                 | undefined;
