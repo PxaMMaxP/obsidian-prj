@@ -20,11 +20,18 @@ import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
+import './classes/Dependencies';
 
+/**
+ *
+ */
 export default class Prj extends Plugin {
     public settings: PrjSettings;
     public api: API = API;
 
+    /**
+     * Will be called when the plugin is loaded
+     */
     async onload() {
         // eslint-disable-next-line no-console
         console.log("Loading plugin 'PRJ'");
@@ -39,6 +46,9 @@ export default class Prj extends Plugin {
         }
     }
 
+    /**
+     * Will be called when the layout is ready
+     */
     async onLayoutReady(): Promise<void> {
         // eslint-disable-next-line no-console
         console.log('Layout ready');
@@ -79,6 +89,9 @@ export default class Prj extends Plugin {
         }, 500);
     }
 
+    /**
+     * Register the Obsidian Commands an Events
+     */
     private registerCommandsAndEvents(): void {
         // Create New Metadata File Command
         CreateNewMetadataModal.registerCommand();
@@ -128,12 +141,18 @@ export default class Prj extends Plugin {
         this.addCommand({
             id: 'rebuild-active-view',
             name: Lng.gt('Rebuild active view'),
+            /**
+             * Rebuild the active view
+             */
             callback: async () => {
                 Helper.rebuildActiveView();
             },
         });
     }
 
+    /**
+     * Will be called when the plugin is unloaded
+     */
     onunload() {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
@@ -142,6 +161,9 @@ export default class Prj extends Plugin {
         Global.deconstructor();
     }
 
+    /**
+     * Load the settings
+     */
     async loadSettings() {
         this.settings = Object.assign(
             {},
@@ -150,6 +172,9 @@ export default class Prj extends Plugin {
         );
     }
 
+    /**
+     * Save the settings
+     */
     async saveSettings() {
         await this.saveData(this.settings);
     }

@@ -5,6 +5,7 @@ import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './interfaces/ITag';
 import { ITags, ITagsDependencies } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
+import DependencyRegistry from '../DependencyRegistry';
 
 /**
  * Represents an array of tags.
@@ -86,12 +87,19 @@ export default class Tags extends BaseComplexDataType implements ITags {
      * @param metadataCache The metadata cache.
      * @param tagFactory The tag factory for the `ITag` interface.
      * @param logger The logger to use for logging messages.
+     * @param dependencies
      */
     constructor(
         tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies: ITagsDependencies,
+        dependencies?: ITagsDependencies,
     ) {
         super();
+
+        dependencies = DependencyRegistry.isDependencyProvided(
+            'ITagsDependencies',
+            dependencies,
+        );
+
         this._metadataCache = dependencies.metadataCache;
         this._tagClass = dependencies.tagClass;
         this.logger = dependencies.logger;
@@ -106,9 +114,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return new (this._tagClass as ITagConstructor)(tagValue, {
-            metadataCache: this._metadataCache,
-        });
+        return new (this._tagClass as any)(tagValue);
     }
 
     /**
@@ -249,6 +255,9 @@ export default class Tags extends BaseComplexDataType implements ITags {
         let index = 0;
 
         return {
+            /**
+             *
+             */
             next: (): IteratorResult<ITag> => {
                 if (index < this._tags.length) {
                     return {
@@ -334,6 +343,9 @@ export default class Tags extends BaseComplexDataType implements ITags {
         return obj instanceof Tags;
     }
 
+    /**
+     *
+     */
     public getFrontmatterObject():
         | Record<string, unknown>
         | Array<unknown>

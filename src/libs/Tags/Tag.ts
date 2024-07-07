@@ -1,10 +1,15 @@
 import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag, ITagDependencies } from './interfaces/ITag';
+import type { ITag, ITagDependencies } from './interfaces/ITag';
+import DependencyRegistry from '../DependencyRegistry';
 
 /**
  * Represents a tag.
  * @remarks The class extends the String class and provides additional methods to work with tags.
+ */
+
+/**
+ *
  */
 export default class Tag extends BaseComplexDataType implements ITag {
     private _tag: string;
@@ -72,9 +77,15 @@ export default class Tag extends BaseComplexDataType implements ITag {
      * Creates a new instance of the Tag class.
      * @param value The value of the tag.
      * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
+     * @param dependencies
      */
-    constructor(value: string, dependencies: ITagDependencies) {
+    constructor(value: string, dependencies?: ITagDependencies) {
         super();
+
+        dependencies = DependencyRegistry.isDependencyProvided(
+            'ITagDependencies',
+            dependencies,
+        );
 
         this.value = value;
 
@@ -174,6 +185,9 @@ export default class Tag extends BaseComplexDataType implements ITag {
         return this.value.startsWith(searchString, position);
     }
 
+    /**
+     *
+     */
     public getFrontmatterObject():
         | Record<string, unknown>
         | Array<unknown>
