@@ -1,550 +1,1078 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ILogger } from 'src/interfaces/ILogger';
 import ProxyHandler from '../ProxyHandler';
 
-interface NestedObject {
-    value: string;
-    nestedArray?: string[];
-    nestedObject?: {
-        deepValue: string;
-    };
+/**
+ * Extends the ProxyHandler class for testing
+ * to get access to the protected properties and methods.
+ */
+class TestProxyHandler<T extends object> extends ProxyHandler<T> {
+    public get proxyMap(): WeakMap<object, unknown> {
+        return (this as any)._proxyMap;
+    }
+
+    private _proxyMapSize = 0;
+
+    public get proxyMapSize(): number {
+        return this._proxyMapSize;
+    }
+
+    public updateKeyValueDelegate(
+        updateKeyValue: (key: string, value: unknown) => void,
+    ): void {
+        (this as any)._updateKeyValue = updateKeyValue;
+    }
+
+    public updateLogger(logger: ILogger | undefined): void {
+        (this as any).logger = logger;
+    }
+
+    constructor(
+        logger: ILogger | undefined,
+        updateKeyValue: (key: string, value: unknown) => void,
+    ) {
+        super(logger, updateKeyValue);
+
+        ((this as any).addProxyToMapOriginal as (
+            obj: Partial<T>,
+            proxy: Partial<T>,
+        ) => void) = (this as any).addProxyToMap as (
+            obj: Partial<T>,
+            proxy: Partial<T>,
+        ) => void;
+
+        ((this as any).addProxyToMap as (
+            obj: Partial<T>,
+            proxy: Partial<T>,
+        ) => void) = this.addProxyToMapWrapper;
+    }
+
+    protected addProxyToMapWrapper(obj: Partial<T>, proxy: Partial<T>): void {
+        this._proxyMapSize++;
+
+        (
+            (this as any).addProxyToMapOriginal as (
+                obj: Partial<T>,
+                proxy: Partial<T>,
+            ) => void
+        )(obj, proxy);
+    }
 }
 
-interface TestObject {
-    publicField: string;
-    get privateField(): string;
-    set privateField(value: string);
-    nested?: NestedObject;
-    arrayField?: string[];
-}
+class TestObjectClass {
+    // ...
 
-class TestObjectImplementation implements TestObject {
-    public publicField: string;
-    private _privateField: string;
+    private _test: string;
 
-    constructor(publicField: string, privateField: string) {
-        this.publicField = publicField;
-        this._privateField = privateField;
+    public get test(): string {
+        return this._test + ' getter';
     }
 
-    get privateField(): string {
-        return this._privateField + '!';
-    }
-
-    set privateField(value: string) {
-        this._privateField = value;
-    }
-}
-
-class NestedObject {
-    private _deepValue: { value: string };
-
-    constructor(initialValue: string) {
-        this._deepValue = { value: initialValue };
-    }
-
-    get deepValue() {
-        return this._deepValue;
-    }
-
-    set deepValue(newVal: { value: string }) {
-        this._deepValue = newVal;
+    public set test(value: string) {
+        this._test = value + ' setter';
     }
 }
 
 describe('ProxyHandler', () => {
-    let logger: ILogger;
     let updateKeyValueMock: jest.Mock;
-    let proxyHandler: ProxyHandler<TestObject>;
+    let proxyHandler: TestProxyHandler<object>;
 
     beforeEach(() => {
-        logger = {
+        updateKeyValueMock = jest.fn();
+
+        proxyHandler = new TestProxyHandler<object>(
+            undefined,
+            updateKeyValueMock,
+        );
+    });
+
+    //#region General Tests
+
+    test('Should create a proxy of an anonymous object ', () => {
+        const testObject = {
+            test: 'test',
+        };
+        const proxy = proxyHandler.createProxy(testObject);
+        expect(proxy).toEqual(testObject);
+    });
+
+    test('Should change the value of a public property', () => {
+        type TestObject = {
+            test: string;
+        };
+
+        const testObject = {
+            test: 'value',
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test = 'new value';
+
+        expect(proxy.test).toBe('new value');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test', 'new value');
+    });
+
+    test('Should change the value of a property trough a setter', () => {
+        type TestObject = {
+            _test: string;
+            set test(value: string);
+            get test(): string;
+        };
+
+        const testObject = {
+            _test: 'value',
+            set test(value: string) {
+                this._test = value;
+            },
+            get test() {
+                return this._test;
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test = 'new value';
+
+        expect(proxy.test).toBe('new value');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test', 'new value');
+    });
+
+    test('Should change the value of a property trough a setter and get a changed value trough a getter', () => {
+        type TestObject = {
+            _test: string;
+            set test(value: string);
+            get test(): string;
+        };
+
+        const testObject = {
+            _test: 'value',
+            set test(value: string) {
+                this._test = value + ' changed';
+            },
+            get test() {
+                return this._test;
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test = 'new value';
+
+        expect(proxy.test).toBe('new value changed');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test',
+            'new value changed',
+        );
+    });
+
+    test('Should change the value of a private property trough a setter and get a changed value trough a getter', () => {
+        const testObject = new TestObjectClass();
+        const proxy = proxyHandler.createProxy(testObject) as TestObjectClass;
+
+        proxy.test = 'new value';
+
+        expect(proxy.test).toBe('new value setter getter');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test',
+            'new value setter getter',
+        );
+    });
+
+    //#endregion General Tests
+
+    //#region Array of strings
+
+    test('Should work with an array of strings: new array', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value 0', 'value 1', 'value 2'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test = ['value 0', 'value 1', 'value 2'];
+
+        proxy.test.forEach((value, index) => {
+            expect(value).toBe(`value ${index}`);
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test', [
+            'value 0',
+            'value 1',
+            'value 2',
+        ]);
+    });
+
+    test('Should work with an array of strings: push', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.push('new value');
+
+        expect(proxy.test).toEqual(['value', 'new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.1', 'new value');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.length', 2);
+    });
+
+    test('Should work with an array of strings: pop', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.pop();
+
+        expect(proxy.test).toEqual([]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', null);
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.length', 0);
+    });
+
+    test('Should work with an array of strings: shift', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.shift();
+
+        expect(proxy.test).toEqual([]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', null);
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.length', 0);
+    });
+
+    test('Should work with an array of strings: unshift', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.unshift('new value');
+
+        expect(proxy.test).toEqual(['new value', 'value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', 'new value');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.1', 'value');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.length', 2);
+    });
+
+    test('Should work with an array of strings: splice', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.splice(0, 1, 'new value');
+
+        expect(proxy.test).toEqual(['new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', 'new value');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.length', 1);
+    });
+
+    test('Should work with an array of strings: reverse', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value', 'new value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.reverse();
+
+        expect(proxy.test).toEqual(['new value', 'value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', 'new value');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.1', 'value');
+    });
+
+    test('Should work with an array of strings: sort', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['4', '0', '2', '1', '3'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.sort();
+
+        expect(proxy.test).toEqual(['0', '1', '2', '3', '4']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', '0');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.1', '1');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.2', '2');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.3', '3');
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.4', '4');
+    });
+
+    test('Should work with an array of strings: fill', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.fill('new value');
+
+        expect(proxy.test).toEqual(['new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', 'new value');
+    });
+
+    test('Should work with an array of strings: copyWithin', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value', 'new value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.copyWithin(0, 1);
+
+        expect(proxy.test).toEqual(['new value', 'new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', 'new value');
+    });
+
+    test('Should work with an array of strings: delete', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value', 'new value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        delete proxy.test[0];
+
+        expect(proxy.test).toEqual([undefined, 'new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.0', null);
+    });
+
+    test('Should work with an array of strings: delete last element', () => {
+        type TestObject = {
+            test: string[];
+        };
+
+        const testObject = {
+            test: ['value', 'new value'],
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        delete proxy.test[1];
+
+        expect(proxy.test).toEqual(['value', undefined]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.1', null);
+    });
+
+    //#endregion Array of strings
+
+    //#region Object with nested object
+
+    test('Should work with an object with a nested object', () => {
+        type TestObject = {
+            test: {
+                nested: string;
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: 'value',
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested = 'new value';
+
+        expect(proxy.test.nested).toBe('new value');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested',
+            'new value',
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array', () => {
+        type TestObject = {
+            test: {
+                nested: string[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: ['value'],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.push('new value');
+
+        expect(proxy.test.nested).toEqual(['value', 'new value']);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.1',
+            'new value',
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested[0].nestedValue = 'new value';
+
+        expect(proxy.test.nested[0].nestedValue).toBe('new value');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.0.nestedValue',
+            'new value',
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: push', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.push({
+            nestedValue: 'new value',
+        });
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'value',
+            },
+            {
+                nestedValue: 'new value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.1', {
+            nestedValue: 'new value',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.length',
+            2,
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: pop', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                    {
+                        nestedValue: 'new value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.pop();
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.1', null);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.length',
+            1,
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: shift', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                    {
+                        nestedValue: 'new value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.shift();
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'new value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.0', {
+            nestedValue: 'new value',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.length',
+            1,
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: unshift', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.unshift({
+            nestedValue: 'new value',
+        });
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'new value',
+            },
+            {
+                nestedValue: 'value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.0', {
+            nestedValue: 'new value',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.length',
+            2,
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: splice', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                    {
+                        nestedValue: 'new value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.splice(0, 1, {
+            nestedValue: 'new value',
+        });
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'new value',
+            },
+            {
+                nestedValue: 'new value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.0', {
+            nestedValue: 'new value',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'test.nested.length',
+            2,
+        );
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: reverse', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                    {
+                        nestedValue: 'new value',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.reverse();
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: 'new value',
+            },
+            {
+                nestedValue: 'value',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.0', {
+            nestedValue: 'new value',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.1', {
+            nestedValue: 'value',
+        });
+    });
+
+    test('Should work with an object with a nested object and a nested array of objects: sort', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: '4',
+                    },
+                    {
+                        nestedValue: '0',
+                    },
+                    {
+                        nestedValue: '2',
+                    },
+                    {
+                        nestedValue: '1',
+                    },
+                    {
+                        nestedValue: '3',
+                    },
+                ],
+            },
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.sort((a, b) => {
+            return a.nestedValue.localeCompare(b.nestedValue);
+        });
+
+        expect(proxy.test.nested).toEqual([
+            {
+                nestedValue: '0',
+            },
+            {
+                nestedValue: '1',
+            },
+            {
+                nestedValue: '2',
+            },
+            {
+                nestedValue: '3',
+            },
+            {
+                nestedValue: '4',
+            },
+        ]);
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.0', {
+            nestedValue: '0',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.1', {
+            nestedValue: '1',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.2', {
+            nestedValue: '2',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.3', {
+            nestedValue: '3',
+        });
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith('test.nested.4', {
+            nestedValue: '4',
+        });
+    });
+
+    //#endregion Object with nested object
+
+    //#region Existing proxy
+
+    test('Should create a proxy and add it to the proxyMap', () => {
+        type TestObject = {
+            test: string;
+        };
+
+        const testObject = { test: 'value' } as TestObject;
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(proxyHandler.proxyMap.has(testObject)).toBe(true);
+        expect(proxyHandler.proxyMapSize).toBe(1); // Check the size of the proxyMap
+    });
+
+    test('Should create nested proxies and add them to the proxyMap', () => {
+        type TestObject = {
+            test: {
+                nested: string;
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: 'value',
+            },
+        } as TestObject;
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        const devNull = proxy.test; // Access the nested object to create a proxy
+
+        expect(proxyHandler.proxyMap.has(testObject)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test)).toBe(true);
+        expect(proxyHandler.proxyMapSize).toBe(2); // Check the size of the proxyMap
+    });
+
+    test('Should create proxies for nested objects and arrays', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value',
+                    },
+                ],
+            },
+        } as TestObject;
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        const devNull = proxy.test.nested[0]; // Access the nested object to create all proxies
+
+        expect(proxyHandler.proxyMap.has(testObject)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested[0])).toBe(true);
+        expect(proxyHandler.proxyMapSize).toBe(4); // Check the size of the proxyMap
+    });
+
+    test('Should handle array operations and maintain proxies', () => {
+        type TestObject = {
+            test: {
+                nested: {
+                    nestedValue: string;
+                }[];
+            };
+        };
+
+        const testObject = {
+            test: {
+                nested: [
+                    {
+                        nestedValue: 'value1',
+                    },
+                    {
+                        nestedValue: 'value2',
+                    },
+                ],
+            },
+        } as TestObject;
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.test.nested.push({
+            nestedValue: 'value3',
+        });
+
+        proxy.test.nested.forEach((nested, index) => {
+            const devNull = proxy.test.nested[index]; // Access the nested object to create all proxies
+        });
+
+        expect(proxyHandler.proxyMap.has(testObject)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested[0])).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested[1])).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.test.nested[2])).toBe(true);
+        expect(proxyHandler.proxyMapSize).toBe(6); // Check the size of the proxyMap
+    });
+
+    test('Should handle deep nested structures and maintain proxies', () => {
+        type TestObject = {
+            level1: {
+                level2: {
+                    level3: {
+                        level4: string;
+                    };
+                };
+            };
+        };
+
+        const testObject = {
+            level1: {
+                level2: {
+                    level3: {
+                        level4: 'value',
+                    },
+                },
+            },
+        } as TestObject;
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        const devNull_0 = proxy.level1.level2.level3.level4; // Access the nested object to create all proxies
+        const devNull_1 = proxy.level1.level2.level3.level4; // Access the nested object again to test if the proxy is reused
+
+        expect(proxyHandler.proxyMap.has(testObject)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.level1)).toBe(true);
+        expect(proxyHandler.proxyMap.has(testObject.level1.level2)).toBe(true);
+
+        expect(proxyHandler.proxyMap.has(testObject.level1.level2.level3)).toBe(
+            true,
+        );
+        expect(proxyHandler.proxyMapSize).toBe(4); // Check the size of the proxyMap
+    });
+
+    //#endregion Existing proxy
+
+    //#region Check Logger and Try-Catch
+
+    test('Should log an error if the updateKeyValue delegate throws an error', () => {
+        const logger: ILogger = {
             warn: jest.fn(),
             info: jest.fn(),
             error: jest.fn(),
             trace: jest.fn(),
             debug: jest.fn(),
         };
-        updateKeyValueMock = jest.fn();
-        proxyHandler = new ProxyHandler<TestObject>(logger, updateKeyValueMock);
-    });
 
-    test('should create a proxy and get public field', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect(proxy.publicField).toBe('publicValue');
-    });
-
-    test('should create a proxy and get private field through getter', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect(proxy.privateField).toBe('privateValue!');
-    });
-
-    test('should create a proxy and set public field', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        proxy.publicField = 'newPublicValue';
-        expect(proxy.publicField).toBe('newPublicValue');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'publicField',
-            'newPublicValue',
-        );
-    });
-
-    test('should create a proxy and set private field through setter', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        proxy.privateField = 'newPrivateValue';
-        expect(proxy.privateField).toBe('newPrivateValue!');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'privateField',
-            'newPrivateValue!',
-        );
-    });
-
-    test('should resolve proxy value for nested objects', () => {
-        const obj = {
-            nested: {
-                value: 'nestedValue',
-            },
-        } as Partial<TestObjectImplementation>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.nested) {
-            proxy.nested.value = 'newNestedValue';
-        }
-        expect(proxy.nested?.value).toBe('newNestedValue');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.value',
-            'newNestedValue',
-        );
-    });
-
-    test('should handle array properties in the proxy', () => {
-        const obj = {
-            arrayField: ['value1', 'value2'],
-        } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.arrayField) {
-            proxy.arrayField.push('value3');
-        }
-        expect(proxy.arrayField).toContain('value3');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'arrayField.2',
-            'value3',
-        );
-        expect(updateKeyValueMock).toHaveBeenCalledWith('arrayField.length', 3);
-    });
-
-    test('should handle nested arrays within nested objects', () => {
-        const obj = {
-            nested: {
-                value: 'nestedValue',
-                nestedArray: ['nestedValue1', 'nestedValue2'],
-            },
-        } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.nested?.nestedArray) {
-            proxy.nested.nestedArray.push('nestedValue3');
-        }
-        expect(proxy.nested?.nestedArray).toContain('nestedValue3');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.nestedArray.2',
-            'nestedValue3',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.nestedArray.length',
-            3,
-        );
-    });
-
-    test('should handle deeply nested objects', () => {
-        const obj = {
-            nested: {
-                value: 'nestedValue',
-                nestedObject: {
-                    deepValue: 'deepNestedValue',
-                },
-            },
-        } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.nested?.nestedObject) {
-            proxy.nested.nestedObject.deepValue = 'newDeepNestedValue';
-        }
-
-        expect(proxy.nested?.nestedObject?.deepValue).toBe(
-            'newDeepNestedValue',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.nestedObject.deepValue',
-            'newDeepNestedValue',
-        );
-    });
-
-    test('should handle deeply nested objects with private variables', () => {
-        const obj = {
-            nested: {
-                value: 'nestedValue',
-                nestedObject: new NestedObject('deepNestedValue'), // Using the new NestedObject class
-            },
-        } as unknown as Partial<TestObject>;
-
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.nested?.nestedObject) {
-            (proxy.nested.nestedObject.deepValue as any) = {
-                value: 'newDeepNestedValue',
-            };
-        }
-
-        // Verifying if the private variable _deepValue is updated via the setter
-        expect((proxy.nested?.nestedObject?.deepValue as any)?.value).toBe(
-            'newDeepNestedValue',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.nestedObject.deepValue',
-            { value: 'newDeepNestedValue' },
-        );
-    });
-
-    test('should use existing proxy if already created', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy1 = proxyHandler.createProxy(obj);
-        const proxy2 = proxyHandler.createProxy(obj);
-
-        expect(proxy1).toStrictEqual(proxy2);
-    });
-
-    test('should access private field directly through getter', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        // Access directly through getter
-        expect(proxy.privateField).toBe('privateValue!');
-        expect(updateKeyValueMock).not.toHaveBeenCalled();
-    });
-
-    test('should update private field directly through setter', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        // Update directly through setter
-        proxy.privateField = 'newPrivateValue';
-        expect(proxy.privateField).toBe('newPrivateValue!');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'privateField',
-            'newPrivateValue!',
-        );
-    });
-
-    test('should resolve primitive values correctly', () => {
-        const primitiveValue = 42;
-        const resolvedValue = proxyHandler['resolveProxyValue'](primitiveValue);
-        expect(resolvedValue).toBe(primitiveValue);
-    });
-
-    test('should resolve array values correctly', () => {
-        const arrayValue = [1, 2, { nested: 'value' }];
-        const resolvedValue = proxyHandler['resolveProxyValue'](arrayValue);
-        expect(resolvedValue).toEqual([1, 2, { nested: 'value' }]);
-    });
-
-    test('should resolve object values correctly', () => {
-        const objValue = {
-            publicField: 'value1',
-            key2: { nestedKey: 'nestedValue' },
+        const updateKeyValueError: (key: string, value: unknown) => void = (
+            key,
+            value,
+        ) => {
+            throw new Error('Test error');
         };
-        const resolvedValue = proxyHandler['resolveProxyValue'](objValue);
 
-        expect(resolvedValue).toEqual({
-            publicField: 'value1',
-            key2: { nestedKey: 'nestedValue' },
-        });
-    });
+        proxyHandler.updateLogger(logger);
+        proxyHandler.updateKeyValueDelegate(updateKeyValueError);
 
-    test('should handle proxy map values correctly', () => {
-        const objValue = { publicField: 'value' };
-        const proxy = proxyHandler.createProxy(objValue as Partial<TestObject>);
-        const resolvedValue = proxyHandler['resolveProxyValue'](proxy);
-        expect(resolvedValue).toStrictEqual(proxy);
-    });
+        type TestObject = {
+            test: string;
+        };
 
-    test('should return existing proxy for nested object from proxy map 1', () => {
-        const obj = {
-            nested: {
-                value: 'nestedValue',
-                nestedObject: {
-                    deepValue: 'Origin deepNestedValue',
-                },
-            },
-        } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
+        const testObject = {
+            test: 'value',
+        } as TestObject;
 
-        if (proxy.nested?.nestedObject) {
-            proxy.nested.nestedObject.deepValue = 'Old/New DeepNestedValue';
-        }
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
 
-        const oldObj = proxy.nested?.nestedObject;
+        proxy.test = 'new value';
 
-        if (proxy.nested?.nestedObject) {
-            proxy.nested.nestedObject = {
-                deepValue: 'New DeepNestedValue',
-            };
-        }
-
-        if (proxy.nested?.nestedObject) {
-            proxy.nested.nestedObject = oldObj;
-        }
-
-        expect(proxy.nested?.nestedObject?.deepValue).toBe(
-            'Old/New DeepNestedValue',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenNthCalledWith(
-            1,
-            'nested.nestedObject.deepValue',
-            'Old/New DeepNestedValue',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenNthCalledWith(
-            2,
-            'nested.nestedObject',
-            { deepValue: 'New DeepNestedValue' },
-        );
-
-        expect(updateKeyValueMock).toHaveBeenNthCalledWith(
-            3,
-            'nested.nestedObject',
-            { deepValue: 'Old/New DeepNestedValue' },
+        expect(logger.error).toHaveBeenCalledWith(
+            'Failed to update key-value pair for key test with value: Test error',
         );
     });
 
-    test('should return existing proxy for nested object from proxy map 2', () => {
-        const initialObj = {
-            nested: {
-                value: 'nestedValue',
-                nestedObject: {
-                    deepValue: 'Origin deepNestedValue',
-                },
-            },
-        } as Partial<TestObject>;
-        const initialProxy = proxyHandler.createProxy(initialObj);
+    test('Should not log (without logger) an error if the updateKeyValue delegate throws an error', () => {
+        const updateKeyValueError: (key: string, value: unknown) => void = (
+            key,
+            value,
+        ) => {
+            throw new Error('Test error');
+        };
 
-        const newObj = {
-            nested: {
-                value: 'nestedValue',
-                nestedObject: {
-                    deepValue: 'New deepNestedValue',
-                },
-            },
-        } as Partial<TestObject>;
-        const newProxy = proxyHandler.createProxy(newObj);
+        proxyHandler.updateKeyValueDelegate(updateKeyValueError);
 
-        if (initialProxy.nested?.nestedObject) {
-            initialProxy.nested.nestedObject.deepValue =
-                'Make sure that a deep proxy is created.';
-        }
+        type TestObject = {
+            test: string;
+        };
 
-        newProxy.nested = initialProxy.nested;
+        const testObject = {
+            test: 'value',
+        } as TestObject;
 
-        expect(initialProxy.nested?.nestedObject?.deepValue).toBe(
-            'Make sure that a deep proxy is created.',
-        );
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
 
-        expect(newProxy.nested?.nestedObject?.deepValue).toBe(
-            'Make sure that a deep proxy is created.',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenNthCalledWith(
-            1,
-            'nested.nestedObject.deepValue',
-            'Make sure that a deep proxy is created.',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenNthCalledWith(2, 'nested', {
-            nestedObject: {
-                deepValue: 'Make sure that a deep proxy is created.',
-            },
-            value: 'nestedValue',
-        });
+        proxy.test = 'new value';
     });
 
-    test('should handle null object in createProxy', () => {
-        expect(() => proxyHandler.createProxy(null as any)).toThrow();
-    });
+    test('Should log an error if the property is not writable', () => {
+        const logger: ILogger = {
+            warn: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            trace: jest.fn(),
+            debug: jest.fn(),
+        };
 
-    test('should handle undefined object in createProxy', () => {
-        expect(() => proxyHandler.createProxy(undefined as any)).toThrow();
-    });
+        proxyHandler.updateLogger(logger);
 
-    test('should handle null in resolveProxyValue', () => {
-        const resolvedValue = proxyHandler['resolveProxyValue'](null);
-        expect(resolvedValue).toBeNull();
-    });
+        type TestObject = {
+            test: string;
+        };
 
-    test('should handle undefined in resolveProxyValue', () => {
-        const resolvedValue = proxyHandler['resolveProxyValue'](undefined);
-        expect(resolvedValue).toBeUndefined();
-    });
+        const testObject = {
+            test: 'value',
+        } as TestObject;
 
-    test('should create proxy with symbol keys', () => {
-        const symbolKey = Symbol('symbolKey');
-        const obj = { [symbolKey]: 'symbolValue' } as any;
-        const proxy = proxyHandler.createProxy(obj);
+        const freezeObject = Object.freeze(testObject);
 
-        expect((proxy as any)[symbolKey]).toBe('symbolValue');
-    });
-
-    test('should handle private symbol keys', () => {
-        const privateSymbol = Symbol('_privateSymbol');
-        const obj = { [privateSymbol]: 'privateValue' } as any;
-        const proxy = proxyHandler.createProxy(obj);
-
-        (proxy as any)[privateSymbol] = 'newPrivateValue';
-        expect((proxy as any)[privateSymbol]).toBe('newPrivateValue');
-    });
-
-    test('should handle addition of elements to arrays within objects', () => {
-        const obj = { arrayField: ['value1'] } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.arrayField) {
-            proxy.arrayField.push('value2');
-        }
-        expect(proxy.arrayField).toContain('value2');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'arrayField.1',
-            'value2',
-        );
-        expect(updateKeyValueMock).toHaveBeenCalledWith('arrayField.length', 2);
-    });
-
-    test('should handle removal of elements from arrays within objects', () => {
-        const obj = { arrayField: ['value1', 'value2'] } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        if (proxy.arrayField) {
-            proxy.arrayField.pop();
-        }
-        expect(proxy.arrayField).not.toContain('value2');
-        expect(updateKeyValueMock).toHaveBeenCalledWith('arrayField.length', 1);
-    });
-
-    test('should return the same proxy for the same object after modification', () => {
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy1 = proxyHandler.createProxy(obj);
-
-        proxy1.publicField = 'value2';
-        const proxy2 = proxyHandler.createProxy(obj);
-
-        expect(proxy1).toStrictEqual(proxy2);
-        expect(proxy2.publicField).toBe('value2');
-    });
-
-    test('should handle accessing non-existent paths gracefully', () => {
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any)['nonExistentField']).toBeUndefined();
-    });
-
-    test('should handle setting non-existent paths gracefully', () => {
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        (proxy as any)['nonExistentField'] = 'newValue';
-        expect((proxy as any)['nonExistentField']).toBe('newValue');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nonExistentField',
-            'newValue',
-        );
-    });
-
-    test('should handle functions as values in the proxy', () => {
-        const obj = { method: () => 'result' } as any;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).method()).toBe('result');
-    });
-
-    test('should proxy nested objects with functions correctly', () => {
-        const obj = {
-            nested: {
-                method: () => 'nestedResult',
-            },
-        } as any;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).nested.method()).toBe('nestedResult');
-    });
-
-    test('should set and reset private fields correctly', () => {
-        const obj = new TestObjectImplementation('publicValue', 'privateValue');
-        const proxy = proxyHandler.createProxy(obj);
-
-        proxy.privateField = 'newPrivateValue';
-        expect(proxy.privateField).toBe('newPrivateValue!');
-
-        proxy.privateField = 'privateValue';
-        expect(proxy.privateField).toBe('privateValue!');
-    });
-
-    test('should handle multiple nesting and un-nesting of objects', () => {
-        const obj = {
-            nested: {
-                nestedObject: {
-                    deepNestedObject: {
-                        value: 'deepValue',
-                    },
-                },
-            },
-        } as any;
-        const proxy = proxyHandler.createProxy(obj);
-
-        (proxy as any).nested.nestedObject.deepNestedObject.value =
-            'newDeepValue';
-
-        expect((proxy as any).nested.nestedObject.deepNestedObject.value).toBe(
-            'newDeepValue',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.nestedObject.deepNestedObject.value',
-            'newDeepValue',
-        );
-
-        delete (proxy as any).nested.nestedObject.deepNestedObject;
-
-        expect(
-            (proxy as any).nested.nestedObject.deepNestedObject,
-        ).toBeUndefined();
-    });
-
-    test('should log an error when setting a value on a non-writable property', () => {
-        const obj = Object.freeze({ publicField: 'value1' }) as any;
-        const proxy = proxyHandler.createProxy(obj);
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
 
         expect(() => {
-            proxy.publicField = 'newValue';
+            proxy.test = 'new value';
         }).toThrow();
 
         expect(logger.error).toHaveBeenCalledWith(
@@ -552,194 +1080,326 @@ describe('ProxyHandler', () => {
         );
     });
 
-    test('should handle combined scenarios with nested arrays and symbols', () => {
-        const symbolKey = Symbol('symbolKey');
+    test('Should not log (without logger) an error if the property is not writable', () => {
+        type TestObject = {
+            test: string;
+        };
 
-        const obj = {
-            nested: {
-                arrayField: ['value1'],
-                [symbolKey]: 'symbolValue',
-            },
-        } as any;
-        const proxy = proxyHandler.createProxy(obj);
+        const testObject = {
+            test: 'value',
+        } as TestObject;
 
-        (proxy as any).nested.arrayField.push('value2');
-        (proxy as any).nested[symbolKey] = 'newSymbolValue';
+        const freezeObject = Object.freeze(testObject);
 
-        expect((proxy as any).nested.arrayField).toContain('value2');
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.arrayField.1',
-            'value2',
-        );
-
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'nested.arrayField.length',
-            2,
-        );
-        expect((proxy as any).nested[symbolKey]).toBe('newSymbolValue');
-    });
-
-    test('should handle symbol keys in deeply nested objects', () => {
-        const symbolKey = Symbol('symbolKey');
-
-        const obj = {
-            nested: {
-                deepNested: {
-                    [symbolKey]: 'symbolValue',
-                },
-            },
-        } as any;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).nested?.deepNested[symbolKey]).toBe(
-            'symbolValue',
-        );
-        (proxy as any).nested.deepNested[symbolKey] = 'newSymbolValue';
-
-        expect((proxy as any).nested.deepNested[symbolKey]).toBe(
-            'newSymbolValue',
-        );
-    });
-
-    test.skip('should handle symbols as keys in arrays', () => {
-        const symbolKey = Symbol('symbolKey');
-
-        const obj = {
-            arrayField: ['value1', { [symbolKey]: 'symbolValue' }],
-        } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).arrayField?.[1][symbolKey]).toBe('symbolValue');
-        (proxy as any).arrayField?.push({ [symbolKey]: 'newSymbolValue' });
-
-        expect((proxy as any).arrayField?.[2][symbolKey]).toBe(
-            'newSymbolValue',
-        );
-    });
-
-    test('should log error when setting value on non-writable property', () => {
-        const obj = {};
-
-        Object.defineProperty(obj, 'nonWritable', {
-            value: 'initialValue',
-            writable: false,
-        });
-        const proxy = proxyHandler.createProxy(obj as any);
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
 
         expect(() => {
-            (proxy as any).nonWritable = 'newValue';
+            proxy.test = 'new value';
+        }).toThrow();
+    });
+
+    test('Should log an error if the property is not readable', () => {
+        const logger: ILogger = {
+            warn: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            trace: jest.fn(),
+            debug: jest.fn(),
+        };
+
+        proxyHandler.updateLogger(logger);
+
+        type TestObject = {
+            test: string;
+        };
+
+        const testObject = {
+            test: 'value',
+        } as TestObject;
+
+        const handler = {
+            get(target: any, property: string) {
+                if (property === 'test') {
+                    throw new Error(
+                        `Access to property ${property} is forbidden`,
+                    );
+                }
+
+                return target[property];
+            },
+        };
+
+        const testProxy = new Proxy(testObject, handler);
+
+        const proxy = proxyHandler.createProxy(testProxy) as TestObject;
+
+        const value = proxy.test;
+
+        expect(value).toBeUndefined();
+
+        expect(logger.error).toHaveBeenCalledWith(
+            expect.stringContaining('Failed to get property'),
+        );
+    });
+
+    test('Should not log (without logger) an error if the property is not readable', () => {
+        type TestObject = {
+            test: string;
+        };
+
+        const testObject = {
+            test: 'value',
+        } as TestObject;
+
+        const handler = {
+            get(target: any, property: string) {
+                if (property === 'test') {
+                    throw new Error(
+                        `Access to property ${property} is forbidden`,
+                    );
+                }
+
+                return target[property];
+            },
+        };
+
+        const testProxy = new Proxy(testObject, handler);
+
+        const proxy = proxyHandler.createProxy(testProxy) as TestObject;
+
+        const value = proxy.test;
+
+        expect(value).toBeUndefined();
+    });
+
+    test('Should log an error if the property is not deletable', () => {
+        const logger: ILogger = {
+            warn: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            trace: jest.fn(),
+            debug: jest.fn(),
+        };
+
+        proxyHandler.updateLogger(logger);
+
+        type TestObject = {
+            test: string;
+        };
+
+        const testObject = {
+            test: 'value',
+        } as TestObject;
+
+        Object.freeze(testObject);
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(() => {
+            delete (proxy as any).test;
         }).toThrow();
 
         expect(logger.error).toHaveBeenCalledWith(
-            expect.stringContaining('Failed to set property nonWritable'),
+            expect.stringContaining('Failed to delete property'),
         );
     });
 
-    test('should handle deleting properties correctly', () => {
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
+    test('Should not log (without logger) an error if the property is not deletable', () => {
+        type TestObject = {
+            test: string;
+        };
 
-        delete (proxy as any).publicField;
-        expect(proxy.publicField).toBeUndefined();
+        const testObject = {
+            test: 'value',
+        } as TestObject;
 
-        expect(updateKeyValueMock).toHaveBeenCalledWith('publicField', null);
+        Object.freeze(testObject);
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(() => {
+            delete (proxy as any).test;
+        }).toThrow();
     });
 
-    test('should function without updateKeyValue callback', () => {
-        const noCallbackProxyHandler = new ProxyHandler<TestObject>(
-            logger,
-            undefined as any,
-        );
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy = noCallbackProxyHandler.createProxy(obj);
+    //#endregion Check Logger and Try-Catch
 
-        proxy.publicField = 'newValue';
-        expect(proxy.publicField).toBe('newValue');
+    //#region Edge Cases
+
+    test('Should not create a proxy for a null object and log an error', () => {
+        const logger: ILogger = {
+            warn: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            trace: jest.fn(),
+            debug: jest.fn(),
+        };
+
+        proxyHandler.updateLogger(logger);
+
+        const testObject = null;
+
+        expect(() => {
+            const proxy = proxyHandler.createProxy(
+                testObject as unknown as object,
+            );
+        }).toThrow();
 
         expect(logger.error).toHaveBeenCalledWith(
-            expect.stringContaining('Failed to update key-value pair for key'),
+            expect.stringContaining('Failed to create proxy for object'),
         );
     });
 
-    test('should handle private symbol keys', () => {
-        const privateSymbol = Symbol('_privateSymbol');
-        const obj = { [privateSymbol]: 'privateValue' } as any;
-        const proxy = proxyHandler.createProxy(obj);
+    test('Should not create a proxy for a null object and dont log an error', () => {
+        const testObject = null;
 
-        (proxy as any)[privateSymbol] = 'newPrivateValue';
-        expect((proxy as any)[privateSymbol]).toBe('newPrivateValue');
+        expect(() => {
+            const proxy = proxyHandler.createProxy(
+                testObject as unknown as object,
+            );
+        }).toThrow();
     });
 
-    test('should handle setting methods as properties', () => {
-        const obj = {} as any;
-        const proxy = proxyHandler.createProxy(obj);
+    test('Should not create a proxy for an undefined object and log an error', () => {
+        const logger: ILogger = {
+            warn: jest.fn(),
+            info: jest.fn(),
+            error: jest.fn(),
+            trace: jest.fn(),
+            debug: jest.fn(),
+        };
 
-        (proxy as any).method = () => 'result';
-        expect((proxy as any).method()).toBe('result');
+        proxyHandler.updateLogger(logger);
+
+        const testObject = undefined;
+
+        expect(() => {
+            const proxy = proxyHandler.createProxy(
+                testObject as unknown as object,
+            );
+        }).toThrow();
+
+        expect(logger.error).toHaveBeenCalledWith(
+            expect.stringContaining('Failed to create proxy for object'),
+        );
     });
 
-    test('should handle circular references', () => {
-        const obj: any = {};
-        obj.self = obj;
-        const proxy = proxyHandler.createProxy(obj);
+    test('Should not create a proxy for an undefined object and dont log an error', () => {
+        const testObject = undefined;
 
-        expect((proxy as any).self).toBe(proxy);
+        expect(() => {
+            const proxy = proxyHandler.createProxy(
+                testObject as unknown as object,
+            );
+        }).toThrow();
     });
 
-    test('should handle empty objects and arrays', () => {
-        const emptyObj = {} as Partial<TestObject>;
-        const emptyArray = [] as any[] as Partial<TestObject>;
-        const proxyObj = proxyHandler.createProxy(emptyObj);
-        const proxyArray = proxyHandler.createProxy(emptyArray);
+    test('Should handle setting non-existent paths gracefully', () => {
+        type TestObject = {
+            test: string;
+        };
 
-        expect(Object.keys(proxyObj).length).toBe(0);
-        expect((proxyArray as any).length).toBe(0);
+        const testObject = {
+            test: 'value',
+        } as TestObject;
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        (proxy as any)['nonExistentPath'] = 'new value';
+
+        expect((proxy as any)['nonExistentPath']).toBe('new value');
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'nonExistentPath',
+            'new value',
+        );
     });
 
-    test('should handle multiple proxies for the same object', () => {
-        const obj = { publicField: 'value1' } as Partial<TestObject>;
-        const proxy1 = proxyHandler.createProxy(obj);
-        const proxy2 = proxyHandler.createProxy(obj);
+    test('Should handle functions as values in the proxy', () => {
+        type TestObject = {
+            test: () => 'result';
+        };
 
-        proxy1.publicField = 'value2';
-        expect(proxy2.publicField).toBe('value2');
-    });
-
-    test('should handle changes in prototype', () => {
-        const proto = { protoField: 'protoValue' };
-        const obj = Object.create(proto) as Partial<TestObject>;
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).protoField).toBe('protoValue');
-        (obj as any).protoField = 'newProtoValue';
-        expect((proxy as any).protoField).toBe('newProtoValue');
-    });
-
-    test('should handle properties with special descriptors', () => {
-        const obj = {} as Partial<TestObject>;
-
-        Object.defineProperty(obj, 'specialProperty', {
-            value: 'specialValue',
-            writable: true,
-            enumerable: false,
-            configurable: true,
-        });
-        const proxy = proxyHandler.createProxy(obj);
-
-        expect((proxy as any).specialProperty).toBe('specialValue');
-        (proxy as any).specialProperty = 'newSpecialValue';
-        expect((proxy as any).specialProperty).toBe('newSpecialValue');
-    });
-
-    test('should handle function properties in nested objects', () => {
-        const obj = {
-            nested: {
-                method: () => 'nestedResult',
+        const testObject = {
+            test: () => {
+                return 'result';
             },
-        } as any;
-        const proxy = proxyHandler.createProxy(obj);
+        } as TestObject;
 
-        expect((proxy as any).nested.method()).toBe('nestedResult');
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(proxy.test).toBeInstanceOf(Function);
+        expect(proxy.test()).toBe('result');
     });
+
+    test('Should handle not available functions as values in the proxy', () => {
+        type TestObject = {
+            test: () => 'result';
+        };
+
+        const testObject = {};
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        expect(proxy.test).toBeUndefined();
+
+        expect(() => {
+            proxy.test();
+        }).toThrow();
+    });
+
+    test('Should handle circular references correctly', () => {
+        type TestObject = {
+            name: string;
+            child?: TestObject;
+        };
+
+        const testObject: TestObject = {
+            name: 'parent',
+        };
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        proxy.child = proxy; // Creating a circular reference
+
+        expect(proxy.child).toBe(proxy);
+
+        expect(proxyHandler.proxyMapSize).toBe(1);
+    });
+
+    test('Should handle circular references correctly', () => {
+        type TestObject = {
+            name: string;
+            child?: TestObject;
+        };
+
+        const testObject: TestObject = {
+            name: 'parent',
+        };
+
+        const proxy = proxyHandler.createProxy(testObject) as TestObject;
+
+        // Manually setting the child property to create a circular reference
+        proxy.child = proxy;
+
+        expect(proxy.name).toBe('parent');
+        expect(proxy.child).toBe(proxy); // The child should reference the proxy itself
+
+        proxy.name = 'new parent';
+        expect(proxy.name).toBe('new parent');
+        expect(proxy.child?.name).toBe('new parent'); // The child reference should be updated as well
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'child',
+            expect.objectContaining({
+                child: expect.any(Object),
+                name: 'new parent',
+            }),
+        );
+        expect(updateKeyValueMock).toHaveBeenCalledWith('name', 'new parent');
+
+        expect(proxyHandler.proxyMapSize).toBe(1);
+    });
+
+    //#endregion Edge Cases
 });
