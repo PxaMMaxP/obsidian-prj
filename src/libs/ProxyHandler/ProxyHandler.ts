@@ -19,6 +19,12 @@ export default class ProxyHandler<T extends object> {
     private _proxyMap: WeakMap<object, unknown> = new WeakMap();
 
     /**
+     * A map to store reverse mappings of proxies to their original objects.
+     * This is used to find the original target object from a proxy.
+     */
+    private _reverseProxyMap: WeakMap<object, object> = new WeakMap();
+
+    /**
      * A logger instance for logging purposes.
      * @remarks - The logger is optional and can be undefined.
      * @see {@link ILogger}
@@ -75,18 +81,27 @@ export default class ProxyHandler<T extends object> {
             return existingProxy;
         }
 
-        const proxy = new Proxy(obj, {
-            get: (target, property, receiver) =>
-                this.handleGet(target, property, receiver, path),
-            set: (target, property, value, receiver) =>
-                this.handleSet(target, property, value, receiver, path),
-            deleteProperty: (target, property) =>
-                this.handleDeleteProperty(target, property, path),
-        });
+        let proxy: T;
+
+        try {
+            proxy = new Proxy(obj, {
+                get: (target, property, receiver) =>
+                    this.handleGet(target, property, receiver, path),
+                set: (target, property, value, receiver) =>
+                    this.handleSet(target, property, value, receiver, path),
+                deleteProperty: (target, property) =>
+                    this.handleDeleteProperty(target, property, path),
+            }) as T;
+        } catch (error) {
+            this.logger?.error(
+                `Failed to create proxy for object: ${error.message}`,
+            );
+            throw error;
+        }
 
         this.addProxyToMap(obj, proxy);
 
-        return proxy as T;
+        return proxy;
     }
 
     /**
@@ -105,12 +120,26 @@ export default class ProxyHandler<T extends object> {
         receiver: any,
         path: ObjectPath,
     ): unknown {
+        const propertyKey = this.getPropertyKey(property);
+
+        /* istanbul ignore if  */
         if (this.isPrivate(property)) {
+            this.logger?.error(
+                'The `isPrivate`-Path is used in the `handleGet` method!',
+            );
+
             return target[property as keyof Partial<T>];
         }
 
-        const propertyKey = this.getPropertyKey(property);
-        const value = target[property as keyof Partial<T>];
+        let value: unknown;
+
+        try {
+            value = target[property as keyof Partial<T>];
+        } catch (error) {
+            this.logger?.error(
+                `Failed to get property ${propertyKey} on path ${path}: ${error.message}`,
+            );
+        }
 
         if (value && typeof value === 'object') {
             const newPath = this.createObjectPath(path, propertyKey);
@@ -139,7 +168,14 @@ export default class ProxyHandler<T extends object> {
         receiver: any,
         path: ObjectPath,
     ): boolean {
-        if (this.isPrivate(property)) {
+        const propertyKey = this.getPropertyKey(property);
+
+        /* istanbul ignore if  */
+        if (this.isPrivate(propertyKey)) {
+            this.logger?.error(
+                'The `isPrivate`-Path is used in the `handleSet` method!',
+            );
+
             target[property as keyof Partial<T>] = value as
                 | T[keyof T]
                 | undefined;
@@ -147,7 +183,6 @@ export default class ProxyHandler<T extends object> {
             return true;
         }
 
-        const propertyKey = this.getPropertyKey(property);
         const newPath = this.createObjectPath(path, propertyKey);
         const resolvedValue = this.resolveProxyValue(value);
 
@@ -212,7 +247,11 @@ export default class ProxyHandler<T extends object> {
      * @returns {unknown} The resolved value.
      */
     private resolveProxyValue(value: unknown): unknown {
-        if (Array.isArray(value)) {
+        const existingProxy = this.getExistingProxy(value as Partial<T>);
+
+        if (existingProxy) {
+            return existingProxy;
+        } else if (Array.isArray(value)) {
             return value.map((item) => this.resolveProxyValue(item));
         } else if (value && typeof value === 'object') {
             const result: Record<string | symbol, unknown> = {};
@@ -258,7 +297,10 @@ export default class ProxyHandler<T extends object> {
      * @returns {T | undefined} The existing proxy or undefined if no proxy is available.
      */
     private getExistingProxy(obj: Partial<T>): T | undefined {
-        return this._proxyMap.get(obj) as T | undefined;
+        return (
+            (this._proxyMap.get(obj) as T | undefined) ||
+            (this._reverseProxyMap.get(obj) as T | undefined)
+        );
     }
 
     /**
@@ -268,5 +310,6 @@ export default class ProxyHandler<T extends object> {
      */
     private addProxyToMap(obj: Partial<T>, proxy: Partial<T>): void {
         this._proxyMap.set(obj, proxy);
+        this._reverseProxyMap.set(proxy, obj);
     }
 }
