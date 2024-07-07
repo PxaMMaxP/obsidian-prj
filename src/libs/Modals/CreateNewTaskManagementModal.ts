@@ -282,6 +282,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
     /**
      * Constructs the form to create a new task management file.
+     * @returns The form configuration.
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {

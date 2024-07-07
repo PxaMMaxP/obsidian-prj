@@ -65,9 +65,11 @@ export default class DependencyRegistry {
         throw new Error(`Dependency ${name} not found`);
     }
     /**
-     *
-     * @param name
-     * @param dependency
+     * Checks if the dependency is provided, if not, resolves it.
+     * @param name The name of the dependency to check.
+     * @param dependency The dependency which is provided or resolved.
+     * @returns The provided or resolved dependency.
+     * @throws {Error} If the dependency is not provided or resolved.
      */
     public static isDependencyProvided<T>(
         name: string,

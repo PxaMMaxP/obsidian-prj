@@ -12,7 +12,7 @@ export type ViewState = 'source' | 'preview';
  * @remarks - This class is used to create a singleton like container for the block.
  * - Childs from containers with the same uid will be moved between the corosponding containers.
  * Depending on the current view state.
- * @tutorial
+ * @example
  * ```ts
  * //const uid = Create a unique id for the block.
  * const singletonBlockProcessor = new SingletonBlockProcessor(uid, el, ctx);
@@ -59,7 +59,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get the current code block view state.
-     * @returns The current code block view state.
      */
     public get codeBlockViewState(): ViewState | undefined {
         return this.getCodeBlockViewState();
@@ -67,7 +66,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get the current workspace leaf content block.
-     * @returns The current workspace leaf content block.
      */
     private get workspaceLeafContent(): Element | undefined {
         return this._el.closest('.workspace-leaf-content') ?? undefined;
@@ -75,7 +73,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get the current workspace leaf state.
-     * @returns The current workspace leaf state.
      */
     private get workspaceLeafState(): string | undefined {
         return (
@@ -85,7 +82,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get all sibling blocks with the uid as id.
-     * @returns All sibling blocks with the uid as id.
      */
     private get siblingBlocks(): NodeListOf<Element> | undefined {
         return this.workspaceLeafContent?.querySelectorAll(`#${this._uid}`);
@@ -93,7 +89,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get the source sibling block.
-     * @returns The source sibling block. Eg. the live editor view.
      */
     private get sourceSiblingBlock(): Element | undefined {
         return (
@@ -105,7 +100,6 @@ export default class SingletonBlockProcessor {
 
     /**
      * Get the preview sibling block.
-     * @returns The preview sibling block. Eg. the reading view.
      */
     private get previewSiblingBlock(): Element | undefined {
         return (

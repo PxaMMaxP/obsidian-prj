@@ -132,7 +132,12 @@
     ],
     "jsdoc/require-param": "warn",
     "jsdoc/require-description": "warn",
-    "jsdoc/require-returns": "warn",
+    "jsdoc/require-returns": [
+      "warn",
+      {
+        "checkGetters": false
+      }
+    ],
     "jsdoc/check-tag-names": [
       "warn",
       {

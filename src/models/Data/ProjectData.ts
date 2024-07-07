@@ -4,7 +4,6 @@ import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import Tag from 'src/libs/Tags/Tag';
 import Tags from 'src/libs/Tags/Tags';
-import { TagsDefaultDependencies } from 'src/libs/Tags/Tags.dependency';
 import {
     FileSubType,
     Status,

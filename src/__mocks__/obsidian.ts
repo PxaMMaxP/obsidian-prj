@@ -45,6 +45,7 @@ export interface MarkdownPostProcessorContext {
     /** @public */
     sourcePath: string;
     /** @public */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     frontmatter: any | null | undefined;
 
     /**

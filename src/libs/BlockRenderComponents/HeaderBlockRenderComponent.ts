@@ -31,7 +31,7 @@ export default class HeaderBlockRenderComponent
 {
     private _app = Global.getInstance().app;
     private _global = Global.getInstance();
-    private logger = Logging.getLogger('HeaderBlockRenderComponent');
+    private _logger = Logging.getLogger('HeaderBlockRenderComponent');
     private _metadataCache = this._global.metadataCache;
     private _model:
         | PrjTaskManagementModel<
@@ -105,6 +105,7 @@ export default class HeaderBlockRenderComponent
 
     /**
      * The status of the Prj File.
+     * @returns The status of the Prj File.
      */
     private get status(): Status | undefined {
         return this.model?.data.status ?? undefined;
@@ -119,6 +120,7 @@ export default class HeaderBlockRenderComponent
 
     /**
      * The description of the Prj File.
+     * @returns The description of the Prj File.
      */
     private get description(): string | undefined {
         return this.model?.data.description ?? undefined;
@@ -189,8 +191,8 @@ export default class HeaderBlockRenderComponent
     }
 
     /**
-     *
-     * @param settings
+     * Initializes a new instance of the HeaderBlockRenderComponent.
+     * @param settings The settings of the processor.
      */
     constructor(settings: IProcessorSettings) {
         this._processorSettings = settings;
@@ -206,7 +208,7 @@ export default class HeaderBlockRenderComponent
             this.container,
             () => this.onLoad(),
             () => this.onUnload(),
-            this.logger,
+            this._logger,
         );
         this._childComponent.load();
         this._processorSettings.ctx.addChild(this._childComponent);
@@ -250,7 +252,7 @@ export default class HeaderBlockRenderComponent
             this.model = undefined;
             await this.build();
         } catch (error) {
-            this.logger.error(
+            this._logger.error(
                 `Error while redrawing HeaderBlockRenderComponent: ${error}`,
             );
         }
@@ -271,8 +273,8 @@ export default class HeaderBlockRenderComponent
     /**
      * The `file-rename-event` event handler.
      * @param file Contains `{ oldPath: string; newPath: string }` of the file which has changed.
-     * @param file.oldPath
-     * @param file.newPath
+     * @param file.oldPath The old path of the file.
+     * @param file.newPath The new path of the file.
      */
     private onPathChanged(file: { oldPath: string; newPath: string }): void {
         if (file.oldPath === this.path) {
@@ -301,7 +303,7 @@ export default class HeaderBlockRenderComponent
 
             this.container.append(this.headerContainer);
         } catch (error) {
-            this.logger.error(
+            this._logger.error(
                 `Error while building HeaderBlockRenderComponent: ${error}`,
             );
         }
@@ -531,7 +533,7 @@ export default class HeaderBlockRenderComponent
         const activeFile = this._global.app.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
-            this.logger.trace('Active file changed: ', activeFile.path);
+            this._logger.trace('Active file changed: ', activeFile.path);
 
             if (this.path !== activeFile.path) {
                 this.path = activeFile.path;
@@ -544,7 +546,7 @@ export default class HeaderBlockRenderComponent
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this.logger.trace('Active file changed: Debouncing');
+        this._logger.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
         this._activeFileDebounceTimer = setTimeout(async () => {

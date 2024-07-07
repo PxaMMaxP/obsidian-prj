@@ -63,35 +63,35 @@ export default class Logging implements ILogger {
             /**
              * Logs a `trace` message
              * @param args The arguments to log
-             * @returns
+             * @returns Nothing
              */
             trace: (...args: any[]) =>
                 instance.logWithPrefix('trace', prefix, args),
             /**
              * Logs a `debug` message
              * @param args The arguments to log
-             * @returns
+             * @returns Nothing
              */
             debug: (...args: any[]) =>
                 instance.logWithPrefix('debug', prefix, args),
             /**
              * Logs an `info` message
              * @param args The arguments to log
-             * @returns
+             * @returns Nothing
              */
             info: (...args: any[]) =>
                 instance.logWithPrefix('info', prefix, args),
             /**
              * Logs a `warn` message
              * @param args The arguments to log
-             * @returns
+             * @returns Nothing
              */
             warn: (...args: any[]) =>
                 instance.logWithPrefix('warn', prefix, args),
             /**
              * Logs an `error` message
              * @param args The arguments to log
-             * @returns
+             * @returns Nothing
              */
             error: (...args: any[]) =>
                 instance.logWithPrefix('error', prefix, args),
@@ -117,8 +117,8 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message to the console if the log level is "trace"
-     * @param message
-     * @param optionalParams
+     * @param message The message to log
+     * @param optionalParams Optional parameters to log
      */
     public trace(message?: any, ...optionalParams: any[]): void {
         if (this.logLevelActive('trace')) {
@@ -130,8 +130,8 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message to the console if the log level is "debug"
-     * @param message
-     * @param optionalParams
+     * @param message The message to log
+     * @param optionalParams Optional parameters to log
      */
     public debug(message?: any, ...optionalParams: any[]): void {
         if (this.logLevelActive('debug')) {
@@ -143,8 +143,8 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message to the console if the log level is "info" or "debug"
-     * @param message
-     * @param optionalParams
+     * @param message The message to log
+     * @param optionalParams Optional parameters to log
      */
     public info(message?: any, ...optionalParams: any[]): void {
         if (this.logLevelActive('info')) {
@@ -156,8 +156,8 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message to the console if the log level is "info", "debug" or "warn"
-     * @param message
-     * @param optionalParams
+     * @param message The message to log
+     * @param optionalParams Optional parameters to log
      */
     public warn(message?: any, ...optionalParams: any[]): void {
         if (this.logLevelActive('warn')) {
@@ -169,8 +169,8 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message to the console if the log level is "info", "debug", "warn" or "error"
-     * @param message
-     * @param optionalParams
+     * @param message The message to log
+     * @param optionalParams Optional parameters to log
      */
     public error(message?: any, ...optionalParams: any[]): void {
         if (this.logLevelActive('error')) {

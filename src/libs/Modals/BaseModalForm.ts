@@ -51,6 +51,7 @@ export default abstract class BaseModalForm {
 
     /**
      * Returns the ModalForms API
+     * @returns The ModalForms API
      */
     protected getApi(): IModalForm {
         if (this.modalFormApi === undefined || this.modalFormApi === null) {
@@ -63,6 +64,7 @@ export default abstract class BaseModalForm {
 
     /**
      * Sets the ModalForms API
+     * @returns The ModalForms API or undefined if not found
      */
     private setApi(): IModalForm | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
