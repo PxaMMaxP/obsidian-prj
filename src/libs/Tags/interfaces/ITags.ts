@@ -25,7 +25,7 @@ export type TagsConstructorType = typeof BaseComplexDataType & ITagsConstructor;
 export interface ITagsConstructor {
     new (
         tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies: ITagsDependencies,
+        dependencies?: ITagsDependencies,
     ): ITags;
 }
 

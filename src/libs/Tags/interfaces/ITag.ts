@@ -19,7 +19,7 @@ export type TagConstructorType = typeof BaseComplexDataType & ITagConstructor;
  * Represents a tag constructor.
  */
 export interface ITagConstructor {
-    new (value: string, dependencies: ITagDependencies): ITag;
+    new (value: string, dependencies?: ITagDependencies): ITag;
 }
 
 /**

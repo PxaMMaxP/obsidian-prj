@@ -28,7 +28,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
      * The logger to use for logging messages.
      * If not provided, no messages will be logged.
      */
-    private logger: ILogger | undefined = undefined;
+    private _logger: ILogger | undefined = undefined;
 
     /**
      * The tags array.
@@ -84,10 +84,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
     /**
      * Creates a new instance of the TagsArray class.
      * @param tags The tags to use for the creation. Can be a string, an array of strings, or undefined.
-     * @param metadataCache The metadata cache.
-     * @param tagFactory The tag factory for the `ITag` interface.
-     * @param logger The logger to use for logging messages.
-     * @param dependencies
+     * @param dependencies The dependencies of the tags; if not provided, the global dependency registry is used.
      */
     constructor(
         tags: ITags | ITag | string | string[] | undefined | null,
@@ -102,7 +99,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
 
         this._metadataCache = dependencies.metadataCache;
         this._tagClass = dependencies.tagClass;
-        this.logger = dependencies.logger;
+        this._logger = dependencies.logger;
         this._tags = [];
 
         this.add(tags);
@@ -114,7 +111,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return new (this._tagClass as any)(tagValue);
+        return new (this._tagClass as ITagConstructor)(tagValue);
     }
 
     /**
@@ -163,14 +160,14 @@ export default class Tags extends BaseComplexDataType implements ITags {
                 this._tags.push(tag as typeof BaseComplexDataType & ITag);
                 added = true;
             } else {
-                this.logger?.warn(`Tag '${tag.value}' already exists.`);
+                this._logger?.warn(`Tag '${tag.value}' already exists.`);
             }
         });
 
         if (added) {
             this.invalidateSpecificTags();
         } else {
-            this.logger?.warn('No tags added.');
+            this._logger?.warn('No tags added.');
         }
 
         return added;
@@ -191,7 +188,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
 
             return true;
         } else {
-            this.logger?.warn(`Tag '${tag}' not found.`);
+            this._logger?.warn(`Tag '${tag}' not found.`);
 
             return false;
         }
@@ -256,7 +253,8 @@ export default class Tags extends BaseComplexDataType implements ITags {
 
         return {
             /**
-             *
+             * Returns the next tag in the tags array.
+             * @returns The next tag in the tags array.
              */
             next: (): IteratorResult<ITag> => {
                 if (index < this._tags.length) {
@@ -324,12 +322,12 @@ export default class Tags extends BaseComplexDataType implements ITags {
             if (cache && cache.metadata && cache.metadata.frontmatter) {
                 return this.add(cache.metadata.frontmatter.tags);
             } else {
-                this.logger?.warn('No metadata found in the file.');
+                this._logger?.warn('No metadata found in the file.');
 
                 return false;
             }
         } else {
-            this.logger?.warn('No file provided.');
+            this._logger?.warn('No file provided.');
 
             return false;
         }
@@ -338,13 +336,15 @@ export default class Tags extends BaseComplexDataType implements ITags {
     /**
      * Checks if the object is an instance of the ITags interface.
      * @param obj The object to check.
+     * @returns Whether the object is an instance of the ITags interface.
      */
     public isInstanceOfTags(obj: unknown): obj is ITags {
         return obj instanceof Tags;
     }
 
     /**
-     *
+     * Returns a frontmatter compatible object.
+     * @returns All Tags as an array of strings.
      */
     public getFrontmatterObject():
         | Record<string, unknown>

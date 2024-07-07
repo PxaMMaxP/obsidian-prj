@@ -76,8 +76,7 @@ export default class Tag extends BaseComplexDataType implements ITag {
     /**
      * Creates a new instance of the Tag class.
      * @param value The value of the tag.
-     * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
-     * @param dependencies
+     * @param dependencies The dependencies of the tag; if not provided, the global dependency registry is used.
      */
     constructor(value: string, dependencies?: ITagDependencies) {
         super();
@@ -180,13 +179,15 @@ export default class Tag extends BaseComplexDataType implements ITag {
      * Returns whether the tag starts with the specified search string.
      * @param searchString The string to search for.
      * @param position The position to start the search.
+     * @returns Whether the tag starts with the specified search string.
      */
     startsWith(searchString: string, position?: number): boolean {
         return this.value.startsWith(searchString, position);
     }
 
     /**
-     *
+     * Returns a frontmatter compatible object.
+     * @returns The Tag as a string.
      */
     public getFrontmatterObject():
         | Record<string, unknown>
