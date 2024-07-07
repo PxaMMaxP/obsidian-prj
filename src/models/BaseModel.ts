@@ -2,12 +2,15 @@ import { TFile } from 'obsidian';
 import Logging from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
+import BaseData from './Data/BaseData';
 import { FileModel } from './FileModel';
 
 /**
  * Base class for models that are stored in files.
  */
-export default class BaseModel<T extends object> extends FileModel<T> {
+export default class BaseModel<
+    T extends BaseData<unknown>,
+> extends FileModel<T> {
     protected logger: ILogger;
 
     /**

@@ -354,7 +354,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         GeneralComponents.createCellTags(
             tags,
             this.component,
-            documentModel.getTags(),
+            documentModel.data.tags?.toStringArray() ?? [],
         );
 
         const hide = this.getHideState(documentModel, undefined);
@@ -434,7 +434,10 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
     private determineTagHideState(document: DocumentModel): boolean {
         return this.settings.reactOnActiveFile
-            ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
+            ? !Helper.isTagIncluded(
+                  this.settings.tags,
+                  document.data.tags?.toStringArray() ?? [],
+              )
             : false;
     }
 

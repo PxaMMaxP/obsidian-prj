@@ -14,7 +14,6 @@ import {
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import Tags from '../Tags';
 
 /**
  * Modal to create a new metadata file
@@ -68,8 +67,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         const convertedPreset: IResultData =
             this.convertPresetToIResultData(preset);
 
-        const activeFile = Helper.getActiveFile();
-        const tags: string[] = Tags.getTagsFromFile(activeFile);
+        const tags: string[] = this.getTagsFromActiveFile();
 
         if (convertedPreset) {
             if (convertedPreset.tags && Array.isArray(convertedPreset.tags)) {

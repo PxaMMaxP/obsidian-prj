@@ -6,12 +6,18 @@ import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
+import BaseData from 'src/models/Data/BaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import Tags from '../Tags';
+import {
+    TagDefaultDependencies,
+    TagsDefaultDependencies,
+} from '../Tags/DefaultDependencies';
+import Tag from '../Tags/Tag';
+import Tags from '../Tags/Tags';
 import { TagTree } from '../Tags/types/TagTree';
 
 /**
@@ -32,7 +38,9 @@ export default class HeaderBlockRenderComponent
     private logger = Logging.getLogger('HeaderBlockRenderComponent');
     private _metadataCache = this._global.metadataCache;
     private _model:
-        | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+        | PrjTaskManagementModel<
+              IPrjData & IPrjTaskManagement & BaseData<unknown>
+          >
         | undefined;
 
     private _processorSettings: IProcessorSettings;
@@ -132,7 +140,9 @@ export default class HeaderBlockRenderComponent
      * The model of the Prj File.
      */
     private get model():
-        | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+        | PrjTaskManagementModel<
+              IPrjData & IPrjTaskManagement & BaseData<unknown>
+          >
         | undefined {
         if (this._model) return this._model;
 
@@ -151,7 +161,9 @@ export default class HeaderBlockRenderComponent
      */
     private set model(
         value:
-            | PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+            | PrjTaskManagementModel<
+                  IPrjData & IPrjTaskManagement & BaseData<unknown>
+              >
             | undefined,
     ) {
         this._model = value;
@@ -177,8 +189,8 @@ export default class HeaderBlockRenderComponent
     /**
      * The tags of the Prj File.
      */
-    private get tags(): Array<string> {
-        return Tags.getValidTags(this.frontmatter?.tags ?? []);
+    private get tags(): Tags {
+        return new Tags(this.frontmatter?.tags, TagsDefaultDependencies);
     }
 
     constructor(settings: IProcessorSettings) {
@@ -427,10 +439,12 @@ export default class HeaderBlockRenderComponent
             const fullPath = path ? `${path}/${tag}` : tag;
             const li = document.createElement('li');
 
-            const tagLink = Tags.createObsidianTagLink(
-                path ? tag : `#${tag}`,
-                fullPath,
+            const tagObject = new Tag(tag, TagDefaultDependencies);
+
+            const tagLink = tagObject.getObsidianLink(
+                path ? tagObject.toString() : tagObject.tagWithHash,
             );
+
             li.appendChild(tagLink);
             const subTags = tagTree[tag];
             const hasSubTags = Object.keys(subTags).length > 0;
@@ -458,7 +472,7 @@ export default class HeaderBlockRenderComponent
         labelDiv.classList.add('tag-label');
         labelDiv.textContent = `${Lng.gt('Tags')}:`;
 
-        const tagTree = Tags.createTagTree(this.tags);
+        const tagTree = this.tags.getTagTree();
         const tagsList = this.createDomList(tagTree);
         tagsDiv.appendChild(tagsList);
 

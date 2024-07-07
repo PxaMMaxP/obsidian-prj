@@ -21,22 +21,6 @@ export class DocumentModel
     private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
-    get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
-    }
-    set tags(value: string[]) {
-        this.data.tags = value;
-    }
-
     public get data(): Partial<DocumentData> {
         return this._data;
     }
@@ -84,14 +68,6 @@ export class DocumentModel
         return this._relatedFiles;
     }
 
-    /**
-     * Returns the metadata of the document as a string
-     * @deprecated Use `data.toString()` instead.
-     */
-    public override toString(): string {
-        return this.data.toString?.() ?? '';
-    }
-
     public getWikilink(text: string | undefined): string {
         if (text) {
             return `[[${this.file.name}|${text}]]`;
@@ -124,15 +100,6 @@ export class DocumentModel
         }
 
         return 'x-circle';
-    }
-
-    /**
-     * Returns the description of the document
-     * @returns String containing the description
-     * @deprecated Use `data.description` instead.
-     */
-    public getDescription(): string {
-        return this.data.description ?? '';
     }
 
     /**
@@ -208,23 +175,6 @@ export class DocumentModel
         this.data.file = link;
 
         return link;
-    }
-
-    /**
-     * Returns the tags of the document as an array of strings
-     * @returns Array of strings containing the tags
-     */
-    public getTags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
     }
 
     public getUID(): string {
@@ -439,47 +389,35 @@ export class DocumentModel
         let tagFolder: string | undefined = undefined;
         let specialTagFolder: string | undefined = undefined;
 
-        if (Array.isArray(document.data.tags)) {
-            // Tag Folder
-            // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
-            const foundTag = document.data.tags.find((tag) =>
-                settings.documentSettings.customTagFolders.some(
-                    (folder) => folder.tag === tag,
-                ),
-            );
+        const tagArray = document.data.tags?.toStringArray() ?? [];
 
-            if (foundTag) {
-                tagFolder = settings.documentSettings.customTagFolders.find(
-                    (folder) => folder.tag === foundTag,
-                )?.folder;
-            }
+        // Tag Folder
+        // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
+        const foundTag = tagArray.find((tag) =>
+            settings.documentSettings.customTagFolders.some(
+                (folder) => folder.tag === tag,
+            ),
+        );
 
-            // Special Tag Folder
-            // `document.data.tags` is an Array, search for the first tag that matches a special tag folder
-            const foundSpecialTag = document.data.tags.find((tag) =>
-                settings.documentSettings.specialPdfFolders.some(
-                    (folder) => folder.tag === tag,
-                ),
-            );
-
-            if (foundSpecialTag) {
-                specialTagFolder =
-                    settings.documentSettings.specialPdfFolders.find(
-                        (folder) => folder.tag === foundSpecialTag,
-                    )?.folder;
-            }
-        } else if (document.data.tags) {
-            // `document.data.tags` is a string, search for the custom tag folder
+        if (foundTag) {
             tagFolder = settings.documentSettings.customTagFolders.find(
-                (folder) => folder.tag === document.data.tags,
-            )?.folder;
-
-            // `document.data.tags` is a string, search for the special tag folder
-            specialTagFolder = settings.documentSettings.specialPdfFolders.find(
-                (folder) => folder.tag === document.data.tags,
+                (folder) => folder.tag === foundTag,
             )?.folder;
         }
-        // If no tag folder was found, use the default folder
+
+        // Special Tag Folder
+        // `document.data.tags` is an Array, search for the first tag that matches a special tag folder
+        const foundSpecialTag = tagArray.find((tag) =>
+            settings.documentSettings.specialPdfFolders.some(
+                (folder) => folder.tag === tag,
+            ),
+        );
+
+        if (foundSpecialTag) {
+            specialTagFolder = settings.documentSettings.specialPdfFolders.find(
+                (folder) => folder.tag === foundSpecialTag,
+            )?.folder;
+        }
 
         let defaultPdfFolder = documentDate
             ? settings.documentSettings.pdfFolder

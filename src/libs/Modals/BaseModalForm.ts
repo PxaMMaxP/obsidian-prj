@@ -1,13 +1,15 @@
 import { App, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
-import Tags from 'src/libs/Tags';
+import Tags from 'src/libs/Tags/Tags';
 import {
     FormConfiguration,
     IFormResult,
     IModalForm,
     IResultData,
 } from 'src/types/ModalFormType';
+import Helper from '../Helper';
+import { TagsDefaultDependencies } from '../Tags/DefaultDependencies';
 
 export default abstract class BaseModalForm {
     protected app: App = Global.getInstance().app;
@@ -82,28 +84,14 @@ export default abstract class BaseModalForm {
      * Returns the tags from the file.
      * @param activeFile The file to get the tags from.
      * @returns The tags from the file.
-     * @deprecated Use {@link Tags.getTagsFromFile} instead
      */
-    public static getTags(activeFile: TFile | undefined): string[] {
-        const tags: string[] = [];
+    protected getTagsFromActiveFile(
+        activeFile: TFile | undefined = Helper.getActiveFile(),
+    ): string[] {
+        const activeFileTags = new Tags(undefined, TagsDefaultDependencies);
+        activeFileTags.loadTagsFromFile(activeFile);
 
-        if (activeFile) {
-            const cache =
-                Global.getInstance().metadataCache.getEntry(activeFile);
-
-            if (
-                cache &&
-                cache.metadata &&
-                cache.metadata.frontmatter &&
-                cache.metadata.frontmatter.tags
-            ) {
-                if (Array.isArray(cache.metadata.frontmatter.tags)) {
-                    tags.push(...cache.metadata.frontmatter.tags);
-                } else {
-                    tags.push(cache.metadata.frontmatter.tags);
-                }
-            }
-        }
+        const tags: string[] = activeFileTags.toStringArray();
 
         return tags;
     }

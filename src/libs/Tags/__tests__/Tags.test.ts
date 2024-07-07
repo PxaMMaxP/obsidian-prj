@@ -1,14 +1,17 @@
 import { TFile } from 'obsidian';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from '../interfaces/ITag';
-import { Tags } from '../Tags';
+import { ITagsDependencies } from '../interfaces/ITags';
+import Tags from '../Tags';
 
 describe('Tags', () => {
     let mockLogger: ILogger;
     let mockMetadataCache: IMetadataCache;
-    let MockTagClass: typeof BaseTypeChecker & ITagConstructor;
+    let MockTagClass: typeof BaseComplexDataType & ITagConstructor;
+    let dependencies: ITagsDependencies;
+    let dependenciesWithoutLogger: ITagsDependencies;
 
     beforeEach(() => {
         mockLogger = {
@@ -31,6 +34,14 @@ describe('Tags', () => {
             constructor(value: string, metadataCache: IMetadataCache) {
                 this.value = value;
                 this.metadataCache = metadataCache;
+            }
+            getFrontmatterObject():
+                | Record<string, unknown>
+                | Array<unknown>
+                | string
+                | null
+                | undefined {
+                throw new Error('Method not implemented.');
             }
             exists: boolean;
 
@@ -83,64 +94,56 @@ describe('Tags', () => {
             }
         }
 
-        MockTagClass = MockTag as unknown as typeof BaseTypeChecker &
+        MockTagClass = MockTag as unknown as typeof BaseComplexDataType &
             ITagConstructor;
+
+        dependencies = {
+            metadataCache: mockMetadataCache,
+            tagClass: MockTagClass,
+            logger: mockLogger,
+        };
+
+        dependenciesWithoutLogger = {
+            metadataCache: mockMetadataCache,
+            tagClass: MockTagClass,
+        };
     });
 
     // Constructor Tests
     test('should initialize with no tags and no logger', () => {
-        const tagsArray = new Tags(undefined, mockMetadataCache, MockTagClass);
+        const tagsArray = new Tags(undefined, dependenciesWithoutLogger);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
     test('should initialize with a single tag', () => {
-        const tagsArray = new Tags('tag1', mockMetadataCache, MockTagClass);
+        const tagsArray = new Tags('tag1', dependenciesWithoutLogger);
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
     });
 
     test('should initialize with an array of tags', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should initialize with undefined tags', () => {
-        const tagsArray = new Tags(
-            undefined,
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(undefined, dependencies);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
     // Method Tests
     test('should add a single tag that does not exist', () => {
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         tagsArray.add('tag1');
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
     });
 
     test('should not add a single tag that already exists', () => {
-        const tagsArray = new Tags(
-            ['tag1'],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(['tag1'], dependencies);
         tagsArray.add('tag1');
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
@@ -151,24 +154,14 @@ describe('Tags', () => {
     });
 
     test('should add multiple tags', () => {
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         tagsArray.add(['tag1', 'tag2']);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should not add existing tags when adding multiple tags', () => {
-        const tagsArray = new Tags(
-            ['tag1'],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(['tag1'], dependencies);
         tagsArray.add(['tag1', 'tag2']);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
@@ -179,40 +172,24 @@ describe('Tags', () => {
     });
 
     test('should log a warning when adding undefined tags', () => {
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         tagsArray.add(undefined);
         expect(mockLogger.warn).toHaveBeenCalledWith('No tags added.');
     });
 
     test('should remove an existing tag', () => {
-        const tagsArray = new Tags(
-            ['tag1'],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(['tag1'], dependencies);
         tagsArray.remove(tagsArray.values[0]);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
     test('should log a warning when removing a non-existing tag', () => {
-        const tagsArray = new Tags(
-            ['tag1'],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(['tag1'], dependencies);
 
-        const nonExistingTag = new (MockTagClass as ITagConstructor)(
-            'tag2',
-            mockMetadataCache,
-        );
+        const nonExistingTag = new (MockTagClass as ITagConstructor)('tag2', {
+            metadataCache: mockMetadataCache,
+        });
         tagsArray.remove(nonExistingTag);
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
@@ -220,38 +197,22 @@ describe('Tags', () => {
     });
 
     test('should return all tags', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
     });
 
     test('should return all tags as a comma-separated string', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
         expect(tagsArray.toString()).toBe('tag1, tag2');
     });
 
     test('should return the correct number of tags', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should iterate over all tags', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
         const tags: string[] = [];
 
         for (const tag of tagsArray) {
@@ -262,28 +223,17 @@ describe('Tags', () => {
 
     // Additional Tests
     test('should not add duplicate tags when initialized with an array containing duplicates', () => {
-        const tagsArray = new Tags(
-            ['tag1', 'tag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags(['tag1', 'tag1', 'tag2'], dependencies);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should handle removing a tag from an empty array gracefully', () => {
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
 
-        const tagToRemove = new (MockTagClass as ITagConstructor)(
-            'tag1',
-            mockMetadataCache,
-        );
+        const tagToRemove = new (MockTagClass as ITagConstructor)('tag1', {
+            metadataCache: mockMetadataCache,
+        });
         tagsArray.remove(tagToRemove);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
@@ -291,7 +241,7 @@ describe('Tags', () => {
     });
 
     test('should not log when adding a tag without a logger', () => {
-        const tagsArray = new Tags(['tag1'], mockMetadataCache, MockTagClass);
+        const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
         tagsArray.add('tag1');
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
@@ -299,12 +249,11 @@ describe('Tags', () => {
     });
 
     test('should not log when removing a non-existing tag without a logger', () => {
-        const tagsArray = new Tags(['tag1'], mockMetadataCache, MockTagClass);
+        const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
 
-        const nonExistingTag = new (MockTagClass as ITagConstructor)(
-            'tag2',
-            mockMetadataCache,
-        );
+        const nonExistingTag = new (MockTagClass as ITagConstructor)('tag2', {
+            metadataCache: mockMetadataCache,
+        });
         tagsArray.remove(nonExistingTag);
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
@@ -315,8 +264,7 @@ describe('Tags', () => {
     test('should return specific tags', () => {
         const tagsArray = new Tags(
             ['tag1', 'tag1/subtag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
+            dependenciesWithoutLogger,
         );
 
         expect(tagsArray.specificTags.map((tag) => tag.toString())).toEqual([
@@ -329,8 +277,7 @@ describe('Tags', () => {
     test('should return tag tree', () => {
         const tagsArray = new Tags(
             ['tag1', 'tag1/subtag1', 'tag2'],
-            mockMetadataCache,
-            MockTagClass,
+            dependenciesWithoutLogger,
         );
 
         const expectedTree = {
@@ -354,12 +301,7 @@ describe('Tags', () => {
             },
         });
 
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         const result = tagsArray.loadTagsFromFile(mockFile);
         expect(result).toBe(true);
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
@@ -369,12 +311,7 @@ describe('Tags', () => {
         const mockFile = { path: 'test.md' } as TFile;
         mockMetadataCache.getEntry = jest.fn().mockReturnValue(null);
 
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         const result = tagsArray.loadTagsFromFile(mockFile);
         expect(result).toBe(false);
         expect(tagsArray.toStringArray()).toEqual([]);
@@ -385,15 +322,31 @@ describe('Tags', () => {
     });
 
     test('should log warning if no file provided', () => {
-        const tagsArray = new Tags(
-            [],
-            mockMetadataCache,
-            MockTagClass,
-            mockLogger,
-        );
+        const tagsArray = new Tags([], dependencies);
         const result = tagsArray.loadTagsFromFile(undefined);
         expect(result).toBe(false);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(mockLogger.warn).toHaveBeenCalledWith('No file provided.');
+    });
+
+    // Test `first()` and `last()` methods
+    test('should return the first tag', () => {
+        const tagsArray = new Tags(['tag1', 'tag2'], dependencies);
+        expect(tagsArray.first()?.toString()).toBe('tag1');
+    });
+
+    test('should return undefined as first tag', () => {
+        const tagsArray = new Tags(undefined, dependencies);
+        expect(tagsArray.first()).toBe(undefined);
+    });
+
+    test('should return the last tag', () => {
+        const tagsArray = new Tags(['tag1', 'tag2'], dependencies);
+        expect(tagsArray.last()?.toString()).toBe('tag2');
+    });
+
+    test('should return undefined as last tag', () => {
+        const tagsArray = new Tags(undefined, dependencies);
+        expect(tagsArray.last()).toBe(undefined);
     });
 });

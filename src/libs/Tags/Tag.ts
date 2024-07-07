@@ -1,12 +1,12 @@
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag } from './interfaces/ITag';
+import { ITag, ITagDependencies } from './interfaces/ITag';
 
 /**
  * Represents a tag.
  * @remarks The class extends the String class and provides additional methods to work with tags.
  */
-export default class Tag extends BaseTypeChecker implements ITag {
+export default class Tag extends BaseComplexDataType implements ITag {
     private _tag: string;
 
     /**
@@ -15,7 +15,7 @@ export default class Tag extends BaseTypeChecker implements ITag {
      * @remarks If the tag is prefixed with a hash symbol, the symbol is removed.
      */
     private set value(value: string) {
-        this._tag = value.startsWith('#') ? value.slice(1) : value;
+        this._tag = value?.startsWith('#') ? value.slice(1) : value || '';
     }
 
     /**
@@ -73,12 +73,12 @@ export default class Tag extends BaseTypeChecker implements ITag {
      * @param value The value of the tag.
      * @param metadataCache The metadata cache. If not provided, the global metadata cache is used.
      */
-    constructor(value: string, metadataCache: IMetadataCache) {
+    constructor(value: string, dependencies: ITagDependencies) {
         super();
 
         this.value = value;
 
-        this._metadataCache = metadataCache;
+        this._metadataCache = dependencies.metadataCache;
     }
 
     /**
@@ -172,5 +172,14 @@ export default class Tag extends BaseTypeChecker implements ITag {
      */
     startsWith(searchString: string, position?: number): boolean {
         return this.value.startsWith(searchString, position);
+    }
+
+    public getFrontmatterObject():
+        | Record<string, unknown>
+        | Array<unknown>
+        | string
+        | null
+        | undefined {
+        return this._tag.toString();
     }
 }

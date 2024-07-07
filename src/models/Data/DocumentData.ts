@@ -2,6 +2,9 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjDocument from 'src/interfaces/IPrjDocument';
+import { TagsDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
+import Tag from 'src/libs/Tags/Tag';
+import Tags from 'src/libs/Tags/Tags';
 import { FileType, FileSubType } from 'src/types/PrjTypes';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import BaseData from './BaseData';
@@ -125,9 +128,21 @@ export default class DocumentData
      * The tags of the document.
      * @remarks This value is included in the `toString` output.
      */
-    @toStringField
+    private _tags: Tags | null | undefined;
+
     @fieldConfig()
-    tags: string | string[] | null | undefined;
+    set tags(value: Tags | Tag | string | string[] | null | undefined) {
+        if (Tags.isInstanceOf(value)) {
+            this._tags = value;
+        } else {
+            this._tags = new Tags(value, TagsDefaultDependencies);
+        }
+    }
+
+    @toStringField
+    get tags(): Tags | null | undefined {
+        return this._tags;
+    }
 
     /**
      * The annotation target of the document.

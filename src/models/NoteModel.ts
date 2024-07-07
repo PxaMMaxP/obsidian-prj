@@ -5,7 +5,6 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags';
 import NoteData from './Data/NoteData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -17,22 +16,6 @@ export class NoteModel
 {
     protected logger: ILogger = Logging.getLogger('NoteModel');
 
-    get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
-    }
-    set tags(value: string[]) {
-        this.data.tags = value;
-    }
-
     public get data(): Partial<NoteData> {
         return this._data;
     }
@@ -42,14 +25,6 @@ export class NoteModel
 
     constructor(file: TFile | undefined) {
         super(file, NoteData, undefined);
-    }
-
-    /**
-     * Returns the metadata of the note as a string
-     * @deprecated Use `data.toString()` instead.
-     */
-    public override toString(): string {
-        return this.data.toString?.() ?? '';
     }
 
     public getWikilink(text: string | undefined): string {
@@ -109,12 +84,10 @@ export class NoteModel
         }
 
         if (model.data.tags) {
-            const tags = Tags.getValidTags(model.data.tags);
-            const firstTag = tags.first();
+            const firstTag = model.data.tags.first();
 
             if (firstTag && firstTag !== undefined) {
-                const seperateTags = Tags.getTagElements(firstTag);
-                const lastTagElement = seperateTags.last();
+                const lastTagElement = firstTag.getElements().last();
                 lastTagElement && newFileName.push(lastTagElement);
             }
         }

@@ -4,8 +4,10 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags';
+import { TagDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
+import Tag from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
+import BaseData from './Data/BaseData';
 import ProjectData from './Data/ProjectData';
 import TaskData from './Data/TaskData';
 import TopicData from './Data/TopicData';
@@ -14,27 +16,13 @@ import IPrjData from '../interfaces/IPrjData';
 import IPrjModel from '../interfaces/IPrjModel';
 import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 
-export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
+export class PrjTaskManagementModel<
+        T extends IPrjData & IPrjTaskManagement & BaseData<unknown>,
+    >
     extends FileModel<T>
     implements IPrjModel<T>
 {
     protected logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
-
-    get tags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
-    }
-    set tags(value: string[]) {
-        this.data.tags = value;
-    }
 
     public get data(): Partial<T> {
         return this._data;
@@ -45,14 +33,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
     constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
         super(file, ctor, undefined);
-    }
-
-    /**
-     * Returns the metadata of the model as a string
-     * @deprecated Use `data.toString()` instead.
-     */
-    public override toString(): string {
-        return this.data.toString?.() ?? '';
     }
 
     /**
@@ -143,23 +123,6 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
     }
 
     /**
-     * Returns the tags of the model as an array of strings
-     * @returns Array of strings containing the tags
-     */
-    public getTags(): string[] {
-        const tags = this.data.tags;
-        let formattedTags: string[] = [];
-
-        if (tags && typeof tags === 'string') {
-            formattedTags = [tags];
-        } else if (Array.isArray(tags)) {
-            formattedTags = [...tags];
-        }
-
-        return formattedTags;
-    }
-
-    /**
      * Returns the aliases of the model as an array of strings
      * @returns Array of strings containing the aliases
      */
@@ -188,8 +151,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
 
         const aliases =
             this.getAliases().length > 0
-                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  Tags.getTagElements(this.getAliases().first()!)
+                ? new Tag(
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      this.getAliases().first()!,
+                      TagDefaultDependencies,
+                  ).getElements()
                 : undefined;
 
         let filename: string;
@@ -228,7 +194,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     private static _modelFactories = new Map<
         string,
-        (file: TFile) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+        (
+            file: TFile,
+        ) => PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >
     >();
 
     /**
@@ -240,7 +210,9 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
         type: string,
         factory: (
             file: TFile,
-        ) => PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        ) => PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
     ) {
         PrjTaskManagementModel._modelFactories.set(type, factory);
     }
@@ -252,7 +224,11 @@ export class PrjTaskManagementModel<T extends IPrjData & IPrjTaskManagement>
      */
     public static getCorospondingModel(
         file: TFile,
-    ): PrjTaskManagementModel<IPrjData & IPrjTaskManagement> | undefined {
+    ):
+        | PrjTaskManagementModel<
+              IPrjData & IPrjTaskManagement & BaseData<unknown>
+          >
+        | undefined {
         const entry = Global.getInstance().metadataCache.getEntry(file);
 
         if (!entry) return undefined;

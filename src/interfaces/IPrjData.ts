@@ -1,3 +1,7 @@
+import Tag from 'src/libs/Tags/Tag';
+import Tags from 'src/libs/Tags/Tags';
+
 export default interface IPrjData {
-    tags: string[] | string | null | undefined;
+    get tags(): Tags | null | undefined;
+    set tags(value: Tags | Tag | string[] | string | null | undefined);
 }

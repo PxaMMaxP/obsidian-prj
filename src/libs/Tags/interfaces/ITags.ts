@@ -1,20 +1,35 @@
 import { TFile } from 'obsidian';
-import BaseTypeChecker from 'src/classes/BaseTypeChecker';
+import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './ITag';
 import { TagTree } from '../types/TagTree';
 
+/**
+ * Represents a ITags dependencie container.
+ */
+export interface ITagsDependencies {
+    metadataCache: IMetadataCache;
+    tagClass: typeof BaseComplexDataType & ITagConstructor;
+    logger?: ILogger;
+}
+
+/**
+ * Represents a tags constructor.
+ */
+export type TagsConstructorType = typeof BaseComplexDataType & ITagsConstructor;
+
+/**
+ * Represents a tags constructor.
+ */
 export interface ITagsConstructor {
     new (
         tags: ITags | ITag | string | string[] | undefined | null,
-        metadataCache: IMetadataCache,
-        tagClass: typeof BaseTypeChecker & ITagConstructor,
-        logger?: ILogger,
+        dependencies: ITagsDependencies,
     ): ITags;
 }
 
-export interface ITags {
+export interface ITags extends BaseComplexDataType {
     /**
      * Gets the tags.
      */
@@ -94,6 +109,18 @@ export interface ITags {
      * @returns An iterator object that iterates over the tags in the array.
      */
     [Symbol.iterator](): Iterator<ITag>;
+
+    /**
+     * Returns the first tag in the tags array.
+     * @returns The first tag in the tags array or `undefined` if the tags array is empty.
+     */
+    first(): ITag | undefined;
+
+    /**
+     * Returns the last tag in the tags array.
+     * @returns The last tag in the tags array or `undefined` if the tags array is empty.
+     */
+    last(): ITag | undefined;
 
     /**
      * Creates a tag tree from an array of tags.

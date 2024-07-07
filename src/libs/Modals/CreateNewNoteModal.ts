@@ -3,7 +3,6 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import Logging from 'src/classes/Logging';
-import DocumentData from 'src/models/Data/DocumentData';
 import NoteData from 'src/models/Data/NoteData';
 import { NoteModel } from 'src/models/NoteModel';
 import {
@@ -14,7 +13,6 @@ import {
 } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import Tags from '../Tags';
 
 /**
  * Modal to create a new metadata file
@@ -66,8 +64,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
         const convertedPreset: IResultData =
             this.convertPresetToIResultData(preset);
 
-        const activeFile = Helper.getActiveFile();
-        const tags: string[] = Tags.getTagsFromFile(activeFile);
+        const tags: string[] = this.getTagsFromActiveFile();
 
         if (convertedPreset) {
             if (convertedPreset.tags && Array.isArray(convertedPreset.tags)) {
@@ -117,7 +114,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
             ? existingFile.parent?.path
             : this.settings.noteSettings.defaultFolder;
 
-        note.data = result.data as Partial<DocumentData>;
+        note.data = result.data as Partial<NoteData>;
 
         if (!existingFile) {
             // No existing file, create a new one

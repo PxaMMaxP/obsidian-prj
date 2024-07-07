@@ -1,7 +1,7 @@
 /**
  * This interface defines the methods for opening a modal form.
  * @see https://github.com/danielo515/obsidian-modal-form
- * @license
+ * @license MIT
  * @tutorial modalforms.api You can get the Api like this:
  * ```ts
  * const modalFormsApi = (app as any).plugins.plugins.modalforms.api;
@@ -19,7 +19,8 @@ export interface IModalForm {
     /**
      * This method opens a modal form. The form is defined by the configuration object.
      * @param config The configuration object for the form.
-     * @param options The options object for the form. `values` is a key-value pair of the form data.
+     * @param options The options object for the form.
+     * @param options.values The initial values for the form fields. It is a key-value pair of the form data.
      * @returns A promise that resolves to the form data.
      * @see {@link IFormResult}
      */

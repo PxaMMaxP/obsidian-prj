@@ -4,14 +4,19 @@ import { ILogger } from 'src/interfaces/ILogger';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import Helper from 'src/libs/Helper';
 import MetadataCache from 'src/libs/MetadataCache';
+import ProxyHandler from 'src/libs/ProxyHandler/ProxyHandler';
+import BaseData from './Data/BaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 
-export class FileModel<T extends object> extends TransactionModel<T> {
+export class FileModel<
+    T extends BaseData<unknown>,
+> extends TransactionModel<T> {
     protected global: Global;
     protected app: App;
     protected metadataCache: MetadataCache;
+    private _proxyHandler: ProxyHandler<T>;
     protected logger: ILogger;
 
     private _file: TFile | undefined;
@@ -61,11 +66,6 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      */
     private _dataProxy: T | undefined = undefined;
     /**
-     * The proxy map to use.
-     * @see {@link FileModel.createProxy}
-     */
-    private _proxyMap: WeakMap<object, unknown> = new WeakMap();
-    /**
      * The yaml key map to use.
      * @see {@link YamlKeyMap}
      * @see {@link FileModel.initYamlKeyMap}
@@ -84,7 +84,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         yamlKeyMap: YamlKeyMap | undefined,
         logger?: ILogger,
     ) {
-        super(undefined);
+        super(undefined, Logging.getLogger('TransactionModel'));
 
         this.logger = logger ?? Logging.getLogger('FileModel');
 
@@ -92,6 +92,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         this.global = Global.getInstance();
         this.app = this.global.app;
         this.metadataCache = this.global.metadataCache;
+
+        this._proxyHandler = new ProxyHandler(undefined, this.updateKeyValue);
 
         if (file) {
             // Set the file and indirectly the `writeChanges` function.
@@ -120,8 +122,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             this.logger?.trace('Creating empty object');
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
-            this.changes = emptyObject;
-            this._dataProxy = this.createProxy(emptyObject) as T;
+            this.changes = emptyObject.defaultData;
+            this._dataProxy = this._proxyHandler.createProxy(emptyObject) as T;
 
             return this._dataProxy;
         }
@@ -136,7 +138,7 @@ export class FileModel<T extends object> extends TransactionModel<T> {
         }
 
         const dataObject: T = new this._ctor(frontmatter as Partial<T>);
-        this._dataProxy = this.createProxy(dataObject) as T;
+        this._dataProxy = this._proxyHandler.createProxy(dataObject) as T;
 
         return this._dataProxy;
     }
@@ -149,9 +151,9 @@ export class FileModel<T extends object> extends TransactionModel<T> {
      * - If value is `null`, the value is cleared.
      */
     protected set _data(values: Partial<T>) {
-        const dataObject: T = new this._ctor(values);
+        const keys = Object.keys(values) as Array<keyof T>;
 
-        for (const key in dataObject) {
+        for (const key of keys) {
             if (values[key] !== undefined) {
                 this._data[key] = values[key];
             }
@@ -196,6 +198,8 @@ export class FileModel<T extends object> extends TransactionModel<T> {
             await previousPromise;
         }
 
+        this.logger?.trace(`Updating with:`, value);
+
         try {
             await this.app.fileManager.processFrontMatter(
                 this._file,
@@ -213,93 +217,6 @@ export class FileModel<T extends object> extends TransactionModel<T> {
                 error,
             );
         }
-    }
-
-    /**
-     * Creates a proxy for the given object.
-     * @param obj The object to create a proxy for.
-     * @param path The path of the object. e.g. `data.title`
-     * @returns The proxy object.
-     * @remarks - If the object is already proxied, the existing proxy is returned.
-     * - If the object is not proxied, a new proxy is created
-     * and the `proxyMap` is updated. The proxy is returned.
-     * @see {@link FileModel._proxyMap}
-     * - If the object is an object, the function is called recursively.
-     * - Only non-proxy values are sent to the `updateKeyValue` function.
-     * @see {@link FileModel.resolveProxyValue}
-     * @see {@link FileModel.updateKeyValue}
-     */
-    private createProxy(obj: Partial<T>, path = ''): unknown {
-        const existingProxy = this._proxyMap.get(obj);
-
-        if (existingProxy) {
-            return existingProxy;
-        }
-
-        const proxy = new Proxy(obj, {
-            get: (target, property, receiver) => {
-                const propertyKey = this.getPropertyKey(property);
-                const value = Reflect.get(target, property, receiver);
-
-                const newPath = path
-                    ? `${path}.${propertyKey}`
-                    : `${propertyKey}`;
-
-                if (value && typeof value === 'object') {
-                    return this.createProxy(value, newPath);
-                }
-
-                return value;
-            },
-            set: (target, property, value, receiver) => {
-                const propertyKey = this.getPropertyKey(property);
-
-                const newPath = path
-                    ? `${path}.${propertyKey}`
-                    : `${propertyKey}`;
-
-                const resolvedValue = this.resolveProxyValue(value);
-
-                Reflect.set(target, property, resolvedValue, receiver);
-                this.updateKeyValue(newPath, resolvedValue);
-
-                return true;
-            },
-        });
-
-        this._proxyMap.set(obj, proxy);
-
-        return proxy;
-    }
-
-    private resolveProxyValue(value: unknown): unknown {
-        if (this._proxyMap.has(value as object)) {
-            // If the value is a proxy, get the original value
-            return this._proxyMap.get(value as object);
-        } else if (Array.isArray(value)) {
-            // If the value is an array, recursively check each element
-            return value.map((item) => this.resolveProxyValue(item));
-        } else if (value && typeof value === 'object') {
-            // If the value is an object, recursively check the properties
-            return Object.fromEntries(
-                Object.entries(value).map(([key, val]) => [
-                    key,
-                    this.resolveProxyValue(val),
-                ]),
-            );
-        }
-
-        // Return only non-proxy values
-        return value;
-    }
-
-    /**
-     * Returns the value of the given property key.
-     * @param property The property key to get the value for.
-     * @returns The value of the given property key.
-     */
-    private getPropertyKey(property: string | symbol): string {
-        return typeof property === 'symbol' ? property.toString() : property;
     }
 
     /**

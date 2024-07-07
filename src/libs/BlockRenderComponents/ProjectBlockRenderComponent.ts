@@ -4,6 +4,7 @@ import Logging from 'src/classes/Logging';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
+import BaseData from 'src/models/Data/BaseData';
 import ProjectData from 'src/models/Data/ProjectData';
 import TaskData from 'src/models/Data/TaskData';
 import TopicData from 'src/models/Data/TopicData';
@@ -22,7 +23,7 @@ import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
 
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
-    PrjTaskManagementModel<IPrjData & IPrjTaskManagement>
+    PrjTaskManagementModel<IPrjData & IPrjTaskManagement & BaseData<unknown>>
 > {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
@@ -234,7 +235,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private async generateTableRow(
-        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        model: PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
     ): Promise<Row> {
         const rowClassList: string[] = [];
         const rowData: DocumentFragment[] = [];
@@ -319,7 +322,12 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         // Row 6 -- Tags
         const tags = document.createDocumentFragment();
         rowData.push(tags);
-        GeneralComponents.createCellTags(tags, this.component, model.getTags());
+
+        GeneralComponents.createCellTags(
+            tags,
+            this.component,
+            model.data.tags?.toStringArray() ?? [],
+        );
 
         const hide = this.getHideState(model, this.settings.maxDocuments);
 
@@ -362,7 +370,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     protected getHideState(
-        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        model: PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
         maxVisibleRows: number | undefined,
     ): boolean {
         let searchResult = false;
@@ -400,7 +410,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private determineHideState(
-        model: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        model: PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
     ): boolean {
         if (
             this.settings.filter.includes('Topic') &&
@@ -427,19 +439,21 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     private determineTagHideState(
-        document: PrjTaskManagementModel<IPrjData & IPrjTaskManagement>,
+        document: PrjTaskManagementModel<
+            IPrjData & IPrjTaskManagement & BaseData<unknown>
+        >,
     ): boolean {
         if (this.settings.reactOnActiveFile) {
             return !Helper.isTagIncluded(
                 this.settings.tags,
-                document.getTags(),
+                document.data.tags?.toStringArray() ?? [],
             );
         } else if (this.settings.filter.includes('DeepHierarchy')) {
             return false;
         } else {
             return !Helper.isTagDirectlyBelow(
                 this.settings.tags,
-                document.getTags(),
+                document.data.tags?.toStringArray() ?? [],
             );
         }
     }

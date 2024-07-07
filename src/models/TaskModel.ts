@@ -3,7 +3,8 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags';
+import { TagsDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
+import Tags from 'src/libs/Tags/Tags';
 import { Status } from 'src/types/PrjTypes';
 import TaskData from './Data/TaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
@@ -37,13 +38,14 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
         status?: (status: Status | undefined) => boolean,
     ): TaskModel[] {
         const filesWithSameTags = this.metadataCache.cache.filter((file) => {
-            const fileTags = Tags.getValidTags(
+            const fileTags = new Tags(
                 file.metadata?.frontmatter?.tags,
+                TagsDefaultDependencies,
             );
-            const thisTags = this.tags;
+            const thisTags = this.data.tags;
 
             return (
-                fileTags.some((tag) => thisTags.includes(tag)) &&
+                fileTags.some((tag) => thisTags?.includes(tag) ?? false) &&
                 file.file.basename !== this.file.basename &&
                 file.metadata?.frontmatter?.type === 'Task' &&
                 (status ? status(file.metadata?.frontmatter?.status) : true)
