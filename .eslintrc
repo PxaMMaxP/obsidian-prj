@@ -131,7 +131,17 @@
       }
     ],
     "jsdoc/require-param": "warn",
-    "jsdoc/require-description": "warn",
+    "jsdoc/require-description": [
+      "warn",
+      {
+        "contexts": [
+          "FunctionDeclaration",
+          "MethodDefinition",
+          "ClassDeclaration"
+        ],
+        "descriptionStyle": "body"
+      }
+    ],
     "jsdoc/require-returns": [
       "warn",
       {
@@ -142,6 +152,18 @@
       "warn",
       {
         "definedTags": ["remarks", "jest-environment"]
+      }
+    ],
+    "jsdoc/no-restricted-syntax": [
+      "error",
+      {
+        "contexts": [
+          {
+            "context": "MethodDefinition[kind='get']",
+            "comment": "JsdocBlock:has(JsdocTag[tag='returns'])",
+            "message": "JSDoc @returns comments are not allowed in getters."
+          }
+        ]
       }
     ]
     },
