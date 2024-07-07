@@ -8,7 +8,7 @@ import { ILogger } from 'src/interfaces/ILogger';
  * @remarks Use this as a child when you want to customize the `onLoad` and `onUnload` functions.
  */
 export default class CustomizableRenderChild extends MarkdownRenderChild {
-    private logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
     private _onUnload: (() => void) | undefined;
     private _onLoad: (() => void) | undefined;
 
@@ -26,7 +26,7 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
         logger?: ILogger,
     ) {
         super(container);
-        this.logger = logger ?? undefined;
+        this._logger = logger ?? undefined;
         this._onLoad = onLoad;
         this._onUnload = onUnload;
     }
@@ -37,7 +37,7 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
      * @remarks Calls the custom `onLoad` function if it is defined and then calls the base `onLoad` function.
      */
     override onload(): void {
-        this.logger?.trace('On Load');
+        this._logger?.trace('On Load');
         this._onLoad?.();
         super.onload();
     }
@@ -48,7 +48,7 @@ export default class CustomizableRenderChild extends MarkdownRenderChild {
      * @remarks Calls the custom `onUnload` function if it is defined and then calls the base `onUnload` function.
      */
     override onunload(): void {
-        this.logger?.trace('On Unload');
+        this._logger?.trace('On Unload');
         this._onUnload?.();
         super.onunload();
     }
