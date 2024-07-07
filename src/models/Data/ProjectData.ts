@@ -2,9 +2,9 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
-import { TagsDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
 import Tag from 'src/libs/Tags/Tag';
 import Tags from 'src/libs/Tags/Tags';
+import { TagsDefaultDependencies } from 'src/libs/Tags/Tags.dependency';
 import {
     FileSubType,
     Status,
@@ -14,6 +14,9 @@ import {
 } from 'src/types/PrjTypes';
 import BaseData from './BaseData';
 
+/**
+ * Represents a project.
+ */
 export default class ProjectData
     extends BaseData<ProjectData>
     implements IPrjData, IPrjTaskManagement
@@ -52,15 +55,22 @@ export default class ProjectData
      */
     private _tags: Tags | null | undefined;
 
+    /**
+     * Sets the tags of the Project.
+     */
     @fieldConfig()
     set tags(value: Tags | Tag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
         } else {
-            this._tags = new Tags(value, TagsDefaultDependencies);
+            this._tags = new Tags(value);
         }
     }
 
+    /**
+     * Gets the tags of the Project.
+     * @returns The tags of the Project.
+     */
     @toStringField
     get tags(): Tags | null | undefined {
         return this._tags;
@@ -72,6 +82,12 @@ export default class ProjectData
     @fieldConfig()
     aliases: string[] | null | undefined;
 
+    /**
+     * Creates a new instance of the ProjectData class.
+     * @param data - The data to use for the model.
+     * - If no data is provided, the default values e.g. `undefined` are used.
+     * - If only partial data is provided, the missing values are set to `undefined`.
+     */
     constructor(data: Partial<ProjectData>) {
         super(data);
     }

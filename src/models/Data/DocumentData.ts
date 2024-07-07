@@ -2,7 +2,6 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjDocument from 'src/interfaces/IPrjDocument';
-import { TagsDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
 import Tag from 'src/libs/Tags/Tag';
 import Tags from 'src/libs/Tags/Tags';
 import { FileType, FileSubType } from 'src/types/PrjTypes';
@@ -130,15 +129,22 @@ export default class DocumentData
      */
     private _tags: Tags | null | undefined;
 
+    /**
+     * Sets the tags of the document.
+     */
     @fieldConfig()
     set tags(value: Tags | Tag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
         } else {
-            this._tags = new Tags(value, TagsDefaultDependencies);
+            this._tags = new Tags(value);
         }
     }
 
+    /**
+     * Gets the tags of the document.
+     * @returns The tags of the document.
+     */
     @toStringField
     get tags(): Tags | null | undefined {
         return this._tags;
@@ -160,7 +166,7 @@ export default class DocumentData
 
     /**
      * Creates a new instance of the `DocumentData` class.
-     * @param data - The data to use for the creation.
+     * @param data - The data to use for the model.
      * - If no data is provided, the default values e.g. `undefined` are used.
      * - If only partial data is provided, the missing values are set to `undefined`.
      */

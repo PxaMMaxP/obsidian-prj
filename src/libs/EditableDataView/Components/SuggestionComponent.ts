@@ -1,4 +1,5 @@
-import { Component, MarkdownRenderChild } from 'obsidian';
+import { Component } from 'obsidian';
+import CustomizableRenderChild from 'src/libs/CustomizableRenderChild/CustomizableRenderChild';
 
 /**
  * A suggestion.
@@ -19,22 +20,9 @@ export type Suggestions = Suggestion[];
  * @see {@link SuggestionComponent.getCursorPositionNumber}
  */
 type CursorPosition = number | 'start' | 'end';
-
 /**
- * A child for the suggestor.
- * @remarks - This child is used to register the events for the suggestor.
- * - After the suggestor is unloaded, the events are unregistered.
+ * Represents a suggestion component.
  */
-export class SuggestorChild extends MarkdownRenderChild {
-    constructor(container: HTMLElement) {
-        super(container);
-    }
-
-    override onunload(): void {
-        super.onunload();
-    }
-}
-
 export default class SuggestionComponent {
     private _component: Component;
     private _suggester: ((value: string) => Suggestions) | undefined;
@@ -44,7 +32,7 @@ export default class SuggestionComponent {
 
     private _suggestions: Suggestions;
     private _activeSuggestions: Suggestions;
-    private _suggestorChild: SuggestorChild | undefined;
+    private _suggestorChild: CustomizableRenderChild | undefined;
     private _suggestionIndex = 0;
     private _scrollMode: boolean;
 
@@ -83,6 +71,9 @@ export default class SuggestionComponent {
         return this;
     }
 
+    /**
+     * Initializes the suggestion component.
+     */
     private setSuggestion() {
         let suggestion: Suggestion | undefined;
 
@@ -168,7 +159,9 @@ export default class SuggestionComponent {
      * - The suggestor is loaded and registered to the input element.
      */
     public enableSuggestior() {
-        this._suggestorChild = new SuggestorChild(this._suggestionsContainer);
+        this._suggestorChild = new CustomizableRenderChild(
+            this._suggestionsContainer,
+        );
         this._suggestorChild.load();
         this._component.addChild(this._suggestorChild);
 
@@ -297,6 +290,7 @@ export default class SuggestionComponent {
 
     /**
      * Returns the length of the text in the input element.
+     * @returns The length of the text in the input element.
      */
     private get inputTextLength() {
         return this._inputElement.textContent?.length ?? 0;
@@ -304,6 +298,7 @@ export default class SuggestionComponent {
 
     /**
      * Returns the current cursor position in the input element.
+     * @returns The current cursor position in the input element.
      */
     private get cursorPosition() {
         const selection = window.getSelection();

@@ -1,12 +1,14 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
-import { TagsDefaultDependencies } from 'src/libs/Tags/DefaultDependencies';
 import Tag from 'src/libs/Tags/Tag';
 import Tags from 'src/libs/Tags/Tags';
 import { FileType } from 'src/types/PrjTypes';
 import BaseData from './BaseData';
 
+/**
+ * Represents a note.
+ */
 export default class NoteData extends BaseData<NoteData> implements IPrjData {
     @fieldConfig('Note')
     type: FileType | null | undefined;
@@ -29,20 +31,33 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
      */
     private _tags: Tags | null | undefined;
 
+    /**
+     * Sets the tags of the note.
+     */
     @fieldConfig()
     set tags(value: Tags | Tag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
         } else {
-            this._tags = new Tags(value, TagsDefaultDependencies);
+            this._tags = new Tags(value);
         }
     }
 
+    /**
+     * Gets the tags of the note.
+     * @returns The tags of the note.
+     */
     @toStringField
     get tags(): Tags | null | undefined {
         return this._tags;
     }
 
+    /**
+     * Initializes a new instance of the NoteData class.
+     * @param data - The data to use for the model.
+     * - If no data is provided, the default values e.g. `undefined` are used.
+     * - If only partial data is provided, the missing values are set to `undefined`.
+     */
     constructor(data: Partial<NoteData>) {
         super(data);
     }

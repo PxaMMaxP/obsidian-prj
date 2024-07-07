@@ -13,6 +13,7 @@ export default class Logging implements ILogger {
     /**
      * Creates a new Logging instance
      * @param logLevel The log level to use. Defaults to "info"
+     * @param logPrefix The prefix to prepend to log messages
      */
     constructor(logLevel: LoggingLevel = 'info', logPrefix = '') {
         this._logLevel = logLevel;
@@ -25,6 +26,10 @@ export default class Logging implements ILogger {
         Logging._instance = this;
     }
 
+    /**
+     * Sets the log level
+     * @param logLevel The log level to set
+     */
     public setLogLevel(logLevel: LoggingLevel) {
         this._logLevel = logLevel;
         // eslint-disable-next-line no-console
@@ -33,6 +38,7 @@ export default class Logging implements ILogger {
 
     /**
      * Returns the Logging instance
+     * @returns The Logging instance
      */
     public static getInstance(): Logging {
         if (!Logging._instance) {
@@ -45,6 +51,7 @@ export default class Logging implements ILogger {
     /**
      * Returns an object with logging methods that prepend a specified prefix to messages
      * @param prefix The prefix to prepend to all log messages
+     * @returns An object with logging methods
      */
     public static getLogger(prefix: string): ILogger {
         const instance = Logging.getInstance();
@@ -53,14 +60,39 @@ export default class Logging implements ILogger {
         const logMethods: {
             [key in Exclude<LoggingLevel, 'none'>]: (...args: any[]) => void;
         } = {
+            /**
+             * Logs a `trace` message
+             * @param args The arguments to log
+             * @returns
+             */
             trace: (...args: any[]) =>
                 instance.logWithPrefix('trace', prefix, args),
+            /**
+             * Logs a `debug` message
+             * @param args The arguments to log
+             * @returns
+             */
             debug: (...args: any[]) =>
                 instance.logWithPrefix('debug', prefix, args),
+            /**
+             * Logs an `info` message
+             * @param args The arguments to log
+             * @returns
+             */
             info: (...args: any[]) =>
                 instance.logWithPrefix('info', prefix, args),
+            /**
+             * Logs a `warn` message
+             * @param args The arguments to log
+             * @returns
+             */
             warn: (...args: any[]) =>
                 instance.logWithPrefix('warn', prefix, args),
+            /**
+             * Logs an `error` message
+             * @param args The arguments to log
+             * @returns
+             */
             error: (...args: any[]) =>
                 instance.logWithPrefix('error', prefix, args),
         };
@@ -70,7 +102,6 @@ export default class Logging implements ILogger {
 
     /**
      * Logs a message with a specified prefix and level.
-     *
      * @param level - The logging level.
      * @param prefix - The prefix to add to the log message.
      * @param args - The arguments to be logged.
@@ -149,10 +180,20 @@ export default class Logging implements ILogger {
         }
     }
 
+    /**
+     * Constructs a log message with the log prefix
+     * @param message The message to log
+     * @returns The constructed log message: `${this._logPrefix}${message}`
+     */
     private constructLogMessage(message?: any): string {
         return `${this._logPrefix}${message}`;
     }
 
+    /**
+     * Checks if the log level is active
+     * @param logLevel The log level to check
+     * @returns Whether the log level is active
+     */
     private logLevelActive(logLevel: LoggingLevel): boolean {
         if (this._logLevel === 'none') {
             return false;

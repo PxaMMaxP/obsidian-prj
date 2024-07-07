@@ -9,8 +9,10 @@ import {
     IResultData,
 } from 'src/types/ModalFormType';
 import Helper from '../Helper';
-import { TagsDefaultDependencies } from '../Tags/DefaultDependencies';
 
+/**
+ * Represents a base class for modal forms.
+ */
 export default abstract class BaseModalForm {
     protected app: App = Global.getInstance().app;
     protected settings = Global.getInstance().settings;
@@ -31,7 +33,7 @@ export default abstract class BaseModalForm {
 
     /**
      * Checks if the ModalForms API is available
-     * @returns {boolean} True if the API is available
+     * @returns True if the API is available
      * @remarks Log an error if the API is not available
      */
     protected isApiAvailable(): boolean {
@@ -47,6 +49,9 @@ export default abstract class BaseModalForm {
         return true;
     }
 
+    /**
+     * Returns the ModalForms API
+     */
     protected getApi(): IModalForm {
         if (this.modalFormApi === undefined || this.modalFormApi === null) {
             this.logger.error('ModalForms API not found');
@@ -56,6 +61,9 @@ export default abstract class BaseModalForm {
         }
     }
 
+    /**
+     * Sets the ModalForms API
+     */
     private setApi(): IModalForm | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const modalFormApi = (this.app as any).plugins.plugins.modalforms
@@ -88,7 +96,7 @@ export default abstract class BaseModalForm {
     protected getTagsFromActiveFile(
         activeFile: TFile | undefined = Helper.getActiveFile(),
     ): string[] {
-        const activeFileTags = new Tags(undefined, TagsDefaultDependencies);
+        const activeFileTags = new Tags(undefined);
         activeFileTags.loadTagsFromFile(activeFile);
 
         const tags: string[] = activeFileTags.toStringArray();

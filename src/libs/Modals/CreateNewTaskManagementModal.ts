@@ -11,15 +11,25 @@ import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import { TagDefaultDependencies } from '../Tags/DefaultDependencies';
 import Tag from '../Tags/Tag';
 import Tags from '../Tags/Tags';
 
+/**
+ * Represents the modal to create a new task management file.
+ */
 export default class CreateNewTaskManagementModal extends BaseModalForm {
+    /**
+     * Creates a new instance of CreateNewTaskManagementModal.
+     */
     constructor() {
         super();
     }
 
+    /**
+     * Opens the form to create a new task management file.
+     * @returns The result of the form.
+     * @async
+     */
     public async openForm(): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewTaskManagementModal' form");
@@ -40,6 +50,12 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         return result;
     }
 
+    /**
+     * Evaluates the result of the form and creates the task management file.
+     * @param result The result of the form.
+     * @returns The created task management file.
+     * @async
+     */
     public async evaluateForm(
         result: IFormResult,
     ): Promise<
@@ -122,6 +138,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             base: undefined as string | undefined,
             tag: undefined as string | undefined,
             postfix: undefined as number | undefined,
+            /**
+             * The full tag including the postfix.
+             */
             get fullTag(): string {
                 return this.tag + (this.postfix ? this.postfix : '');
             },
@@ -140,10 +159,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                         `${baseTag}/${tag}` + (acronym ? `/${acronym}` : '');
                 }
 
-                while (
-                    acronym &&
-                    new Tag(mainTag.fullTag, TagDefaultDependencies).exists
-                ) {
+                while (acronym && new Tag(mainTag.fullTag).exists) {
                     if (!mainTag.postfix) {
                         mainTag.postfix = 0;
                     }
@@ -186,6 +202,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             postfix: undefined as number | undefined,
             extension: `.md`,
             file: undefined as TFile | undefined,
+            /**
+             * The full path of the file including the postfix.
+             */
             get fullPath() {
                 return Path.join(
                     this.filepath,
@@ -261,6 +280,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         return model;
     }
 
+    /**
+     * Constructs the form to create a new task management file.
+     */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {
             title: `${Lng.gt('New Topic/Project')}`,
@@ -428,6 +450,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         global.plugin.addCommand({
             id: 'create-new-task-management-file',
             name: `${Lng.gt('New Topic/Project')}`,
+            /**
+             * Opens the form to create a new task management file.
+             */
             callback: async () => {
                 const modal = new CreateNewTaskManagementModal();
                 const result = await modal.openForm();
