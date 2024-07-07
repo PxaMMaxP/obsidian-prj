@@ -46,16 +46,6 @@
           "leadingUnderscore": "require"
         },
         {
-          "selector": "classProperty",
-          "modifiers": ["private"],
-          "filter": {
-            "regex": "^logger$",
-            "match": true
-          },
-          "format": ["camelCase"],
-          "leadingUnderscore": "forbid"
-        },
-        {
           "selector": "memberLike",
           "modifiers": ["public"],
           "format": ["camelCase"],
