@@ -20,7 +20,7 @@ type WriteChangesReturnType = {
  * @remarks - A transaction is a set of changes that are applied to the model at once.
  * - This is useful when multiple changes need to be applied to the model, but the changes should only be written to the file once all changes have been applied.
  * - This is also useful when the changes should be applied to the model, but not written to the file yet.
- * @tutorial - To start a transaction, call the `startTransaction` method.
+ * @summary - To start a transaction, call the `startTransaction` method.
  * - To apply the changes to the model, call the `finishTransaction` method.
  * - To discard the changes, call the `abortTransaction` method.
  */
@@ -30,6 +30,10 @@ export class TransactionModel<T> {
      * A promise that resolves when the changes are written to the file.
      */
     private _writeChangesPromise: Promise<void> | undefined;
+    /**
+     * Returns the promise that resolves when the last changes are written to the file.
+     * @returns Returns the promise if it exists, otherwise `undefined`. The promise can already be solved or pending.
+     */
     protected get writeChangesPromise(): Promise<void> | undefined {
         return this._writeChangesPromise;
     }
@@ -67,6 +71,7 @@ export class TransactionModel<T> {
     /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
+     * @param logger A optional logger that logs messages.
      * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
      */
     constructor(
@@ -112,7 +117,7 @@ export class TransactionModel<T> {
     /**
      * Calls the `writeChanges` function if it is available.
      * @param update The changes to write. Defaults to `this.changes` if not provided.
-     * @returns {WriteChangesReturnType} An object with a promise that resolves when the changes are written to the file and a boolean that indicates whether the writeChanges function was called.
+     * @returns An object with a promise that resolves when the changes are written to the file and a boolean that indicates whether the writeChanges function was called.
      * @remarks - If the `writeChanges` function is available, it will be called asynchronously (No waiting for the function to finish).
      * - If the `writeChanges` function is not available, this method does nothing.
      * @remarks - If the `writeChanges` function is called, the `changes` property is set to an empty object after the function is called
