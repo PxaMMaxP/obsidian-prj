@@ -10,12 +10,8 @@ import BaseData from 'src/models/Data/BaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
-import CustomizableRenderChild from '../CustomizableRenderChild';
+import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import {
-    TagDefaultDependencies,
-    TagsDefaultDependencies,
-} from '../Tags/DefaultDependencies';
 import Tag from '../Tags/Tag';
 import Tags from '../Tags/Tags';
 import { TagTree } from '../Tags/types/TagTree';
@@ -58,7 +54,6 @@ export default class HeaderBlockRenderComponent
 
     /**
      * Sets the path value.
-     *
      * @param value - The new path value.
      */
     private set path(value: string) {
@@ -190,9 +185,13 @@ export default class HeaderBlockRenderComponent
      * The tags of the Prj File.
      */
     private get tags(): Tags {
-        return new Tags(this.frontmatter?.tags, TagsDefaultDependencies);
+        return new Tags(this.frontmatter?.tags);
     }
 
+    /**
+     *
+     * @param settings
+     */
     constructor(settings: IProcessorSettings) {
         this._processorSettings = settings;
         this.onUnload = this.onUnload.bind(this);
@@ -272,6 +271,8 @@ export default class HeaderBlockRenderComponent
     /**
      * The `file-rename-event` event handler.
      * @param file Contains `{ oldPath: string; newPath: string }` of the file which has changed.
+     * @param file.oldPath
+     * @param file.newPath
      */
     private onPathChanged(file: { oldPath: string; newPath: string }): void {
         if (file.oldPath === this.path) {
@@ -308,7 +309,6 @@ export default class HeaderBlockRenderComponent
 
     /**
      * Creates a separator line as a DocumentFragment.
-     *
      * @returns The created separator line as a DocumentFragment.
      */
     private createSeparatorLine(): DocumentFragment {
@@ -439,7 +439,7 @@ export default class HeaderBlockRenderComponent
             const fullPath = path ? `${path}/${tag}` : tag;
             const li = document.createElement('li');
 
-            const tagObject = new Tag(tag, TagDefaultDependencies);
+            const tagObject = new Tag(tag);
 
             const tagLink = tagObject.getObsidianLink(
                 path ? tagObject.toString() : tagObject.tagWithHash,

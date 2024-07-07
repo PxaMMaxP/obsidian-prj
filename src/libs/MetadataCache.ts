@@ -39,7 +39,7 @@ export default class MetadataCache implements IMetadataCache {
 
     /**
      * Get the metadata cache
-     * @returns {FileMetadata[]} Array of FileMetadata objects
+     * @returns Array of FileMetadata objects
      * @description This method returns the metadata cache as an array of FileMetadata objects. The FileMetadata object contains the file and the cached metadata.
      * @remarks - The reference of the array is returned and will be the same on every call.
      * - If the cache is updated, the array is emptied and repopulated with the current values from the metadata cache.
@@ -64,7 +64,7 @@ export default class MetadataCache implements IMetadataCache {
 
     /**
      * Get the singleton instance of the MetadataCache class
-     * @returns {MetadataCache} The MetadataCache instance
+     * @returns The MetadataCache instance
      */
     static getInstance() {
         if (!MetadataCache.instance) {
@@ -135,7 +135,7 @@ export default class MetadataCache implements IMetadataCache {
 
     /**
      * Check if the metadata cache is ready
-     * @returns {boolean} True if the metadata cache is ready, false otherwise
+     * @returns True if the metadata cache is ready, false otherwise
      */
     public isCacheReady(): boolean {
         return this._metadataCacheReady;
@@ -143,7 +143,7 @@ export default class MetadataCache implements IMetadataCache {
 
     /**
      * Wait for the metadata cache to be ready
-     * @returns {Promise<void>} Promise that resolves when the metadata cache is ready
+     * @returns Promise that resolves when the metadata cache is ready
      * @description This method returns a promise that resolves when the metadata cache is ready.
      */
     public async waitForCacheReady(): Promise<void> {
@@ -325,7 +325,6 @@ export default class MetadataCache implements IMetadataCache {
 
     /**
      * Handles the event when a file is renamed.
-     *
      * @param oldPath The old path of the file.
      * @param newFile The new file object representing the renamed file.
      */
@@ -463,6 +462,11 @@ export default class MetadataCache implements IMetadataCache {
         }
     }
 
+    /**
+     * Get the backlinks for a file.
+     * @param file The file to get the backlinks for.
+     * @returns Array of files that link to the file.
+     */
     public getBacklinks(file: TFile): TFile[] {
         const filesWithBacklinks: TFile[] = [];
 
@@ -514,6 +518,7 @@ export default class MetadataCache implements IMetadataCache {
     /**
      * Update a file in the metadata cache
      * @param file The file to update in the metadata cache
+     * @param cache The new cached metadata
      */
     private async updateEntry(file: TFile, cache: CachedMetadata) {
         if (this._metadataCache) {
@@ -605,6 +610,10 @@ export default class MetadataCache implements IMetadataCache {
         }
     }
 
+    /**
+     * Redraw the markdown view
+     * @deprecated This method is deprecated and will be removed in a future version.
+     */
     private redrawMarkdownView() {
         this.logger.debug(`Redrawing markdown view`);
         this._app.workspace.updateOptions();

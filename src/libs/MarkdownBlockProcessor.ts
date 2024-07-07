@@ -1,34 +1,27 @@
 /* eslint-disable no-case-declarations */
-// Note: MarkdownBlockProcessor Class
-
 import * as yaml from 'js-yaml';
-import { MarkdownPostProcessorContext, MarkdownRenderChild } from 'obsidian';
+import { MarkdownPostProcessorContext } from 'obsidian';
 import Logging from 'src/classes/Logging';
 import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
 import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRenderComponent';
 import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';
 import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
+import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRenderChild';
 import Helper from './Helper';
 import SingletonBlockProcessor from './SingletonBlockProcessor';
 import Global from '../classes/Global';
 import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 
-class MdRenderChild extends MarkdownRenderChild {
-    constructor(container: HTMLElement) {
-        super(container);
-    }
-
-    override onunload(): void {
-        const logger = Logging.getLogger('MdRenderChild');
-        logger.trace('On Unload');
-        super.onunload();
-    }
-}
-
 /**
  * Class for the markdown block processor.
  */
 export default class MarkdownBlockProcessor {
+    /**
+     * Parse the source of the `prj` block.
+     * @param source A unique identifier for the block.
+     * @param el The HTML element.
+     * @param ctx The markdown post processor context.
+     */
     static async parseSource(
         source: string,
         el: HTMLElement,
@@ -90,7 +83,12 @@ export default class MarkdownBlockProcessor {
             });
         }
 
-        const cmp = new MdRenderChild(blockContainer);
+        const cmp = new CustomizableRenderChild(
+            blockContainer,
+            undefined,
+            undefined,
+            logger,
+        );
         setting.component = cmp;
         ctx.addChild(cmp);
 
