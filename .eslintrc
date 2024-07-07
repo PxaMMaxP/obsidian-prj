@@ -130,7 +130,7 @@
         }
       }
     ],
-    "jsdoc/require-param": "warn",
+    "jsdoc/require-param": ["warn", { "exemptedBy": ["deprecated"] }],
     "jsdoc/require-description": [
       "warn",
       {
@@ -139,13 +139,15 @@
           "MethodDefinition",
           "ClassDeclaration"
         ],
-        "descriptionStyle": "body"
+        "descriptionStyle": "body",
+        "exemptedBy": ["deprecated"]
       }
     ],
     "jsdoc/require-returns": [
       "warn",
       {
-        "checkGetters": false
+        "checkGetters": false,
+        "exemptedBy": ["deprecated"]
       }
     ],
     "jsdoc/check-tag-names": [
