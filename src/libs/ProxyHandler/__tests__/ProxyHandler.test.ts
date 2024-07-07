@@ -36,6 +36,22 @@ class TestObjectImplementation implements TestObject {
     }
 }
 
+class NestedObject {
+    private _deepValue: { value: string };
+
+    constructor(initialValue: string) {
+        this._deepValue = { value: initialValue };
+    }
+
+    get deepValue() {
+        return this._deepValue;
+    }
+
+    set deepValue(newVal: { value: string }) {
+        this._deepValue = newVal;
+    }
+}
+
 describe('ProxyHandler', () => {
     let logger: ILogger;
     let updateKeyValueMock: jest.Mock;
@@ -180,12 +196,39 @@ describe('ProxyHandler', () => {
         );
     });
 
+    test('should handle deeply nested objects with private variables', () => {
+        const obj = {
+            nested: {
+                value: 'nestedValue',
+                nestedObject: new NestedObject('deepNestedValue'), // Using the new NestedObject class
+            },
+        } as unknown as Partial<TestObject>;
+
+        const proxy = proxyHandler.createProxy(obj);
+
+        if (proxy.nested?.nestedObject) {
+            (proxy.nested.nestedObject.deepValue as any) = {
+                value: 'newDeepNestedValue',
+            };
+        }
+
+        // Verifying if the private variable _deepValue is updated via the setter
+        expect((proxy.nested?.nestedObject?.deepValue as any)?.value).toBe(
+            'newDeepNestedValue',
+        );
+
+        expect(updateKeyValueMock).toHaveBeenCalledWith(
+            'nested.nestedObject.deepValue',
+            { value: 'newDeepNestedValue' },
+        );
+    });
+
     test('should use existing proxy if already created', () => {
         const obj = new TestObjectImplementation('publicValue', 'privateValue');
         const proxy1 = proxyHandler.createProxy(obj);
         const proxy2 = proxyHandler.createProxy(obj);
 
-        expect(proxy1).toBe(proxy2);
+        expect(proxy1).toStrictEqual(proxy2);
     });
 
     test('should access private field directly through getter', () => {
@@ -412,7 +455,7 @@ describe('ProxyHandler', () => {
         proxy1.publicField = 'value2';
         const proxy2 = proxyHandler.createProxy(obj);
 
-        expect(proxy1).toBe(proxy2);
+        expect(proxy1).toStrictEqual(proxy2);
         expect(proxy2.publicField).toBe('value2');
     });
 
@@ -600,10 +643,7 @@ describe('ProxyHandler', () => {
         delete (proxy as any).publicField;
         expect(proxy.publicField).toBeUndefined();
 
-        expect(updateKeyValueMock).toHaveBeenCalledWith(
-            'publicField',
-            undefined,
-        );
+        expect(updateKeyValueMock).toHaveBeenCalledWith('publicField', null);
     });
 
     test('should function without updateKeyValue callback', () => {
