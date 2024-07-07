@@ -37,6 +37,9 @@ export default class CreateNewNoteModal extends BaseModalForm {
         global.plugin.addCommand({
             id: 'create-new-note-file',
             name: `${Lng.gt('Create new note')}`,
+            /**
+             *
+             */
             callback: async () => {
                 const modal = new CreateNewNoteModal();
                 const result = await modal.openForm();
@@ -52,8 +55,8 @@ export default class CreateNewNoteModal extends BaseModalForm {
 
     /**
      * Opens the modal form
-     * @param {Partial<NoteData>} [preset] Preset values for the form
-     * @returns {Promise<IFormResult | undefined>} Result of the form
+     * @param [preset] Preset values for the form
+     * @returns Result of the form
      */
     public async openForm(
         preset?: Partial<NoteData>,
@@ -95,7 +98,6 @@ export default class CreateNewNoteModal extends BaseModalForm {
 
     /**
      * Evaluates the form result and creates or renames a note accordingly.
-     *
      * @param result - The form result containing the data.
      * @param existingFile - The existing file to be renamed, if applicable.
      * @returns A Promise that resolves to the created or renamed NoteModel, or undefined if the API is not available or the form result is invalid.
@@ -150,7 +152,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
 
     /**
      * Constructs the form
-     * @returns {FormConfiguration} Form configuration
+     * @returns Form configuration
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {

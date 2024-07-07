@@ -68,7 +68,6 @@ export default class ProjectData
 
     /**
      * Gets the tags of the Project.
-     * @returns The tags of the Project.
      */
     @toStringField
     get tags(): Tags | null | undefined {

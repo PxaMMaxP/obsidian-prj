@@ -7,7 +7,6 @@ import Logging from 'src/classes/Logging';
  *
  * This class provides methods to create and manage a search input component.
  * It includes functionality for setting up the search box and handling input events.
- *
  * @see {@link create} for details about creating a search input component.
  * @see {@link SearchCallback} for details about the search callback.
  */
@@ -16,6 +15,7 @@ export default class SearchInput {
      * Creates a new search input component.
      * @param component The component to register the events to.
      * @param onSearch The callback to call when the search box value changes. Passes the search box value and the key that was pressed.
+     * @param defaultText
      * @returns The created search input component as `DocumentFragment`.
      * @remarks - The search input component consists of a label, an input sizer and a search box.
      * - CSS classes:

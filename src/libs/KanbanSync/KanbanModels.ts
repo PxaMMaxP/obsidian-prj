@@ -47,6 +47,12 @@ export class KanbanBoard {
         return this._contentKanbanSettings;
     }
 
+    /**
+     *
+     * @param contentFrontmatter
+     * @param contentMarkdown
+     * @param contentKanbanSettings
+     */
     constructor(
         contentFrontmatter: string,
         contentMarkdown: string,
@@ -200,29 +206,50 @@ export class KanbanBoard {
 export class KanbanList {
     private logger = Logging.getLogger('KanbanCard');
 
+    /**
+     *
+     */
     public get type(): 'list' {
         return 'list';
     }
     private _status: KanbanStatus;
+    /**
+     *
+     */
     public get status(): KanbanStatus {
         return this._status;
     }
     private _title: string;
+    /**
+     *
+     */
     public get title(): string {
         return this._title;
     }
     public items?: KanbanCard[];
 
     private _rawContent: string;
+    /**
+     *
+     */
     public get rawContent(): string {
         return this._rawContent;
     }
 
     private _completed: boolean;
+    /**
+     *
+     */
     public get completed(): boolean {
         return this._completed;
     }
 
+    /**
+     *
+     * @param title
+     * @param status
+     * @param content
+     */
     constructor(title: string, status: KanbanStatus, content: string) {
         this._title = title;
         this._status = status;
@@ -263,6 +290,10 @@ export class KanbanList {
         );
     }
 
+    /**
+     *
+     * @param card
+     */
     public removeCard(card: KanbanCard): void {
         if (this.items) {
             const index = this.items.indexOf(card);
@@ -282,21 +313,36 @@ export class KanbanList {
 export class KanbanCard {
     private logger = Logging.getLogger('KanbanCardItem');
 
+    /**
+     *
+     */
     public get type(): 'card' {
         return 'card';
     }
     public checked: boolean;
 
     private _linkedFile: TFile | null;
+    /**
+     *
+     */
     public get linkedFile(): TFile | null {
         return this._linkedFile;
     }
 
     private _rawContent: string;
+    /**
+     *
+     */
     public get rawContent(): string {
         return this._rawContent;
     }
 
+    /**
+     *
+     * @param checked
+     * @param linkedFile
+     * @param content
+     */
     constructor(
         checked: boolean | null,
         linkedFile: TFile | null,

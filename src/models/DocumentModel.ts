@@ -13,6 +13,9 @@ import Global from '../classes/Global';
 import IPrjModel from '../interfaces/IPrjModel';
 import Helper from '../libs/Helper';
 
+/**
+ *
+ */
 export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
@@ -21,13 +24,24 @@ export class DocumentModel
     private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
+    /**
+     *
+     */
     public get data(): Partial<DocumentData> {
         return this._data;
     }
+    /**
+     *
+     */
     public set data(value: Partial<DocumentData>) {
         this._data = value;
     }
 
+    /**
+     *
+     * @param file
+     * @param logger
+     */
     constructor(file: TFile | undefined, logger?: ILogger) {
         super(file, DocumentData, DocumentData.yamlKeyMap);
 
@@ -35,6 +49,9 @@ export class DocumentModel
         this._fileCache = Global.getInstance().fileCache;
     }
 
+    /**
+     *
+     */
     public get relatedFiles(): DocumentModel[] | null {
         if (this._relatedFiles === undefined) {
             this._relatedFiles = [];
@@ -68,6 +85,10 @@ export class DocumentModel
         return this._relatedFiles;
     }
 
+    /**
+     *
+     * @param text
+     */
     public getWikilink(text: string | undefined): string {
         if (text) {
             return `[[${this.file.name}|${text}]]`;
@@ -88,6 +109,9 @@ export class DocumentModel
         }
     }
 
+    /**
+     *
+     */
     public getCorospondingSymbol(): string {
         if (this.data.type === 'Metadata') {
             if (this.data.subType === 'Cluster') {
@@ -155,7 +179,6 @@ export class DocumentModel
 
     /**
      * Sets the linked file for the document.
-     *
      * @param file The TFile object representing the linked file.
      * @param path The optional path to override the file's path.
      * @remarks - This function sets the `file` property of the document to the wikilink of the file.
@@ -177,6 +200,9 @@ export class DocumentModel
         return link;
     }
 
+    /**
+     *
+     */
     public getUID(): string {
         if (this.data.uid === undefined || this.data.uid === '') {
             const random = Math.floor(Math.random() * 1000);
@@ -197,7 +223,7 @@ export class DocumentModel
     //#region Static API
     /**
      * Returns all documents
-     * @returns {DocumentModel[]} List of all documents
+     * @returns List of all documents
      */
     public static getAllDocuments(): DocumentModel[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
@@ -211,7 +237,6 @@ export class DocumentModel
 
     /**
      * Retrieves all unique sender and recipient names from the metadata cache.
-     *
      * @returns An array of strings representing the sender and recipient names.
      */
     public static getAllSenderRecipients(): string[] {
@@ -266,7 +291,7 @@ export class DocumentModel
 
     /**
      * Returns all PDFs without metadata files
-     * @returns {TFile[]} List of PDFs without metadata files
+     * @returns List of PDFs without metadata files
      * @remarks - This function searches for all PDFs without a corresponding metadata file.
      * - The function uses the metadataCache and fileCache to find all PDFs without a metadata file.
      */

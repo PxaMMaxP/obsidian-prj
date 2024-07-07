@@ -1,6 +1,9 @@
 import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
+/**
+ *
+ */
 export default class LinkComponent extends BaseComponent {
     //#region base properties
     protected editabilityEnabled = false;
@@ -27,6 +30,10 @@ export default class LinkComponent extends BaseComponent {
     private _datalist: HTMLDataListElement;
     //#endregion
 
+    /**
+     *
+     * @param component
+     */
     constructor(component: Component) {
         super(component);
         this.onFinalize = this.build;
@@ -127,6 +134,10 @@ export default class LinkComponent extends BaseComponent {
             html?: DocumentFragment;
         },
     ) {
+        /**
+         *
+         * @param value
+         */
         this._onPresentation = async (value: string): Promise<void> => {
             const linkContent = formator(value);
             this._link.href = linkContent.href;
@@ -174,6 +185,10 @@ export default class LinkComponent extends BaseComponent {
     }
     //#endregion
 
+    /**
+     *
+     * @param suggestions
+     */
     private setSuggestionsList(suggestions: string[]) {
         if (!this._datalist) return;
         this._datalist.innerHTML = '';
@@ -186,6 +201,9 @@ export default class LinkComponent extends BaseComponent {
     }
 
     //#region Base Callbacks
+    /**
+     *
+     */
     private build() {
         this._link = document.createElement('a');
         this.presentationContainer.appendChild(this._link);
@@ -213,6 +231,9 @@ export default class LinkComponent extends BaseComponent {
         this._onPresentation?.(this._value);
     }
 
+    /**
+     *
+     */
     private buildInput() {
         this._label = document.createElement('label');
         this._label.title = this._title;
@@ -266,16 +287,25 @@ export default class LinkComponent extends BaseComponent {
         }
     }
 
+    /**
+     *
+     */
     private enableEdit() {
         this._onPresentation?.(this._value);
         this._input.focus();
         this._input.select();
     }
 
+    /**
+     *
+     */
     private disableEdit() {
         this._onPresentation?.(this._value);
     }
 
+    /**
+     *
+     */
     private async save(): Promise<void> {
         this._value = this._input.value;
         await this._onSave?.(this._value);

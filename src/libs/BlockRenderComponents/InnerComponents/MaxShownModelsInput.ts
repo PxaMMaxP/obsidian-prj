@@ -7,7 +7,6 @@ import Logging from 'src/classes/Logging';
  *
  * This class provides methods to create and manage a max shown models input component.
  * It includes functionality for setting up the max shown models input and handling input events.
- *
  * @see {@link create} for details about creating a max shown models input component.
  * @see {@link MaxShownModelsCallback} for details about the max shown models callback.
  */
@@ -54,6 +53,9 @@ export default class MaxShownModelsInput {
             batchSize,
         );
 
+        /**
+         * Debounces the `onChange` callback.
+         */
         const debounceOnChange = () => {
             clearTimeout(debounceTimer);
 
@@ -110,6 +112,8 @@ export default class MaxShownModelsInput {
     /**
      * Create the presentation span for the max shown models number.
      * @param maxShownModels The container for the max shown models number.
+     * @param component The component to register the events to.
+     * @param batchSize The batch size to add or subtract.
      * @returns - The created presentation span as `DocumentFragment`
      * - The created presentation span as `HTMLSpanElement`
      * - The span element has the class `filter-max-number`.

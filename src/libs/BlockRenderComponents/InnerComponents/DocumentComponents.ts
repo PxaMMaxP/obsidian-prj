@@ -6,7 +6,16 @@ import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import Helper from 'src/libs/Helper';
 import { DocumentModel } from 'src/models/DocumentModel';
 
+/**
+ *
+ */
 export default class DocumentComponents {
+    /**
+     *
+     * @param documentModel
+     * @param component
+     * @param summaryRelatedFiles
+     */
     public static createCellSummary(
         documentModel: DocumentModel,
         component: Component,
@@ -29,6 +38,14 @@ export default class DocumentComponents {
         );
     }
 
+    /**
+     *
+     * @param relatedFilesList
+     * @param component
+     * @param documentModel
+     * @param noneDocSymbol
+     * @param dateFormatShort
+     */
     public static createRelatedFilesList(
         relatedFilesList: DocumentFragment,
         component: Component,
@@ -119,6 +136,12 @@ export default class DocumentComponents {
         });
     }
 
+    /**
+     *
+     * @param documentModel
+     * @param component
+     * @param models
+     */
     public static createCellSenderRecipient(
         documentModel: DocumentModel,
         component: Component,
@@ -194,6 +217,15 @@ export default class DocumentComponents {
         return senderRecipient;
     }
 
+    /**
+     *
+     * @param name
+     * @param component
+     * @param value
+     * @param title
+     * @param onSaveCallback
+     * @param models
+     */
     private static createEDVSenderRecipient(
         name: HTMLElement | DocumentFragment,
         component: Component,
@@ -226,6 +258,13 @@ export default class DocumentComponents {
         );
     }
 
+    /**
+     *
+     * @param fileLink
+     * @param component
+     * @param documentModel
+     * @param editability
+     */
     public static createCellFileLink(
         fileLink: DocumentFragment,
         component: Component,
@@ -286,6 +325,12 @@ export default class DocumentComponents {
         });
     }
 
+    /**
+     *
+     * @param metadataLink
+     * @param component
+     * @param documentModel
+     */
     public static createCellMetadatalink(
         metadataLink: DocumentFragment,
         component: Component,

@@ -36,8 +36,7 @@ export default class Tag extends BaseComplexDataType implements ITag {
     private _metadataCache: IMetadataCache;
 
     /**
-     * Gets the tag with a hash symbol.
-     * @returns The tag prefixed with a hash symbol.
+     * Gets the tag prefixed with a hash symbol.
      */
     public get tagWithHash(): string {
         return `#${this._tag}`;
@@ -50,7 +49,6 @@ export default class Tag extends BaseComplexDataType implements ITag {
 
     /**
      * Gets whether the tag exists in the cache.
-     * @returns Whether the tag exists in the cache.
      * @remarks Lazy loading is used to check if the tag exists in the cache.
      */
     public get exists(): boolean {

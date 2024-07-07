@@ -11,7 +11,7 @@ export default class SearchQuery {
 
     /**
      * Adds a search element to the query.
-     * @param {SearchElement} element - The search element to add.
+     * @param element The search element to add.
      */
     public addElement(element: SearchElement): void {
         this._elements.push(element);
@@ -19,7 +19,7 @@ export default class SearchQuery {
 
     /**
      * Gets the collection of search elements.
-     * @returns {SearchElement[]} An array of search elements.
+     * @returns An array of search elements.
      */
     public getElements(): SearchElement[] {
         return this._elements;
@@ -28,7 +28,7 @@ export default class SearchQuery {
     /**
      * Determines if the query matches the given text.
      * @param text The text to test.
-     * @returns {boolean} True if the query matches the text; otherwise, false.
+     * @returns True if the query matches the text; otherwise, false.
      */
     public matches(text: string): boolean {
         if (this._elements.length === 0) {

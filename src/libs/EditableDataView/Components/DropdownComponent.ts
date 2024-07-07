@@ -1,6 +1,9 @@
 import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
+/**
+ *
+ */
 export default class DropdownComponent extends BaseComponent {
     //#region base properties
     protected editabilityEnabled = false;
@@ -15,6 +18,9 @@ export default class DropdownComponent extends BaseComponent {
     private _onSave: (value: string) => Promise<void>;
     private _value: string;
     private _options: { value: string; text: string }[];
+    /**
+     *
+     */
     private get _selectedOption(): { value: string; text: string } {
         const selectedOption = this._options.find(
             (o) => o.value === this._value,
@@ -31,6 +37,10 @@ export default class DropdownComponent extends BaseComponent {
     private _select: HTMLSelectElement;
     //#endregion
 
+    /**
+     *
+     * @param component
+     */
     constructor(component: Component) {
         super(component);
         this.onFinalize = this.build;
@@ -94,6 +104,10 @@ export default class DropdownComponent extends BaseComponent {
     public setFormator(
         formator: (value: string) => { text: string; html?: DocumentFragment },
     ) {
+        /**
+         *
+         * @param value
+         */
         this._onPresentation = async (value: string): Promise<void> => {
             const { text, html } = formator(value);
 
@@ -122,6 +136,9 @@ export default class DropdownComponent extends BaseComponent {
     }
     //#endregion
 
+    /**
+     *
+     */
     private enableOptions() {
         const optionFound = this._options.find((o) => o.value === this._value);
 
@@ -140,11 +157,17 @@ export default class DropdownComponent extends BaseComponent {
         });
     }
 
+    /**
+     *
+     */
     private disableOptions() {
         this._select.innerHTML = '';
     }
 
     //#region Base Callbacks
+    /**
+     *
+     */
     private build() {
         this._presentationSpan = document.createElement('span');
         this.presentationContainer.appendChild(this._presentationSpan);
@@ -156,6 +179,9 @@ export default class DropdownComponent extends BaseComponent {
         //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
     }
 
+    /**
+     *
+     */
     private buildInput() {
         this._select = document.createElement('select');
         this.dataInputContainer.appendChild(this._select);
@@ -164,18 +190,27 @@ export default class DropdownComponent extends BaseComponent {
         this._select.classList.add('select-input');
     }
 
+    /**
+     *
+     */
     private enableEdit() {
         this.enableOptions();
         this._select.value = this._value ? this._value : '';
         this._select.focus();
     }
 
+    /**
+     *
+     */
     private disableEdit() {
         this._onPresentation?.(this._selectedOption.value);
         //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
         this.disableOptions();
     }
 
+    /**
+     *
+     */
     private async save(): Promise<void> {
         this._value = this._select.value;
         await this._onSave?.(this._value);

@@ -143,7 +143,6 @@ export default class DocumentData
 
     /**
      * Gets the tags of the document.
-     * @returns The tags of the document.
      */
     @toStringField
     get tags(): Tags | null | undefined {

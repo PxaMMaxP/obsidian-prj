@@ -30,6 +30,9 @@ export default class AddAnnotationModal extends BaseModalForm {
         global.plugin.addCommand({
             id: 'add-annotation-modal',
             name: `${Lng.gt('Add annotation')}`,
+            /**
+             *
+             */
             callback: async () => {
                 const modal = new AddAnnotationModal();
                 const result = await modal.openForm();
@@ -43,7 +46,8 @@ export default class AddAnnotationModal extends BaseModalForm {
 
     /**
      * Opens the modal form
-     * @returns {Promise<IFormResult | undefined>} Result of the form
+     * @param preset
+     * @returns Result of the form
      */
     public async openForm(
         preset?: Partial<unknown>,
@@ -62,6 +66,10 @@ export default class AddAnnotationModal extends BaseModalForm {
         return result;
     }
 
+    /**
+     *
+     * @param result
+     */
     public async evaluateForm(
         result: IFormResult,
     ): Promise<string | undefined> {
@@ -101,7 +109,7 @@ export default class AddAnnotationModal extends BaseModalForm {
 
     /**
      * Constructs the form
-     * @returns {FormConfiguration} Form configuration
+     * @returns Form configuration
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {

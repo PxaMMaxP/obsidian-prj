@@ -40,6 +40,9 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         global.plugin.addCommand({
             id: 'create-new-metadata-file',
             name: `${Lng.gt('Create new metadata')}`,
+            /**
+             *
+             */
             callback: async () => {
                 const modal = new CreateNewMetadataModal();
                 const result = await modal.openForm();
@@ -55,8 +58,8 @@ export default class CreateNewMetadataModal extends BaseModalForm {
 
     /**
      * Opens the modal form
-     * @param {Partial<DocumentData>} [preset] Preset values for the form
-     * @returns {Promise<IFormResult | undefined>} Result of the form
+     * @param [preset] Preset values for the form
+     * @returns Result of the form
      */
     public async openForm(
         preset?: Partial<DocumentData>,
@@ -93,8 +96,9 @@ export default class CreateNewMetadataModal extends BaseModalForm {
 
     /**
      * Evaluates the form result and creates a new metadata file
-     * @param {IFormResult} result Result of the form
-     * @returns {Promise<DocumentModel | undefined>} The created metadata file
+     * @param result Result of the form
+     * @param existingFile A optional existing file to use
+     * @returns The created metadata file
      * @remarks 1. Creates a new Document model with the give file or no file.
      * 2. Sets the data of the document model to the form result.
      * 3. Creates a new file with the metadata filename or uses the existing file and rename it.
@@ -163,7 +167,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
 
     /**
      * Constructs the form
-     * @returns {FormConfiguration} Form configuration
+     * @returns Form configuration
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {

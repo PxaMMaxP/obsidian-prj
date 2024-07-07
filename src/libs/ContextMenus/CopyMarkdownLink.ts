@@ -15,11 +15,17 @@ export default class CopyMarkdownLink {
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
+    /**
+     *
+     */
     constructor() {
         this.logger.debug('Initializing CopyMarkdownLink');
         this.registerEvents();
     }
 
+    /**
+     *
+     */
     static getInstance(): CopyMarkdownLink {
         if (!CopyMarkdownLink.instance) {
             CopyMarkdownLink.instance = new CopyMarkdownLink();

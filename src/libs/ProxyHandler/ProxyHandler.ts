@@ -85,10 +85,28 @@ export default class ProxyHandler<T extends object> {
 
         try {
             proxy = new Proxy(obj, {
+                /**
+                 *
+                 * @param target
+                 * @param property
+                 * @param receiver
+                 */
                 get: (target, property, receiver) =>
                     this.handleGet(target, property, receiver, path),
+                /**
+                 *
+                 * @param target
+                 * @param property
+                 * @param value
+                 * @param receiver
+                 */
                 set: (target, property, value, receiver) =>
                     this.handleSet(target, property, value, receiver, path),
+                /**
+                 *
+                 * @param target
+                 * @param property
+                 */
                 deleteProperty: (target, property) =>
                     this.handleDeleteProperty(target, property, path),
             }) as T;
@@ -110,6 +128,7 @@ export default class ProxyHandler<T extends object> {
      * @param target The target object.
      * @param property The property to get.
      * @param The proxy or an object that inherits from the proxy.
+     * @param receiver
      * @param path The path of the object. See {@link ObjectPath}.
      * @returns The value of the property.
      */
@@ -153,7 +172,7 @@ export default class ProxyHandler<T extends object> {
      * @param value The value to set.
      * @param receiver The proxy or an object that inherits from the proxy.
      * @param path The path of the object. See {@link ObjectPath}.
-     * @returns {boolean} True if the property was set successfully, false otherwise.
+     * @returns True if the property was set successfully, false otherwise.
      */
     private handleSet(
         target: Partial<T>,
@@ -197,7 +216,7 @@ export default class ProxyHandler<T extends object> {
      * @param target The target object.
      * @param property The property to delete.
      * @param path The path of the object. See {@link ObjectPath}.
-     * @returns {boolean} True if the property was deleted successfully, false otherwise.
+     * @returns True if the property was deleted successfully, false otherwise.
      */
     private handleDeleteProperty(
         target: Partial<T>,
@@ -225,7 +244,7 @@ export default class ProxyHandler<T extends object> {
      * Determines if a property is private based on its name.
      * Private properties start with an underscore. Example: `_privateProperty`.
      * @param property The property to check.
-     * @returns {boolean} True if the property is private, false otherwise.
+     * @returns True if the property is private, false otherwise.
      */
     private isPrivate(property: string | symbol): boolean {
         return property.toString().startsWith('_');
@@ -234,7 +253,7 @@ export default class ProxyHandler<T extends object> {
     /**
      * Resolves the value of a proxy object.
      * @param value The value to resolve.
-     * @returns {unknown} The resolved value.
+     * @returns The resolved value.
      */
     private resolveProxyValue(value: unknown): unknown {
         const existingProxy = this.getExistingProxy(value as Partial<T>);
@@ -260,7 +279,7 @@ export default class ProxyHandler<T extends object> {
     /**
      * Retrieves the string key of a property.
      * @param property The property to get the key for.
-     * @returns {string} The string key of the property.
+     * @returns The string key of the property.
      */
     private getPropertyKey(property: string | symbol): string {
         return typeof property === 'symbol' ? property.toString() : property;
@@ -270,7 +289,7 @@ export default class ProxyHandler<T extends object> {
      * Creates an object path by appending a property to an optional existing path.
      * @param path Optional existing path. See {@link ObjectPath}.
      * @param property The property to append.
-     * @returns {ObjectPath} The object path.
+     * @returns The object path.
      * @example - createObjectPath('data', 'title') => 'data.title'
      *          - createObjectPath(undefined, 'title') => 'title'
      */
@@ -284,7 +303,7 @@ export default class ProxyHandler<T extends object> {
     /**
      * Retrieves an existing proxy for the given object.
      * @param obj The object for which the proxy, if available, is to be retrieved.
-     * @returns {T | undefined} The existing proxy or undefined if no proxy is available.
+     * @returns The existing proxy or undefined if no proxy is available.
      */
     private getExistingProxy(obj: Partial<T>): T | undefined {
         return (

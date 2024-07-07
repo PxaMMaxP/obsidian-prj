@@ -1,3 +1,6 @@
+/**
+ * A class that provides utility functions for working with paths and filenames.
+ */
 export class Path {
     /**
      * Joins all given path segments into a single path.
@@ -32,7 +35,6 @@ export class Path {
      * - period,
      * - space
      * - or umlauts.
-     *
      * @param filename - The filename to sanitize.
      * @returns The sanitized filename.
      */

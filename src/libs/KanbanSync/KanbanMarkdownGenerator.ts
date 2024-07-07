@@ -4,6 +4,9 @@ import Logging from 'src/classes/Logging';
 import { KanbanBoard, KanbanList } from './KanbanModels';
 import { ArchivedString, CompletedString } from './KanbanTypes';
 
+/**
+ *
+ */
 export default class KanbanMarkdownGenerator {
     private logger = Logging.getLogger('KanbanMarkdownGenerator');
     private _global = Global.getInstance();
@@ -11,6 +14,11 @@ export default class KanbanMarkdownGenerator {
     private _file: TFile;
     private _path: string;
 
+    /**
+     *
+     * @param kanbanBoard
+     * @param file
+     */
     constructor(kanbanBoard: KanbanBoard, file: TFile) {
         this._kanbanBoard = kanbanBoard;
         this._file = file;

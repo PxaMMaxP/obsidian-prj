@@ -105,7 +105,6 @@ export default class HeaderBlockRenderComponent
 
     /**
      * The status of the Prj File.
-     * @returns The status of the Prj File.
      */
     private get status(): Status | undefined {
         return this.model?.data.status ?? undefined;
@@ -120,7 +119,6 @@ export default class HeaderBlockRenderComponent
 
     /**
      * The description of the Prj File.
-     * @returns The description of the Prj File.
      */
     private get description(): string | undefined {
         return this.model?.data.description ?? undefined;

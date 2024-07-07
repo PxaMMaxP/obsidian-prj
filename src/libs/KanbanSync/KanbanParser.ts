@@ -4,6 +4,9 @@ import Logging from 'src/classes/Logging';
 import PrjTypes from 'src/types/PrjTypes';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
 
+/**
+ *
+ */
 export default class KanbanParser {
     private logger = Logging.getLogger('KanbanParser');
     private _file: TFile;
@@ -16,6 +19,10 @@ export default class KanbanParser {
 
     private _board: KanbanBoard;
 
+    /**
+     *
+     * @param file
+     */
     constructor(file: TFile) {
         this._file = file;
     }

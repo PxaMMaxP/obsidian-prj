@@ -7,7 +7,7 @@ import SearchElement from './SearchElement';
 export default class SearchTerm extends SearchElement {
     /**
      * Constructs a new SearchTerm with the given term.
-     * @param {string} term - The search term value.
+     * @param term - The search term value.
      */
     constructor(term: string) {
         super(term);
@@ -15,7 +15,6 @@ export default class SearchTerm extends SearchElement {
 
     /**
      * Gets the term value of the search element.
-     * @returns {string} The term value.
      */
     public get term(): string {
         return this._value;
@@ -23,7 +22,7 @@ export default class SearchTerm extends SearchElement {
 
     /**
      * Sets the term value of the search element.
-     * @param {string} value - The new term value to be set.
+     * @param value - The new term value to be set.
      */
     public set term(value: string) {
         this._value = value;
@@ -32,7 +31,6 @@ export default class SearchTerm extends SearchElement {
     /**
      * Determines if the element is an operator.
      * This method overrides the abstract method in the base class.
-     * @returns {boolean} Always returns false, indicating that this element is not an operator.
      */
     public get isOperator(): boolean {
         return false;

@@ -4,6 +4,9 @@ import Helper from 'src/libs/Helper';
 import BaseComponent from './BaseComponent';
 import SuggestionComponent, { Suggestions } from './SuggestionComponent';
 
+/**
+ *
+ */
 export default class TextComponent extends BaseComponent {
     //#region base properties
     protected editabilityEnabled = false;
@@ -38,6 +41,10 @@ export default class TextComponent extends BaseComponent {
         return this._suggester !== undefined;
     }
 
+    /**
+     *
+     * @param component
+     */
     constructor(component: Component) {
         super(component);
         this.onFinalize = this.build;
@@ -121,6 +128,10 @@ export default class TextComponent extends BaseComponent {
      * @remarks The formator is called when the component change in `not-edit` mode.
      */
     public setFormator(formator: (value: string) => Promise<string>) {
+        /**
+         *
+         * @param value
+         */
         this._onPresentation = async (value: string): Promise<void> => {
             this._presentationSpan.textContent = await formator(this._value);
         };
@@ -136,6 +147,10 @@ export default class TextComponent extends BaseComponent {
      * - The custom formator is ignored if this method is called!
      */
     public setRenderMarkdown(path = '') {
+        /**
+         *
+         * @param value
+         */
         this._onMarkdownPresentation = (value: string): Promise<void> => {
             if (Helper.isPossiblyMarkdown(value)) {
                 const app = Global.getInstance().app;
@@ -172,6 +187,9 @@ export default class TextComponent extends BaseComponent {
     //#endregion
 
     //#region Base Callbacks
+    /**
+     *
+     */
     private build() {
         this._presentationSpan = document.createElement('span');
         this.presentationContainer.appendChild(this._presentationSpan);
@@ -208,6 +226,9 @@ export default class TextComponent extends BaseComponent {
         }
     }
 
+    /**
+     *
+     */
     private buildInput() {
         this.component.registerDomEvent(
             this._presentationSpan,
@@ -222,6 +243,9 @@ export default class TextComponent extends BaseComponent {
         );
     }
 
+    /**
+     *
+     */
     private enableEdit() {
         this.presentationContainer.classList.remove('hidden');
         this._presentationSpan.contentEditable = 'true';
@@ -230,6 +254,9 @@ export default class TextComponent extends BaseComponent {
         this.setInputCursorAbsolutePosition('end', this._presentationSpan);
     }
 
+    /**
+     *
+     */
     private disableEdit() {
         if (this._onMarkdownPresentation) {
             this._presentationSpan.textContent = null;
@@ -243,6 +270,9 @@ export default class TextComponent extends BaseComponent {
         this._suggestionComponent?.disableSuggestor();
     }
 
+    /**
+     *
+     */
     private async save(): Promise<void> {
         this._value = this._presentationSpan.textContent ?? '';
         await this._onSave?.(this._value);

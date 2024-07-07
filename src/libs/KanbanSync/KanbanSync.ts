@@ -7,8 +7,11 @@ import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';
 import KanbanParser from './KanbanParser';
 
+/**
+ * The KanbanSync class is responsible for synchronizing the Kanban board with a regular Prj file.
+ */
 export default class KanbanSync {
-    private logger = Logging.getLogger('KanbanSync');
+    private _logger = Logging.getLogger('KanbanSync');
 
     private _metadataCache = Global.getInstance().metadataCache;
     private _kanbanFile: TFile;
@@ -24,15 +27,15 @@ export default class KanbanSync {
 
     /**
      * Creates an instance of the KanbanSync class.
-     * @param {TFile} kanbanFile The kanban file.
-     * @param {TFile} [changedFile] The changed corresponding Prj file (optional).
+     * @param kanbanFile The kanban file.
+     * @param [changedFile] The changed corresponding Prj file (optional).
      */
     constructor(kanbanFile: TFile, changedFile?: TFile) {
         this._kanbanFile = kanbanFile;
 
         this._kanbanMetadata =
             this._metadataCache.getEntry(kanbanFile)?.metadata;
-        this.logger.trace(`KanbanSync:`, this._kanbanMetadata);
+        this._logger.trace(`KanbanSync:`, this._kanbanMetadata);
 
         if (!changedFile) {
             this._syncMode = 'out';
@@ -58,12 +61,12 @@ export default class KanbanSync {
         await this.loadKanbanFile();
 
         if (this._syncMode === 'out') {
-            this.logger.debug(
+            this._logger.debug(
                 `Syncing files linked to kanban ${this._kanbanFile.path}`,
             );
             this.syncFiles();
         } else {
-            this.logger.debug(
+            this._logger.debug(
                 `Syncing kanban ${this._kanbanFile.path} with changed file ${this._changedFile?.path}`,
             );
             await this.syncKanban();
@@ -74,7 +77,6 @@ export default class KanbanSync {
      * Synchronizes the Kanban board by moving a file to a new position based on its status.
      * If the file's status has changed, it finds the corresponding heading for the new state
      * and moves the file to the appropriate position within the Kanban board.
-     *
      * @returns A Promise that resolves once the Kanban synchronization is complete.
      */
     private async syncKanban(): Promise<void> {
@@ -82,7 +84,7 @@ export default class KanbanSync {
         const card = this._kanbankBoard?.getCardItemPerFile(this._changedFile);
 
         if (!card) {
-            this.logger.warn(
+            this._logger.warn(
                 `Could not find card for file '${this._changedFile.path}'`,
             );
 
@@ -90,7 +92,7 @@ export default class KanbanSync {
         }
 
         if (!this._kanbankBoard) {
-            this.logger.warn(
+            this._logger.warn(
                 `Could not find kanban board for file '${this._changedFile.path}'`,
             );
 
@@ -102,7 +104,7 @@ export default class KanbanSync {
         )?.data.status;
 
         if (!newHeadingState) {
-            this.logger.warn(
+            this._logger.warn(
                 `Could not find status for file '${this._changedFile.path}'`,
             );
 
@@ -192,7 +194,6 @@ export default class KanbanSync {
 
     /**
      * Retrieves the linked Kanban files for a given file.
-     *
      * @param file - The file for which to retrieve the linked Kanban files.
      * @returns An array of TFile objects representing the linked Kanban files.
      */

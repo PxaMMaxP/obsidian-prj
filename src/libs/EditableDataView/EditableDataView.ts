@@ -5,11 +5,19 @@ import LinkComponent from './Components/LinkComponent';
 import TextareaComponent from './Components/TextareaComponent';
 import TextComponent from './Components/TextComponent';
 
+/**
+ *
+ */
 export default class EditableDataView {
     private _container: HTMLElement | DocumentFragment;
     private _component: Component;
     private _attributesList: Record<string, string> = {};
 
+    /**
+     *
+     * @param container
+     * @param component
+     */
     constructor(
         container: HTMLElement | DocumentFragment,
         component: Component,
@@ -18,6 +26,10 @@ export default class EditableDataView {
         this._component = component;
     }
 
+    /**
+     *
+     * @param configure
+     */
     public addText(
         configure: (component: TextComponent) => void,
     ): EditableDataView {
@@ -31,6 +43,10 @@ export default class EditableDataView {
         return this;
     }
 
+    /**
+     *
+     * @param configure
+     */
     public addTextarea(
         configure: (component: TextareaComponent) => void,
     ): EditableDataView {
@@ -44,6 +60,10 @@ export default class EditableDataView {
         return this;
     }
 
+    /**
+     *
+     * @param configure
+     */
     public addLink(
         configure: (component: LinkComponent) => void,
     ): EditableDataView {
@@ -57,6 +77,10 @@ export default class EditableDataView {
         return this;
     }
 
+    /**
+     *
+     * @param configure
+     */
     public addDate(
         configure: (component: DateComponent) => void,
     ): EditableDataView {
@@ -70,6 +94,10 @@ export default class EditableDataView {
         return this;
     }
 
+    /**
+     *
+     * @param configure
+     */
     public addDropdown(
         configure: (component: DropdownComponent) => void,
     ): EditableDataView {

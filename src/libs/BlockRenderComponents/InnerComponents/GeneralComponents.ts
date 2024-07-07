@@ -5,6 +5,9 @@ import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import Helper from 'src/libs/Helper';
 import { FileType } from 'src/types/PrjTypes';
 
+/**
+ * General components class for `BlockRenderComponent`.
+ */
 export default class GeneralComponents {
     /**
      * Creates a link to the file at `path` with the `corospondingSymbol` as icon.
@@ -36,6 +39,15 @@ export default class GeneralComponents {
         );
     }
 
+    /**
+     * Create a cell with a date.
+     * @param date The container to append the date to.
+     * @param component The component to register the events to.
+     * @param title The title of the date.
+     * @param format The format of the date.
+     * @param onRead The function to read the date from model.
+     * @param onWrite The function to write the date to model.
+     */
     public static createCellDate(
         date: DocumentFragment,
         component: Component,
@@ -60,6 +72,12 @@ export default class GeneralComponents {
         );
     }
 
+    /**
+     * Create a cell with tags as links.
+     * @param tagContainer The container to append the tags to.
+     * @param component The component to register the events to.
+     * @param tags The tags to create links for.
+     */
     public static createCellTags(
         tagContainer: DocumentFragment,
         component: Component,

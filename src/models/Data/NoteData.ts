@@ -45,7 +45,6 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
 
     /**
      * Gets the tags of the note.
-     * @returns The tags of the note.
      */
     @toStringField
     get tags(): Tags | null | undefined {

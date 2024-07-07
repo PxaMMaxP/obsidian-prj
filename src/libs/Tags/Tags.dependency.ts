@@ -6,7 +6,7 @@ import DependencyRegistry from '../DependencyRegistry';
 import MetadataCache from '../MetadataCache';
 
 /**
- *
+ * @returns The metadata cache instance.
  */
 const getMetadataCacheInstance = () => MetadataCache.getInstance();
 

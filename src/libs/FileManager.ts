@@ -200,7 +200,6 @@ export class Filename {
 
     /**
      * The full filename.
-     * @returns `${this.basename}${this.extension}
      */
     get filename(): string {
         return `${this.basename}${this.extension ? `.${this.extension}` : ''}`;

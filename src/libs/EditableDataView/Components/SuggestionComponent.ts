@@ -290,7 +290,6 @@ export default class SuggestionComponent {
 
     /**
      * Returns the length of the text in the input element.
-     * @returns The length of the text in the input element.
      */
     private get inputTextLength() {
         return this._inputElement.textContent?.length ?? 0;
@@ -298,7 +297,6 @@ export default class SuggestionComponent {
 
     /**
      * Returns the current cursor position in the input element.
-     * @returns The current cursor position in the input element.
      */
     private get cursorPosition() {
         const selection = window.getSelection();

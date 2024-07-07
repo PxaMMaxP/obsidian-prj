@@ -23,7 +23,7 @@ import { DEFAULT_SETTINGS } from './types/PrjSettings';
 import './classes/Dependencies';
 
 /**
- *
+ * The main plugin class
  */
 export default class Prj extends Plugin {
     public settings: PrjSettings;

@@ -10,23 +10,40 @@ import { FileModel } from './FileModel';
 import Global from '../classes/Global';
 import IPrjModel from '../interfaces/IPrjModel';
 
+/**
+ *
+ */
 export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
     protected logger: ILogger = Logging.getLogger('NoteModel');
 
+    /**
+     *
+     */
     public get data(): Partial<NoteData> {
         return this._data;
     }
+    /**
+     *
+     */
     public set data(value: Partial<NoteData>) {
         this._data = value;
     }
 
+    /**
+     *
+     * @param file
+     */
     constructor(file: TFile | undefined) {
         super(file, NoteData, undefined);
     }
 
+    /**
+     *
+     * @param text
+     */
     public getWikilink(text: string | undefined): string {
         if (text) {
             return `[[${this.file.name}|${text}]]`;
@@ -70,7 +87,6 @@ export class NoteModel
     //#region Static API
     /**
      * Generates a filename based on the provided NoteModel.
-     *
      * @param model The NoteModel object used to generate the filename.
      * @returns The generated filename as a string.
      */

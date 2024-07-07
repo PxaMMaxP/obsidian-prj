@@ -1,6 +1,9 @@
 import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
+/**
+ *
+ */
 export default class DateComponent extends BaseComponent {
     //#region base properties
     protected editabilityEnabled = false;
@@ -21,6 +24,10 @@ export default class DateComponent extends BaseComponent {
     private _input: HTMLInputElement;
     //#endregion
 
+    /**
+     *
+     * @param component
+     */
     constructor(component: Component) {
         super(component);
         this.onFinalize = this.build;
@@ -89,6 +96,9 @@ export default class DateComponent extends BaseComponent {
     //#endregion
 
     //#region Base Callbacks
+    /**
+     *
+     */
     private build() {
         this._presentationSpan = document.createElement('span');
         this.presentationContainer.appendChild(this._presentationSpan);
@@ -102,6 +112,9 @@ export default class DateComponent extends BaseComponent {
             : this._value;
     }
 
+    /**
+     *
+     */
     private buildInput() {
         this._input = document.createElement('input');
         this.dataInputContainer.appendChild(this._input);
@@ -111,18 +124,27 @@ export default class DateComponent extends BaseComponent {
         this._input.classList.add('date-input');
     }
 
+    /**
+     *
+     */
     private enableEdit() {
         this._input.value = this._value ? this._value : '';
         this._input.focus();
         this._input.select();
     }
 
+    /**
+     *
+     */
     private disableEdit() {
         this._presentationSpan.textContent = this._onPresentation
             ? this._onPresentation(this._value)
             : this._value;
     }
 
+    /**
+     *
+     */
     private async save(): Promise<void> {
         this._value = this._input.value;
         await this._onSave?.(this._value);

@@ -6,6 +6,9 @@ import Helper from 'src/libs/Helper';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { FileType, Status, UrgencySymbols } from 'src/types/PrjTypes';
 
+/**
+ *
+ */
 export default class ProjectComponents {
     /**
      * Creates a title component.
@@ -90,6 +93,13 @@ export default class ProjectComponents {
         );
     }
 
+    /**
+     *
+     * @param container
+     * @param component
+     * @param onRead
+     * @param onWrite
+     */
     public static createStatus(
         container: DocumentFragment,
         component: Component,

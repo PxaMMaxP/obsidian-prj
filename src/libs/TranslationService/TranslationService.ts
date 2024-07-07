@@ -3,12 +3,18 @@ import { PrjSettings } from 'src/types/PrjSettings';
 import ILanguageTranslations from './interfaces/ILanguageTranslations';
 import ITranslationService from './interfaces/ITranslationService';
 
+/**
+ *
+ */
 export class TranslationService implements ITranslationService {
     static instance: TranslationService | undefined;
     private logger: ILogger | undefined;
     private _translations: ILanguageTranslations[];
     private _language: string;
 
+    /**
+     *
+     */
     static getInstance(): TranslationService {
         if (!TranslationService.instance) {
             throw new Error('TranslationService not initialized');
@@ -17,6 +23,12 @@ export class TranslationService implements ITranslationService {
         return TranslationService.instance;
     }
 
+    /**
+     *
+     * @param translations
+     * @param settings
+     * @param logger
+     */
     constructor(
         translations: ILanguageTranslations[],
         settings: PrjSettings,

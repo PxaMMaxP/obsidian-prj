@@ -10,6 +10,9 @@ import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 
+/**
+ * Represents a model for a file.
+ */
 export class FileModel<
     T extends BaseData<unknown>,
 > extends TransactionModel<T> {
@@ -20,6 +23,9 @@ export class FileModel<
     protected logger: ILogger;
 
     private _file: TFile | undefined;
+    /**
+     * The file of the model.
+     */
     public get file(): TFile {
         if (this._file === undefined) {
             this.logger?.warn('File not set');
@@ -77,6 +83,7 @@ export class FileModel<
      * @param file The file to create the model for.
      * @param ctor The constructor of the data object.
      * @param yamlKeyMap The yaml key map to use.
+     * @param logger The optional logger to use.
      */
     constructor(
         file: TFile | undefined,
@@ -105,7 +112,6 @@ export class FileModel<
 
     /**
      * Returns the data object as a proxy.
-     * @returns The data object as a proxy.
      * @remarks This is the main entry point for the data object:
      * - If a proxy already exists, it is returned.
      * - If no proxy exists,
@@ -185,6 +191,7 @@ export class FileModel<
      * Updates the key value pair in the frontmatter.
      * @param value The new value to set.
      * @param previousPromise The previous promise to wait for. Implementing a self obtain Queue.
+     * @returns A Promise that resolves when the frontmatter is updated.
      * @remarks - Overwrites only the given values.
      * - If the file is not set, the frontmatter is not set.
      */

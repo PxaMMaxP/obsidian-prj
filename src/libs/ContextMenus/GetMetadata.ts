@@ -7,6 +7,9 @@ import { FileType } from 'src/types/PrjTypes';
 import Helper from '../Helper';
 import { FileMetadata } from '../MetadataCache';
 
+/**
+ *
+ */
 export default class GetMetadata {
     static instance: GetMetadata;
     private _app = Global.getInstance().app;
@@ -16,12 +19,18 @@ export default class GetMetadata {
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
+    /**
+     *
+     */
     private constructor() {
         this.logger.debug('Initializing GetMetadata');
         this.registerEvents();
         this.registerCommands();
     }
 
+    /**
+     *
+     */
     static getInstance(): GetMetadata {
         if (!GetMetadata.instance) {
             GetMetadata.instance = new GetMetadata();
@@ -69,6 +78,9 @@ export default class GetMetadata {
         this._plugin.addCommand({
             id: 'get-metadata-file',
             name: Lng.gt('Show Metadata File'),
+            /**
+             *
+             */
             callback: () => {
                 GetMetadata.getInstance().invoke();
             },

@@ -8,7 +8,8 @@ export default abstract class SearchElement {
 
     /**
      * Constructs a new SearchElement with the given value.
-     * @param {string} value - The value of the search element.
+     * @param value The value of the search element.
+     * @param negated The negated value of the search element.
      */
     constructor(value: string, negated = false) {
         this._value = value;
@@ -24,7 +25,6 @@ export default abstract class SearchElement {
 
     /**
      * Gets the value of the search element.
-     * @returns {string} The value of the search element.
      */
     public get value(): string {
         return this._value;
@@ -32,7 +32,7 @@ export default abstract class SearchElement {
 
     /**
      * Sets the value of the search element.
-     * @param {string} newValue - The new value to be set.
+     * @param newValue - The new value to be set.
      */
     public set value(newValue: string) {
         this._value = newValue;
@@ -40,7 +40,6 @@ export default abstract class SearchElement {
 
     /**
      * Gets the negated value of the search element.
-     * @returns {boolean} The negated value of the search element.
      */
     public get negated(): boolean {
         return this._negated;
@@ -48,7 +47,7 @@ export default abstract class SearchElement {
 
     /**
      * Sets the negated value of the search element.
-     * @param {boolean} newValue - The new negated value to be set.
+     * @param newValue - The new negated value to be set.
      */
     public set negated(newValue: boolean) {
         this._negated = newValue;

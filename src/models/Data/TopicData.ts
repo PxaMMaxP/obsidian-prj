@@ -68,7 +68,6 @@ export default class TopicData
 
     /**
      * Gets the tags of the topic.
-     * @returns The tags of the topic.
      */
     @toStringField
     get tags(): Tags | null | undefined {

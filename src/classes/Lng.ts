@@ -12,6 +12,9 @@ import { TranslationService } from '../libs/TranslationService/TranslationServic
 export default class Lng {
     private static _instance: ITranslationService | undefined;
 
+    /**
+     * Gets the singleton instance of the translation service.
+     */
     private static get instance(): ITranslationService {
         if (!Lng._instance) {
             Lng._instance = new TranslationService(

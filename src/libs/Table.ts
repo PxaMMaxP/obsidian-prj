@@ -1,7 +1,13 @@
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from './Helper';
 
+/**
+ *
+ */
 export default class Table {
+    /**
+     *
+     */
     public get data(): StructedTable {
         return this._table;
     }
@@ -123,6 +129,7 @@ export default class Table {
      * @param rowData The data of the new row
      * @param rowClassList The class list of the new row
      * @param hidden Whether the new row should be hidden
+     * @param row
      */
     public addRow(row: Row): void {
         this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
@@ -586,7 +593,6 @@ export default class Table {
 
     /**
      * Toggles the specified classes on the given element.
-     *
      * @param element - The HTML element to toggle the classes on.
      * @param classList - An array of classes to toggle.
      * @param add - A boolean value indicating whether to add or remove the classes.
@@ -634,6 +640,10 @@ export default class Table {
         ] = header;
     }
 
+    /**
+     *
+     * @param header
+     */
     private changeHeaderClass(header: TableHeader): void {
         const headerIndex = this._headers.findIndex(
             (headerItem) => headerItem.text === header.text,
@@ -678,7 +688,6 @@ export default class Table {
 
     /**
      * Makes the input string safe for use as an ID.
-     *
      * @param input - The input string to be made safe.
      * @returns The safe ID string.
      */

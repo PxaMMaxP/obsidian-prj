@@ -15,7 +15,7 @@ export default class Global {
     fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
-    private logger = Logging.getLogger('Global');
+    private _logger = Logging.getLogger('Global');
 
     /**
      * Creates a new instance of the Global class.
@@ -51,10 +51,10 @@ export default class Global {
      * Waits for the cache to be initialized.
      */
     public async awaitCacheInitialization() {
-        this.logger.debug('Waiting for cache initialization');
+        this._logger.debug('Waiting for cache initialization');
         await this.fileCache.waitForCacheReady();
         await this.metadataCache.waitForCacheReady();
-        this.logger.debug('Cache initialized');
+        this._logger.debug('Cache initialized');
     }
 
     /**

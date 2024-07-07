@@ -32,7 +32,6 @@ export class TransactionModel<T> {
     private _writeChangesPromise: Promise<void> | undefined;
     /**
      * Returns the promise that resolves when the last changes are written to the file.
-     * @returns Returns the promise if it exists, otherwise `undefined`. The promise can already be solved or pending.
      */
     protected get writeChangesPromise(): Promise<void> | undefined {
         return this._writeChangesPromise;
@@ -51,7 +50,6 @@ export class TransactionModel<T> {
 
     /**
      * Returns whether a transaction is active.
-     * @returns `true` if a transaction is active, otherwise `false`.
      */
     public get isTransactionActive(): boolean {
         return this._transactionActive;
@@ -59,7 +57,6 @@ export class TransactionModel<T> {
 
     /**
      * Returns whether changes exist.
-     * @returns `true` if changes exist, otherwise `false`.
      */
     private get changesExisting(): boolean {
         return !(

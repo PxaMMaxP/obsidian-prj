@@ -36,7 +36,6 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     /**
      * The table headers.
      * @remarks The table headers are used to create the table.
-     *
      */
     protected tableHeaders: TableHeader[] = [
         {
@@ -64,11 +63,19 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         { text: Lng.gt('Tags'), headerClass: [], columnClass: ['tags'] },
     ];
 
+    /**
+     * Creates a new document block render component.
+     * @param settings The settings of the document block render component.
+     */
     constructor(settings: IProcessorSettings) {
         super(settings);
         this.parseSettings();
     }
 
+    /**
+     * Run the {@link TableBlockRenderComponent.build} method.
+     * @returns A promise which is resolved when the documents basic components are built.
+     */
     public build(): Promise<void> {
         return super.build();
     }
@@ -189,6 +196,10 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         await this.onFilterDebounce();
     }
 
+    /**
+     * This method debounces the `onFilter` method.
+     * @returns A promise which is resolved when Timer is set.
+     */
     private async onFilterDebounce(): Promise<void> {
         clearTimeout(this._filterButtonDebounceTimer);
 
@@ -369,6 +380,12 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         return row;
     }
 
+    /**
+     * Gets the hide state of the document.
+     * @param model The document model to get the hide state for.
+     * @param maxVisibleRows The maximum visible rows.
+     * @returns If the document should be hidden returns `true`, else `false`.
+     */
     protected getHideState(
         model: DocumentModel,
         maxVisibleRows: number | undefined,
@@ -432,6 +449,11 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         return true;
     }
 
+    /**
+     * Determines if the document should be hidden based on the tags in the settings.
+     * @param document The document to check.
+     * @returns If the document should be  shown returns `true`, else `false`.
+     */
     private determineTagHideState(document: DocumentModel): boolean {
         return this.settings.reactOnActiveFile
             ? !Helper.isTagIncluded(
@@ -441,6 +463,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             : false;
     }
 
+    /**
+     * This method runs the {@link TableBlockRenderComponent.filter} method.
+     */
     public onActiveFileFilter() {
         this.onFilter();
     }
@@ -462,6 +487,10 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         this.tableContainer.appendChild(this.table.data.table);
     }
 
+    /**
+     * This method runs the {@link TableBlockRenderComponent.redraw} method.
+     * @returns A promise which is resolved when the documents are redrawn.
+     */
     public redraw(): Promise<void> {
         return super.redraw();
     }

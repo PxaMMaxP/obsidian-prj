@@ -14,8 +14,8 @@ import SearchTerm from './SearchTerm';
 export default class SearchParser {
     /**
      * Parses the given search text into a SearchQuery object.
-     * @param {string} searchText - The search text to parse.
-     * @returns {SearchQuery} A SearchQuery object containing the parsed search elements.
+     * @param searchText - The search text to parse.
+     * @returns A SearchQuery object containing the parsed search elements.
      */
     public static parse(searchText: string): SearchQuery {
         const query = new SearchQuery();
@@ -89,7 +89,7 @@ export default class SearchParser {
 
     /**
      * Adds default AND operators between search terms if no operators are specified.
-     * @param {SearchQuery} query The SearchQuery object to add operators to.
+     * @param query The SearchQuery object to add operators to.
      */
     private static handleDefaultOperator(query: SearchQuery): void {
         const searchElements = query.getElements();
@@ -111,7 +111,7 @@ export default class SearchParser {
 
     /**
      * Combines negations with search terms and removes negation operators.
-     * @param {SearchQuery} query The SearchQuery object to process.
+     * @param query The SearchQuery object to process.
      */
     private static combineNegationsAndElements(query: SearchQuery): void {
         const searchElements = query.getElements();
@@ -143,9 +143,9 @@ export default class SearchParser {
 
     /**
      * Adds a search term to the query.
-     * @param {SearchQuery} query The SearchQuery object to add the term to.
-     * @param {string} term The term to add.
-     * @returns {string} An empty string.
+     * @param query The SearchQuery object to add the term to.
+     * @param term The term to add.
+     * @returns An empty string.
      */
     private static addTerm(query: SearchQuery, term: string): string {
         const searchTerm = new SearchTerm(term);
@@ -156,8 +156,8 @@ export default class SearchParser {
 
     /**
      * Adds a search operator to the query.
-     * @param {SearchQuery} query The SearchQuery object to add the operator to.
-     * @param {SearchOperatorType} operator The operator to add.
+     * @param query The SearchQuery object to add the operator to.
+     * @param operator The operator to add.
      */
     private static addOperator(
         query: SearchQuery,
@@ -169,8 +169,8 @@ export default class SearchParser {
 
     /**
      * Checks if the character is a search operator.
-     * @param {string} char - The character to check.
-     * @returns {boolean} True if the character is a search operator, false otherwise.
+     * @param char - The character to check.
+     * @returns True if the character is a search operator, false otherwise.
      */
     private static isOperator(char: string): boolean {
         return SearchOperators.includes(char as SearchOperatorType);
@@ -178,8 +178,8 @@ export default class SearchParser {
 
     /**
      * Checks if the character is a quote.
-     * @param {string} char The character to check.
-     * @returns {boolean} True if the character is a quote, false otherwise.
+     * @param char The character to check.
+     * @returns True if the character is a quote, false otherwise.
      */
     private static isQuote(char: string): boolean {
         return SearchQuotes.includes(char as SearchQuoteType);

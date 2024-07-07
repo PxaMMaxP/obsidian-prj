@@ -2,14 +2,25 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import Prj from 'src/main';
 import Logging, { LoggingLevel } from './Logging';
 
+/**
+ * Represents the settings tab for the plugin.
+ */
 export class SettingTab extends PluginSettingTab {
     plugin: Prj;
 
+    /**
+     * Creates a new instance of the SettingTab class.
+     * @param app The Obsidian App instance.
+     * @param plugin The Prj instance.
+     */
     constructor(app: App, plugin: Prj) {
         super(app, plugin);
         this.plugin = plugin;
     }
 
+    /**
+     * Displays the settings.
+     */
     display(): void {
         const { containerEl } = this;
 

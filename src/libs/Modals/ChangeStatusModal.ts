@@ -10,16 +10,25 @@ import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 import Helper from '../Helper';
 
+/**
+ *
+ */
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
     model: PrjTaskManagementModel<
         IPrjData & IPrjTaskManagement & BaseData<unknown>
     >;
 
+    /**
+     *
+     */
     constructor() {
         super(Global.getInstance().app);
     }
 
+    /**
+     *
+     */
     override open() {
         const workspace = this.app.workspace;
         const activeFile = workspace.getActiveFile();
@@ -40,6 +49,9 @@ export default class ChangeStatusModal extends Modal {
         super.open();
     }
 
+    /**
+     *
+     */
     onOpen() {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: Lng.gt('Change Status') });
@@ -70,6 +82,9 @@ export default class ChangeStatusModal extends Modal {
         );
     }
 
+    /**
+     *
+     */
     onClose() {
         const { contentEl } = this;
         contentEl.empty();
@@ -87,6 +102,9 @@ export default class ChangeStatusModal extends Modal {
         global.plugin.addCommand({
             id: 'change-prj-status',
             name: Lng.gt('Change Status'),
+            /**
+             *
+             */
             callback: () => new ChangeStatusModal().open(),
         });
     }

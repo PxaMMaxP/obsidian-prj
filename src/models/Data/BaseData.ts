@@ -46,7 +46,6 @@ export default abstract class BaseData<T> {
 
     /**
      * Gets the default data for the current data model `T`.
-     * @returns The default data for the current data model.
      */
     public get defaultData(): Partial<T> {
         const defaultData: Partial<T> = {};

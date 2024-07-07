@@ -33,7 +33,7 @@ export default class FileCache {
 
     /**
      * Creates a new FileCache instance
-     * @constructor
+     * @class
      * @remarks Events are disabled: We do not need them for now
      */
     constructor() {
@@ -87,7 +87,7 @@ export default class FileCache {
 
     /**
      * Wait for the file cache to be ready
-     * @returns {Promise<void>} Promise that resolves when the file cache is ready
+     * @returns Promise that resolves when the file cache is ready
      * @description This method returns a promise that resolves when the file cache is ready.
      */
     public async waitForCacheReady(): Promise<void> {

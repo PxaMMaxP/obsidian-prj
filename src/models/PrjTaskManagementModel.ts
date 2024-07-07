@@ -28,7 +28,6 @@ export class PrjTaskManagementModel<
 
     /**
      * The data of the model.
-     * @returns The data of the model.
      */
     public get data(): Partial<T> {
         return this._data;
@@ -103,7 +102,6 @@ export class PrjTaskManagementModel<
 
     /**
      * Returns the urgency of the model.
-     * @returns The urgency of the model.
      */
     public get urgency(): number {
         return PrjTaskManagementModel.calculateUrgency(

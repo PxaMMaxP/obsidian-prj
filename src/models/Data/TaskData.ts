@@ -68,7 +68,6 @@ export default class TaskData
 
     /**
      * Gets the tags of the Task.
-     * @returns The tags of the Task.
      */
     @toStringField
     get tags(): Tags | null | undefined {

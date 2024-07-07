@@ -5,7 +5,13 @@ import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
 import Helper from '../Helper';
 
+/**
+ *
+ */
 export default class CreateNewProjectModal extends CreateNewTaskManagementModal {
+    /**
+     *
+     */
     protected override constructForm(): FormConfiguration {
         const form = super.constructForm();
         form.title = `${Lng.gt('New')} ${Lng.gt('Project')}`;
@@ -71,6 +77,9 @@ export default class CreateNewProjectModal extends CreateNewTaskManagementModal 
         global.plugin.addCommand({
             id: 'create-new-project-file',
             name: `${Lng.gt('New project')}`,
+            /**
+             *
+             */
             callback: async () => {
                 const modal = new CreateNewProjectModal();
                 const result = await modal.openForm();

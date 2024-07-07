@@ -36,7 +36,6 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     /**
      * The table headers.
      * @remarks The table headers are used to create the table.
-     *
      */
     protected tableHeaders: TableHeader[] = [
         { text: Lng.gt('Date'), headerClass: [], columnClass: ['font-xsmall'] },
@@ -49,11 +48,18 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         { text: Lng.gt('Tags'), headerClass: [], columnClass: ['tags'] },
     ];
 
+    /**
+     *
+     * @param settings
+     */
     constructor(settings: IProcessorSettings) {
         super(settings);
         this.parseSettings();
     }
 
+    /**
+     *
+     */
     public build(): Promise<void> {
         return super.build();
     }
@@ -277,6 +283,11 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         return row;
     }
 
+    /**
+     *
+     * @param model
+     * @param maxVisibleRows
+     */
     protected getHideState(
         model: NoteModel,
         maxVisibleRows: number | undefined,
@@ -307,12 +318,19 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         return hide; // Standard-Verhalten
     }
 
+    /**
+     *
+     * @param document
+     */
     private determineTagHideState(document: NoteModel): boolean {
         return this.settings.reactOnActiveFile
             ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
             : false;
     }
 
+    /**
+     *
+     */
     public onActiveFileFilter() {
         this.onFilter();
     }
@@ -334,6 +352,9 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         this.tableContainer.appendChild(this.table.data.table);
     }
 
+    /**
+     *
+     */
     public redraw(): Promise<void> {
         return super.redraw();
     }

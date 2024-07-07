@@ -7,7 +7,6 @@ import Logging from 'src/classes/Logging';
  *
  * This class provides methods to create and manage a filter button component with a symbol.
  * It includes functionality for toggling the filter button and handling click events.
- *
  * @see {@link create} for details about creating a filter button component.
  * @see {@link FilterCallback} for details about the filter callback.
  */

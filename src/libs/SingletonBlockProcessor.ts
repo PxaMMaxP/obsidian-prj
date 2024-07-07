@@ -48,7 +48,6 @@ export default class SingletonBlockProcessor {
      * Get the singletone container for the block.
      * @remarks - Use this container for all your block content.
      * - Register a component with **this** container.
-     * @returns The singletone container for the block.
      */
     public get singletoneContainer(): HTMLElement {
         this._singletonContainer =

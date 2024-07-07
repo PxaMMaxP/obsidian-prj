@@ -7,7 +7,13 @@ import Global from 'src/classes/Global';
  */
 export type CursorPosition = number | 'start' | 'end';
 
+/**
+ *
+ */
 export default abstract class BaseComponent {
+    /**
+     *
+     */
     public get container(): HTMLDivElement {
         return this._shippingContainer;
     }
@@ -71,6 +77,10 @@ export default abstract class BaseComponent {
     abstract onFinalize: () => void;
     //#endregion
 
+    /**
+     *
+     * @param component
+     */
     constructor(component: Component) {
         this.component = component;
         this._shippingContainer = document.createElement('div');

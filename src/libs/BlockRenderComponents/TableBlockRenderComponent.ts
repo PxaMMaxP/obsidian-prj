@@ -13,6 +13,9 @@ import MetadataCache, { FileMetadata } from '../MetadataCache';
 import Search from '../Search/Search';
 import Table, { RowsState, TableHeader } from '../Table';
 
+/**
+ * Represents the base class for table block render components.
+ */
 export default abstract class TableBlockRenderComponent<
     T extends IPrjModel<unknown>,
 > implements RedrawableBlockRenderComponent
@@ -59,6 +62,7 @@ export default abstract class TableBlockRenderComponent<
 
     /**
      * Builds the component first time.
+     * @returns A promise that resolves when the component is drawn.
      * @remarks Calls the `draw` method.
      */
     public async build(): Promise<void> {
@@ -107,6 +111,7 @@ export default abstract class TableBlockRenderComponent<
 
     /**
      * Redraws the component on request. Clears the container and calls the `draw` method.
+     * @returns A promise that resolves when the component is redrawn.
      * @remarks This methode clears the container and calls the `draw` methode.
      */
     public async redraw(): Promise<void> {
@@ -208,6 +213,12 @@ export default abstract class TableBlockRenderComponent<
                 newTags = [tags];
             }
 
+            /**
+             * Checks if the tags are different.
+             * @param tags1 The first array to compare.
+             * @param tags2 The second array to compare.
+             * @returns True if the tags are different, false otherwise.
+             */
             const areTagsDifferent = (tags1: string[], tags2: string[]) => {
                 if (tags1.length !== tags2.length) return true;
 
@@ -245,13 +256,17 @@ export default abstract class TableBlockRenderComponent<
      */
     abstract onActiveFileFilter(): void;
 
+    /**
+     * Gets the unique identifier for the model.
+     * @param model The model to get the unique identifier for.
+     * @returns The unique identifier per model.
+     */
     protected getUID(model: T): string {
         return Helper.generateUID(model.file.path);
     }
 
     /**
      * Retrieves models based on the specified file types, tags, and model factory.
-     *
      * @param types - The file types to filter by.
      * @param tags - The tags to filter by.
      * @param modelFactory - The factory function to create models from file metadata.

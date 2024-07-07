@@ -8,7 +8,7 @@ import { SearchOperatorType } from './SearchOperatorTypes';
 export default class SearchOperator extends SearchElement {
     /**
      * Constructs a new SearchOperator with the given operator.
-     * @param {SearchOperatorType} operator - The operator value, which can be '&', '|' or '!'.
+     * @param operator - The operator value, which can be '&', '|' or '!'.
      */
     constructor(operator: SearchOperatorType) {
         super(operator);
@@ -16,7 +16,6 @@ export default class SearchOperator extends SearchElement {
 
     /**
      * Gets the operator value of the search element.
-     * @returns {SearchOperatorType} The operator value.
      */
     public get operator(): SearchOperatorType {
         return this._value as SearchOperatorType;
@@ -24,7 +23,7 @@ export default class SearchOperator extends SearchElement {
 
     /**
      * Sets the operator value of the search element.
-     * @param {SearchOperatorType} value - The new operator value to be set.
+     * @param value - The new operator value to be set.
      */
     public set operator(value: SearchOperatorType) {
         this._value = value;
@@ -33,7 +32,6 @@ export default class SearchOperator extends SearchElement {
     /**
      * Determines if the element is an operator.
      * This method overrides the abstract method in the base class.
-     * @returns {boolean} Always returns true, indicating that this element is an operator.
      */
     public get isOperator(): boolean {
         return true;

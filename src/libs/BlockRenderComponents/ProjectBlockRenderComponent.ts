@@ -22,6 +22,9 @@ import Helper from '../Helper';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
 
+/**
+ *
+ */
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<IPrjData & IPrjTaskManagement & BaseData<unknown>>
 > {
@@ -40,7 +43,6 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     /**
      * The table headers.
      * @remarks The table headers are used to create the table.
-     *
      */
     protected tableHeaders: TableHeader[] = [
         {
@@ -64,19 +66,32 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         { text: Lng.gt('Tags'), headerClass: [], columnClass: ['tags'] },
     ];
 
+    /**
+     *
+     * @param settings
+     */
     constructor(settings: IProcessorSettings) {
         super(settings);
         this.parseSettings();
     }
 
+    /**
+     *
+     */
     public build(): Promise<void> {
         return super.build();
     }
 
+    /**
+     *
+     */
     public redraw(): Promise<void> {
         return super.redraw();
     }
 
+    /**
+     *
+     */
     protected async draw(): Promise<void> {
         const startTime = Date.now();
 
@@ -106,6 +121,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         );
     }
 
+    /**
+     *
+     */
     private async buildTable(): Promise<void> {
         this.table = new Table(
             this.tableHeaders,
@@ -116,6 +134,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         this.tableContainer.appendChild(this.table.data.table);
     }
 
+    /**
+     *
+     */
     private async buildHeader(): Promise<void> {
         // Filter container
         const headerFilterButtons = document.createElement('div');
@@ -192,6 +213,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         headerFilterButtons.appendChild(searchBox);
     }
 
+    /**
+     *
+     * @param batchSize
+     * @param sleepBetweenBatches
+     */
     private async addDocumentsToTable(
         batchSize = this.settings.batchSize,
         sleepBetweenBatches = this.settings.sleepBetweenBatches,
@@ -234,6 +260,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         }
     }
 
+    /**
+     *
+     * @param model
+     */
     private async generateTableRow(
         model: PrjTaskManagementModel<
             IPrjData & IPrjTaskManagement & BaseData<unknown>
@@ -341,6 +371,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         return row;
     }
 
+    /**
+     *
+     * @param type
+     * @param status
+     */
     private async onFilterButton(type: string, status: boolean): Promise<void> {
         if (this.settings.filter.includes(type as FilteredModels)) {
             this.settings.filter = this.settings.filter.filter(
@@ -352,6 +387,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         await this.onFilterDebounce();
     }
 
+    /**
+     *
+     */
     private async onFilterDebounce(): Promise<void> {
         clearTimeout(this._filterButtonDebounceTimer);
 
@@ -360,6 +398,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         }, 750);
     }
 
+    /**
+     *
+     * @param maxDocuments
+     */
     private async onMaxDocumentsChange(
         maxDocuments: number,
     ): Promise<undefined> {
@@ -369,6 +411,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         return undefined;
     }
 
+    /**
+     *
+     * @param model
+     * @param maxVisibleRows
+     */
     protected getHideState(
         model: PrjTaskManagementModel<
             IPrjData & IPrjTaskManagement & BaseData<unknown>
@@ -409,6 +456,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         return hide; // Standard-Verhalten
     }
 
+    /**
+     *
+     * @param model
+     */
     private determineHideState(
         model: PrjTaskManagementModel<
             IPrjData & IPrjTaskManagement & BaseData<unknown>
@@ -438,6 +489,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         return true;
     }
 
+    /**
+     *
+     * @param document
+     */
     private determineTagHideState(
         document: PrjTaskManagementModel<
             IPrjData & IPrjTaskManagement & BaseData<unknown>
@@ -458,6 +513,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         }
     }
 
+    /**
+     *
+     */
     public onActiveFileFilter() {
         this.onFilter();
     }

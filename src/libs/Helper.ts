@@ -5,14 +5,16 @@ import { Path } from 'src/classes/Path';
 import Tag from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
 
+/**
+ *
+ */
 export default class Helper {
     private static _md5 = require('crypto-js/md5');
 
     /**
      * Extracts the date, filename, file extension and display text from a wikilink
      * @param wikilink Wikilink to extract the data from, eg. [[2021.01.01 - file.txt|Display text]]
-     * @returns {WikilinkData} Object containing the date, filename, file extension and display text
-     *
+     * @returns Object containing the date, filename, file extension and display text
      */
     static extractDataFromWikilink(
         wikilink: string | null | undefined,
@@ -136,6 +138,10 @@ export default class Helper {
         return regexMarkdownSymbols.test(text);
     }
 
+    /**
+     *
+     * @param text
+     */
     static containsHTML(text: string) {
         const htmlRegex = /<[^>]*>/;
 
@@ -206,7 +212,6 @@ export default class Helper {
 
     /**
      * Checks if a given file type or an array of file types is included in another given file type or an array of file types.
-     *
      * @param typesToCheck The file type or array of file types to check.
      * @param typesToBeChecked The file type or array of file types to be checked against.
      * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
@@ -330,6 +335,9 @@ export default class Helper {
         return prefixValue + acronym;
     }
 
+    /**
+     *
+     */
     static getActiveFile(): TFile | undefined {
         const workspace = Global.getInstance().app.workspace;
         const activeFile = workspace.getActiveFile();
@@ -387,6 +395,10 @@ export default class Helper {
         return tagFound !== undefined;
     }
 
+    /**
+     *
+     * @param file
+     */
     static async openFile(file: TFile): Promise<void> {
         Logging.getLogger('Helper').trace(`Opening file for ${file.name}`);
         const workspace = Global.getInstance().app.workspace;
@@ -399,7 +411,6 @@ export default class Helper {
 
     /**
      * Sanitizes a filename by removing any characters that are not alphanumeric, hyphen, underscore, period, space, or umlauts.
-     *
      * @param filename - The filename to sanitize.
      * @returns The sanitized filename.
      * @deprecated Use {@link Path.sanitizeFilename} instead.
@@ -408,6 +419,9 @@ export default class Helper {
         return filename.replace(/[^a-zA-Z0-9-_. äöüÄÖÜß§]/g, '');
     }
 
+    /**
+     *
+     */
     static rebuildActiveView(): void {
         const workspace = Global.getInstance().app.workspace;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, deprecation/deprecation
@@ -425,7 +439,6 @@ export default class Helper {
 
     /**
      * Deep clones a FrontMatterCache object.
-     *
      * @param obj - The object to be cloned.
      * @returns The cloned object.
      */
