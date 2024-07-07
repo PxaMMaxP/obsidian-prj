@@ -7,7 +7,7 @@ jest.mock('obsidian');
 import { MarkdownRenderChild } from 'obsidian'; // Dies wird das Mock-Modul verwenden
 import loggerMock from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
-import CustomizableRenderChild from '../CustomizableRenderChild';
+import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
 
 describe('CustomizableRenderChild', () => {
     let container: HTMLElement;
