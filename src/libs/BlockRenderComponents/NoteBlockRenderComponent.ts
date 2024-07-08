@@ -20,6 +20,7 @@ import Table, { Row, TableHeader } from '../Table';
  * Document block render component class for `TableBlockRenderComponent`.
  * @remarks This class provides methods to create and manage a document block render component.
  * @see {@link create} for details about creating a document block render component.
+ * @augments TableBlockRenderComponent<NoteModel>
  */
 export default class NoteBlockRenderComponent extends TableBlockRenderComponent<NoteModel> {
     protected settings: BlockRenderSettings = {
@@ -49,8 +50,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     ];
 
     /**
-     *
-     * @param settings
+     * Represents a NoteBlockRenderComponent.
+     * @param settings The settings for the component.
      */
     constructor(settings: IProcessorSettings) {
         super(settings);
@@ -58,7 +59,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     *
+     * Builds the NoteBlockRenderComponent.
+     * @returns A promise that resolves when the build is complete.
      */
     public build(): Promise<void> {
         return super.build();
@@ -284,9 +286,10 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     *
-     * @param model
-     * @param maxVisibleRows
+     * Determines the hide state of a note block render component.
+     * @param model The note model.
+     * @param maxVisibleRows The maximum number of visible rows.
+     * @returns A boolean indicating whether the note block should be hidden or not.
      */
     protected getHideState(
         model: NoteModel,
@@ -319,8 +322,9 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     *
-     * @param document
+     * Determines the hide state of a tag based on the provided document and settings.
+     * @param document The NoteModel representing the document.
+     * @returns A boolean indicating whether the tag should be hidden or not.
      */
     private determineTagHideState(document: NoteModel): boolean {
         return this.settings.reactOnActiveFile
@@ -329,7 +333,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     *
+     * Executes the filter logic when the active file filter is triggered.
      */
     public onActiveFileFilter() {
         this.onFilter();
@@ -353,7 +357,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     }
 
     /**
-     *
+     * Redraws the component.
+     * @returns A promise that resolves when the component has finished redrawing.
      */
     public redraw(): Promise<void> {
         return super.redraw();

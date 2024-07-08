@@ -2,7 +2,7 @@ import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
 /**
- *
+ * Represents a dropdown component that extends the base component.
  */
 export default class DropdownComponent extends BaseComponent {
     //#region base properties
@@ -19,7 +19,7 @@ export default class DropdownComponent extends BaseComponent {
     private _value: string;
     private _options: { value: string; text: string }[];
     /**
-     *
+     * Gets the selected option of the dropdown component.
      */
     private get _selectedOption(): { value: string; text: string } {
         const selectedOption = this._options.find(
@@ -38,8 +38,8 @@ export default class DropdownComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param component
+     * Creates a new instance of the DropdownComponent class.
+     * @param component The component to attach the dropdown to.
      */
     constructor(component: Component) {
         super(component);
@@ -105,8 +105,8 @@ export default class DropdownComponent extends BaseComponent {
         formator: (value: string) => { text: string; html?: DocumentFragment },
     ) {
         /**
-         *
-         * @param value
+         * Sets the presentation of the component.
+         * @param value The value to set.
          */
         this._onPresentation = async (value: string): Promise<void> => {
             const { text, html } = formator(value);
@@ -137,7 +137,7 @@ export default class DropdownComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
+     * Enables the options of the dropdown component.
      */
     private enableOptions() {
         const optionFound = this._options.find((o) => o.value === this._value);
@@ -158,7 +158,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Disables the options of the dropdown component.
      */
     private disableOptions() {
         this._select.innerHTML = '';
@@ -166,7 +166,7 @@ export default class DropdownComponent extends BaseComponent {
 
     //#region Base Callbacks
     /**
-     *
+     * Builds the presentation of the dropdown component.
      */
     private build() {
         this._presentationSpan = document.createElement('span');
@@ -180,7 +180,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Builds the input of the dropdown component.
      */
     private buildInput() {
         this._select = document.createElement('select');
@@ -191,7 +191,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Enables the edit mode of the dropdown component.
      */
     private enableEdit() {
         this.enableOptions();
@@ -200,7 +200,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Disables the edit mode of the dropdown component.
      */
     private disableEdit() {
         this._onPresentation?.(this._selectedOption.value);
@@ -209,7 +209,7 @@ export default class DropdownComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Saves the value of the dropdown component.
      */
     private async save(): Promise<void> {
         this._value = this._select.value;

@@ -29,7 +29,7 @@ export default class ProxyHandler<T extends object> {
      * @remarks - The logger is optional and can be undefined.
      * @see {@link ILogger}
      */
-    private logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
 
     /**
      * A delegate function for updating key-value pairs.
@@ -47,7 +47,7 @@ export default class ProxyHandler<T extends object> {
         try {
             this._updateKeyValue(key, value);
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Failed to update key-value pair for key ${key} with value: ${error.message}`,
             );
         }
@@ -57,13 +57,13 @@ export default class ProxyHandler<T extends object> {
      * Creates an instance of ProxyHandler.
      * @param logger A optional logger instance for logging purposes.
      * @param updateKeyValue A delegate function for updating key-value pairs.
-     *                       See {@link _updateKeyValue} & {@link updateKeyValue}.
+     * See {@link _updateKeyValue} & {@link updateKeyValue}.
      */
     constructor(
         logger: ILogger | undefined,
         updateKeyValue: (key: string, value: unknown) => void,
     ) {
-        this.logger = logger;
+        this._logger = logger;
         this._updateKeyValue = updateKeyValue;
     }
 
@@ -71,7 +71,7 @@ export default class ProxyHandler<T extends object> {
      * Creates a proxy for the given object.
      * @param obj The object to create a proxy for.
      * @param path The path of the object.
-     *            Default is an empty string. See {@link ObjectPath}.
+     * Default is an empty string. See {@link ObjectPath}.
      * @returns The proxy object.
      */
     public createProxy(obj: Partial<T>, path: ObjectPath = ''): T {
@@ -86,32 +86,35 @@ export default class ProxyHandler<T extends object> {
         try {
             proxy = new Proxy(obj, {
                 /**
-                 *
-                 * @param target
-                 * @param property
-                 * @param receiver
+                 * Handles the get operation for the proxy.
+                 * @param target The target object.
+                 * @param property The property to get.
+                 * @param receiver The proxy or an object that inherits from the proxy.
+                 * @returns The value of the property.
                  */
                 get: (target, property, receiver) =>
                     this.handleGet(target, property, receiver, path),
                 /**
-                 *
-                 * @param target
-                 * @param property
-                 * @param value
-                 * @param receiver
+                 * Handles the set operation for the proxy.
+                 * @param target The target object.
+                 * @param property The property to set.
+                 * @param value The value to set.
+                 * @param receiver The proxy or an object that inherits from the proxy.
+                 * @returns True if the property was set successfully, false otherwise.
                  */
                 set: (target, property, value, receiver) =>
                     this.handleSet(target, property, value, receiver, path),
                 /**
-                 *
-                 * @param target
-                 * @param property
+                 * Handles the delete operation for the proxy.
+                 * @param target The target object.
+                 * @param property The property to delete.
+                 * @returns True if the property was deleted successfully, false otherwise.
                  */
                 deleteProperty: (target, property) =>
                     this.handleDeleteProperty(target, property, path),
             }) as T;
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Failed to create proxy for object: ${error.message}`,
             );
             throw error;
@@ -127,8 +130,7 @@ export default class ProxyHandler<T extends object> {
      * @private
      * @param target The target object.
      * @param property The property to get.
-     * @param The proxy or an object that inherits from the proxy.
-     * @param receiver
+     * @param receiver The proxy or an object that inherits from the proxy.
      * @param path The path of the object. See {@link ObjectPath}.
      * @returns The value of the property.
      */
@@ -150,7 +152,7 @@ export default class ProxyHandler<T extends object> {
         try {
             value = target[property as keyof Partial<T>];
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Failed to get property ${propertyKey} on path ${path}: ${error.message}`,
             );
         }
@@ -203,7 +205,7 @@ export default class ProxyHandler<T extends object> {
 
             return true;
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Failed to set property ${propertyKey} on path ${newPath}: ${error.message}`,
             );
 
@@ -232,7 +234,7 @@ export default class ProxyHandler<T extends object> {
 
             return true;
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Failed to delete property ${propertyKey} on path ${newPath}: ${error.message}`,
             );
 

@@ -5,26 +5,27 @@ import Logging from 'src/classes/Logging';
 
 /**
  * Class to handle the 'CopyMarkdownLink' context menu
- *  - Adds a context menu item to copy the markdown link of a file
+ * - Adds a context menu item to copy the markdown link of a file
  */
 export default class CopyMarkdownLink {
     static instance: CopyMarkdownLink;
     private _app = Global.getInstance().app;
-    private logger = Logging.getLogger('CopyMarkdownLink');
+    private _logger = Logging.getLogger('CopyMarkdownLink');
     private _plugin = Global.getInstance().plugin;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
     /**
-     *
+     * Creates an instance of CopyMarkdownLink.
      */
     constructor() {
-        this.logger.debug('Initializing CopyMarkdownLink');
+        this._logger.debug('Initializing CopyMarkdownLink');
         this.registerEvents();
     }
 
     /**
-     *
+     * Gets the singleton instance of the CopyMarkdownLink class.
+     * @returns The singleton instance.
      */
     static getInstance(): CopyMarkdownLink {
         if (!CopyMarkdownLink.instance) {
@@ -39,7 +40,7 @@ export default class CopyMarkdownLink {
      */
     public static deconstructor() {
         if (this.instance && this.instance.eventsRegistered) {
-            this.instance.logger.trace(
+            this.instance._logger.trace(
                 "Deconstructing 'CopyMarkdownLink' events",
             );
 
@@ -49,7 +50,7 @@ export default class CopyMarkdownLink {
             );
             this.instance.eventsRegistered = false;
         } else {
-            this.instance.logger.trace(
+            this.instance._logger.trace(
                 "No 'CopyMarkdownLink' events to deconstruct",
             );
         }
@@ -60,7 +61,7 @@ export default class CopyMarkdownLink {
      */
     private registerEvents() {
         if (!this.eventsRegistered) {
-            this.logger.trace("Registering 'CopyMarkdownLink' events");
+            this._logger.trace("Registering 'CopyMarkdownLink' events");
             this._app.workspace.on('file-menu', this.bindContextMenu);
             this.eventsRegistered = true;
         }

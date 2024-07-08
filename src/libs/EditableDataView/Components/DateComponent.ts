@@ -2,7 +2,7 @@ import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
 /**
- *
+ * Represents a date component in an editable data view.
  */
 export default class DateComponent extends BaseComponent {
     //#region base properties
@@ -25,8 +25,8 @@ export default class DateComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param component
+     * Creates a new instance of the DateComponent class.
+     * @param component The component to associate with the DateComponent.
      */
     constructor(component: Component) {
         super(component);
@@ -74,7 +74,7 @@ export default class DateComponent extends BaseComponent {
      * Sets the formator of the component.
      * @param formator The formator to set.
      * @returns The component itself.
-     * @remarks The formator is called when the component change in `not-edit` mode.
+     * @remarks The formator is called when the component changes in `not-edit` mode.
      */
     public setFormator(formator: (value: string) => string): DateComponent {
         this._onPresentation = formator;
@@ -97,7 +97,7 @@ export default class DateComponent extends BaseComponent {
 
     //#region Base Callbacks
     /**
-     *
+     * Builds the presentation span for the component.
      */
     private build() {
         this._presentationSpan = document.createElement('span');
@@ -113,7 +113,7 @@ export default class DateComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Builds the input element for the component.
      */
     private buildInput() {
         this._input = document.createElement('input');
@@ -125,7 +125,7 @@ export default class DateComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Enables the edit mode for the component.
      */
     private enableEdit() {
         this._input.value = this._value ? this._value : '';
@@ -134,7 +134,7 @@ export default class DateComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Disables the edit mode for the component.
      */
     private disableEdit() {
         this._presentationSpan.textContent = this._onPresentation
@@ -143,7 +143,7 @@ export default class DateComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Saves the value of the component.
      */
     private async save(): Promise<void> {
         this._value = this._input.value;

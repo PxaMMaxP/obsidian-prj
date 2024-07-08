@@ -6,7 +6,7 @@ import TextareaComponent from './Components/TextareaComponent';
 import TextComponent from './Components/TextComponent';
 
 /**
- *
+ * Represents an editable data view that allows adding various components.
  */
 export default class EditableDataView {
     private _container: HTMLElement | DocumentFragment;
@@ -14,9 +14,9 @@ export default class EditableDataView {
     private _attributesList: Record<string, string> = {};
 
     /**
-     *
-     * @param container
-     * @param component
+     * Creates a new instance of EditableDataView.
+     * @param container - The container element where the components will be added.
+     * @param component - The parent component.
      */
     constructor(
         container: HTMLElement | DocumentFragment,
@@ -27,8 +27,9 @@ export default class EditableDataView {
     }
 
     /**
-     *
-     * @param configure
+     * Adds a text component to the data view.
+     * @param configure - A function that configures the text component.
+     * @returns The EditableDataView instance.
      */
     public addText(
         configure: (component: TextComponent) => void,
@@ -44,8 +45,9 @@ export default class EditableDataView {
     }
 
     /**
-     *
-     * @param configure
+     * Adds a textarea component to the data view.
+     * @param configure - A function that configures the textarea component.
+     * @returns The EditableDataView instance.
      */
     public addTextarea(
         configure: (component: TextareaComponent) => void,
@@ -61,8 +63,9 @@ export default class EditableDataView {
     }
 
     /**
-     *
-     * @param configure
+     * Adds a link component to the data view.
+     * @param configure - A function that configures the link component.
+     * @returns The EditableDataView instance.
      */
     public addLink(
         configure: (component: LinkComponent) => void,
@@ -78,8 +81,9 @@ export default class EditableDataView {
     }
 
     /**
-     *
-     * @param configure
+     * Adds a date component to the data view.
+     * @param configure - A function that configures the date component.
+     * @returns The EditableDataView instance.
      */
     public addDate(
         configure: (component: DateComponent) => void,
@@ -95,8 +99,9 @@ export default class EditableDataView {
     }
 
     /**
-     *
-     * @param configure
+     * Adds a dropdown component to the data view.
+     * @param configure - A function that configures the dropdown component.
+     * @returns The EditableDataView instance.
      */
     public addDropdown(
         configure: (component: DropdownComponent) => void,

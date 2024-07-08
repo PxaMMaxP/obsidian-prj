@@ -7,14 +7,14 @@ import Helper from 'src/libs/Helper';
 import { DocumentModel } from 'src/models/DocumentModel';
 
 /**
- *
+ * Represents a collection of static methods for creating various components related to documents.
  */
 export default class DocumentComponents {
     /**
-     *
-     * @param documentModel
-     * @param component
-     * @param summaryRelatedFiles
+     * Creates a cell summary for a document.
+     * @param documentModel - The document model.
+     * @param component - The component.
+     * @param summaryRelatedFiles - The related files for the summary.
      */
     public static createCellSummary(
         documentModel: DocumentModel,
@@ -39,12 +39,12 @@ export default class DocumentComponents {
     }
 
     /**
-     *
-     * @param relatedFilesList
-     * @param component
-     * @param documentModel
-     * @param noneDocSymbol
-     * @param dateFormatShort
+     * Creates a list of related files and appends it to the specified document fragment.
+     * @param relatedFilesList - The document fragment to which the related files list will be appended.
+     * @param component - The component associated with the related files list.
+     * @param documentModel - The document model containing the related files.
+     * @param noneDocSymbol - The symbol to be used when there are no related files.
+     * @param dateFormatShort - The short date format to be used for displaying dates.
      */
     public static createRelatedFilesList(
         relatedFilesList: DocumentFragment,
@@ -137,10 +137,11 @@ export default class DocumentComponents {
     }
 
     /**
-     *
-     * @param documentModel
-     * @param component
-     * @param models
+     * Creates a cell sender recipient document fragment.
+     * @param documentModel - The document model.
+     * @param component - The component.
+     * @param models - The document models.
+     * @returns The created document fragment.
      */
     public static createCellSenderRecipient(
         documentModel: DocumentModel,
@@ -218,13 +219,14 @@ export default class DocumentComponents {
     }
 
     /**
-     *
-     * @param name
-     * @param component
-     * @param value
-     * @param title
-     * @param onSaveCallback
-     * @param models
+     * Creates an instance of EditableDataView with sender/recipient functionality.
+     * @param name - The name of the element or document fragment.
+     * @param component - The component to be added to the EditableDataView.
+     * @param value - The initial value for the EditableDataView.
+     * @param title - The title for the EditableDataView.
+     * @param onSaveCallback - The callback function to be called when the value is saved.
+     * @param models - An optional array of DocumentModel objects.
+     * @returns An instance of EditableDataView with sender/recipient functionality.
      */
     private static createEDVSenderRecipient(
         name: HTMLElement | DocumentFragment,
@@ -259,11 +261,11 @@ export default class DocumentComponents {
     }
 
     /**
-     *
-     * @param fileLink
-     * @param component
-     * @param documentModel
-     * @param editability
+     * Creates a cell file link.
+     * @param fileLink - The document fragment representing the file link.
+     * @param component - The component associated with the file link.
+     * @param documentModel - The document model containing the data for the file link.
+     * @param editability - Optional. Specifies whether the file link should be editable. Default is true.
      */
     public static createCellFileLink(
         fileLink: DocumentFragment,
@@ -326,10 +328,10 @@ export default class DocumentComponents {
     }
 
     /**
-     *
-     * @param metadataLink
-     * @param component
-     * @param documentModel
+     * Creates a cell metadata link.
+     * @param metadataLink - The document fragment representing the metadata link.
+     * @param component - The component associated with the metadata link.
+     * @param documentModel - The document model containing the metadata.
      */
     public static createCellMetadatalink(
         metadataLink: DocumentFragment,

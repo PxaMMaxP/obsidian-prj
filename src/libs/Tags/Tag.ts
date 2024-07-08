@@ -5,11 +5,6 @@ import DependencyRegistry from '../DependencyRegistry';
 
 /**
  * Represents a tag.
- * @remarks The class extends the String class and provides additional methods to work with tags.
- */
-
-/**
- *
  */
 export default class Tag extends BaseComplexDataType implements ITag {
     private _tag: string;

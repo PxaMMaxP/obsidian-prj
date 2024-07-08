@@ -4,16 +4,18 @@ import ILanguageTranslations from './interfaces/ILanguageTranslations';
 import ITranslationService from './interfaces/ITranslationService';
 
 /**
- *
+ * A service that provides translations for the application.
  */
 export class TranslationService implements ITranslationService {
     static instance: TranslationService | undefined;
-    private logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
     private _translations: ILanguageTranslations[];
     private _language: string;
 
     /**
-     *
+     * Gets the instance of the TranslationService.
+     * @remarks **Singleton**
+     * @returns The instance of the TranslationService.
      */
     static getInstance(): TranslationService {
         if (!TranslationService.instance) {
@@ -24,10 +26,10 @@ export class TranslationService implements ITranslationService {
     }
 
     /**
-     *
-     * @param translations
-     * @param settings
-     * @param logger
+     * Creates a new instance of the TranslationService.
+     * @param translations The translations to use.
+     * @param settings The settings to use.
+     * @param logger The optional logger to use.
      */
     constructor(
         translations: ILanguageTranslations[],
@@ -36,7 +38,7 @@ export class TranslationService implements ITranslationService {
     ) {
         TranslationService.instance = this;
 
-        this.logger = logger;
+        this._logger = logger;
         this._translations = translations;
         this._language = settings.language;
     }
@@ -58,7 +60,7 @@ export class TranslationService implements ITranslationService {
                 return language.translations[key] as string;
             }
         }
-        this.logger?.warn(`Translation for key ${key} not found`);
+        this._logger?.warn(`Translation for key ${key} not found`);
 
         return key;
     }
@@ -77,7 +79,7 @@ export class TranslationService implements ITranslationService {
             if (language.translations.hasOwnProperty(key)) {
                 translationStrings.push(language.translations[key]);
             } else {
-                this.logger?.warn(
+                this._logger?.warn(
                     `Translation for key ${key} not found in language ${language.lang}`,
                 );
                 translationStrings.push(key);

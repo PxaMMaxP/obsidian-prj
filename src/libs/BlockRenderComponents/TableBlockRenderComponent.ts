@@ -147,7 +147,7 @@ export default abstract class TableBlockRenderComponent<
      * `activeFile` means the tags of the active file.
      * - `maxDocuments`: The maximum number of documents to show on same time.
      * - `filter`: Must be an array. The values present the document types.
-     *   All values that are in the array are shown.
+     * All values that are in the array are shown.
      */
     protected parseSettings(): void {
         this.processorSettings.options.forEach((option) => {

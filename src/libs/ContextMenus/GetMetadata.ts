@@ -8,28 +8,29 @@ import Helper from '../Helper';
 import { FileMetadata } from '../MetadataCache';
 
 /**
- *
+ * Represents a class for retrieving metadata for a file.
  */
 export default class GetMetadata {
     static instance: GetMetadata;
     private _app = Global.getInstance().app;
-    private logger = Logging.getLogger('GetMetadata');
+    private _logger = Logging.getLogger('GetMetadata');
     private _plugin = Global.getInstance().plugin;
     private _metadataCache = Global.getInstance().metadataCache;
     protected eventsRegistered = false;
     protected bindContextMenu = this.onContextMenu.bind(this);
 
     /**
-     *
+     * Initializes a new instance of the GetMetadata class.
      */
     private constructor() {
-        this.logger.debug('Initializing GetMetadata');
+        this._logger.debug('Initializing GetMetadata');
         this.registerEvents();
         this.registerCommands();
     }
 
     /**
-     *
+     * Gets the singleton instance of the GetMetadata class.
+     * @returns The singleton instance.
      */
     static getInstance(): GetMetadata {
         if (!GetMetadata.instance) {
@@ -40,11 +41,11 @@ export default class GetMetadata {
     }
 
     /**
-     * Deconstructs the 'GetMetadata' events
+     * Deconstructs the 'GetMetadata' events.
      */
     public static deconstructor() {
         if (this.instance && this.instance.eventsRegistered) {
-            this.instance.logger.trace("Deconstructing 'GetMetadata' events");
+            this.instance._logger.trace("Deconstructing 'GetMetadata' events");
 
             this.instance._app.workspace.off(
                 'file-menu',
@@ -52,34 +53,34 @@ export default class GetMetadata {
             );
             this.instance.eventsRegistered = false;
         } else {
-            this.instance.logger.trace(
+            this.instance._logger.trace(
                 "No 'GetMetadata' events to deconstruct",
             );
         }
     }
 
     /**
-     * Registers the 'GetMetadata' events
+     * Registers the 'GetMetadata' events.
      */
     private registerEvents() {
         if (!this.eventsRegistered) {
-            this.logger.trace("Registering 'GetMetadata' events");
+            this._logger.trace("Registering 'GetMetadata' events");
             this._app.workspace.on('file-menu', this.bindContextMenu);
             this.eventsRegistered = true;
         }
     }
 
     /**
-     * Registers the 'GetMetadata' commands
+     * Registers the 'GetMetadata' commands.
      */
     private registerCommands() {
-        this.logger.trace("Registering 'GetMetadata' commands");
+        this._logger.trace("Registering 'GetMetadata' commands");
 
         this._plugin.addCommand({
             id: 'get-metadata-file',
             name: Lng.gt('Show Metadata File'),
             /**
-             *
+             * Callback function for the 'get-metadata-file' command.
              */
             callback: () => {
                 GetMetadata.getInstance().invoke();
@@ -88,9 +89,9 @@ export default class GetMetadata {
     }
 
     /**
-     * Adds the 'GetMetadata' context menu item
-     * @param menu The context menu
-     * @param file The file to add the context menu item to
+     * Adds the 'GetMetadata' context menu item.
+     * @param menu The context menu.
+     * @param file The file to add the context menu item to.
      */
     private onContextMenu(menu: Menu, file: TAbstractFile) {
         // Allow only pdf files
@@ -118,9 +119,9 @@ export default class GetMetadata {
     }
 
     /**
-     * Returns the metadata file for the given document (e.g. pdf) file
-     * @param file The document file
-     * @returns The metadata file or undefined if not found
+     * Returns the metadata file for the given document (e.g. pdf) file.
+     * @param file The document file.
+     * @returns The metadata file or undefined if not found.
      */
     private getCorrespondingMetadataFile(
         file: TFile,
@@ -145,7 +146,7 @@ export default class GetMetadata {
     }
 
     /**
-     * Opens the metadata file for the active (e.g. pdf) file
+     * Opens the metadata file for the active (e.g. pdf) file.
      */
     public async invoke() {
         const workspace = this._app.workspace;
@@ -156,14 +157,14 @@ export default class GetMetadata {
             !(activeFile instanceof TFile) ||
             !activeFile.path.endsWith('.pdf')
         ) {
-            this.logger.warn('No active pdf file found.');
+            this._logger.warn('No active pdf file found.');
 
             return;
         }
         const metadataFile = this.getCorrespondingMetadataFile(activeFile);
 
         if (!metadataFile) {
-            this.logger.warn('No metadata file to the active pdf file found.');
+            this._logger.warn('No metadata file to the active pdf file found.');
 
             return;
         }

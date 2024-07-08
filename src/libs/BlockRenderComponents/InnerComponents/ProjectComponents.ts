@@ -7,7 +7,7 @@ import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { FileType, Status, UrgencySymbols } from 'src/types/PrjTypes';
 
 /**
- *
+ * Represents the project components.
  */
 export default class ProjectComponents {
     /**
@@ -94,11 +94,11 @@ export default class ProjectComponents {
     }
 
     /**
-     *
-     * @param container
-     * @param component
-     * @param onRead
-     * @param onWrite
+     * Creates a status component.
+     * @param container The container to append the status to.
+     * @param component The component to register the events to.
+     * @param onRead On read callback. Should return the status.
+     * @param onWrite On write callback. Should write the new status to the file.
      */
     public static createStatus(
         container: DocumentFragment,

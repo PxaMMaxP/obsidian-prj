@@ -6,11 +6,12 @@ import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
 import Helper from '../Helper';
 
 /**
- *
+ * Represents a modal to create a new project.
  */
 export default class CreateNewProjectModal extends CreateNewTaskManagementModal {
     /**
-     *
+     * Create a new `FormConfiguration` for the modal
+     * @returns The form configuration
      */
     protected override constructForm(): FormConfiguration {
         const form = super.constructForm();

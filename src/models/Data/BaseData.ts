@@ -30,7 +30,7 @@ export default abstract class BaseData<T> {
      * Merges the provided data into the current instance.
      * @param data The optional data to merge into the current instance.
      * @remarks - This method uses the {@link fieldConfig} property to determine which fields to merge and their default values.
-     *          - If a field is not present in the provided data or no data is provided, the default value is used.
+     * - If a field is not present in the provided data or no data is provided, the default value is used.
      */
     protected mergeData(data?: Partial<T>): void {
         for (const config of this.fieldConfig) {

@@ -4,7 +4,7 @@ import Helper from 'src/libs/Helper';
 import BaseComponent from './BaseComponent';
 
 /**
- *
+ * Represents a textarea component for editable data view.
  */
 export default class TextareaComponent extends BaseComponent {
     //#region base properties
@@ -30,8 +30,8 @@ export default class TextareaComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param component
+     * Creates a new instance of TextareaComponent.
+     * @param component The component to attach the textarea to.
      */
     constructor(component: Component) {
         super(component);
@@ -90,12 +90,12 @@ export default class TextareaComponent extends BaseComponent {
      * Sets the formator of the component.
      * @param formator The formator to set.
      * @returns The component itself.
-     * @remarks The formator is called when the component change in `not-edit` mode.
+     * @remarks The formator is called when the component changes in `not-edit` mode.
      */
     public setFormator(formator: (value: string) => Promise<string>) {
         /**
-         *
-         * @param value
+         * Sets the presentation of the component using the specified formator.
+         * @param value The value to format and set as the presentation.
          */
         this._onPresentation = async (value: string): Promise<void> => {
             this._presentationSpan.textContent = await formator(this._value);
@@ -108,13 +108,14 @@ export default class TextareaComponent extends BaseComponent {
      * Sets the markdown formator of the component.
      * @param path The path of the file to resolve internal links.
      * @returns The component itself.
-     * @remarks The formator is called when the component change in `not-edit` mode.
+     * @remarks The formator is called when the component changes in `not-edit` mode.
      * - The custom formator is ignored if this method is called!
      */
     public setRenderMarkdown(path = '') {
         /**
-         *
-         * @param value
+         * Sets the presentation of the component using the specified markdown formator.
+         * @param value The value to format and set as the presentation.
+         * @returns A promise that resolves when the presentation is set.
          */
         this._onMarkdownPresentation = (value: string): Promise<void> => {
             if (Helper.isPossiblyMarkdown(value)) {
@@ -153,7 +154,7 @@ export default class TextareaComponent extends BaseComponent {
 
     //#region Base Callbacks
     /**
-     *
+     * Builds the presentation of the component.
      */
     private build() {
         this._presentationSpan = document.createElement('span');
@@ -175,7 +176,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Builds the input element for editing.
      */
     private buildInput() {
         this.component.registerDomEvent(
@@ -200,7 +201,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Enables the edit mode of the component.
      */
     private enableEdit() {
         this.presentationContainer.classList.remove('hidden');
@@ -211,7 +212,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Disables the edit mode of the component.
      */
     private disableEdit() {
         if (this._onMarkdownPresentation) {
@@ -226,7 +227,7 @@ export default class TextareaComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Saves the value of the component.
      */
     private async save(): Promise<void> {
         this._value = this._presentationSpan.textContent ?? '';

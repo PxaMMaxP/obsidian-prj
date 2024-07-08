@@ -59,7 +59,7 @@ type RegisteredEvent<T extends ICallback, K extends keyof T['events']> = {
  * ```
  */
 export default class GenericEvents<T extends ICallback> {
-    private logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
     private _events: Array<RegisteredEvent<T, keyof T['events']>> = [];
 
     /**
@@ -67,7 +67,7 @@ export default class GenericEvents<T extends ICallback> {
      * @param logger The logger to use. You can use your own logger or `console` as logger.
      */
     constructor(logger?: ILogger) {
-        this.logger = logger;
+        this._logger = logger;
     }
 
     /**
@@ -85,7 +85,7 @@ export default class GenericEvents<T extends ICallback> {
     ): void {
         // Add the event to the _events array
         this._events.push({ eventName, callback });
-        this.logger?.debug(`Event ${eventName.toString()} registered`);
+        this._logger?.debug(`Event ${eventName.toString()} registered`);
     }
 
     /**
@@ -112,12 +112,12 @@ export default class GenericEvents<T extends ICallback> {
 
         if (finalLength === initialLength) {
             // No event was removed, log a warning
-            this.logger?.warn(
+            this._logger?.warn(
                 `Event ${eventName.toString()} could not be deregistered`,
             );
         } else {
             // Event was removed, log a debug message
-            this.logger?.debug(`Event ${eventName.toString()} deregistered`);
+            this._logger?.debug(`Event ${eventName.toString()} deregistered`);
         }
     }
 
@@ -141,7 +141,7 @@ export default class GenericEvents<T extends ICallback> {
             .filter((event) => event.eventName === eventName)
             .forEach((event) => {
                 this._executeEventHandler(event.callback, eventData, callback);
-                this.logger?.debug(`Event ${eventName.toString()} fired`);
+                this._logger?.debug(`Event ${eventName.toString()} fired`);
             });
     }
 
@@ -168,19 +168,19 @@ export default class GenericEvents<T extends ICallback> {
             // Execute the handler and call the callback with the result
             const result = await handler(eventData);
 
-            this.logger?.debug(
+            this._logger?.debug(
                 `Event handler for ${handler.toString()} executed`,
             );
 
             if (callback) {
                 callback(result);
 
-                this.logger?.debug(
+                this._logger?.debug(
                     `Callback for ${handler.toString()} executed`,
                 );
             }
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Error in event handler for ${handler.toString()}: ${error}`,
             );
         }

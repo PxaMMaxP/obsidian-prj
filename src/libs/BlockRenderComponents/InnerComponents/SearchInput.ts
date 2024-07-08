@@ -15,14 +15,14 @@ export default class SearchInput {
      * Creates a new search input component.
      * @param component The component to register the events to.
      * @param onSearch The callback to call when the search box value changes. Passes the search box value and the key that was pressed.
-     * @param defaultText
+     * @param defaultText The default text to set to the search box.
      * @returns The created search input component as `DocumentFragment`.
      * @remarks - The search input component consists of a label, an input sizer and a search box.
      * - CSS classes:
-     *  - `filter-search` - The container of the search input component.
-     *  - `filter-text` - The label of the search input component.
-     *  - `search-box-sizer` - The sizer of the search input component.
-     *  - `search-box` - The search box of the search input component.
+     * - `filter-search` - The container of the search input component.
+     * - `filter-text` - The label of the search input component.
+     * - `search-box-sizer` - The sizer of the search input component.
+     * - `search-box` - The search box of the search input component.
      */
     public static create(
         component: Component,

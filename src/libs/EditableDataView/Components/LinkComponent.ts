@@ -2,7 +2,7 @@ import { Component } from 'obsidian';
 import BaseComponent from './BaseComponent';
 
 /**
- *
+ * Represents a link component that can be edited and displayed in different modes.
  */
 export default class LinkComponent extends BaseComponent {
     //#region base properties
@@ -31,8 +31,8 @@ export default class LinkComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param component
+     * Creates a new instance of the LinkComponent.
+     * @param component The Obsidian component to attach the link to.
      */
     constructor(component: Component) {
         super(component);
@@ -135,8 +135,8 @@ export default class LinkComponent extends BaseComponent {
         },
     ) {
         /**
-         *
-         * @param value
+         * Sets the presentation of the component.
+         * @param value The value to present.
          */
         this._onPresentation = async (value: string): Promise<void> => {
             const linkContent = formator(value);
@@ -186,8 +186,8 @@ export default class LinkComponent extends BaseComponent {
     //#endregion
 
     /**
-     *
-     * @param suggestions
+     * Sets the suggestions list for the input element.
+     * @param suggestions The suggestions to set.
      */
     private setSuggestionsList(suggestions: string[]) {
         if (!this._datalist) return;
@@ -202,7 +202,7 @@ export default class LinkComponent extends BaseComponent {
 
     //#region Base Callbacks
     /**
-     *
+     * Builds the presentation mode of the component.
      */
     private build() {
         this._link = document.createElement('a');
@@ -232,7 +232,7 @@ export default class LinkComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Builds the input mode of the component.
      */
     private buildInput() {
         this._label = document.createElement('label');
@@ -288,7 +288,7 @@ export default class LinkComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Enables the edit mode of the component.
      */
     private enableEdit() {
         this._onPresentation?.(this._value);
@@ -297,14 +297,14 @@ export default class LinkComponent extends BaseComponent {
     }
 
     /**
-     *
+     * Disables the edit mode of the component.
      */
     private disableEdit() {
         this._onPresentation?.(this._value);
     }
 
     /**
-     *
+     * Saves the changes made to the component.
      */
     private async save(): Promise<void> {
         this._value = this._input.value;

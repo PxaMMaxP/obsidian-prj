@@ -5,19 +5,19 @@ import { KanbanBoard, KanbanList } from './KanbanModels';
 import { ArchivedString, CompletedString } from './KanbanTypes';
 
 /**
- *
+ * Represents a markdown generator for a kanban board.
  */
 export default class KanbanMarkdownGenerator {
-    private logger = Logging.getLogger('KanbanMarkdownGenerator');
+    private _logger = Logging.getLogger('KanbanMarkdownGenerator');
     private _global = Global.getInstance();
     private _kanbanBoard: KanbanBoard;
     private _file: TFile;
     private _path: string;
 
     /**
-     *
-     * @param kanbanBoard
-     * @param file
+     * Creates a new instance of the markdown generator.
+     * @param kanbanBoard The kanban board to generate the markdown for.
+     * @param file The file to generate the markdown for.
      */
     constructor(kanbanBoard: KanbanBoard, file: TFile) {
         this._kanbanBoard = kanbanBoard;
@@ -32,7 +32,7 @@ export default class KanbanMarkdownGenerator {
      */
     public async saveFile(content: string, onlyLog = false): Promise<void> {
         if (onlyLog) {
-            this.logger.debug(
+            this._logger.debug(
                 `Would save file ${this._file.path} with content: \n${content}`,
             );
 
@@ -40,7 +40,7 @@ export default class KanbanMarkdownGenerator {
         } else {
             this._global.app.vault.modify(this._file, content);
 
-            this.logger.debug(
+            this._logger.debug(
                 `Saved file ${this._file.path} with content: \n${content}`,
             );
         }
@@ -108,7 +108,7 @@ export default class KanbanMarkdownGenerator {
                     link = `[[${linktext}]]`;
                 }
 
-                this.logger.trace(
+                this._logger.trace(
                     `Generating card: - [${item.checked ? 'x' : ' '}] ${link}`,
                 );
 

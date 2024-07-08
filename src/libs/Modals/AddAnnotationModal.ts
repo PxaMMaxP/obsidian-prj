@@ -12,7 +12,7 @@ export default class AddAnnotationModal extends BaseModalForm {
     private _fileCache = Global.getInstance().fileCache;
 
     /**
-     * Creates an instance of CreateNewMetadataModal.
+     * Creates an instance of AddAnnotationModal.
      */
     constructor() {
         super();
@@ -31,7 +31,7 @@ export default class AddAnnotationModal extends BaseModalForm {
             id: 'add-annotation-modal',
             name: `${Lng.gt('Add annotation')}`,
             /**
-             *
+             * Callback function for the command
              */
             callback: async () => {
                 const modal = new AddAnnotationModal();
@@ -46,7 +46,7 @@ export default class AddAnnotationModal extends BaseModalForm {
 
     /**
      * Opens the modal form
-     * @param preset
+     * @param preset - Optional preset data for the form
      * @returns Result of the form
      */
     public async openForm(
@@ -59,7 +59,7 @@ export default class AddAnnotationModal extends BaseModalForm {
         const result = await this.getApi().openForm(form);
 
         this.logger.trace(
-            `From closes with status '${result.status}' and data:`,
+            `Form closes with status '${result.status}' and data:`,
             result.data,
         );
 
@@ -67,8 +67,9 @@ export default class AddAnnotationModal extends BaseModalForm {
     }
 
     /**
-     *
-     * @param result
+     * Evaluates the form result and performs necessary actions
+     * @param result - Result of the form
+     * @returns A string representing the evaluated form result
      */
     public async evaluateForm(
         result: IFormResult,
@@ -108,8 +109,8 @@ export default class AddAnnotationModal extends BaseModalForm {
     }
 
     /**
-     * Constructs the form
-     * @returns Form configuration
+     * Constructs the form configuration
+     * @returns The form configuration
      */
     protected constructForm(): FormConfiguration {
         const form: FormConfiguration = {

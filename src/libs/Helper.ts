@@ -6,7 +6,7 @@ import Tag from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
 
 /**
- *
+ * Represents a helper class with various utility methods.
  */
 export default class Helper {
     private static _md5 = require('crypto-js/md5');
@@ -139,8 +139,9 @@ export default class Helper {
     }
 
     /**
-     *
-     * @param text
+     * Checks if the given text contains HTML
+     * @param text The text to check
+     * @returns Whether the text contains HTML (true or false)
      */
     static containsHTML(text: string) {
         const htmlRegex = /<[^>]*>/;
@@ -336,7 +337,8 @@ export default class Helper {
     }
 
     /**
-     *
+     * Gets the active file in the workspace.
+     * @returns The active file in the workspace, or undefined if no file is active.
      */
     static getActiveFile(): TFile | undefined {
         const workspace = Global.getInstance().app.workspace;
@@ -396,8 +398,8 @@ export default class Helper {
     }
 
     /**
-     *
-     * @param file
+     * Opens the specified file in the active leaf.
+     * @param file The file to open.
      */
     static async openFile(file: TFile): Promise<void> {
         Logging.getLogger('Helper').trace(`Opening file for ${file.name}`);
@@ -420,7 +422,7 @@ export default class Helper {
     }
 
     /**
-     *
+     * Rebuilds the active view.
      */
     static rebuildActiveView(): void {
         const workspace = Global.getInstance().app.workspace;

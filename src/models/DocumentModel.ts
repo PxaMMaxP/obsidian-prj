@@ -14,7 +14,7 @@ import IPrjModel from '../interfaces/IPrjModel';
 import Helper from '../libs/Helper';
 
 /**
- *
+ * Represents the model for a document.
  */
 export class DocumentModel
     extends FileModel<DocumentData>
@@ -25,22 +25,22 @@ export class DocumentModel
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     /**
-     *
+     * The data of the document.
      */
     public get data(): Partial<DocumentData> {
         return this._data;
     }
     /**
-     *
+     * The data of the document.
      */
     public set data(value: Partial<DocumentData>) {
         this._data = value;
     }
 
     /**
-     *
-     * @param file
-     * @param logger
+     * Creates a new instance of the document model.
+     * @param file The file to create the model for.
+     * @param logger The optional logger to use.
      */
     constructor(file: TFile | undefined, logger?: ILogger) {
         super(file, DocumentData, DocumentData.yamlKeyMap);
@@ -50,7 +50,7 @@ export class DocumentModel
     }
 
     /**
-     *
+     * Returns the related files of the document
      */
     public get relatedFiles(): DocumentModel[] | null {
         if (this._relatedFiles === undefined) {
@@ -86,8 +86,9 @@ export class DocumentModel
     }
 
     /**
-     *
-     * @param text
+     * Get a wikilink for the document
+     * @param text The text to display in the wikilink
+     * @returns The wikilink. E.g. `[[FileName]]` or `[[FileName|Text]]`
      */
     public getWikilink(text: string | undefined): string {
         if (text) {
@@ -110,7 +111,8 @@ export class DocumentModel
     }
 
     /**
-     *
+     * Get the corresponding symbol for the document
+     * @returns The symbol for the document as Lucide icon string.
      */
     public getCorospondingSymbol(): string {
         if (this.data.type === 'Metadata') {
@@ -183,6 +185,7 @@ export class DocumentModel
      * @param path The optional path to override the file's path.
      * @remarks - This function sets the `file` property of the document to the wikilink of the file.
      * - If no file is provided, the function will return.
+     * @returns The wikilink of the linked file.
      */
     public setLinkedFile(
         file: TFile | undefined,
@@ -201,7 +204,8 @@ export class DocumentModel
     }
 
     /**
-     *
+     * Get the UID of the document
+     * @returns The UID of the document
      */
     public getUID(): string {
         if (this.data.uid === undefined || this.data.uid === '') {

@@ -23,7 +23,7 @@ import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
 
 /**
- *
+ * Represents a block render component for `PrjTaskManagementModel`.
  */
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
     PrjTaskManagementModel<IPrjData & IPrjTaskManagement & BaseData<unknown>>
@@ -67,8 +67,8 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     ];
 
     /**
-     *
-     * @param settings
+     * Creates an instance of `ProjectBlockRenderComponent`.
+     * @param settings The settings for the processor.
      */
     constructor(settings: IProcessorSettings) {
         super(settings);
@@ -76,21 +76,24 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
+     * Build the basic structure of the component.
+     * @returns A promise that resolves when the component is built.
      */
     public build(): Promise<void> {
         return super.build();
     }
 
     /**
-     *
+     * Redraw the component.
+     * @returns A promise that resolves when the component is redrawn.
      */
     public redraw(): Promise<void> {
         return super.redraw();
     }
 
     /**
-     *
+     * Draw the component.
+     * @returns A promise that resolves when the component is drawn.
      */
     protected async draw(): Promise<void> {
         const startTime = Date.now();
@@ -122,7 +125,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
+     * Build the basic table structure.
      */
     private async buildTable(): Promise<void> {
         this.table = new Table(
@@ -135,7 +138,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
+     * Build the header of the component.
      */
     private async buildHeader(): Promise<void> {
         // Filter container
@@ -214,9 +217,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param batchSize
-     * @param sleepBetweenBatches
+     * Add the documents to the table.
+     * @param batchSize The size of the batch.
+     * @param sleepBetweenBatches The time to sleep between batches.
      */
     private async addDocumentsToTable(
         batchSize = this.settings.batchSize,
@@ -261,8 +264,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param model
+     * Generate a table row for a model.
+     * @param model The model to generate the row for.
+     * @returns The generated row.
      */
     private async generateTableRow(
         model: PrjTaskManagementModel<
@@ -372,9 +376,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param type
-     * @param status
+     * Called when the search input changes or a filter is applied.
+     * @param type The type of the filter.
+     * @param status The status of the filter.
      */
     private async onFilterButton(type: string, status: boolean): Promise<void> {
         if (this.settings.filter.includes(type as FilteredModels)) {
@@ -388,7 +392,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
+     * Debounce the filter button.
      */
     private async onFilterDebounce(): Promise<void> {
         clearTimeout(this._filterButtonDebounceTimer);
@@ -399,8 +403,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param maxDocuments
+     * Called when the maximum documents to show changes.
+     * @param maxDocuments The maximum documents to show.
+     * @returns A promise that resolves when the maximum documents to show changes.
      */
     private async onMaxDocumentsChange(
         maxDocuments: number,
@@ -412,9 +417,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param model
-     * @param maxVisibleRows
+     * Get the hide state of a model.
+     * @param model The model to get the hide state for.
+     * @param maxVisibleRows The maximum visible rows.
+     * @returns Whether the model should be hidden.
      */
     protected getHideState(
         model: PrjTaskManagementModel<
@@ -457,8 +463,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param model
+     * Determine the hide state of a model.
+     * @param model The model to determine the hide state for.
+     * @returns Whether the model should be hidden.
      */
     private determineHideState(
         model: PrjTaskManagementModel<
@@ -490,8 +497,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
-     * @param document
+     * Determine the tag hide state of a model.
+     * @param document The document to determine the tag hide state for.
+     * @returns Whether the model should be hidden.
      */
     private determineTagHideState(
         document: PrjTaskManagementModel<
@@ -514,7 +522,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     }
 
     /**
-     *
+     * Called when the search input changes.
      */
     public onActiveFileFilter() {
         this.onFilter();

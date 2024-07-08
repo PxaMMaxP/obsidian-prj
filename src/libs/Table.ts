@@ -2,16 +2,16 @@ import { ILogger } from 'src/interfaces/ILogger';
 import Helper from './Helper';
 
 /**
- *
+ * Represents a HTML table.
  */
 export default class Table {
     /**
-     *
+     * The data of the table.
      */
     public get data(): StructedTable {
         return this._table;
     }
-    private logger: ILogger | undefined;
+    private _logger: ILogger | undefined;
     private _table: StructedTable;
     /**
      * A list of row placeholders
@@ -62,7 +62,7 @@ export default class Table {
         this._tableId = id;
         this._tableClassList = classList;
         this._table = this.createTable();
-        this.logger = logger;
+        this._logger = logger;
     }
 
     /**
@@ -125,11 +125,7 @@ export default class Table {
 
     /**
      * Adds a row to the table
-     * @param rowUid The UID of the new row
-     * @param rowData The data of the new row
-     * @param rowClassList The class list of the new row
-     * @param hidden Whether the new row should be hidden
-     * @param row
+     * @param row The row to add. See {@link Row} for more information.
      */
     public addRow(row: Row): void {
         this._addRow(row.rowUid, row.rowData, row.rowClassList, row.hidden);
@@ -288,8 +284,8 @@ export default class Table {
     /**
      * Returns the number of visible and hidden rows
      * @returns The number of visible and hidden rows
-     * @returns visibleRows The number of visible rows
-     * @returns hiddenRows The number of hidden rows
+     * - `visibleRows` The number of visible rows
+     * - `hiddenRows` The number of hidden rows
      */
     public getRowStats(): { visibleRows: number; hiddenRows: number } {
         return { visibleRows: this._visibleRows, hiddenRows: this._hiddenRows };
@@ -313,7 +309,7 @@ export default class Table {
                 try {
                     this._table.body.removeChild(rowToDelete);
                 } catch (error) {
-                    this.logger?.warn(
+                    this._logger?.warn(
                         'Row not active in the table. Error:',
                         error,
                     );
@@ -333,7 +329,7 @@ export default class Table {
                 try {
                     this._table.body.removeChild(placeholder);
                 } catch (error) {
-                    this.logger?.warn(
+                    this._logger?.warn(
                         'Placeholder row not active in the table. Error:',
                         error,
                     );
@@ -361,14 +357,14 @@ export default class Table {
      * @returns Whether the state has changed. Returns `false` if the row is already hidden.
      */
     private _hideRow(rowUid: string): boolean {
-        this.logger?.trace(`Row ${rowUid} should be hidden.`);
+        this._logger?.trace(`Row ${rowUid} should be hidden.`);
 
         const changes = this.togleRowClass(
             rowUid,
             [this._defaultClasses.hiddenRow],
             true,
         );
-        this.logger?.trace(`Row ${rowUid} changes: ${changes}`);
+        this._logger?.trace(`Row ${rowUid} changes: ${changes}`);
 
         if (changes) {
             this._removeRowContent(rowUid);
@@ -397,14 +393,14 @@ export default class Table {
      * @returns Whether the state has changed. Returns `false` if the row is already visible.
      */
     private _showRow(rowUid: string): boolean {
-        this.logger?.trace(`Row ${rowUid} should be shown.`);
+        this._logger?.trace(`Row ${rowUid} should be shown.`);
 
         const changes = this.togleRowClass(
             rowUid,
             [this._defaultClasses.hiddenRow],
             false,
         );
-        this.logger?.trace(`Row ${rowUid} changes: ${changes}`);
+        this._logger?.trace(`Row ${rowUid} changes: ${changes}`);
 
         if (changes) {
             this._addRowContent(rowUid);
@@ -422,20 +418,20 @@ export default class Table {
      * @param rows.hidden Whether to hide or show the row
      */
     public async changeShowHideStateRows(rows: RowsState[]): Promise<void> {
-        this.logger?.trace(`Change Show/Hide state of ${rows.length} rows.`);
+        this._logger?.trace(`Change Show/Hide state of ${rows.length} rows.`);
         let changes = false;
 
         rows.forEach((row) => {
-            this.logger?.trace(
+            this._logger?.trace(
                 `Change Show/Hide state of Row: ${row.rowUid} to ${row.hidden}.`,
             );
 
             if (row.hidden) {
-                this.logger?.trace(`Hide Row: ${row.rowUid}`);
+                this._logger?.trace(`Hide Row: ${row.rowUid}`);
                 const result = this._hideRow(row.rowUid);
                 changes ||= result;
             } else {
-                this.logger?.trace(`Show Row: ${row.rowUid}`);
+                this._logger?.trace(`Show Row: ${row.rowUid}`);
                 const result = this._showRow(row.rowUid);
                 changes ||= result;
             }
@@ -475,7 +471,7 @@ export default class Table {
                 try {
                     this._table.body.replaceChild(row, placeholder);
                 } catch (error) {
-                    this.logger?.warn(
+                    this._logger?.warn(
                         'Placeholder row not active in the table. Error:',
                         error,
                     );
@@ -503,6 +499,7 @@ export default class Table {
     /**
      * Removes the placeholder row with the given UID from the internal array
      * @param rowUid The UID of the row
+     * @returns The placeholder row with the given UID or undefined if no placeholder row with the given UID exists
      */
     private _removePlaceholder(
         rowUid: string,
@@ -554,6 +551,7 @@ export default class Table {
      * @param rowUid The UID of the row
      * @param classList The class list to toggle
      * @param add Whether to add or remove the class
+     * @returns Whether the class was toggled
      */
     public togleRowClass(
         rowUid: string,
@@ -641,8 +639,8 @@ export default class Table {
     }
 
     /**
-     *
-     * @param header
+     * Changes the header class of the table header and corresponding cells.
+     * @param header The table header object.
      */
     private changeHeaderClass(header: TableHeader): void {
         const headerIndex = this._headers.findIndex(

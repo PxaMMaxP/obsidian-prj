@@ -11,7 +11,7 @@ import { Status } from 'src/types/PrjTypes';
 import Helper from '../Helper';
 
 /**
- *
+ * Represents a modal to change the status of a project.
  */
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
@@ -20,14 +20,14 @@ export default class ChangeStatusModal extends Modal {
     >;
 
     /**
-     *
+     * Creates a new instance of the modal.
      */
     constructor() {
         super(Global.getInstance().app);
     }
 
     /**
-     *
+     * Opens the modal.
      */
     override open() {
         const workspace = this.app.workspace;
@@ -50,7 +50,7 @@ export default class ChangeStatusModal extends Modal {
     }
 
     /**
-     *
+     * Initializes the modal.
      */
     onOpen() {
         const { contentEl } = this;
@@ -83,7 +83,7 @@ export default class ChangeStatusModal extends Modal {
     }
 
     /**
-     *
+     * Closes the modal.
      */
     onClose() {
         const { contentEl } = this;
@@ -103,7 +103,8 @@ export default class ChangeStatusModal extends Modal {
             id: 'change-prj-status',
             name: Lng.gt('Change Status'),
             /**
-             *
+             * Opens the modal to change the status of a project.
+             * @returns Nothing
              */
             callback: () => new ChangeStatusModal().open(),
         });

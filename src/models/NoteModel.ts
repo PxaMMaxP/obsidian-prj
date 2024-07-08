@@ -11,7 +11,7 @@ import Global from '../classes/Global';
 import IPrjModel from '../interfaces/IPrjModel';
 
 /**
- *
+ * Represents the model for a note.
  */
 export class NoteModel
     extends FileModel<NoteData>
@@ -20,29 +20,30 @@ export class NoteModel
     protected logger: ILogger = Logging.getLogger('NoteModel');
 
     /**
-     *
+     * The data of the note.
      */
     public get data(): Partial<NoteData> {
         return this._data;
     }
     /**
-     *
+     * The data of the note.
      */
     public set data(value: Partial<NoteData>) {
         this._data = value;
     }
 
     /**
-     *
-     * @param file
+     * Creates a new instance of the note model.
+     * @param file The file to create the model for.
      */
     constructor(file: TFile | undefined) {
         super(file, NoteData, undefined);
     }
 
     /**
-     *
-     * @param text
+     * Get a wikilink for the note
+     * @param text The text to display in the wikilink
+     * @returns The wikilink. E.g. `[[FileName]]` or `[[FileName|Text]]`
      */
     public getWikilink(text: string | undefined): string {
         if (text) {
