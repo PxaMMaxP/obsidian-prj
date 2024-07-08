@@ -101,8 +101,8 @@
       {
         "groups": [
           ["builtin", "external"],
-          [ "internal", "index"],
-          [ "parent", "sibling" ] 
+          ["internal"],
+          ["parent", "sibling"]
         ],
         "newlines-between": "never",
         "alphabetize": {
@@ -156,6 +156,8 @@
         "definedTags": ["remarks", "jest-environment"]
       }
     ],
+    "jsdoc/check-alignment": "warn",
+    "jsdoc/check-indentation": "warn",
     "jsdoc/no-restricted-syntax": [
       "error",
       {
