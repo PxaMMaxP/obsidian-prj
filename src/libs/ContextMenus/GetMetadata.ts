@@ -11,7 +11,7 @@ import { FileMetadata } from '../MetadataCache';
  * Represents a class for retrieving metadata for a file.
  */
 export default class GetMetadata {
-    static instance: GetMetadata;
+    private static _instance: GetMetadata;
     private _app = Global.getInstance().app;
     private _logger = Logging.getLogger('GetMetadata');
     private _plugin = Global.getInstance().plugin;
@@ -33,27 +33,27 @@ export default class GetMetadata {
      * @returns The singleton instance.
      */
     static getInstance(): GetMetadata {
-        if (!GetMetadata.instance) {
-            GetMetadata.instance = new GetMetadata();
+        if (!GetMetadata._instance) {
+            GetMetadata._instance = new GetMetadata();
         }
 
-        return GetMetadata.instance;
+        return GetMetadata._instance;
     }
 
     /**
      * Deconstructs the 'GetMetadata' events.
      */
     public static deconstructor() {
-        if (this.instance && this.instance.eventsRegistered) {
-            this.instance._logger.trace("Deconstructing 'GetMetadata' events");
+        if (this._instance && this._instance.eventsRegistered) {
+            this._instance._logger.trace("Deconstructing 'GetMetadata' events");
 
-            this.instance._app.workspace.off(
+            this._instance._app.workspace.off(
                 'file-menu',
-                this.instance.bindContextMenu,
+                this._instance.bindContextMenu,
             );
-            this.instance.eventsRegistered = false;
+            this._instance.eventsRegistered = false;
         } else {
-            this.instance._logger.trace(
+            this._instance._logger.trace(
                 "No 'GetMetadata' events to deconstruct",
             );
         }

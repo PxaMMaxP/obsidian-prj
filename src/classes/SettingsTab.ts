@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import Prj from 'src/main';
 import Logging, { LoggingLevel } from './Logging';
