@@ -2,7 +2,7 @@ import { ITagDependencies, TagConstructorType } from './interfaces/ITag';
 import { ITagsDependencies } from './interfaces/ITags';
 import Tag from './Tag';
 import Tags from './Tags';
-import DependencyRegistry from '../DependencyRegistry';
+import DependencyRegistry from '../../classes/DependencyRegistry';
 import MetadataCache from '../MetadataCache';
 
 /**

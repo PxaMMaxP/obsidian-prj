@@ -5,7 +5,7 @@ import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITagConstructor } from './interfaces/ITag';
 import { ITags, ITagsDependencies } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
-import DependencyRegistry from '../DependencyRegistry';
+import DependencyRegistry from '../../classes/DependencyRegistry';
 
 /**
  * Represents an array of tags.

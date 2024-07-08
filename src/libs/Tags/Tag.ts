@@ -1,7 +1,7 @@
 import BaseComplexDataType from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITagDependencies } from './interfaces/ITag';
-import DependencyRegistry from '../DependencyRegistry';
+import DependencyRegistry from '../../classes/DependencyRegistry';
 
 /**
  * Represents a tag.
