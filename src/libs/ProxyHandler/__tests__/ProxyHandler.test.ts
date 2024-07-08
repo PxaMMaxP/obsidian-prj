@@ -26,7 +26,7 @@ class TestProxyHandler<T extends object> extends ProxyHandler<T> {
     }
 
     public updateLogger(logger: ILogger | undefined): void {
-        (this as any).logger = logger;
+        (this as any)._logger = logger;
     }
 
     constructor(
