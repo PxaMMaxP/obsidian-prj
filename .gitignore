@@ -31,3 +31,5 @@ diff_output.txt
 .VSCodeCounter
 
 coverage/*
+
+docs/*
