@@ -1,10 +1,11 @@
+import { ISearch_ } from './interfaces/ISearch';
 import SearchParser from './SearchParser';
 import SearchQuery from './SearchQuery';
 
 /**
  * Represents a search operation.
  */
-export default class Search {
+const search_: ISearch_ = class Search {
     private _searchQueryText: string;
     private _searchQuery: SearchQuery | undefined;
 
@@ -35,4 +36,6 @@ export default class Search {
 
         return this._searchQuery?.matches(text) ?? false;
     }
-}
+};
+
+export { search_ as Search };
