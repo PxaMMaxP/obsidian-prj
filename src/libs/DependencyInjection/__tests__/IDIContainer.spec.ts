@@ -10,7 +10,7 @@ export function test_IDIContainer(Container: IDIContainer_) {
         let container: IDIContainer;
 
         beforeEach(() => {
-            container = new Container();
+            container = Container.getInstance();
         });
 
         it('should register and resolve a dependency', () => {

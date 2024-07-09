@@ -1,8 +1,8 @@
 /**
- * Dependency Injection Container Constructor Interface
+ * Static Dependency Injection Container Interface
  */
 export interface IDIContainer_ {
-    new (): IDIContainer;
+    getInstance(): IDIContainer;
 }
 
 /**
@@ -19,6 +19,16 @@ export interface IDIContainer {
     /**
      * Resolve a dependency
      * @param identifier The identifier of the dependency
+     * @param necessary If true, throws an error if the dependency is not found
+     * @returns The resolved dependency
+     * @throws Error if the dependency is not found
      */
-    resolve<T>(identifier: string): T;
+    resolve<T>(identifier: string, necessary?: true): T;
+    /**
+     * Resolve a dependency
+     * @param identifier The identifier of the dependency
+     * @param necessary If true, throws an error if the dependency is not found
+     * @returns The resolved dependency or undefined if the dependency is not found
+     */
+    resolve<T>(identifier: string, necessary?: false): T | undefined;
 }
