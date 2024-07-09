@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
-import ProxyHandler from '../ProxyHandler';
+import { ProxyHandler } from '../ProxyHandler';
 
 /**
  * Extends the ProxyHandler class for testing
