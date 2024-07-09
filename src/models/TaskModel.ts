@@ -3,7 +3,7 @@ import Logging from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
-import Tags from 'src/libs/Tags/Tags';
+import { Tags } from 'src/libs/Tags/Tags';
 import { Status } from 'src/types/PrjTypes';
 import TaskData from './Data/TaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';

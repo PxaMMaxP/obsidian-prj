@@ -11,8 +11,8 @@ import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';
-import Tag from '../Tags/Tag';
-import Tags from '../Tags/Tags';
+import { ITags } from '../Tags/interfaces/ITags';
+import { Tag } from '../Tags/Tag';
 
 /**
  * Represents the modal to create a new task management file.
@@ -190,7 +190,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         model.data.energy = PrjTypes.isValidEnergy(result.data.energy);
         model.data.due = (result.data.dueDate as string) ?? undefined;
 
-        model.data.tags = result.data.tags as unknown as Tags;
+        model.data.tags = result.data.tags as unknown as ITags;
 
         model.data.aliases = [`#${mainTag.fullTag}`];
 

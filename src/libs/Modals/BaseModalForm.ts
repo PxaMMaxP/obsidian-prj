@@ -1,7 +1,7 @@
 import { App, TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Logging from 'src/classes/Logging';
-import Tags from 'src/libs/Tags/Tags';
+import { Tags } from 'src/libs/Tags/Tags';
 import {
     FormConfiguration,
     IFormResult,

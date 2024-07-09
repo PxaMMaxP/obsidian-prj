@@ -12,8 +12,9 @@ import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import Tag from '../Tags/Tag';
-import Tags from '../Tags/Tags';
+import { ITags } from '../Tags/interfaces/ITags';
+import { Tag } from '../Tags/Tag';
+import { Tags } from '../Tags/Tags';
 import { TagTree } from '../Tags/types/TagTree';
 
 /**
@@ -184,7 +185,7 @@ export default class HeaderBlockRenderComponent
     /**
      * The tags of the Prj File.
      */
-    private get tags(): Tags {
+    private get tags(): ITags {
         return new Tags(this.frontmatter?.tags);
     }
 

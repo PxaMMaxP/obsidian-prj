@@ -1,8 +1,9 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
-import Tag from 'src/libs/Tags/Tag';
-import Tags from 'src/libs/Tags/Tags';
+import { ITag } from 'src/libs/Tags/interfaces/ITag';
+import { ITags } from 'src/libs/Tags/interfaces/ITags';
+import { Tags } from 'src/libs/Tags/Tags';
 import { FileType } from 'src/types/PrjTypes';
 import BaseData from './BaseData';
 
@@ -29,13 +30,13 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
      * The tags of the note.
      * @remarks This value is included in the `toString` output.
      */
-    private _tags: Tags | null | undefined;
+    private _tags: ITags | null | undefined;
 
     /**
      * Sets the tags of the note.
      */
     @fieldConfig()
-    set tags(value: Tags | Tag | string | string[] | null | undefined) {
+    set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
         } else {
@@ -47,7 +48,7 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
      * Gets the tags of the note.
      */
     @toStringField
-    get tags(): Tags | null | undefined {
+    get tags(): ITags | null | undefined {
         return this._tags;
     }
 
