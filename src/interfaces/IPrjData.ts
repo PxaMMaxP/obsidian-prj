@@ -1,7 +1,7 @@
-import Tag from 'src/libs/Tags/Tag';
-import Tags from 'src/libs/Tags/Tags';
+import { ITag } from 'src/libs/Tags/interfaces/ITag';
+import { ITags } from 'src/libs/Tags/interfaces/ITags';
 
 export default interface IPrjData {
-    get tags(): Tags | null | undefined;
-    set tags(value: Tags | Tag | string[] | string | null | undefined);
+    get tags(): ITags | null | undefined;
+    set tags(value: ITags | ITag | string[] | string | null | undefined);
 }
