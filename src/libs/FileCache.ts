@@ -33,7 +33,6 @@ export default class FileCache {
 
     /**
      * Creates a new FileCache instance
-     * @class
      * @remarks Events are disabled: We do not need them for now
      */
     constructor() {
