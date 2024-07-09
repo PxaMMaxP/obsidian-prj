@@ -3,12 +3,12 @@
  */
 
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITagDependencies } from '../interfaces/ITag';
-import Tag from '../Tag';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { Tag } from '../Tag';
 
 describe('Tag', () => {
     let metadataCacheMock: IMetadataCache;
-    let dependencies: ITagDependencies;
+    let dependencies: IDIContainer;
 
     beforeEach(() => {
         metadataCacheMock = {
@@ -24,7 +24,22 @@ describe('Tag', () => {
         } as unknown as IMetadataCache;
 
         dependencies = {
-            metadataCache: metadataCacheMock,
+            register<T>(identifier: string, dependency: T): void {
+                throw new Error('Method not implemented.');
+            },
+            resolve<T>(identifier: string): T {
+                let dependency: T;
+
+                switch (identifier) {
+                    case 'IMetadataCache':
+                        dependency = metadataCacheMock as unknown as T;
+                        break;
+                    default:
+                        throw new Error(`Dependency ${identifier} not found`);
+                }
+
+                return dependency as T;
+            },
         };
     });
 
@@ -105,8 +120,13 @@ describe('Tag', () => {
             cache: [],
         } as unknown as IMetadataCache;
 
-        const dependenciesEmpty = {
-            metadataCache: metadataCacheMockEmpty,
+        const dependenciesEmpty: IDIContainer = {
+            register<T>(identifier: string, dependency: T): void {
+                throw new Error('Method not implemented.');
+            },
+            resolve<T>(identifier: string, necessary = true): T {
+                return metadataCacheMockEmpty as T;
+            },
         };
         const tag = new Tag('exampleTag', dependenciesEmpty);
         expect(tag.exists).toBe(false);

@@ -1,33 +1,27 @@
 import { TFile } from 'obsidian';
-import BaseComplexDataType from 'src/classes/BaseComplexDataType';
-import { ILogger } from 'src/interfaces/ILogger';
+import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
+import BaseComplexDataType, {
+    IBaseComplexDataType,
+    IBaseComplexDataTypeSymbol,
+} from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag, ITagConstructor } from '../interfaces/ITag';
-import { ITagsDependencies } from '../interfaces/ITags';
-import Tags from '../Tags';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { ITag, ITag_ } from '../interfaces/ITag';
+import { Tags } from '../Tags';
 
 describe('Tags', () => {
-    let mockLogger: ILogger;
     let mockMetadataCache: IMetadataCache;
-    let MockTagClass: typeof BaseComplexDataType & ITagConstructor;
-    let dependencies: ITagsDependencies;
-    let dependenciesWithoutLogger: ITagsDependencies;
+    let MockTagClass: ITag_;
+    let dependencies: IDIContainer;
+    let dependenciesWithoutLogger: IDIContainer;
 
     beforeEach(() => {
-        mockLogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
         mockMetadataCache = {
             getEntry: jest.fn(),
         } as unknown as IMetadataCache;
 
         // Manuelle Erstellung der Mock-Klasse
-        class MockTag implements ITag {
+        class MockTag implements ITag, IBaseComplexDataType {
             value: string;
             metadataCache: IMetadataCache;
 
@@ -35,6 +29,7 @@ describe('Tags', () => {
                 this.value = value;
                 this.metadataCache = metadataCache;
             }
+            [IBaseComplexDataTypeSymbol] = true;
             getFrontmatterObject():
                 | Record<string, unknown>
                 | Array<unknown>
@@ -94,18 +89,56 @@ describe('Tags', () => {
             }
         }
 
-        MockTagClass = MockTag as unknown as typeof BaseComplexDataType &
-            ITagConstructor;
+        MockTagClass = MockTag as unknown as typeof BaseComplexDataType & ITag_;
 
         dependencies = {
-            metadataCache: mockMetadataCache,
-            tagClass: MockTagClass,
-            logger: mockLogger,
+            register<T>(identifier: string, dependency: T): void {
+                throw new Error('Method not implemented.');
+            },
+            resolve<T>(identifier: string): T {
+                let dependency: T;
+
+                switch (identifier) {
+                    case 'IMetadataCache':
+                        dependency = mockMetadataCache as unknown as T;
+                        break;
+                    case 'ITag':
+                        dependency = MockTagClass as unknown as T;
+                        break;
+                    case 'ILogger_':
+                        dependency = MockLogger_ as unknown as T;
+                        break;
+                    default:
+                        throw new Error(`Dependency ${identifier} not found`);
+                }
+
+                return dependency as T;
+            },
         };
 
         dependenciesWithoutLogger = {
-            metadataCache: mockMetadataCache,
-            tagClass: MockTagClass,
+            register<T>(identifier: string, dependency: T): void {
+                throw new Error('Method not implemented.');
+            },
+            resolve<T>(identifier: string): T {
+                let dependency: T;
+
+                switch (identifier) {
+                    case 'IMetadataCache':
+                        dependency = mockMetadataCache as unknown as T;
+                        break;
+                    case 'ITag':
+                        dependency = MockTagClass as unknown as T;
+                        break;
+                    case 'ILogger_':
+                        dependency = undefined as unknown as T;
+                        break;
+                    default:
+                        throw new Error(`Dependency ${identifier} not found`);
+                }
+
+                return dependency as T;
+            },
         };
     });
 
@@ -148,7 +181,7 @@ describe('Tags', () => {
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
 
-        expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect(MockLogger.warn).toHaveBeenCalledWith(
             "Tag 'tag1' already exists.",
         );
     });
@@ -166,7 +199,7 @@ describe('Tags', () => {
         expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
 
-        expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect(MockLogger.warn).toHaveBeenCalledWith(
             "Tag 'tag1' already exists.",
         );
     });
@@ -174,7 +207,7 @@ describe('Tags', () => {
     test('should log a warning when adding undefined tags', () => {
         const tagsArray = new Tags([], dependencies);
         tagsArray.add(undefined);
-        expect(mockLogger.warn).toHaveBeenCalledWith('No tags added.');
+        expect(MockLogger.warn).toHaveBeenCalledWith('No tags added.');
     });
 
     test('should remove an existing tag', () => {
@@ -187,13 +220,11 @@ describe('Tags', () => {
     test('should log a warning when removing a non-existing tag', () => {
         const tagsArray = new Tags(['tag1'], dependencies);
 
-        const nonExistingTag = new (MockTagClass as ITagConstructor)('tag2', {
-            metadataCache: mockMetadataCache,
-        });
+        const nonExistingTag = new MockTagClass('tag2', dependencies);
         tagsArray.remove(nonExistingTag);
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
-        expect(mockLogger.warn).toHaveBeenCalledWith("Tag 'tag2' not found.");
+        expect(MockLogger.warn).toHaveBeenCalledWith("Tag 'tag2' not found.");
     });
 
     test('should return all tags', () => {
@@ -231,13 +262,11 @@ describe('Tags', () => {
     test('should handle removing a tag from an empty array gracefully', () => {
         const tagsArray = new Tags([], dependencies);
 
-        const tagToRemove = new (MockTagClass as ITagConstructor)('tag1', {
-            metadataCache: mockMetadataCache,
-        });
+        const tagToRemove = new MockTagClass('tag1', dependencies);
         tagsArray.remove(tagToRemove);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
-        expect(mockLogger.warn).toHaveBeenCalledWith("Tag 'tag1' not found.");
+        expect(MockLogger.warn).toHaveBeenCalledWith("Tag 'tag1' not found.");
     });
 
     test('should not log when adding a tag without a logger', () => {
@@ -251,9 +280,7 @@ describe('Tags', () => {
     test('should not log when removing a non-existing tag without a logger', () => {
         const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
 
-        const nonExistingTag = new (MockTagClass as ITagConstructor)('tag2', {
-            metadataCache: mockMetadataCache,
-        });
+        const nonExistingTag = new MockTagClass('tag2', dependencies);
         tagsArray.remove(nonExistingTag);
         expect(tagsArray.toStringArray()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
@@ -316,7 +343,7 @@ describe('Tags', () => {
         expect(result).toBe(false);
         expect(tagsArray.toStringArray()).toEqual([]);
 
-        expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect(MockLogger.warn).toHaveBeenCalledWith(
             'No metadata found in the file.',
         );
     });
@@ -326,7 +353,7 @@ describe('Tags', () => {
         const result = tagsArray.loadTagsFromFile(undefined);
         expect(result).toBe(false);
         expect(tagsArray.toStringArray()).toEqual([]);
-        expect(mockLogger.warn).toHaveBeenCalledWith('No file provided.');
+        expect(MockLogger.warn).toHaveBeenCalledWith('No file provided.');
     });
 
     // Test `first()` and `last()` methods
