@@ -57,43 +57,59 @@ export const Logging: ILogger_ = class Logging implements ILogger {
         const instance = Logging.getInstance();
         prefix = `${prefix}: `;
 
-        const logMethods: ILogger & {
-            [key in Exclude<LoggingLevel, 'none'>]: (...args: any[]) => void;
-        } = {
+        const logMethods: ILogger = Logging.newLoggerWithPrefix(
+            instance,
+            prefix,
+        );
+
+        return logMethods;
+    }
+
+    /**
+     * Creates a new logger with a specified prefix.
+     * @param instance The Logging instance which will be used to log messages. Eg. Singleton instance.
+     * @param prefix The prefix to prepend to the log message.
+     * @returns An object with logging methods.
+     */
+    private static newLoggerWithPrefix(
+        instance: Logging,
+        prefix: string,
+    ): ILogger {
+        return {
             /**
              * Logs a `trace` message
              * @param args The arguments to log
              * @returns Nothing
              */
-            trace: (...args: any[]) =>
+            trace: (...args: any[]): void =>
                 instance.logWithPrefix('trace', prefix, args),
             /**
              * Logs a `debug` message
              * @param args The arguments to log
              * @returns Nothing
              */
-            debug: (...args: any[]) =>
+            debug: (...args: any[]): void =>
                 instance.logWithPrefix('debug', prefix, args),
             /**
              * Logs an `info` message
              * @param args The arguments to log
              * @returns Nothing
              */
-            info: (...args: any[]) =>
+            info: (...args: any[]): void =>
                 instance.logWithPrefix('info', prefix, args),
             /**
              * Logs a `warn` message
              * @param args The arguments to log
              * @returns Nothing
              */
-            warn: (...args: any[]) =>
+            warn: (...args: any[]): void =>
                 instance.logWithPrefix('warn', prefix, args),
             /**
              * Logs an `error` message
              * @param args The arguments to log
              * @returns Nothing
              */
-            error: (...args: any[]) =>
+            error: (...args: any[]): void =>
                 instance.logWithPrefix('error', prefix, args),
 
             /**
@@ -101,12 +117,10 @@ export const Logging: ILogger_ = class Logging implements ILogger {
              * @param logLevel The log level to set
              * @throws Error: Method in individual loggers not implemented
              */
-            setLogLevel: (logLevel: LoggingLevel) => {
+            setLogLevel: (logLevel: LoggingLevel): void => {
                 throw new Error('Method in individual loggers not implemented');
             },
         };
-
-        return logMethods;
     }
 
     /**
