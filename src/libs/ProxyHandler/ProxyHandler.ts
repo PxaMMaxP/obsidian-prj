@@ -1,4 +1,5 @@
 import { ILogger } from 'src/interfaces/ILogger';
+import { IProxyHandler, IProxyHandler_ } from './interfaces/IProxyHandler';
 import { ObjectPath } from './types/ObjectPath';
 
 /**
@@ -7,7 +8,9 @@ import { ObjectPath } from './types/ObjectPath';
  * - manage a change object through a delegate function to track changes on the data object.
  * @template T The type of the data object.
  */
-export default class ProxyHandler<T extends object> {
+const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
+    implements IProxyHandler<T>
+{
     /**
      * A map to store proxies of objects to reuse them
      * instead of unnecessarily creating new proxies for the same objects.
@@ -323,4 +326,6 @@ export default class ProxyHandler<T extends object> {
         this._proxyMap.set(obj, proxy);
         this._reverseProxyMap.set(proxy, obj);
     }
-}
+};
+
+export { ProxyHandler_ as ProxyHandler };
