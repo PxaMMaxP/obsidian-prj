@@ -1,4 +1,7 @@
-import BaseComplexDataType from 'src/classes/BaseComplexDataType';
+import {
+    IBaseComplexDataType,
+    isIBaseComplexDataType,
+} from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
 
 /**
@@ -227,9 +230,9 @@ export class TransactionModel<T> {
         keys.forEach((k, index) => {
             if (index === keys.length - 1) {
                 // Check if the value is a custom complex data type and get the frontmatter object if it is
-                if (value instanceof BaseComplexDataType) {
+                if (isIBaseComplexDataType(value)) {
                     current[k] = (
-                        value as BaseComplexDataType
+                        value as IBaseComplexDataType
                     ).getFrontmatterObject();
                 } else {
                     current[k] = value;
