@@ -10,7 +10,8 @@ import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import Helper from '../Helper';
 import MetadataCache, { FileMetadata } from '../MetadataCache';
-import Search from '../Search/Search';
+import { ISearch } from '../Search/interfaces/ISearch';
+import { Search } from '../Search/Search';
 import Table, { RowsState, TableHeader } from '../Table';
 
 /**
@@ -444,7 +445,7 @@ export type BlockRenderSettings = {
      * Search terms array used to filter the models.
      * If undefined, no search filter is applied.
      */
-    search: Search | undefined;
+    search: ISearch | undefined;
 
     /**
      * The search text.
