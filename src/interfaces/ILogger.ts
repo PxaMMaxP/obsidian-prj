@@ -1,3 +1,7 @@
+export interface ILogger_ {
+    getLogger(prefix: string): ILogger;
+}
+
 /**
  * Interface for the logger.
  * @remarks You can attach your own logger or `console` as logger.

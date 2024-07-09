@@ -1,6 +1,6 @@
-import { ILogger } from 'src/interfaces/ILogger';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 
-const loggerMock: ILogger = {
+const MockLogger: ILogger = {
     warn: jest.fn(),
     info: jest.fn(),
     error: jest.fn(),
@@ -8,4 +8,8 @@ const loggerMock: ILogger = {
     debug: jest.fn(),
 };
 
-export default loggerMock;
+export const MockLogger_: ILogger_ = {
+    getLogger: jest.fn(() => MockLogger),
+};
+
+export default MockLogger;
