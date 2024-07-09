@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import BaseData from './Data/BaseData';

@@ -1,7 +1,7 @@
 import { TFile } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import ProjectData from 'src/models/Data/ProjectData';
 import TaskData from 'src/models/Data/TaskData';

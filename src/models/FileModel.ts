@@ -1,5 +1,5 @@
 import { App, TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import Helper from 'src/libs/Helper';

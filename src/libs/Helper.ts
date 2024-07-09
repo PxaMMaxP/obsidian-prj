@@ -1,6 +1,6 @@
 import { FrontMatterCache, TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { Tag } from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';

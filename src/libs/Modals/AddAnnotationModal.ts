@@ -1,6 +1,6 @@
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Field, FormConfiguration, IFormResult } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
 import Helper from '../Helper';

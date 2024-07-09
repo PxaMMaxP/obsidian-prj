@@ -2,7 +2,7 @@
 
 import { TFile } from 'obsidian';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileCache from 'src/libs/FileCache';

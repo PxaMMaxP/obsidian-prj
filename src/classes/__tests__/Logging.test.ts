@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import Logging, { LoggingLevel } from '../Logging';
+import { Logging, LoggingLevel } from '../Logging';
+
+interface ILoggerPrivate {
+    logLevelActive(logLevel: LoggingLevel): boolean;
+    constructLogMessage(message?: any): string;
+}
 
 describe('Logging Class', () => {
     let consoleInfoSpy: jest.SpyInstance;
@@ -187,12 +192,15 @@ describe('Logging Class', () => {
 
     it('should create a prefixed log message using constructLogMessage', () => {
         const logger = new Logging('info', 'Prefix');
-        const message = logger['constructLogMessage']('test message');
+
+        const message = (logger as unknown as ILoggerPrivate)[
+            'constructLogMessage'
+        ]('test message');
         expect(message).toBe('Prefix-test message');
     });
 
     it('should correctly evaluate active log levels', () => {
-        const logger = new Logging('info');
+        const logger = new Logging('info') as unknown as ILoggerPrivate;
         expect(logger['logLevelActive']('trace')).toBe(false);
         expect(logger['logLevelActive']('debug')).toBe(false);
         expect(logger['logLevelActive']('info')).toBe(true);

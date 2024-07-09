@@ -1,6 +1,6 @@
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
 import Helper from '../Helper';

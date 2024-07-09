@@ -5,7 +5,7 @@ import { PrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
-import Logging from './classes/Logging';
+import { Logging } from './classes/Logging';
 import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
 import GetMetadata from './libs/ContextMenus/GetMetadata';
 import { DIContainer } from './libs/DependencyInjection/DIContainer';
@@ -20,6 +20,7 @@ import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import { Tag } from './libs/Tags/Tag';
+import { Tags } from './libs/Tags/Tags';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
@@ -169,6 +170,7 @@ export default class Prj extends Plugin {
         );
 
         this._dependencies.register('ITag', Tag);
+        this._dependencies.register('ITags', Tags);
 
         this._dependencies.register('ILogger_', Logging);
     }

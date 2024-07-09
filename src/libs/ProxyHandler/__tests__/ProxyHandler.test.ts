@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
 import ProxyHandler from '../ProxyHandler';
 
@@ -990,14 +991,6 @@ describe('ProxyHandler', () => {
     //#region Check Logger and Try-Catch
 
     test('Should log an error if the updateKeyValue delegate throws an error', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
         const updateKeyValueError: (key: string, value: unknown) => void = (
             key,
             value,
@@ -1005,7 +998,7 @@ describe('ProxyHandler', () => {
             throw new Error('Test error');
         };
 
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
         proxyHandler.updateKeyValueDelegate(updateKeyValueError);
 
         type TestObject = {
@@ -1020,7 +1013,7 @@ describe('ProxyHandler', () => {
 
         proxy.test = 'new value';
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             'Failed to update key-value pair for key test with value: Test error',
         );
     });
@@ -1049,15 +1042,7 @@ describe('ProxyHandler', () => {
     });
 
     test('Should log an error if the property is not writable', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
 
         type TestObject = {
             test: string;
@@ -1075,7 +1060,7 @@ describe('ProxyHandler', () => {
             proxy.test = 'new value';
         }).toThrow();
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             expect.stringContaining('Failed to set property'),
         );
     });
@@ -1099,15 +1084,7 @@ describe('ProxyHandler', () => {
     });
 
     test('Should log an error if the property is not readable', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
 
         type TestObject = {
             test: string;
@@ -1137,7 +1114,7 @@ describe('ProxyHandler', () => {
 
         expect(value).toBeUndefined();
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             expect.stringContaining('Failed to get property'),
         );
     });
@@ -1173,15 +1150,7 @@ describe('ProxyHandler', () => {
     });
 
     test('Should log an error if the property is not deletable', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
 
         type TestObject = {
             test: string;
@@ -1199,7 +1168,7 @@ describe('ProxyHandler', () => {
             delete (proxy as any).test;
         }).toThrow();
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             expect.stringContaining('Failed to delete property'),
         );
     });
@@ -1227,15 +1196,7 @@ describe('ProxyHandler', () => {
     //#region Edge Cases
 
     test('Should not create a proxy for a null object and log an error', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
 
         const testObject = null;
 
@@ -1245,7 +1206,7 @@ describe('ProxyHandler', () => {
             );
         }).toThrow();
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             expect.stringContaining('Failed to create proxy for object'),
         );
     });
@@ -1261,15 +1222,7 @@ describe('ProxyHandler', () => {
     });
 
     test('Should not create a proxy for an undefined object and log an error', () => {
-        const logger: ILogger = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
-
-        proxyHandler.updateLogger(logger);
+        proxyHandler.updateLogger(MockLogger);
 
         const testObject = undefined;
 
@@ -1279,7 +1232,7 @@ describe('ProxyHandler', () => {
             );
         }).toThrow();
 
-        expect(logger.error).toHaveBeenCalledWith(
+        expect(MockLogger.error).toHaveBeenCalledWith(
             expect.stringContaining('Failed to create proxy for object'),
         );
     });

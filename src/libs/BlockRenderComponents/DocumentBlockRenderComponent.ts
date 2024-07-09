@@ -1,6 +1,6 @@
 import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { DocumentModel } from 'src/models/DocumentModel';
 import DocumentComponents from './InnerComponents/DocumentComponents';
 import FilterButton from './InnerComponents/FilterButton';

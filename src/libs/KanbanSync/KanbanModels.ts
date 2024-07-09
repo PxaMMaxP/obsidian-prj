@@ -1,5 +1,5 @@
 import { TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { CompletedString, KanbanStatus } from './KanbanTypes';
 
 /**

@@ -1,6 +1,6 @@
 import { TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';

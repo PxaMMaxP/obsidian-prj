@@ -1,7 +1,7 @@
 // Note: MetadataCache class
 
 import { App, CachedMetadata, TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
 import { PrjSettings } from 'src/types/PrjSettings';

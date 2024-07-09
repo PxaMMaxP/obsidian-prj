@@ -1,7 +1,7 @@
 import { CachedMetadata, TFile } from 'obsidian';
 import API from 'src/classes/API';
 import Global from 'src/classes/Global';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import PrjTypes from 'src/types/PrjTypes';
 import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';

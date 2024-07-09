@@ -1,7 +1,7 @@
 import { App } from 'obsidian';
 import Prj from 'src/main';
 import { PrjSettings } from 'src/types/PrjSettings';
-import Logging, { LoggingLevel } from './Logging';
+import { Logging, LoggingLevel } from './Logging';
 import FileCache from '../libs/FileCache';
 import MetadataCache from '../libs/MetadataCache';
 

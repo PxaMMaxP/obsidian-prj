@@ -2,7 +2,7 @@
 
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import Prj from 'src/main';
-import Logging, { LoggingLevel } from './Logging';
+import { Logging, LoggingLevel } from './Logging';
 
 /**
  * Represents the settings tab for the plugin.

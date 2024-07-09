@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
 import ProxyHandler from '../ProxyHandler';
 
@@ -202,13 +203,7 @@ describe('ProxyHandler Performance', () => {
     };
 
     // Run tests with logger
-    runPerformanceTests('with logger', {
-        warn: jest.fn(),
-        info: jest.fn(),
-        error: jest.fn(),
-        trace: jest.fn(),
-        debug: jest.fn(),
-    });
+    runPerformanceTests('with logger', MockLogger);
 
     // Run tests without logger
     runPerformanceTests('without logger', undefined);

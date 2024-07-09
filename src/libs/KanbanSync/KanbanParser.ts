@@ -1,6 +1,6 @@
 import { TFile, App } from 'obsidian';
 import Global from 'src/classes/Global';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import PrjTypes from 'src/types/PrjTypes';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
 

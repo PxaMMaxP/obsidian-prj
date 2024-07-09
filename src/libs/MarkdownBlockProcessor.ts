@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import * as yaml from 'js-yaml';
 import { MarkdownPostProcessorContext } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
 import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRenderComponent';
 import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';

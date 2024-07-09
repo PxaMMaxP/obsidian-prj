@@ -1,14 +1,6 @@
+import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
 import GenericEvents, { ICallback, IEvent } from '../GenericEvents';
-
-// Dummy Logger Implementation for Testing
-class DummyLogger implements ILogger {
-    trace = jest.fn();
-    info = jest.fn();
-    debug = jest.fn();
-    warn = jest.fn();
-    error = jest.fn();
-}
 
 interface MyEvents extends ICallback {
     events: {
@@ -18,7 +10,6 @@ interface MyEvents extends ICallback {
 }
 
 describe('GenericEvents', () => {
-    let logger: DummyLogger;
     let events: GenericEvents<MyEvents>;
 
     const runTests = (loggerInstance?: ILogger) => {
@@ -184,8 +175,7 @@ describe('GenericEvents', () => {
     };
 
     describe('with logger', () => {
-        logger = new DummyLogger();
-        runTests(logger);
+        runTests(MockLogger);
     });
 
     describe('without logger', () => {

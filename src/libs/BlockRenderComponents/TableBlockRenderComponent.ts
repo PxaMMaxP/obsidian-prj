@@ -1,7 +1,7 @@
 import { Component, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import IPrjModel from 'src/interfaces/IPrjModel';
 import { PrjSettings } from 'src/types/PrjSettings';

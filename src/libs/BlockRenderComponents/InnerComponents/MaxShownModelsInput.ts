@@ -1,6 +1,6 @@
 import { Component, setIcon } from 'obsidian';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 
 /**
  * Max shown models input component class for `TableBlockRenderComponent`.

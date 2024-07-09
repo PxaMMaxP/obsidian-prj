@@ -1,4 +1,4 @@
-import { ILogger } from 'src/interfaces/ILogger';
+import MockLogger from 'src/__mocks__/ILogger.mock';
 import { TransactionModel } from '../TransactionModel';
 
 describe('TransactionModel', () => {
@@ -12,41 +12,32 @@ describe('TransactionModel', () => {
         Promise<void>,
         [unknown, (Promise<void> | undefined)?]
     >;
-    let loggerMock: ILogger;
 
     beforeEach(() => {
         writeChangesMock = jest.fn().mockResolvedValue(undefined);
-
-        loggerMock = {
-            warn: jest.fn(),
-            info: jest.fn(),
-            error: jest.fn(),
-            trace: jest.fn(),
-            debug: jest.fn(),
-        };
     });
 
     test('should initialize with active transaction if no writeChanges is provided', () => {
-        const transactionModel = new TransactionModel(undefined, loggerMock);
+        const transactionModel = new TransactionModel(undefined, MockLogger);
 
         expect(transactionModel.isTransactionActive).toBe(true);
-        expect(loggerMock.warn).not.toHaveBeenCalled();
+        expect(MockLogger.warn).not.toHaveBeenCalled();
     });
 
     test('should initialize with inactive transaction if writeChanges is provided', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         expect(transactionModel.isTransactionActive).toBe(false);
-        expect(loggerMock.warn).not.toHaveBeenCalled();
+        expect(MockLogger.warn).not.toHaveBeenCalled();
     });
 
     test('should start and finish a transaction', async () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.startTransaction();
@@ -64,12 +55,12 @@ describe('TransactionModel', () => {
     });
 
     test('should log warning if starting an already active transaction', () => {
-        const transactionModel = new TransactionModel(undefined, loggerMock);
+        const transactionModel = new TransactionModel(undefined, MockLogger);
 
         transactionModel.startTransaction();
         transactionModel.startTransaction();
 
-        expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect(MockLogger.warn).toHaveBeenCalledWith(
             'Transaction already active',
         );
     });
@@ -77,18 +68,18 @@ describe('TransactionModel', () => {
     test('should log warning if finishing an inactive transaction', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.finishTransaction();
 
-        expect(loggerMock.warn).toHaveBeenCalledWith('No transaction active');
+        expect(MockLogger.warn).toHaveBeenCalledWith('No transaction active');
     });
 
     test('should abort a transaction and discard changes', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.startTransaction();
@@ -103,18 +94,18 @@ describe('TransactionModel', () => {
     test('should log warning if aborting an inactive transaction', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.abortTransaction();
 
-        expect(loggerMock.warn).toHaveBeenCalledWith('No transaction active');
+        expect(MockLogger.warn).toHaveBeenCalledWith('No transaction active');
     });
 
     test('should update key value and call writeChanges if no transaction is active', () => {
         const transactionModel = new TestTransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.testUpdateKeyValue('data.title', 'new title');
@@ -128,7 +119,7 @@ describe('TransactionModel', () => {
     test('should update key value and not call writeChanges if transaction is active', () => {
         const transactionModel = new TestTransactionModel(
             writeChangesMock,
-            loggerMock,
+            MockLogger,
         );
 
         transactionModel.startTransaction();
@@ -141,7 +132,7 @@ describe('TransactionModel', () => {
     });
 
     test('should set writeChanges and finish or abort transaction based on changes existence', () => {
-        const transactionModel = new TransactionModel(undefined, loggerMock);
+        const transactionModel = new TransactionModel(undefined, MockLogger);
 
         transactionModel.startTransaction();
         transactionModel['changes'] = { key: 'value' } as Partial<unknown>;
@@ -156,7 +147,7 @@ describe('TransactionModel', () => {
     });
 
     test('should set writeChanges and abort transaction if no changes exist', () => {
-        const transactionModel = new TransactionModel(undefined, loggerMock);
+        const transactionModel = new TransactionModel(undefined, MockLogger);
 
         transactionModel.startTransaction();
 
@@ -164,7 +155,7 @@ describe('TransactionModel', () => {
 
         expect(transactionModel.isTransactionActive).toBe(false);
 
-        expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect(MockLogger.warn).toHaveBeenCalledWith(
             'Transaction already active',
         );
     });

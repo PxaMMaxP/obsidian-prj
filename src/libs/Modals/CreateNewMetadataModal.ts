@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import DocumentData from 'src/models/Data/DocumentData';
 import { DocumentModel } from 'src/models/DocumentModel';
 import {

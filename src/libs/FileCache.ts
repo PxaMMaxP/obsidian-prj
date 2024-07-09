@@ -1,7 +1,7 @@
 // Note: FileCache class
 
 import { App, TAbstractFile, TFile } from 'obsidian';
-import Logging from 'src/classes/Logging';
+import { Logging } from 'src/classes/Logging';
 import Global from '../classes/Global';
 
 /**
