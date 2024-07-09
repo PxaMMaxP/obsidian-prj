@@ -1,6 +1,6 @@
 {
   "name": "obsidian-prj-plugin",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
@@ -17,12 +17,12 @@
     "lint:fix": "eslint --fix --ext .ts .",
     "format": "prettier --write .",
     "version:show": "node -e \"console.log(require('./package.json').version)\"",
-    "test": "jest --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
+    "test": "jest",
     "test:file": "jest --watch --onlyChanged --coverage=true --verbose",
-    "test:verbose": "jest --verbose --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
-    "test:watch": "jest --watch --onlyChanged --verbose --testPathIgnorePatterns=\\.performance\\.test\\.ts$",
+    "test:verbose": "jest --verbose",
+    "test:watch": "jest --watch --onlyChanged --verbose",
     "test:performance": "jest --config jest.config.performance.js --runInBand --verbose",
-    "test:coverage": "jest --config jest.config.coverage.js --coverage --testPathIgnorePatterns=\\.performance\\.test\\.ts$"
+    "test:coverage": "jest --config jest.config.coverage.js --coverage"
   },
   "keywords": [],
   "author": "",

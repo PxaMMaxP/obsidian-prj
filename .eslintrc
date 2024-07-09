@@ -137,7 +137,8 @@
         "contexts": [
           "FunctionDeclaration",
           "MethodDefinition",
-          "ClassDeclaration"
+          "ClassDeclaration",
+          "ClassExpression"
         ],
         "descriptionStyle": "body",
         "exemptedBy": ["deprecated"]
