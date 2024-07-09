@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { ILogger } from 'src/interfaces/ILogger';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 
 /**
  * Logging class; encapsulates console.log, console.debug, console.warn and console.error
  */
-export default class Logging implements ILogger {
+export const Logging: ILogger_ = class Logging implements ILogger {
     private static _instance: Logging;
     private _logLevel: LoggingLevel;
     private _logPrefix: string;
@@ -230,7 +230,7 @@ export default class Logging implements ILogger {
 
         return true;
     }
-}
+};
 
 export type LoggingLevel =
     | 'none'

@@ -1,5 +1,9 @@
+import { LoggingLevel } from 'src/classes/Logging';
+
 export interface ILogger_ {
+    new (logLevel: LoggingLevel, logPrefix: string): ILogger;
     getLogger(prefix: string): ILogger;
+    getInstance(): ILogger;
 }
 
 /**
