@@ -5,8 +5,11 @@ import { PrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
+import Logging from './classes/Logging';
 import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
 import GetMetadata from './libs/ContextMenus/GetMetadata';
+import { DIContainer } from './libs/DependencyInjection/DIContainer';
+import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
@@ -16,16 +19,17 @@ import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
+import { Tag } from './libs/Tags/Tag';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
-import './classes/Dependencies';
 
 /**
  * The main plugin class
  */
 export default class Prj extends Plugin {
+    private _dependencies: IDIContainer;
     public settings: PrjSettings;
     public api: API = API;
 
@@ -60,6 +64,9 @@ export default class Prj extends Plugin {
 
         new Global(this, this.app, this.settings);
         await Global.getInstance().awaitCacheInitialization();
+
+        this._dependencies = DIContainer.getInstance();
+        this.registerDependencies();
 
         this.registerMarkdownCodeBlockProcessor(
             'prj',
@@ -148,6 +155,22 @@ export default class Prj extends Plugin {
                 Helper.rebuildActiveView();
             },
         });
+    }
+
+    /**
+     * Register the dependencies
+     */
+    private registerDependencies(): void {
+        this._dependencies.register('App', this.app);
+
+        this._dependencies.register(
+            'IMetadataCache',
+            Global.getInstance().metadataCache,
+        );
+
+        this._dependencies.register('ITag', Tag);
+
+        this._dependencies.register('ILogger_', Logging);
     }
 
     /**
