@@ -1,11 +1,14 @@
 import { TFile } from 'obsidian';
-import BaseComplexDataType from 'src/classes/BaseComplexDataType';
-import { ILogger } from 'src/interfaces/ILogger';
+import BaseComplexDataType, {
+    IBaseComplexDataTypeSymbol,
+} from 'src/classes/BaseComplexDataType';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag, ITagConstructor } from './interfaces/ITag';
-import { ITags, ITagsDependencies } from './interfaces/ITags';
+import { ITag, ITag_ } from './interfaces/ITag';
+import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
-import DependencyRegistry from '../../classes/DependencyRegistry';
+import { DIContainer } from '../DependencyInjection/DIContainer';
+import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents an array of tags.
@@ -13,11 +16,18 @@ import DependencyRegistry from '../../classes/DependencyRegistry';
  * - The class also provides a method to convert all tags to a string.
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
-export default class Tags extends BaseComplexDataType implements ITags {
+const Tags_: ITags_ = class Tags extends BaseComplexDataType implements ITags {
+    [IBaseComplexDataTypeSymbol] = true;
+
+    /**
+     * The dependencies of the tags.
+     */
+    private _dependencies: IDIContainer;
+
     /**
      * The dependency injection token for the `ITag` interface.
      */
-    private _tagClass: typeof BaseComplexDataType & ITagConstructor;
+    private _tagClass: ITag_;
 
     /**
      * The metadata cache.
@@ -33,7 +43,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
     /**
      * The tags array.
      */
-    private _tags: (typeof BaseComplexDataType & ITag)[] = [];
+    private _tags: ITag[] = [];
 
     /**
      * Gets the tags.
@@ -88,19 +98,19 @@ export default class Tags extends BaseComplexDataType implements ITags {
      */
     constructor(
         tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies?: ITagsDependencies,
+        dependencies?: IDIContainer,
     ) {
         super();
 
-        dependencies = DependencyRegistry.isDependencyProvided(
-            'ITagsDependencies',
-            dependencies,
-        );
+        this._dependencies = dependencies ?? DIContainer.getInstance();
 
-        this._metadataCache = dependencies.metadataCache;
-        this._tagClass = dependencies.tagClass;
-        this._logger = dependencies.logger;
-        this._tags = [];
+        this._metadataCache =
+            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
+        this._tagClass = this._dependencies.resolve<ITag_>('ITag');
+
+        this._logger = this._dependencies
+            .resolve<ILogger_>('ILogger_', false)
+            ?.getLogger('Tags');
 
         this.add(tags);
     }
@@ -111,7 +121,7 @@ export default class Tags extends BaseComplexDataType implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return new (this._tagClass as ITagConstructor)(tagValue);
+        return new this._tagClass(tagValue, this._dependencies);
     }
 
     /**
@@ -354,4 +364,6 @@ export default class Tags extends BaseComplexDataType implements ITags {
         | undefined {
         return this._tags.map((tag) => tag.getFrontmatterObject());
     }
-}
+};
+
+export { Tags_ as Tags };

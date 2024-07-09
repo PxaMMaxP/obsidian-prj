@@ -1,35 +1,23 @@
 import { TFile } from 'obsidian';
-import BaseComplexDataType from 'src/classes/BaseComplexDataType';
-import { ILogger } from 'src/interfaces/ILogger';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag, ITagConstructor } from './ITag';
+import {
+    IBaseComplexDataType,
+    IStaticBaseComplexDataType,
+} from 'src/classes/BaseComplexDataType';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { ITag } from './ITag';
 import { TagTree } from '../types/TagTree';
 
 /**
- * Represents a ITags dependencie container.
- */
-export interface ITagsDependencies {
-    metadataCache: IMetadataCache;
-    tagClass: typeof BaseComplexDataType & ITagConstructor;
-    logger?: ILogger;
-}
-
-/**
  * Represents a tags constructor.
  */
-export type TagsConstructorType = typeof BaseComplexDataType & ITagsConstructor;
-
-/**
- * Represents a tags constructor.
- */
-export interface ITagsConstructor {
+export interface ITags_ extends IStaticBaseComplexDataType {
     new (
         tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies?: ITagsDependencies,
+        dependencies?: IDIContainer,
     ): ITags;
 }
 
-export interface ITags extends BaseComplexDataType {
+export interface ITags extends IBaseComplexDataType {
     /**
      * Gets the tags.
      */

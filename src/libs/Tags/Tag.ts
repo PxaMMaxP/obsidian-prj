@@ -1,12 +1,24 @@
-import BaseComplexDataType from 'src/classes/BaseComplexDataType';
+import BaseComplexDataType, {
+    IBaseComplexDataType,
+    IBaseComplexDataTypeSymbol,
+} from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import type { ITag, ITagDependencies } from './interfaces/ITag';
-import DependencyRegistry from '../../classes/DependencyRegistry';
+import type { ITag, ITag_ } from './interfaces/ITag';
+import { DIContainer } from '../DependencyInjection/DIContainer';
+import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents a tag.
  */
-export default class Tag extends BaseComplexDataType implements ITag {
+const Tag_: ITag_ = class Tag
+    extends BaseComplexDataType
+    implements ITag, IBaseComplexDataType
+{
+    [IBaseComplexDataTypeSymbol] = true;
+
+    /**
+     * The tag.
+     */
     private _tag: string;
 
     /**
@@ -71,17 +83,15 @@ export default class Tag extends BaseComplexDataType implements ITag {
      * @param value The value of the tag.
      * @param dependencies The dependencies of the tag; if not provided, the global dependency registry is used.
      */
-    constructor(value: string, dependencies?: ITagDependencies) {
+    constructor(value: string, dependencies?: IDIContainer) {
         super();
 
-        dependencies = DependencyRegistry.isDependencyProvided(
-            'ITagDependencies',
-            dependencies,
-        );
+        dependencies = dependencies ?? DIContainer.getInstance();
 
         this.value = value;
 
-        this._metadataCache = dependencies.metadataCache;
+        this._metadataCache =
+            dependencies.resolve<IMetadataCache>('IMetadataCache');
     }
 
     /**
@@ -190,4 +200,6 @@ export default class Tag extends BaseComplexDataType implements ITag {
         | undefined {
         return this._tag.toString();
     }
-}
+};
+
+export { Tag_ as Tag };
