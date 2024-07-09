@@ -4,7 +4,8 @@ import { ILogger } from 'src/interfaces/ILogger';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import Helper from 'src/libs/Helper';
 import MetadataCache from 'src/libs/MetadataCache';
-import ProxyHandler from 'src/libs/ProxyHandler/ProxyHandler';
+import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
+import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';
 import BaseData from './Data/BaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
@@ -19,7 +20,7 @@ export class FileModel<
     protected global: Global;
     protected app: App;
     protected metadataCache: MetadataCache;
-    private _proxyHandler: ProxyHandler<T>;
+    private _proxyHandler: IProxyHandler<T>;
     protected logger: ILogger;
 
     private _file: TFile | undefined;
