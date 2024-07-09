@@ -6,10 +6,12 @@ const MockLogger: ILogger = {
     error: jest.fn(),
     trace: jest.fn(),
     debug: jest.fn(),
+    setLogLevel: jest.fn(),
 };
 
 export const MockLogger_: ILogger_ = {
     getLogger: jest.fn(() => MockLogger),
-};
+    getInstance: jest.fn(() => MockLogger),
+} as unknown as ILogger_;
 
 export default MockLogger;

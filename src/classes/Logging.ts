@@ -57,7 +57,7 @@ export const Logging: ILogger_ = class Logging implements ILogger {
         const instance = Logging.getInstance();
         prefix = `${prefix}: `;
 
-        const logMethods: {
+        const logMethods: ILogger & {
             [key in Exclude<LoggingLevel, 'none'>]: (...args: any[]) => void;
         } = {
             /**
@@ -95,6 +95,15 @@ export const Logging: ILogger_ = class Logging implements ILogger {
              */
             error: (...args: any[]) =>
                 instance.logWithPrefix('error', prefix, args),
+
+            /**
+             * Sets the log level
+             * @param logLevel The log level to set
+             * @throws Error: Method in individual loggers not implemented
+             */
+            setLogLevel: (logLevel: LoggingLevel) => {
+                throw new Error('Method in individual loggers not implemented');
+            },
         };
 
         return logMethods;
