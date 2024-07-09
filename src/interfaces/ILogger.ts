@@ -1,7 +1,7 @@
 import { LoggingLevel } from 'src/classes/Logging';
 
 export interface ILogger_ {
-    new (logLevel: LoggingLevel, logPrefix: string): ILogger;
+    new (logLevel?: LoggingLevel, logPrefix?: string): ILogger;
     getLogger(prefix: string): ILogger;
     getInstance(): ILogger;
 }
@@ -45,4 +45,10 @@ export interface ILogger {
      * @param optionalParams Optional parameters: strings, objects, etc.
      */
     error(message?: unknown, ...optionalParams: unknown[]): void;
+
+    /**
+     * Sets the log level
+     * @param logLevel The log level to set
+     */
+    setLogLevel(logLevel: LoggingLevel): void;
 }
