@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Logging, LoggingLevel } from '../Logging';
+import { Logging, LoggingLevel, LoggingLevelNumber } from '../Logging';
 
 interface ILoggerPrivate {
-    logLevelActive(logLevel: LoggingLevel): boolean;
+    logLevelActive(logLevel: LoggingLevelNumber): boolean;
     constructLogMessage(message?: any): string;
 }
 
@@ -71,6 +71,7 @@ describe('Logging Class', () => {
     });
 
     it('should return an ILogger with prefixed log methods from getLogger', () => {
+        Logging.getInstance().setLogLevel('info');
         const logger = Logging.getLogger('TestPrefix');
         logger.info('Test message');
 
@@ -142,7 +143,7 @@ describe('Logging Class', () => {
 
         expect(consoleTraceSpy).not.toHaveBeenCalled();
         expect(consoleDebugSpy).not.toHaveBeenCalled();
-        expect(consoleInfoSpy).not.toHaveBeenCalled();
+        expect(consoleInfoSpy).toHaveBeenCalledWith('Log level set to error');
         expect(consoleWarnSpy).not.toHaveBeenCalled();
         expect(consoleErrorSpy).toHaveBeenCalledWith('error message');
     });
@@ -152,7 +153,7 @@ describe('Logging Class', () => {
         logger.debug('debug message');
         logger.info('info message');
         expect(consoleDebugSpy).not.toHaveBeenCalled();
-        expect(consoleInfoSpy).not.toHaveBeenCalled();
+        expect(consoleInfoSpy).toHaveBeenCalledWith('Log level set to warn');
     });
 
     it('should not log any messages if the log level is "none"', () => {
@@ -169,7 +170,7 @@ describe('Logging Class', () => {
         expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('should handle undefined log level and logs everything', () => {
+    it('should handle undefined log level and logs on default level', () => {
         const logger = new Logging('none from list' as LoggingLevel);
         logger.trace('trace message');
         logger.debug('debug message');
@@ -177,9 +178,14 @@ describe('Logging Class', () => {
         logger.warn('warn message');
         logger.error('error message');
 
-        expect(consoleTraceSpy).toHaveBeenCalledWith('trace message');
-        expect(consoleDebugSpy).toHaveBeenCalledWith('debug message');
-        expect(consoleInfoSpy).toHaveBeenCalledWith('info message');
+        expect(consoleTraceSpy).not.toHaveBeenCalled();
+        expect(consoleDebugSpy).not.toHaveBeenCalled();
+
+        expect(consoleInfoSpy).toHaveBeenNthCalledWith(
+            1,
+            'Log level set to info',
+        );
+        expect(consoleInfoSpy).toHaveBeenNthCalledWith(2, 'info message');
         expect(consoleWarnSpy).toHaveBeenCalledWith('warn message');
         expect(consoleErrorSpy).toHaveBeenCalledWith('error message');
     });
@@ -201,10 +207,10 @@ describe('Logging Class', () => {
 
     it('should correctly evaluate active log levels', () => {
         const logger = new Logging('info') as unknown as ILoggerPrivate;
-        expect(logger['logLevelActive']('trace')).toBe(false);
-        expect(logger['logLevelActive']('debug')).toBe(false);
-        expect(logger['logLevelActive']('info')).toBe(true);
-        expect(logger['logLevelActive']('warn')).toBe(true);
-        expect(logger['logLevelActive']('error')).toBe(true);
+        expect(logger['logLevelActive'](LoggingLevelNumber.trace)).toBe(false);
+        expect(logger['logLevelActive'](LoggingLevelNumber.debug)).toBe(false);
+        expect(logger['logLevelActive'](LoggingLevelNumber.info)).toBe(true);
+        expect(logger['logLevelActive'](LoggingLevelNumber.warn)).toBe(true);
+        expect(logger['logLevelActive'](LoggingLevelNumber.error)).toBe(true);
     });
 });
