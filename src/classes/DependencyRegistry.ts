@@ -2,6 +2,7 @@
 /**
  * DependencyRegistry is a singleton class that manages the registration and resolution
  * of instances and classes for dependency injection purposes.
+ * @deprecated Use the DIContainer class instead.
  */
 export default class DependencyRegistry {
     private static _instance: DependencyRegistry;
