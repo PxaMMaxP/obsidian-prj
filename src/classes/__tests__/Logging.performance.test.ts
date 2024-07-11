@@ -53,7 +53,7 @@ describe('Logging Performance Test', () => {
         consoleInfoSpy.mockRestore();
 
         console.info(
-            `Time for 1000 calls with logging disabled: ${endTime - startTime} ms`,
+            `Time for 1000 calls with logging **disabled**: ${endTime - startTime} ms`,
         );
     });
 
@@ -80,7 +80,7 @@ describe('Logging Performance Test', () => {
         consoleInfoSpy.mockRestore();
 
         console.info(
-            `Time for 1000 calls with logging enabled: ${endTime - startTime} ms`,
+            `Time for 1000 calls with logging **enabled**: ${endTime - startTime} ms`,
         );
     });
 });
