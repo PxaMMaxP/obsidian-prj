@@ -6,7 +6,7 @@ on:
             - main
 
 jobs:
-    validate-branch-name-pull-request:
+    validate-branch-name-on-pull-request:
         runs-on: ubuntu-latest
 
         steps:

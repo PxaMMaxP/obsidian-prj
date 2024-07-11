@@ -1,10 +1,10 @@
-name: Validate Branch Name
+name: Validate Branch Name on Create
 
 on:
     create:
 
 jobs:
-    validate-branch-name:
+    validate-branch-name-on-create:
         runs-on: ubuntu-latest
 
         steps:
