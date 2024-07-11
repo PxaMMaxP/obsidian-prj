@@ -6,14 +6,14 @@ on:
             - main
 
 jobs:
-    validate-branch-name:
+    validate-branch-name-pull-request:
         runs-on: ubuntu-latest
 
         steps:
             - name: Check out repository
               uses: actions/checkout@v2
 
-            - name: Validate Branch Name
+            - name: Validate Branch Name on Pull Request
               run: |
                   BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
                   if [[ ! "$BRANCH_NAME" =~ ^(feature\/|fix\/|refactoring\/|testing\/) ]]; then
