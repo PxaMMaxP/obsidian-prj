@@ -1,4 +1,5 @@
 import BaseComplexDataType from '../BaseComplexDataType';
+import { isIBaseComplexDataType } from '../isIBaseComplexDataType';
 
 // Concrete class for testing purposes
 class TestComplexDataType extends BaseComplexDataType {
@@ -42,6 +43,20 @@ describe('BaseComplexDataType', () => {
             const testInstance = new TestComplexDataType();
             const frontmatterObject = testInstance.getFrontmatterObject();
             expect(frontmatterObject).toEqual({ key: 'value' });
+        });
+    });
+
+    describe('Test `isIBaseComplexDataType`-function ', () => {
+        it('should return true if object is an instance of the current class', () => {
+            const testInstance = new TestComplexDataType();
+
+            expect(isIBaseComplexDataType(testInstance)).toBe(true);
+        });
+
+        it('should return false if object is not an instance of the current class', () => {
+            const notTestInstance = {};
+
+            expect(isIBaseComplexDataType(notTestInstance)).toBe(false);
         });
     });
 });
