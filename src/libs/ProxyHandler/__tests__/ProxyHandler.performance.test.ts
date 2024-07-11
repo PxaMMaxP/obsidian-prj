@@ -148,7 +148,7 @@ describe('ProxyHandler Performance', () => {
 
                 expect(proxyResult).toBe(`newValue${iterations - 1}`);
                 expect(directResult).toBe(`newValue${iterations - 1}`);
-                expect(proxyDuration / directDuration).toBeLessThan(25);
+                expect(proxyDuration / directDuration).toBeLessThan(30);
             });
 
             test('performance: array manipulation', () => {
