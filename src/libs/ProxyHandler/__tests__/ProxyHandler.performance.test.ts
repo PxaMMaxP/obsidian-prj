@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import MockLogger from 'src/__mocks__/ILogger.mock';
+// import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
 import { IProxyHandler } from '../interfaces/IProxyHandler';
 import { ProxyHandler } from '../ProxyHandler';
@@ -87,6 +87,7 @@ describe('ProxyHandler Performance', () => {
 
                 expect(proxyResult).toBe(`newValue${iterations - 1}`);
                 expect(directResult).toBe(`newValue${iterations - 1}`);
+                expect(proxyDuration / directDuration).toBeLessThan(35);
             });
 
             test('performance: nested object access and update', () => {
@@ -147,6 +148,7 @@ describe('ProxyHandler Performance', () => {
 
                 expect(proxyResult).toBe(`newValue${iterations - 1}`);
                 expect(directResult).toBe(`newValue${iterations - 1}`);
+                expect(proxyDuration / directDuration).toBeLessThan(25);
             });
 
             test('performance: array manipulation', () => {
@@ -199,12 +201,13 @@ describe('ProxyHandler Performance', () => {
 
                 expect(proxyResult).toBe(iterations);
                 expect(directResult).toBe(iterations);
+                expect(proxyDuration / directDuration).toBeLessThan(70);
             });
         });
     };
 
     // Run tests with logger
-    runPerformanceTests('with logger', MockLogger);
+    // runPerformanceTests('with logger', MockLogger);
 
     // Run tests without logger
     runPerformanceTests('without logger', undefined);

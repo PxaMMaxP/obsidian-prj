@@ -18,6 +18,6 @@ describe('SearchQuery Performance', () => {
         // eslint-disable-next-line no-console
         console.log(`Matching large text took ${end - start} ms`);
 
-        expect(end - start).toBeLessThan(50); // 50 ms is speculative
+        expect(end - start).toBeLessThan(5);
     });
 });

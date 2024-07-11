@@ -55,6 +55,8 @@ describe('Logging Performance Test', () => {
         console.info(
             `Time for 1000 calls with logging **disabled**: ${endTime - startTime} ms`,
         );
+
+        expect(endTime - startTime).toBeLessThan(1);
     });
 
     it('should measure performance of 1000 calls with logging enabled', () => {
@@ -82,5 +84,7 @@ describe('Logging Performance Test', () => {
         console.info(
             `Time for 1000 calls with logging **enabled**: ${endTime - startTime} ms`,
         );
+
+        expect(endTime - startTime).toBeLessThan(12);
     });
 });
