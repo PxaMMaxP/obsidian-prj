@@ -10,6 +10,6 @@ describe('SearchParser Performance', () => {
         expect(query.getElements()).toHaveLength(19999);
         // eslint-disable-next-line no-console
         console.log(`Parsing large input took ${end - start} ms`);
-        expect(end - start).toBeLessThan(100); // 100 ms is speculative
+        expect(end - start).toBeLessThan(100);
     });
 });
