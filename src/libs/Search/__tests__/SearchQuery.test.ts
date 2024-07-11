@@ -28,6 +28,30 @@ describe('SearchQuery', () => {
         );
     });
 
+    it('should match text correctly for terms with negated AND operator', () => {
+        const query = SearchParser.parse('term1 !& term2');
+
+        expect(query.matches('This is a text with term 2 but not term1')).toBe(
+            true,
+        );
+
+        expect(query.matches('This is a text with term1 and term2')).toBe(
+            false,
+        );
+    });
+
+    it('should match text correctly for terms with negated OR operator', () => {
+        const query = SearchParser.parse('term1 !| term2');
+
+        expect(query.matches('This is a text with term 2 but not term1')).toBe(
+            true,
+        );
+
+        expect(query.matches('This is a text with term 1 and term2')).toBe(
+            false,
+        );
+    });
+
     it('should match text correctly for quoted terms', () => {
         const query = SearchParser.parse('"term1 term2"');
         expect(query.matches('This is a text with term1 term2')).toBe(true);
