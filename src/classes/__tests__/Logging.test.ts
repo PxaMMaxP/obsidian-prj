@@ -20,7 +20,7 @@ describe('Logging Class', () => {
             .mockImplementation(() => {});
 
         consoleTraceSpy = jest
-            .spyOn(console, 'debug')
+            .spyOn(console, 'trace')
             .mockImplementation(() => {});
 
         consoleDebugSpy = jest
@@ -37,6 +37,7 @@ describe('Logging Class', () => {
     });
 
     afterEach(() => {
+        consoleTraceSpy.mockRestore();
         consoleInfoSpy.mockRestore();
         consoleDebugSpy.mockRestore();
         consoleWarnSpy.mockRestore();
@@ -89,7 +90,7 @@ describe('Logging Class', () => {
         logger.warn('warn message');
         logger.error('error message');
 
-        expect(consoleDebugSpy).toHaveBeenCalledWith('trace message');
+        expect(consoleTraceSpy).toHaveBeenCalledWith('trace message');
         expect(consoleDebugSpy).toHaveBeenCalledWith('debug message');
         expect(consoleInfoSpy).toHaveBeenCalledWith('info message');
         expect(consoleWarnSpy).toHaveBeenCalledWith('warn message');
@@ -107,7 +108,7 @@ describe('Logging Class', () => {
         logger.warn('warn message');
         logger.error('error message');
 
-        expect(consoleDebugSpy).toHaveBeenCalledWith(
+        expect(consoleTraceSpy).toHaveBeenCalledWith(
             'TestPrefix: ',
             'trace message',
         );
