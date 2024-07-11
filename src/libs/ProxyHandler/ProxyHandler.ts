@@ -25,7 +25,7 @@ const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
      * A map to store reverse mappings of proxies to their original objects.
      * This is used to find the original target object from a proxy.
      */
-    private _reverseProxyMap: WeakMap<object, object> = new WeakMap();
+    private _reverseProxyMap: WeakMap<object, WeakRef<object>> = new WeakMap();
 
     /**
      * A logger instance for logging purposes.
@@ -313,7 +313,7 @@ const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
     private getExistingProxy(obj: Partial<T>): T | undefined {
         return (
             (this._proxyMap.get(obj) as T | undefined) ||
-            (this._reverseProxyMap.get(obj) as T | undefined)
+            (this._reverseProxyMap.get(obj)?.deref() as T | undefined)
         );
     }
 
@@ -324,7 +324,7 @@ const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
      */
     private addProxyToMap(obj: Partial<T>, proxy: Partial<T>): void {
         this._proxyMap.set(obj, proxy);
-        this._reverseProxyMap.set(proxy, obj);
+        this._reverseProxyMap.set(proxy, new WeakRef(obj));
     }
 };
 
