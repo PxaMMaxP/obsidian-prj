@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Logging, LoggingLevel, LoggingLevelNumber } from '../Logging';
 
 interface ILoggerPrivate {
     logLevelActive(logLevel: LoggingLevelNumber): boolean;
-    constructLogMessage(message?: any): string;
+    constructLogMessage(message?: unknown): string;
 }
 
 describe('Logging Class', () => {
