@@ -1,13 +1,13 @@
 import {
-    IStaticBaseComplexDataType,
+    IBaseComplexDataType_,
     IBaseComplexDataType,
-} from 'src/classes/BaseComplexDataType';
+} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents a tag constructor.
  */
-export interface ITag_ extends IStaticBaseComplexDataType {
+export interface ITag_ extends IBaseComplexDataType_ {
     new (value: string, dependencies?: IDIContainer): ITag;
 }
 

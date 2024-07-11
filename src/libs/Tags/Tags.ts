@@ -1,12 +1,10 @@
 import { TFile } from 'obsidian';
-import BaseComplexDataType, {
-    IBaseComplexDataTypeSymbol,
-} from 'src/classes/BaseComplexDataType';
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITag_ } from './interfaces/ITag';
 import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
+import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
@@ -17,8 +15,6 @@ import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
 const Tags_: ITags_ = class Tags extends BaseComplexDataType implements ITags {
-    [IBaseComplexDataTypeSymbol] = true;
-
     /**
      * The dependencies of the tags.
      */

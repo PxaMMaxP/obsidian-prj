@@ -1,10 +1,11 @@
 import { TFile } from 'obsidian';
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
-import BaseComplexDataType, {
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataType';
+import {
     IBaseComplexDataType,
     IBaseComplexDataTypeSymbol,
-} from 'src/classes/BaseComplexDataType';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { ITag, ITag_ } from '../interfaces/ITag';
 import { Tags } from '../Tags';

@@ -1,8 +1,6 @@
-import {
-    IBaseComplexDataType,
-    isIBaseComplexDataType,
-} from 'src/classes/BaseComplexDataType';
 import { ILogger } from 'src/interfaces/ILogger';
+import { IBaseComplexDataType } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
+import { isIBaseComplexDataType } from 'src/libs/BaseComplexDataType/isIBaseComplexDataType';
 
 /**
  * The type of return value of the `callWriteChanges` method.
