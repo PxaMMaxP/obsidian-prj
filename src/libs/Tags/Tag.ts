@@ -1,9 +1,7 @@
-import BaseComplexDataType, {
-    IBaseComplexDataType,
-    IBaseComplexDataTypeSymbol,
-} from 'src/classes/BaseComplexDataType';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITag_ } from './interfaces/ITag';
+import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
+import { IBaseComplexDataType } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
@@ -14,8 +12,6 @@ const Tag_: ITag_ = class Tag
     extends BaseComplexDataType
     implements ITag, IBaseComplexDataType
 {
-    [IBaseComplexDataTypeSymbol] = true;
-
     /**
      * The tag.
      */

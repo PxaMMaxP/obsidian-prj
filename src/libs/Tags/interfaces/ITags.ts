@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
 import {
+    IBaseComplexDataType_,
     IBaseComplexDataType,
-    IStaticBaseComplexDataType,
-} from 'src/classes/BaseComplexDataType';
+} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { ITag } from './ITag';
 import { TagTree } from '../types/TagTree';
@@ -10,7 +10,7 @@ import { TagTree } from '../types/TagTree';
 /**
  * Represents a tags constructor.
  */
-export interface ITags_ extends IStaticBaseComplexDataType {
+export interface ITags_ extends IBaseComplexDataType_ {
     new (
         tags: ITags | ITag | string | string[] | undefined | null,
         dependencies?: IDIContainer,
