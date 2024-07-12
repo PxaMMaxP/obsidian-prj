@@ -1,35 +1,18 @@
 import { App, Menu, TAbstractFile } from 'obsidian';
-import DependencyRegistry from 'src/classes/DependencyRegistry';
-import { ILogger } from 'src/interfaces/ILogger';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import Prj from 'src/main';
-
-/**
- * Represents a interface for the {@link ContextMenu|context menu} dependencies.
- */
-export interface IContextMenuDependencies {
-    logger?: ILogger;
-    app: App;
-    plugin: Prj;
-    metadataCache: IMetadataCache;
-}
-
-/**
- * Represents a interface for the {@link ContextMenu|context menu} constructor.
- */
-export interface IContextMenuConstructor {
-    new (dependencies: IContextMenuDependencies): ContextMenu;
-}
+import { IContextMenu } from './interfaces/IContextMenu';
+import { DIContainer } from '../DependencyInjection/DIContainer';
+import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents a class for creating a context menu.
  */
-export default abstract class ContextMenu {
-    protected static _instance: ContextMenu;
+export class ContextMenu implements IContextMenu {
+    protected _dependencies: IDIContainer;
     protected _logger: ILogger | undefined;
     protected _app: App;
     protected _plugin: Prj;
-    protected _metadataCache: IMetadataCache;
     protected _eventsAndCommandsRegistered = false;
     protected _bindContextMenu = this.onContextMenu.bind(this);
 
@@ -37,48 +20,32 @@ export default abstract class ContextMenu {
      * Creates a new instance of the ContextMenu class.
      * @param dependencies The dependencies for the class.
      */
-    private constructor(dependencies: IContextMenuDependencies) {
-        dependencies = DependencyRegistry.isDependencyProvided(
-            'IContextMenuDependencies',
-            dependencies,
-        );
+    protected constructor(dependencies?: IDIContainer) {
+        this._dependencies = dependencies ?? DIContainer.getInstance();
 
-        this._logger = dependencies.logger;
-        this._app = dependencies.app;
-        this._plugin = dependencies.plugin;
-        this._metadataCache = dependencies.metadataCache;
+        this._logger = this._dependencies
+            .resolve<ILogger_>('ILogger_', false)
+            ?.getLogger('ContextMenu');
 
-        this.registerEventsAndCommands();
+        this._app = this._dependencies.resolve<App>('App');
+        this._plugin = this._dependencies.resolve<Prj>('Prj');
     }
 
     /**
-     * Get the singleton instance of the ContextMenu class.
-     * @param dependencies The optional dependencies for the class.
-     * @returns The singleton instance.
+     * Run this method to signalize that the class is initialized.
      */
-    public static getInstance(
-        dependencies?: IContextMenuDependencies,
-    ): ContextMenu {
-        if (!ContextMenu._instance) {
-            ContextMenu._instance =
-                new (this as unknown as IContextMenuConstructor)(
-                    dependencies as IContextMenuDependencies,
-                );
-        }
-
-        return ContextMenu._instance;
+    protected isInitialized(): void {
+        this.registerEventsAndCommands();
     }
 
     /**
      * Deconstructs the 'ContextMenu' events and commands.
      */
-    public static deconstructor() {
-        if (this._instance && this._instance._eventsAndCommandsRegistered) {
-            ContextMenu.deRegisterEventsAndCommands();
+    public deconstructor() {
+        if (this._eventsAndCommandsRegistered) {
+            this.deRegisterEventsAndCommands();
         } else {
-            this._instance?._logger?.trace(
-                `No '${this._instance?.constructor.name}' events to deconstruct`,
-            );
+            this._logger?.trace(`No events to deconstruct`);
         }
     }
 
@@ -89,7 +56,7 @@ export default abstract class ContextMenu {
     private registerEventsAndCommands() {
         try {
             this.onConstruction();
-            this._eventsAndCommandsRegistered = false;
+            this._eventsAndCommandsRegistered = true;
             this._logger?.trace(`Constructed '${this.constructor.name}'`);
         } catch (error) {
             this._logger?.error(
@@ -103,15 +70,12 @@ export default abstract class ContextMenu {
      * Deregesters the events and commands for the class.
      * @remarks This method calls the onDeconstructon method.
      */
-    private static deRegisterEventsAndCommands() {
+    private deRegisterEventsAndCommands() {
         try {
-            this._instance.onDeconstruction();
-            this._instance._eventsAndCommandsRegistered = false;
+            this.onDeconstruction();
+            this._eventsAndCommandsRegistered = false;
         } catch (error) {
-            this._instance._logger?.error(
-                `Error deconstructing '${this._instance.constructor.name}' events`,
-                error,
-            );
+            this._logger?.error(`Error deconstructing events`, error);
 
             throw error;
         }
@@ -132,8 +96,11 @@ export default abstract class ContextMenu {
      *       },
      *   });
      * ```
+     * @override
      */
-    protected abstract onConstruction(): void;
+    protected onConstruction(): void {
+        throw new Error('Method not implemented; Override this method!');
+    }
 
     /**
      * This method is called when the class is deconstructed.
@@ -146,18 +113,27 @@ export default abstract class ContextMenu {
      *           this._instance.bindContextMenu,
      *       );
      * ```
+     * @override
      */
-    protected abstract onDeconstruction(): void;
+    protected onDeconstruction(): void {
+        throw new Error('Method not implemented; Override this method!');
+    }
 
     /**
      * This method is called when the context menu is invoked.
      * @param menu The context menu to add items to.
      * @param file The file the context menu is invoked on.
+     * @override
      */
-    protected abstract onContextMenu(menu: Menu, file: TAbstractFile): void;
+    protected onContextMenu(menu: Menu, file: TAbstractFile): void {
+        throw new Error('Method not implemented; Override this method!');
+    }
 
     /**
      * This method is called when the command menu is invoked.
+     * @override
      */
-    public abstract invoke(): Promise<void>;
+    public invoke(): Promise<void> {
+        throw new Error('Method not implemented; Override this method!');
+    }
 }
