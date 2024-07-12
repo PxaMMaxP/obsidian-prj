@@ -16,8 +16,8 @@ jobs:
             - name: Validate Branch Name on Pull Request
               run: |
                   BRANCH_NAME=${GITHUB_HEAD_REF}
-                  if [[ ! "$BRANCH_NAME" =~ ^(feature\/|fix\/|refactoring\/|testing\/) ]]; then
+                  if [[ ! "$BRANCH_NAME" =~ ^(feature\/|fix\/|refactoring\/|testing\/|dependabot\/) ]]; then
                     echo "Invalid branch name: $BRANCH_NAME"
-                    echo "Branch name must start with 'feature/', 'fix/', 'refactoring/' or 'testing/'"
+                    echo "Branch name must start with 'feature/', 'fix/', 'refactoring/', 'testing/' or 'dependabot/'"
                     exit 1
                   fi
