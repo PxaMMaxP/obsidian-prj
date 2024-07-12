@@ -34,4 +34,4 @@ coverage/*
 
 docs/*
 
-dist/*
+src/auto-imports.ts
