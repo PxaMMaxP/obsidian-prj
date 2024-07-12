@@ -1,6 +1,5 @@
 import { Plugin } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
-import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { PrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
 import Global from './classes/Global';
@@ -20,12 +19,10 @@ import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
-import { Tag } from './libs/Tags/Tag';
-import { Tags } from './libs/Tags/Tags';
 import { TranslationService } from './libs/TranslationService/TranslationService';
 import { Translations } from './translations/Translations';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
-import '../dist/auto-imports';
+import './auto-imports'; //
 
 /**
  * The main plugin class
@@ -82,13 +79,6 @@ export default class Prj extends Plugin {
         this._dependencies = DIContainer.getInstance();
         this.registerDependencies();
 
-        this.registerMarkdownCodeBlockProcessor(
-            'prj',
-            MarkdownBlockProcessor.parseSource,
-        );
-
-        this.app.workspace.updateOptions();
-
         // Get Metadata File Context Menu & Command
         GetMetadata.getInstance();
 
@@ -135,6 +125,7 @@ export default class Prj extends Plugin {
         // Change Status Command
         ChangeStatusModal.registerCommand();
 
+        //
         //Register event on `Status` change..
         Global.getInstance().metadataCache.on(
             'prj-task-management-changed-status-event',
@@ -185,9 +176,6 @@ export default class Prj extends Plugin {
             'IMetadataCache',
             Global.getInstance().metadataCache,
         );
-
-        this._dependencies.register('ITag', Tag);
-        this._dependencies.register('ITags', Tags);
 
         this._dependencies.register('ILogger_', Logging);
 

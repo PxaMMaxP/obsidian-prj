@@ -1,17 +1,37 @@
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITag_ } from './interfaces/ITag';
 import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
-import { IBaseComplexDataType } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
+import {
+    IBaseComplexDataType,
+    IBaseComplexDataType_,
+} from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 
 /**
  * Represents a tag.
  */
-const Tag_: ITag_ = class Tag
+/**
+ * Class for the markdown block processor.
+ */
+@ImplementsStatic<ITag_>()
+@ImplementsStatic<ILifecycleObject>()
+@ImplementsStatic<IBaseComplexDataType_>()
+@Lifecycle
+export class Tag
     extends BaseComplexDataType
     implements ITag, IBaseComplexDataType
 {
+    /**
+     * Register the markdown block processor and update the workspace options.
+     */
+    public static onLoad(): void {
+        DIContainer.getInstance().register('ITag', Tag);
+    }
+
     /**
      * The tag.
      */
@@ -196,6 +216,4 @@ const Tag_: ITag_ = class Tag
         | undefined {
         return this._tag.toString();
     }
-};
-
-export { Tag_ as Tag };
+}
