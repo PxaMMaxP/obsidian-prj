@@ -44,10 +44,10 @@
     "eslint-plugin-override": "https://github.com/PxaMMaxP/eslint-plugin-override",
     "jest": "^29.7.0",
     "obsidian": "latest",
-    "obsidian-dataview": "^0.4.21",
+    "obsidian-dataview": "^0.5.67",
     "quicktype": "^23.0.81",
     "sass": "^1.69.7",
-    "ts-jest": "^29.1.4",
+    "ts-jest": "^29.2.2",
     "tslib": "^2.6.2",
     "typedoc": "^0.26.3",
     "typescript": "^5.4.5"
