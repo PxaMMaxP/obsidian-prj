@@ -5,6 +5,8 @@ import {
     ILifecycleCallback,
     ILifecycleManager,
     ILifecycleManager_,
+    ILifecycleState,
+    ILifecycleTime,
 } from './interfaces/ILifecycleManager';
 
 /**
@@ -12,7 +14,7 @@ import {
  * @singleton See {@link Singleton|@Singleton} for more details.
  * @remarks
  * - Register callbacks to be called when the application is initialized, loaded, or unloaded.
- * - The `registerOnInit`, `registerOnLoad`, and `registerOnUnload` methods are used to register callbacks.
+ * - The `registerOn` method is used to register callbacks.
  * - Call the `onInit`, `onLoad`, and `onUnload` methods when the application is initialized, loaded, or unloaded.
  * - The `LifecycleManager` class is a singleton: you get the same instance every time you call the constructor.
  */
@@ -20,146 +22,140 @@ import {
 @Singleton
 export class LifecycleManager implements ILifecycleManager {
     private _isInitPerformed = false;
+    private _isLoadPerformed = false;
+    private _isUnloadPerformed = false;
+
     /**
-     * Get whether the application is initialized.
+     *
      */
     private get isInitPerformed(): boolean {
         return this._isInitPerformed;
     }
+
     /**
-     * Set the application as initialized.
+     *
      */
     private initPerfomed(): void {
         this._isInitPerformed = true;
     }
-    private _isLoadPerformed = false;
+
     /**
-     * Get whether the application is loaded.
+     *
      */
     private get isLoadPerformed(): boolean {
         return this._isLoadPerformed;
     }
+
     /**
-     * Set the application as loaded.
+     *
      */
     private loadPerformed(): void {
         this._isLoadPerformed = true;
     }
-    private _isUnloadPerformed = false;
+
     /**
-     * Get whether the application is unloaded.
+     *
      */
     private get isUnloadPerformed(): boolean {
         return this._isUnloadPerformed;
     }
+
     /**
-     * Set the application as unloaded.
+     *
      */
     private unloadPerformed(): void {
         this._isUnloadPerformed = true;
     }
-    private _initCallbacks: Array<ILifecycleCallback> = [];
-    private _loadCallbacks: Array<ILifecycleCallback> = [];
-    private _unloadCallbacks: Array<ILifecycleCallback> = [];
+
+    private _callbacks: {
+        [key in ILifecycleState]?: {
+            [key in ILifecycleTime]?: Array<ILifecycleCallback>;
+        };
+    } = {
+        init: { before: [], on: [], after: [] },
+        load: { before: [], on: [], after: [] },
+        unload: { before: [], on: [], after: [] },
+    };
 
     /**
-     * Run this method when the application is initialized.
+     *
      */
     async onInit(): Promise<void> {
-        for (const callback of this._initCallbacks) {
-            await callback();
-        }
+        await this.executeCallbacks('init', 'before');
+        await this.executeCallbacks('init', 'on');
+        await this.executeCallbacks('init', 'after');
         this.initPerfomed();
     }
 
     /**
-     * Run this method when the application is loaded.
+     *
      */
     async onLoad(): Promise<void> {
-        for (const callback of this._loadCallbacks) {
-            await callback();
-        }
+        await this.executeCallbacks('load', 'before');
+        await this.executeCallbacks('load', 'on');
+        await this.executeCallbacks('load', 'after');
         this.loadPerformed();
     }
 
     /**
-     * Run this method when the application is unloaded.
+     *
      */
     async onUnload(): Promise<void> {
-        for (const callback of this._unloadCallbacks) {
-            await callback();
-        }
+        await this.executeCallbacks('unload', 'before');
+        await this.executeCallbacks('unload', 'on');
+        await this.executeCallbacks('unload', 'after');
         this.unloadPerformed();
     }
 
     /**
-     * Register a callback to be called when the application is initialized
-     * or call the callback if the application is already initialized.
-     * @param callback The callback to register.
+     *
+     * @param state
+     * @param time
      */
-    private async registerOnInit(callback: ILifecycleCallback): Promise<void> {
-        if (this.isInitPerformed) {
+    private async executeCallbacks(
+        state: ILifecycleState,
+        time: ILifecycleTime,
+    ): Promise<void> {
+        const callbacks = this._callbacks[state]?.[time] || [];
+
+        for (const callback of callbacks) {
             await callback();
-        } else {
-            this._initCallbacks.push(callback);
         }
     }
 
     /**
-     * Register a callback to be called when the application is loaded
-     * or call the callback if the application is already loaded.
-     * @param callback The callback to register.
+     *
+     * @param time
+     * @param state
+     * @param callback
      */
-    private async registerOnLoad(callback: ILifecycleCallback): Promise<void> {
-        if (this.isLoadPerformed) {
+    private async registerOn(
+        time: ILifecycleTime,
+        state: ILifecycleState,
+        callback: ILifecycleCallback,
+    ): Promise<void> {
+        if (
+            (state === 'init' && this.isInitPerformed) ||
+            (state === 'load' && this.isLoadPerformed) ||
+            (state === 'unload' && this.isUnloadPerformed)
+        ) {
             await callback();
         } else {
-            this._loadCallbacks.push(callback);
+            this._callbacks[state]![time]!.push(callback);
         }
     }
 
     /**
-     * Register a callback to be called when the application is unloaded
-     * or call the callback if the application is already unloaded.
-     * @param callback The callback to register.
+     *
+     * @param time
+     * @param state
+     * @param callback
      */
-    private async registerOnUnload(
+    public static async register(
+        time: ILifecycleTime,
+        state: ILifecycleState,
         callback: ILifecycleCallback,
     ): Promise<void> {
-        if (this.isUnloadPerformed) {
-            await callback();
-        } else {
-            this._unloadCallbacks.push(callback);
-        }
-    }
-
-    /**
-     * Register a callback to be called when the application is initialized.
-     * @param callback The callback to register.
-     */
-    public static async registerOnInit(
-        callback: ILifecycleCallback,
-    ): Promise<void> {
-        await new LifecycleManager().registerOnInit(callback);
-    }
-
-    /**
-     * Register a callback to be called when the application is loaded.
-     * @param callback The callback to register.
-     */
-    public static async registerOnLoad(
-        callback: ILifecycleCallback,
-    ): Promise<void> {
-        await new LifecycleManager().registerOnLoad(callback);
-    }
-
-    /**
-     * Register a callback to be called when the application is unloaded.
-     * @param callback The callback to register.
-     */
-    public static async registerOnUnload(
-        callback: ILifecycleCallback,
-    ): Promise<void> {
-        await new LifecycleManager().registerOnUnload(callback);
+        await new LifecycleManager().registerOn(time, state, callback);
     }
 }

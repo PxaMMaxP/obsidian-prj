@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable jsdoc/require-param-description */
@@ -6,6 +7,8 @@
 import {
     ILifecycleManager_,
     ILifecycleObject,
+    ILifecycleState,
+    ILifecycleTime,
 } from '../interfaces/ILifecycleManager';
 import { LifecycleManager } from '../LifecycleManager';
 
@@ -39,6 +42,24 @@ export function copyStaticProperties(target: Function, source: Function): void {
 }
 
 /**
+ * Registers lifecycle methods based on time and state.
+ * @param instance The instance whose methods are registered.
+ * @param time The lifecycle time.
+ * @param state The lifecycle state.
+ * @param method The lifecycle method.
+ */
+function registerLifecycleMethod(
+    instance: ILifecycleObject,
+    time: ILifecycleTime,
+    state: ILifecycleState,
+    method: keyof ILifecycleObject,
+): void {
+    if (instance[method]) {
+        manager.register(time, state, instance[method]!.bind(instance));
+    }
+}
+
+/**
  * Lifecycle decorator.
  * @param constructor The constructor to decorate with lifecycle methods.
  * @param args
@@ -58,17 +79,17 @@ export function Lifecycle<
     function construct(constructor: T, args: unknown[]): ILifecycleObject {
         const instance = new constructor(...args);
 
-        if (instance.onInit) {
-            manager.registerOnInit(instance.onInit.bind(instance));
-        }
+        registerLifecycleMethod(instance, 'before', 'init', 'beforeInit');
+        registerLifecycleMethod(instance, 'on', 'init', 'onInit');
+        registerLifecycleMethod(instance, 'after', 'init', 'afterInit');
 
-        if (instance.onLoad) {
-            manager.registerOnLoad(instance.onLoad.bind(instance));
-        }
+        registerLifecycleMethod(instance, 'before', 'load', 'beforeLoad');
+        registerLifecycleMethod(instance, 'on', 'load', 'onLoad');
+        registerLifecycleMethod(instance, 'after', 'load', 'afterLoad');
 
-        if (instance.onUnload) {
-            manager.registerOnUnload(instance.onUnload.bind(instance));
-        }
+        registerLifecycleMethod(instance, 'before', 'unload', 'beforeUnload');
+        registerLifecycleMethod(instance, 'on', 'unload', 'onUnload');
+        registerLifecycleMethod(instance, 'after', 'unload', 'afterUnload');
 
         return instance;
     }
@@ -76,17 +97,17 @@ export function Lifecycle<
     /**
      * Registers static lifecycle methods.
      */
-    if (original.onInit) {
-        manager.registerOnInit(original.onInit.bind(original));
-    }
+    registerLifecycleMethod(original, 'before', 'init', 'beforeInit');
+    registerLifecycleMethod(original, 'on', 'init', 'onInit');
+    registerLifecycleMethod(original, 'after', 'init', 'afterInit');
 
-    if (original.onLoad) {
-        manager.registerOnLoad(original.onLoad.bind(original));
-    }
+    registerLifecycleMethod(original, 'before', 'load', 'beforeLoad');
+    registerLifecycleMethod(original, 'on', 'load', 'onLoad');
+    registerLifecycleMethod(original, 'after', 'load', 'afterLoad');
 
-    if (original.onUnload) {
-        manager.registerOnUnload(original.onUnload.bind(original));
-    }
+    registerLifecycleMethod(original, 'before', 'unload', 'beforeUnload');
+    registerLifecycleMethod(original, 'on', 'unload', 'onUnload');
+    registerLifecycleMethod(original, 'after', 'unload', 'afterUnload');
 
     /**
      * The wrapped constructor function.
