@@ -6,7 +6,7 @@ import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
 import { Logging } from './classes/Logging';
-import CopyMarkdownLink from './libs/ContextMenus/CopyMarkdownLink';
+import { CopyMarkdownLink } from './libs/ContextMenus/CopyMarkdownLink';
 import GetMetadata from './libs/ContextMenus/GetMetadata';
 import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
@@ -21,9 +21,11 @@ import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementM
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import { Tag } from './libs/Tags/Tag';
 import { Tags } from './libs/Tags/Tags';
+import { TranslationService } from './libs/TranslationService/TranslationService';
 import { ProjectModel } from './models/ProjectModel';
 import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
+import { Translations } from './translations/Translations';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
 
 /**
@@ -58,6 +60,9 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log('Layout ready');
 
+        // Translation Service
+        new TranslationService(Translations, this.settings, undefined);
+
         // Register Model Factories
         ProjectModel.registerThisModelFactory();
         TaskModel.registerThisModelFactory();
@@ -80,7 +85,7 @@ export default class Prj extends Plugin {
         GetMetadata.getInstance();
 
         // Copy Markdown Link Context Menu
-        CopyMarkdownLink.getInstance();
+        //CopyMarkdownLink.getInstance();
 
         // Register Commands and Events
         this.registerCommandsAndEvents();
@@ -101,6 +106,8 @@ export default class Prj extends Plugin {
      * Register the Obsidian Commands an Events
      */
     private registerCommandsAndEvents(): void {
+        new CopyMarkdownLink();
+
         // Create New Metadata File Command
         CreateNewMetadataModal.registerCommand();
 
@@ -173,6 +180,14 @@ export default class Prj extends Plugin {
         this._dependencies.register('ITags', Tags);
 
         this._dependencies.register('ILogger_', Logging);
+
+        this._dependencies.register(
+            'ITranslationService',
+            TranslationService.getInstance(),
+        );
+
+        this._dependencies.register('Prj', this);
+        this._dependencies.register('App', this.app);
     }
 
     /**
@@ -182,7 +197,7 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
         GetMetadata.deconstructor();
-        CopyMarkdownLink.deconstructor();
+        new CopyMarkdownLink().deconstructor();
         Global.deconstructor();
     }
 
