@@ -10,7 +10,19 @@ if you want to view the source, please visit the github repository of this plugi
 */
 `;
 
-execSync('npm run gen:imports');
+const runImporter = () => {
+	execSync('npm run gen:imports', { stdio: 'inherit' });
+};
+
+const importerPlugin = {
+	name: 'run-importer',
+	setup(build) {
+		build.onStart(() => {
+			console.log('Running importer...');
+			runImporter();
+		});
+	},
+};
 
 const prod = (process.argv[2] === "production");
 
@@ -41,6 +53,7 @@ const context = await esbuild.context({
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
 	outfile: "build/main.js",
+	plugins: [importerPlugin],
 });
 
 if (prod) {
