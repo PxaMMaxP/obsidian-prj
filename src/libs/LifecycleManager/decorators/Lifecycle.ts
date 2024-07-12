@@ -1,9 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable jsdoc/require-param-description */
-/* eslint-disable jsdoc/require-returns */
-/* eslint-disable jsdoc/require-description */
 import {
     ILifecycleManager_,
     ILifecycleObject,
@@ -19,12 +13,12 @@ const manager: ILifecycleManager_ = LifecycleManager;
  * @param target The target to copy the properties to.
  * @param source The source to copy the properties from.
  */
-export function copyStaticProperties(target: Function, source: Function): void {
+export function copyStaticProperties(target: unknown, source: unknown): void {
     let currentSource = source;
 
     while (currentSource && currentSource !== Function.prototype) {
         Object.getOwnPropertyNames(currentSource)
-            .concat(Object.getOwnPropertySymbols(currentSource) as any)
+            .concat(Object.getOwnPropertySymbols(currentSource).toString())
             .forEach((prop) => {
                 if (prop !== 'prototype') {
                     const descriptor = Object.getOwnPropertyDescriptor(
@@ -55,14 +49,14 @@ function registerLifecycleMethod(
     method: keyof ILifecycleObject,
 ): void {
     if (instance[method]) {
-        manager.register(time, state, instance[method]!.bind(instance));
+        manager.register(time, state, instance[method]?.bind(instance));
     }
 }
 
 /**
  * Lifecycle decorator.
  * @param constructor The constructor to decorate with lifecycle methods.
- * @param args
+ * @param args The arguments for the constructor.
  * @returns The decorated constructor with lifecycle management.
  */
 export function Lifecycle<
@@ -72,7 +66,7 @@ export function Lifecycle<
 
     /**
      * Constructs a new instance and registers lifecycle methods.
-     * @param constructor
+     * @param constructor The constructor to decorate with lifecycle methods.
      * @param args The arguments for the constructor.
      * @returns The instance with registered lifecycle methods.
      */
