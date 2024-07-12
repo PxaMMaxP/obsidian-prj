@@ -1,3 +1,5 @@
+import { copyStaticProperties } from 'src/libs/LifecycleManager/decorators/Lifecycle';
+
 /**
  * Singleton decorator.
  * @param constructor The constructor to create a singleton from.
@@ -25,6 +27,7 @@
 export function Singleton<
     T extends { new (...args: unknown[]): NonNullable<unknown> },
 >(constructor: T, ...args: unknown[]): T {
+    const original = constructor;
     let instance: T;
 
     /**
@@ -43,12 +46,8 @@ export function Singleton<
     // Transfer prototype
     wrappedConstructor.prototype = constructor.prototype;
 
-    // Transfer static methods and properties
-    Object.getOwnPropertyNames(constructor).forEach((prop) => {
-        if (prop !== 'prototype') {
-            (wrappedConstructor as any)[prop] = (constructor as any)[prop];
-        }
-    });
+    // Copy static methods and properties
+    copyStaticProperties(wrappedConstructor, original);
 
     return wrappedConstructor as T;
 }

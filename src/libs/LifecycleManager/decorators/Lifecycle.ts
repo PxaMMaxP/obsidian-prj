@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable jsdoc/require-param-description */
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-description */
@@ -8,6 +10,33 @@ import {
 import { LifecycleManager } from '../LifecycleManager';
 
 const manager: ILifecycleManager_ = LifecycleManager;
+
+/**
+ * Copies static properties from the source to the target.
+ * @param target The target to copy the properties to.
+ * @param source The source to copy the properties from.
+ */
+export function copyStaticProperties(target: Function, source: Function): void {
+    let currentSource = source;
+
+    while (currentSource && currentSource !== Function.prototype) {
+        Object.getOwnPropertyNames(currentSource)
+            .concat(Object.getOwnPropertySymbols(currentSource) as any)
+            .forEach((prop) => {
+                if (prop !== 'prototype') {
+                    const descriptor = Object.getOwnPropertyDescriptor(
+                        currentSource,
+                        prop,
+                    );
+
+                    if (descriptor && descriptor.configurable) {
+                        Object.defineProperty(target, prop, descriptor);
+                    }
+                }
+            });
+        currentSource = Object.getPrototypeOf(currentSource);
+    }
+}
 
 /**
  * Lifecycle decorator.
@@ -71,12 +100,8 @@ export function Lifecycle<
     // Transfer prototype
     wrappedConstructor.prototype = original.prototype;
 
-    // Transfer static methods and properties
-    Object.getOwnPropertyNames(constructor).forEach((prop) => {
-        if (prop !== 'prototype') {
-            (wrappedConstructor as any)[prop] = (constructor as any)[prop];
-        }
-    });
+    // Copy static methods and properties
+    copyStaticProperties(wrappedConstructor, original);
 
     return wrappedConstructor as T;
 }
