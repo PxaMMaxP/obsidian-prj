@@ -1,80 +1,53 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
-import Global from 'src/classes/Global';
-import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { Singleton } from 'src/classes/decorators/Singleton';
+import { ContextMenu } from './ContextMenu';
+import { IContextMenu } from './interfaces/IContextMenu';
+import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
- * Class to handle the 'CopyMarkdownLink' context menu
- * - Adds a context menu item to copy the markdown link of a file
+ * Represents a context menu for copying markdown links.
  */
-export default class CopyMarkdownLink {
-    static instance: CopyMarkdownLink;
-    private _app = Global.getInstance().app;
-    private _logger = Logging.getLogger('CopyMarkdownLink');
-    private _plugin = Global.getInstance().plugin;
-    protected eventsRegistered = false;
+@Singleton
+export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
     protected bindContextMenu = this.onContextMenu.bind(this);
+    private _translationService: ITranslationService;
 
     /**
-     * Creates an instance of CopyMarkdownLink.
+     * Creates an instance of CopyMarkdownLinkContextMenu.
+     * @param dependencies - The dependencies for the context menu.
      */
-    constructor() {
-        this._logger.debug('Initializing CopyMarkdownLink');
-        this.registerEvents();
-    }
+    constructor(dependencies?: IDIContainer) {
+        super(dependencies);
 
-    /**
-     * Gets the singleton instance of the CopyMarkdownLink class.
-     * @returns The singleton instance.
-     */
-    static getInstance(): CopyMarkdownLink {
-        if (!CopyMarkdownLink.instance) {
-            CopyMarkdownLink.instance = new CopyMarkdownLink();
-        }
-
-        return CopyMarkdownLink.instance;
-    }
-
-    /**
-     * Deconstructs the 'CopyMarkdownLink' events
-     */
-    public static deconstructor() {
-        if (this.instance && this.instance.eventsRegistered) {
-            this.instance._logger.trace(
-                "Deconstructing 'CopyMarkdownLink' events",
+        this._translationService =
+            this._dependencies.resolve<ITranslationService>(
+                'ITranslationService',
             );
 
-            this.instance._app.workspace.off(
-                'file-menu',
-                this.instance.bindContextMenu,
-            );
-            this.instance.eventsRegistered = false;
-        } else {
-            this.instance._logger.trace(
-                "No 'CopyMarkdownLink' events to deconstruct",
-            );
-        }
+        this.isInitialized();
     }
 
     /**
-     * Registers the 'CopyMarkdownLink' events
+     * Initializes the context menu.
      */
-    private registerEvents() {
-        if (!this.eventsRegistered) {
-            this._logger.trace("Registering 'CopyMarkdownLink' events");
-            this._app.workspace.on('file-menu', this.bindContextMenu);
-            this.eventsRegistered = true;
-        }
+    protected onConstruction(): void {
+        this._app.workspace.on('file-menu', this.bindContextMenu);
     }
 
     /**
-     * Handles the context menu event
-     * @param menu The context menu
-     * @param file The file to add the context menu to
-     * @remarks Adds a context menu item to copy the markdown link of a file:
-     * - The context menu item copies the markdown link of the file to the clipboard.
+     * Cleans up the context menu.
      */
-    private onContextMenu(menu: Menu, file: TAbstractFile) {
+    protected onDeconstruction(): void {
+        this._app.workspace.off('file-menu', this.bindContextMenu);
+    }
+
+    /**
+     * Handles the context menu event.
+     * @param menu - The context menu.
+     * @param file - The file associated with the context menu.
+     */
+    protected onContextMenu(menu: Menu, file: TAbstractFile): void {
         if (!(file instanceof TFile)) {
             return;
         }
@@ -93,11 +66,17 @@ export default class CopyMarkdownLink {
         menu.addSeparator();
 
         menu.addItem((item) => {
-            item.setTitle(Lng.gt('Copy MD Link'))
+            item.setTitle(this._translationService.get('Copy MD Link'))
                 .setIcon('link')
                 .onClick(async () => {
                     navigator.clipboard.writeText(linktext);
                 });
         });
+    }
+    /**
+     * Invokes the context menu.
+     */
+    public invoke(): Promise<void> {
+        throw new Error('Method not implemented!');
     }
 }
