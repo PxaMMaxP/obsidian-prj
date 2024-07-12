@@ -27,6 +27,7 @@ import { TaskModel } from './models/TaskModel';
 import { TopicModel } from './models/TopicModel';
 import { Translations } from './translations/Translations';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
+import '../dist/auto-imports';
 
 /**
  * The main plugin class

@@ -33,3 +33,5 @@ diff_output.txt
 coverage/*
 
 docs/*
+
+dist/*

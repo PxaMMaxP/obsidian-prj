@@ -4,6 +4,7 @@
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
+    "gen:imports": "node importer.js",
     "dev": "concurrently \"node esbuild.config.mjs\" \"npm run watch:sass\" \"node copy-plugin-files.mjs watch\"",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass && node copy-plugin-files.mjs release",
     "build:action": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass",
