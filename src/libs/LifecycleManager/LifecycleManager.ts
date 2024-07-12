@@ -26,42 +26,42 @@ export class LifecycleManager implements ILifecycleManager {
     private _isUnloadPerformed = false;
 
     /**
-     *
+     * Gets whether the initialization has been performed.
      */
     private get isInitPerformed(): boolean {
         return this._isInitPerformed;
     }
 
     /**
-     *
+     * Sets the initialization as performed.
      */
     private initPerfomed(): void {
         this._isInitPerformed = true;
     }
 
     /**
-     *
+     * Gets whether the loading has been performed.
      */
     private get isLoadPerformed(): boolean {
         return this._isLoadPerformed;
     }
 
     /**
-     *
+     * Sets the loading as performed.
      */
     private loadPerformed(): void {
         this._isLoadPerformed = true;
     }
 
     /**
-     *
+     * Gets whether the unloading has been performed.
      */
     private get isUnloadPerformed(): boolean {
         return this._isUnloadPerformed;
     }
 
     /**
-     *
+     * Sets the unloading as performed.
      */
     private unloadPerformed(): void {
         this._isUnloadPerformed = true;
@@ -78,39 +78,9 @@ export class LifecycleManager implements ILifecycleManager {
     };
 
     /**
-     *
-     */
-    async onInit(): Promise<void> {
-        await this.executeCallbacks('init', 'before');
-        await this.executeCallbacks('init', 'on');
-        await this.executeCallbacks('init', 'after');
-        this.initPerfomed();
-    }
-
-    /**
-     *
-     */
-    async onLoad(): Promise<void> {
-        await this.executeCallbacks('load', 'before');
-        await this.executeCallbacks('load', 'on');
-        await this.executeCallbacks('load', 'after');
-        this.loadPerformed();
-    }
-
-    /**
-     *
-     */
-    async onUnload(): Promise<void> {
-        await this.executeCallbacks('unload', 'before');
-        await this.executeCallbacks('unload', 'on');
-        await this.executeCallbacks('unload', 'after');
-        this.unloadPerformed();
-    }
-
-    /**
-     *
-     * @param state
-     * @param time
+     * Executes the registered callbacks for the initialization, loading, or unloading state and time.
+     * @param state - The lifecycle state (init, load, unload).
+     * @param time - The lifecycle time (before, on, after).
      */
     private async executeCallbacks(
         state: ILifecycleState,
@@ -124,10 +94,10 @@ export class LifecycleManager implements ILifecycleManager {
     }
 
     /**
-     *
-     * @param time
-     * @param state
-     * @param callback
+     * Registers a callback to be executed on a specific lifecycle time and state.
+     * @param time - The lifecycle time (before, on, after).
+     * @param state - The lifecycle state (init, load, unload).
+     * @param callback - The callback function to be executed.
      */
     private async registerOn(
         time: ILifecycleTime,
@@ -141,15 +111,15 @@ export class LifecycleManager implements ILifecycleManager {
         ) {
             await callback();
         } else {
-            this._callbacks[state]![time]!.push(callback);
+            this._callbacks[state]?.[time]?.push(callback);
         }
     }
 
     /**
-     *
-     * @param time
-     * @param state
-     * @param callback
+     * Registers a callback to be executed on a specific lifecycle time and state.
+     * @param time - The lifecycle time (before, on, after).
+     * @param state - The lifecycle state (init, load, unload).
+     * @param callback - The callback function to be executed.
      */
     public static async register(
         time: ILifecycleTime,
@@ -157,5 +127,35 @@ export class LifecycleManager implements ILifecycleManager {
         callback: ILifecycleCallback,
     ): Promise<void> {
         await new LifecycleManager().registerOn(time, state, callback);
+    }
+
+    /**
+     * Executes the registered callbacks for the initialization state.
+     */
+    async onInit(): Promise<void> {
+        await this.executeCallbacks('init', 'before');
+        await this.executeCallbacks('init', 'on');
+        await this.executeCallbacks('init', 'after');
+        this.initPerfomed();
+    }
+
+    /**
+     * Executes the registered callbacks for the loading state.
+     */
+    async onLoad(): Promise<void> {
+        await this.executeCallbacks('load', 'before');
+        await this.executeCallbacks('load', 'on');
+        await this.executeCallbacks('load', 'after');
+        this.loadPerformed();
+    }
+
+    /**
+     * Executes the registered callbacks for the unloading state.
+     */
+    async onUnload(): Promise<void> {
+        await this.executeCallbacks('unload', 'before');
+        await this.executeCallbacks('unload', 'on');
+        await this.executeCallbacks('unload', 'after');
+        this.unloadPerformed();
     }
 }
