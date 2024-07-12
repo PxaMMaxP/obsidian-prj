@@ -42,24 +42,30 @@ export default class Prj extends Plugin {
 
         this.addSettingTab(new SettingTab(this.app, this));
 
-        LifecycleManager.registerOnInit(() => {
+        LifecycleManager.register('before', 'init', () => {
             // eslint-disable-next-line no-console
             console.log('Layout ready');
         });
 
-        LifecycleManager.registerOnInit(
+        LifecycleManager.register(
+            'before',
+            'init',
             () =>
                 // Initialize the translation service
                 new TranslationService(Translations, this.settings, undefined),
         );
 
-        // LifecycleManager.registerOnInit(() => );
-
-        LifecycleManager.registerOnInit(
+        LifecycleManager.register(
+            'before',
+            'init',
             () => new Global(this, this.app, this.settings),
         );
 
-        LifecycleManager.registerOnInit(() => this.onLayoutReady());
+        LifecycleManager.register('on', 'init', () =>
+            Global.getInstance().awaitCacheInitialization(),
+        );
+
+        LifecycleManager.register('after', 'init', () => this.onLayoutReady());
 
         if (this.app.workspace.layoutReady) {
             new LifecycleManager().onInit();
@@ -74,8 +80,6 @@ export default class Prj extends Plugin {
      * Will be called when the layout is ready
      */
     async onLayoutReady(): Promise<void> {
-        await Global.getInstance().awaitCacheInitialization();
-
         this._dependencies = DIContainer.getInstance();
         this.registerDependencies();
 
