@@ -7,7 +7,8 @@
       "deprecation",
       "prettier",
       "import",
-      "jsdoc"
+      "jsdoc",
+      "override"
     ],
     "extends": [
       "eslint:recommended",
@@ -20,6 +21,8 @@
         "project": "./tsconfig.json"
     },
     "rules": {
+      "override/require-override": "error",
+      "override/require-static-override": "error",
       "prettier/prettier": "warn",
       "array-callback-return": ["error"],
       "@typescript-eslint/no-unused-vars": [
