@@ -1,12 +1,13 @@
 /**
  * Singleton decorator.
  * @param constructor The constructor to create a singleton from.
+ * @param args Other arguments from the decorator interface.
  * @returns The singleton class.
  * @remarks To get the singleton instance, call the constructor.
  */
 export function Singleton<
     T extends { new (...args: unknown[]): NonNullable<unknown> },
->(constructor: T): T {
+>(constructor: T, ...args: unknown[]): T {
     let instance: T;
 
     /**
