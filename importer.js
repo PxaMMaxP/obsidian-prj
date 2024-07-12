@@ -41,7 +41,7 @@ function main() {
 
     const importContent = generateImports(filesWithComment);
 
-    fs.writeFileSync(path.join(__dirname, 'dist', 'auto-imports.ts'), importContent);
+    fs.writeFileSync(path.join(srcDir, 'auto-imports.ts'), importContent);
 
     console.log('Imports generated successfully');
 }
