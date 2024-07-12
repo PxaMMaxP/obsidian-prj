@@ -12,6 +12,7 @@ import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
+import { LifecycleManager } from './libs/LifecycleManager/LifecycleManager';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
@@ -22,9 +23,6 @@ import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
 import { Tag } from './libs/Tags/Tag';
 import { Tags } from './libs/Tags/Tags';
 import { TranslationService } from './libs/TranslationService/TranslationService';
-import { ProjectModel } from './models/ProjectModel';
-import { TaskModel } from './models/TaskModel';
-import { TopicModel } from './models/TopicModel';
 import { Translations } from './translations/Translations';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
 import '../dist/auto-imports';
@@ -47,10 +45,31 @@ export default class Prj extends Plugin {
 
         this.addSettingTab(new SettingTab(this.app, this));
 
+        LifecycleManager.registerOnInit(() => {
+            // eslint-disable-next-line no-console
+            console.log('Layout ready');
+        });
+
+        LifecycleManager.registerOnInit(
+            () =>
+                // Initialize the translation service
+                new TranslationService(Translations, this.settings, undefined),
+        );
+
+        // LifecycleManager.registerOnInit(() => );
+
+        LifecycleManager.registerOnInit(
+            () => new Global(this, this.app, this.settings),
+        );
+
+        LifecycleManager.registerOnInit(() => this.onLayoutReady());
+
         if (this.app.workspace.layoutReady) {
-            await this.onLayoutReady();
+            new LifecycleManager().onInit();
         } else {
-            this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
+            this.app.workspace.onLayoutReady(() => {
+                new LifecycleManager().onInit();
+            });
         }
     }
 
@@ -58,18 +77,6 @@ export default class Prj extends Plugin {
      * Will be called when the layout is ready
      */
     async onLayoutReady(): Promise<void> {
-        // eslint-disable-next-line no-console
-        console.log('Layout ready');
-
-        // Translation Service
-        new TranslationService(Translations, this.settings, undefined);
-
-        // Register Model Factories
-        ProjectModel.registerThisModelFactory();
-        TaskModel.registerThisModelFactory();
-        TopicModel.registerThisModelFactory();
-
-        new Global(this, this.app, this.settings);
         await Global.getInstance().awaitCacheInitialization();
 
         this._dependencies = DIContainer.getInstance();
@@ -101,6 +108,8 @@ export default class Prj extends Plugin {
             // Possibly no longer necessary with the current Obsidian version...
             Helper.rebuildActiveView();
         }, 500);
+
+        new LifecycleManager().onLoad();
     }
 
     /**
@@ -197,6 +206,8 @@ export default class Prj extends Plugin {
     onunload() {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
+        new LifecycleManager().onUnload();
+
         GetMetadata.deconstructor();
         new CopyMarkdownLink().deconstructor();
         Global.deconstructor();
