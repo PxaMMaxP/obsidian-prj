@@ -23,6 +23,12 @@
       "ES2021.WeakRef"
     ]
   },
+  "ts-node": {
+    "esm": true,
+    "compilerOptions": {
+      "module": "nodenext"
+    }
+  },
   "include": [
   "src/**/*.ts"
   ]
