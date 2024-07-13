@@ -7,7 +7,7 @@ import {
     IBaseComplexDataType_,
 } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from '../DependencyInjection/DIContainer';
-import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 

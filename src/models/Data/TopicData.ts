@@ -59,6 +59,7 @@ export default class TopicData
      * Sets the tags of the topic.
      */
     @fieldConfig()
+    @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
@@ -70,7 +71,6 @@ export default class TopicData
     /**
      * Gets the tags of the topic.
      */
-    @toStringField
     get tags(): ITags | null | undefined {
         return this._tags;
     }
