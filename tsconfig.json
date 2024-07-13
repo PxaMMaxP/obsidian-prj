@@ -12,6 +12,8 @@
     "importHelpers": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
 	"strictNullChecks": true,
     "lib": [
       "DOM",
