@@ -1,12 +1,16 @@
 import { TFile } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { ITag, ITag_ } from './interfaces/ITag';
 import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
 import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
+import { IBaseComplexDataType_ } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from '../DependencyInjection/DIContainer';
-import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 
 /**
  * Represents an array of tags.
@@ -14,7 +18,18 @@ import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
  * - The class also provides a method to convert all tags to a string.
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
-const Tags_: ITags_ = class Tags extends BaseComplexDataType implements ITags {
+@ImplementsStatic<ITags_>()
+@ImplementsStatic<ILifecycleObject>()
+@ImplementsStatic<IBaseComplexDataType_>()
+@Lifecycle
+export class Tags extends BaseComplexDataType implements ITags {
+    /**
+     * Register the markdown block processor and update the workspace options.
+     */
+    public static onLoad(): void {
+        DIContainer.getInstance().register('ITags', Tags);
+    }
+
     /**
      * The dependencies of the tags.
      */
@@ -360,6 +375,4 @@ const Tags_: ITags_ = class Tags extends BaseComplexDataType implements ITags {
         | undefined {
         return this._tags.map((tag) => tag.getFrontmatterObject());
     }
-};
-
-export { Tags_ as Tags };
+}

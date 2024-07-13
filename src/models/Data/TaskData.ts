@@ -59,6 +59,7 @@ export default class TaskData
      * Sets the tags of the Task.
      */
     @fieldConfig()
+    @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
@@ -70,7 +71,6 @@ export default class TaskData
     /**
      * Gets the tags of the Task.
      */
-    @toStringField
     get tags(): ITags | null | undefined {
         return this._tags;
     }

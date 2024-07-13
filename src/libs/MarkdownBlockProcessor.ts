@@ -1,6 +1,7 @@
 /* eslint-disable no-case-declarations */
 import * as yaml from 'js-yaml';
 import { MarkdownPostProcessorContext } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Logging } from 'src/classes/Logging';
 import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
 import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRenderComponent';
@@ -8,6 +9,8 @@ import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderCom
 import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
 import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRenderChild';
 import Helper from './Helper';
+import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from './LifecycleManager/interfaces/ILifecycleManager';
 import SingletonBlockProcessor from './SingletonBlockProcessor';
 import Global from '../classes/Global';
 import { IProcessorSettings } from '../interfaces/IProcessorSettings';
@@ -15,7 +18,21 @@ import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 /**
  * Class for the markdown block processor.
  */
+@ImplementsStatic<ILifecycleObject>()
+@Lifecycle
 export default class MarkdownBlockProcessor {
+    /**
+     * Register the markdown block processor and update the workspace options.
+     */
+    public static onLoad(): void {
+        Global.getInstance().plugin.registerMarkdownCodeBlockProcessor(
+            'prj',
+            MarkdownBlockProcessor.parseSource,
+        );
+
+        Global.getInstance().app.workspace.updateOptions();
+    }
+
     /**
      * Parse the source of the `prj` block.
      * @param source A unique identifier for the block.

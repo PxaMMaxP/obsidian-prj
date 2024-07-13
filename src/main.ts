@@ -1,6 +1,5 @@
 import { Plugin } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
-import MarkdownBlockProcessor from 'src/libs/MarkdownBlockProcessor';
 import { PrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
 import Global from './classes/Global';
@@ -12,6 +11,7 @@ import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
 import Helper from './libs/Helper';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
+import { LifecycleManager } from './libs/LifecycleManager/LifecycleManager';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
 import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
@@ -19,14 +19,10 @@ import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';
 import CreateNewTaskModal from './libs/Modals/CreateNewTaskModal';
-import { Tag } from './libs/Tags/Tag';
-import { Tags } from './libs/Tags/Tags';
 import { TranslationService } from './libs/TranslationService/TranslationService';
-import { ProjectModel } from './models/ProjectModel';
-import { TaskModel } from './models/TaskModel';
-import { TopicModel } from './models/TopicModel';
 import { Translations } from './translations/Translations';
 import { DEFAULT_SETTINGS } from './types/PrjSettings';
+import './auto-imports'; //
 
 /**
  * The main plugin class
@@ -46,10 +42,37 @@ export default class Prj extends Plugin {
 
         this.addSettingTab(new SettingTab(this.app, this));
 
+        LifecycleManager.register('before', 'init', () => {
+            // eslint-disable-next-line no-console
+            console.log('Layout ready');
+        });
+
+        LifecycleManager.register(
+            'before',
+            'init',
+            () =>
+                // Initialize the translation service
+                new TranslationService(Translations, this.settings, undefined),
+        );
+
+        LifecycleManager.register(
+            'before',
+            'init',
+            () => new Global(this, this.app, this.settings),
+        );
+
+        LifecycleManager.register('on', 'init', () =>
+            Global.getInstance().awaitCacheInitialization(),
+        );
+
+        LifecycleManager.register('after', 'init', () => this.onLayoutReady());
+
         if (this.app.workspace.layoutReady) {
-            await this.onLayoutReady();
+            new LifecycleManager().onInit();
         } else {
-            this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
+            this.app.workspace.onLayoutReady(() => {
+                new LifecycleManager().onInit();
+            });
         }
     }
 
@@ -57,29 +80,8 @@ export default class Prj extends Plugin {
      * Will be called when the layout is ready
      */
     async onLayoutReady(): Promise<void> {
-        // eslint-disable-next-line no-console
-        console.log('Layout ready');
-
-        // Translation Service
-        new TranslationService(Translations, this.settings, undefined);
-
-        // Register Model Factories
-        ProjectModel.registerThisModelFactory();
-        TaskModel.registerThisModelFactory();
-        TopicModel.registerThisModelFactory();
-
-        new Global(this, this.app, this.settings);
-        await Global.getInstance().awaitCacheInitialization();
-
         this._dependencies = DIContainer.getInstance();
         this.registerDependencies();
-
-        this.registerMarkdownCodeBlockProcessor(
-            'prj',
-            MarkdownBlockProcessor.parseSource,
-        );
-
-        this.app.workspace.updateOptions();
 
         // Get Metadata File Context Menu & Command
         GetMetadata.getInstance();
@@ -100,6 +102,8 @@ export default class Prj extends Plugin {
             // Possibly no longer necessary with the current Obsidian version...
             Helper.rebuildActiveView();
         }, 500);
+
+        new LifecycleManager().onLoad();
     }
 
     /**
@@ -125,6 +129,7 @@ export default class Prj extends Plugin {
         // Change Status Command
         ChangeStatusModal.registerCommand();
 
+        //
         //Register event on `Status` change..
         Global.getInstance().metadataCache.on(
             'prj-task-management-changed-status-event',
@@ -176,9 +181,6 @@ export default class Prj extends Plugin {
             Global.getInstance().metadataCache,
         );
 
-        this._dependencies.register('ITag', Tag);
-        this._dependencies.register('ITags', Tags);
-
         this._dependencies.register('ILogger_', Logging);
 
         this._dependencies.register(
@@ -196,6 +198,8 @@ export default class Prj extends Plugin {
     onunload() {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
+        new LifecycleManager().onUnload();
+
         GetMetadata.deconstructor();
         new CopyMarkdownLink().deconstructor();
         Global.deconstructor();

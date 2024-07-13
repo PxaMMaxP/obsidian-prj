@@ -59,6 +59,7 @@ export default class ProjectData
      * Sets the tags of the Project.
      */
     @fieldConfig()
+    @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
@@ -70,7 +71,6 @@ export default class ProjectData
     /**
      * Gets the tags of the Project.
      */
-    @toStringField
     get tags(): ITags | null | undefined {
         return this._tags;
     }
