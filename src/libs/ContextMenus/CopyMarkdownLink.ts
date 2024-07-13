@@ -3,13 +3,19 @@ import { Singleton } from 'src/classes/decorators/Singleton';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 import ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Represents a context menu for copying markdown links.
  */
+@Lifecycle
 @Singleton
-export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
+export class CopyMarkdownLink
+    extends ContextMenu
+    implements IContextMenu, ILifecycleObject
+{
     protected bindContextMenu = this.onContextMenu.bind(this);
     private _translationService: ITranslationService;
 
@@ -24,8 +30,20 @@ export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
             this._dependencies.resolve<ITranslationService>(
                 'ITranslationService',
             );
+    }
 
+    /**
+     * This method is called when the application is unloaded.
+     */
+    public onLoad(): void {
         this.isInitialized();
+    }
+
+    /**
+     * This method is called when the application is unloaded.
+     */
+    public onUnload(): void {
+        this.deconstructor();
     }
 
     /**

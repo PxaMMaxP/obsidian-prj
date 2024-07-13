@@ -1,23 +1,35 @@
 import { TFile } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
+import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import { Tags } from 'src/libs/Tags/Tags';
 import { Status } from 'src/types/PrjTypes';
 import TaskData from './Data/TaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
-
+// @import-me
 /**
  * Represents a task.
  */
+@Lifecycle
+@ImplementsStatic<ILifecycleObject>()
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
     protected logger: ILogger = Logging.getLogger('TaskModel');
 
     /**
+     * Initializes the model.
+     */
+    public static onLoad(): void {
+        TaskModel.registerThisModelFactory();
+    }
+
+    /**
      * Registers the TaskModel at the PrjTaskManagementModel.
      */
-    public static registerThisModelFactory(): void {
+    private static registerThisModelFactory(): void {
         // eslint-disable-next-line no-console
         console.debug('Registering `TaskModel` at `PrjTaskManagementModel`');
 
