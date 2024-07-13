@@ -1,9 +1,10 @@
 {
   "name": "obsidian-prj-plugin",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Prj Plugin - Project, Document, and Task Management",
   "main": "main.js",
   "scripts": {
+    "gen:imports": "node importer.js",
     "dev": "concurrently \"node esbuild.config.mjs\" \"npm run watch:sass\" \"node copy-plugin-files.mjs watch\"",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass && node copy-plugin-files.mjs release",
     "build:action": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass",
@@ -43,10 +44,10 @@
     "eslint-plugin-override": "https://github.com/PxaMMaxP/eslint-plugin-override",
     "jest": "^29.7.0",
     "obsidian": "latest",
-    "obsidian-dataview": "^0.4.21",
-    "quicktype": "^23.0.170",
+    "obsidian-dataview": "^0.5.67",
+    "quicktype": "^23.0.81",
     "sass": "^1.77.8",
-    "ts-jest": "^29.1.4",
+    "ts-jest": "^29.2.2",
     "tslib": "^2.6.3",
     "typedoc": "^0.26.4",
     "typescript": "^5.5.3"

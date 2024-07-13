@@ -128,8 +128,8 @@
           "FunctionDeclaration": true,
           "MethodDefinition": true,
           "ClassDeclaration": true,
-          "ArrowFunctionExpression": true,
-          "FunctionExpression": true
+          "ArrowFunctionExpression": false,
+          "FunctionExpression": false
         }
       }
     ],
@@ -157,7 +157,7 @@
     "jsdoc/check-tag-names": [
       "warn",
       {
-        "definedTags": ["remarks", "jest-environment"]
+        "definedTags": ["remarks", "jest-environment", "singleton"]
       }
     ],
     "jsdoc/check-alignment": "warn",
