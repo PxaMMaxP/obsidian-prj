@@ -36,6 +36,7 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
      * Sets the tags of the note.
      */
     @fieldConfig()
+    @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
@@ -47,7 +48,6 @@ export default class NoteData extends BaseData<NoteData> implements IPrjData {
     /**
      * Gets the tags of the note.
      */
-    @toStringField
     get tags(): ITags | null | undefined {
         return this._tags;
     }

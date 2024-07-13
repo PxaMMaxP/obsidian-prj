@@ -134,6 +134,7 @@ export default class DocumentData
      * Sets the tags of the document.
      */
     @fieldConfig()
+    @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
         if (Tags.isInstanceOf(value)) {
             this._tags = value;
@@ -145,7 +146,6 @@ export default class DocumentData
     /**
      * Gets the tags of the document.
      */
-    @toStringField
     get tags(): ITags | null | undefined {
         return this._tags;
     }
