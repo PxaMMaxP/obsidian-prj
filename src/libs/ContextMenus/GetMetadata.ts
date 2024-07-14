@@ -1,91 +1,87 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
-import Global from 'src/classes/Global';
-import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Singleton } from 'src/classes/decorators/Singleton';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { DocumentModel } from 'src/models/DocumentModel';
 import { FileType } from 'src/types/PrjTypes';
+import { ContextMenu } from './ContextMenu';
+import { IContextMenu } from './interfaces/IContextMenu';
+import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import Helper from '../Helper';
+import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 import { FileMetadata } from '../MetadataCache';
+import ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Represents a class for retrieving metadata for a file.
+ * @see {@link Singleton}
+ * @see {@link Lifecycle}
  */
-export default class GetMetadata {
-    private static _instance: GetMetadata;
-    private _app = Global.getInstance().app;
-    private _logger = Logging.getLogger('GetMetadata');
-    private _plugin = Global.getInstance().plugin;
-    private _metadataCache = Global.getInstance().metadataCache;
-    protected eventsRegistered = false;
+@Lifecycle
+@ImplementsStatic<ILifecycleObject>()
+@Singleton
+export class GetMetadata extends ContextMenu implements IContextMenu {
     protected bindContextMenu = this.onContextMenu.bind(this);
+    private _translationService: ITranslationService;
+    private _metadataCache: IMetadataCache;
+    protected eventsRegistered = false;
 
     /**
-     * Initializes a new instance of the GetMetadata class.
+     * Initializes a instance of the GetMetadata class.
+     * @param dependencies The dependencies for the context menu.
      */
-    private constructor() {
-        this._logger.debug('Initializing GetMetadata');
-        this.registerEvents();
-        this.registerCommands();
-    }
+    constructor(dependencies?: IDIContainer) {
+        super(dependencies);
 
-    /**
-     * Gets the singleton instance of the GetMetadata class.
-     * @returns The singleton instance.
-     */
-    static getInstance(): GetMetadata {
-        if (!GetMetadata._instance) {
-            GetMetadata._instance = new GetMetadata();
-        }
-
-        return GetMetadata._instance;
-    }
-
-    /**
-     * Deconstructs the 'GetMetadata' events.
-     */
-    public static deconstructor() {
-        if (this._instance && this._instance.eventsRegistered) {
-            this._instance._logger.trace("Deconstructing 'GetMetadata' events");
-
-            this._instance._app.workspace.off(
-                'file-menu',
-                this._instance.bindContextMenu,
+        this._translationService =
+            this._dependencies.resolve<ITranslationService>(
+                'ITranslationService',
             );
-            this._instance.eventsRegistered = false;
-        } else {
-            this._instance._logger.trace(
-                "No 'GetMetadata' events to deconstruct",
-            );
-        }
+
+        this._metadataCache =
+            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
     }
 
     /**
-     * Registers the 'GetMetadata' events.
+     * This method is called when the application is unloaded.
      */
-    private registerEvents() {
-        if (!this.eventsRegistered) {
-            this._logger.trace("Registering 'GetMetadata' events");
-            this._app.workspace.on('file-menu', this.bindContextMenu);
-            this.eventsRegistered = true;
-        }
+    public static onLoad(): void {
+        const instance = new GetMetadata();
+        instance.isInitialized();
     }
 
     /**
-     * Registers the 'GetMetadata' commands.
+     * This method is called when the application is unloaded.
      */
-    private registerCommands() {
-        this._logger.trace("Registering 'GetMetadata' commands");
+    public static onUnload(): void {
+        const instance = new GetMetadata();
+        instance.deconstructor();
+    }
+
+    /**
+     * Initializes the context menu.
+     */
+    protected onConstruction(): void {
+        this._app.workspace.on('file-menu', this.bindContextMenu);
 
         this._plugin.addCommand({
             id: 'get-metadata-file',
-            name: Lng.gt('Show Metadata File'),
+            name: this._translationService.get('Show Metadata File'),
             /**
              * Callback function for the 'get-metadata-file' command.
              */
             callback: () => {
-                GetMetadata.getInstance().invoke();
+                new GetMetadata().invoke();
             },
         });
+    }
+
+    /**
+     * Cleans up the context menu.
+     */
+    protected onDeconstruction(): void {
+        this._app.workspace.off('file-menu', this.bindContextMenu);
     }
 
     /**
@@ -93,7 +89,7 @@ export default class GetMetadata {
      * @param menu The context menu.
      * @param file The file to add the context menu item to.
      */
-    private onContextMenu(menu: Menu, file: TAbstractFile) {
+    protected onContextMenu(menu: Menu, file: TAbstractFile) {
         // Allow only pdf files
         if (!(file instanceof TFile) || !file.path.endsWith('.pdf')) {
             return;
@@ -109,7 +105,9 @@ export default class GetMetadata {
             menu.addSeparator();
 
             menu.addItem((item) => {
-                item.setTitle(Lng.gt('Show Metadata File'))
+                item.setTitle(
+                    this._translationService.get('Show Metadata File'),
+                )
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
                         await Helper.openFile(document.file);
@@ -157,14 +155,16 @@ export default class GetMetadata {
             !(activeFile instanceof TFile) ||
             !activeFile.path.endsWith('.pdf')
         ) {
-            this._logger.warn('No active pdf file found.');
+            this._logger?.warn('No active pdf file found.');
 
             return;
         }
         const metadataFile = this.getCorrespondingMetadataFile(activeFile);
 
         if (!metadataFile) {
-            this._logger.warn('No metadata file to the active pdf file found.');
+            this._logger?.warn(
+                'No metadata file to the active pdf file found.',
+            );
 
             return;
         }
