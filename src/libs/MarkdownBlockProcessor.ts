@@ -76,8 +76,8 @@ export default class MarkdownBlockProcessor {
             Logging.getLogger('SingletonBlockProcessor'),
         );
 
-        const singleToneBlock = singletonBlockProcessor.singletoneContainer;
-        el.append(singleToneBlock);
+        const singletonBlock = singletonBlockProcessor.singletoneContainer;
+        el.append(singletonBlock);
 
         if (!singletonBlockProcessor.checkForSiblingBlocks()) {
             const endTime = Date.now();
@@ -90,7 +90,7 @@ export default class MarkdownBlockProcessor {
         }
 
         const blockContainer = document.createElement('div');
-        singleToneBlock.append(blockContainer);
+        singletonBlock.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
         blockContainer.lang = global.settings.language;
 
