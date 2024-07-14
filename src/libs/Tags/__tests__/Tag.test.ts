@@ -211,4 +211,102 @@ describe('Tag', () => {
     test('should return false if object is not instance of Tag', () => {
         expect(Tag.isInstanceOf({})).toBe(false);
     });
+
+    // Tests for `isTagAtHierarchyLevel` method
+
+    test('should return true if the tag is directly below another tag at the specified hierarchy level', () => {
+        const tag = new Tag('Tag1/Tag2', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(true);
+    });
+
+    test('should return false if the tag is not directly below another tag at the specified hierarchy level', () => {
+        const tag = new Tag('Tag1/Tag2', dependencies);
+        const parentTag = new Tag('Tag3', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(false);
+    });
+
+    test('should return false if the tag is two levels below another tag when checking for one level', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(false);
+    });
+
+    test('should return true if the tag is two levels below another tag when checking for two levels', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 2)).toBe(true);
+    });
+
+    test('should return false if the levels parameter is less than 1', () => {
+        const tag = new Tag('Tag1/Tag2', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 0)).toBe(false);
+    });
+
+    test('should return false if the levels parameter is greater than or equal to the number of elements in the tag', () => {
+        const tag = new Tag('Tag1', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(false);
+    });
+
+    test('should return true if the tag is exactly the specified levels below another tag', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 2)).toBe(true);
+    });
+
+    test('should return false if the tag is not exactly the specified levels below another tag', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3/Tag4', dependencies);
+        const parentTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 2)).toBe(false);
+    });
+
+    test('should return false if levels parameter is 0', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const targetTag = new Tag('Tag3', dependencies);
+        expect(tag.isTagAtHierarchyLevel(targetTag, 0)).toBe(false);
+    });
+
+    test('should return true if the tag is one level below another tag', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const targetTag = new Tag('Tag2', dependencies);
+        expect(tag.isTagAtHierarchyLevel(targetTag, 1)).toBe(true);
+    });
+
+    test('should return true if the tag is two levels below another tag', () => {
+        const tag = new Tag('Tag1/Tag2/Tag3', dependencies);
+        const targetTag = new Tag('Tag1', dependencies);
+        expect(tag.isTagAtHierarchyLevel(targetTag, 2)).toBe(true);
+    });
+
+    test('should return true if the tag is directly below another tag at the specified hierarchy level', () => {
+        const tag = new Tag('A/B/C/D', dependencies);
+        const parentTag = new Tag('A/B/C', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(true);
+    });
+
+    test('should return false if the tag is two levels below another tag when checking for one level', () => {
+        const tag = new Tag('A/B/C/D/E', dependencies);
+        const parentTag = new Tag('A/B/C', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(false);
+    });
+
+    test('should return true if the tag is two levels below another tag when checking for two levels', () => {
+        const tag = new Tag('A/B/C/D', dependencies);
+        const parentTag = new Tag('A/B', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 2)).toBe(true);
+    });
+
+    test('should return false if the levels parameter is less than 1', () => {
+        const tag = new Tag('A/B/C/D', dependencies);
+        const parentTag = new Tag('A/B/C', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 0)).toBe(false);
+    });
+
+    test('should return false if the levels parameter is greater than or equal to the number of elements in the tag', () => {
+        const tag = new Tag('A/B', dependencies);
+        const parentTag = new Tag('A/B', dependencies);
+        expect(tag.isTagAtHierarchyLevel(parentTag, 1)).toBe(false);
+    });
 });
