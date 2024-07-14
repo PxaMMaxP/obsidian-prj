@@ -1,33 +1,8 @@
-import { moment } from 'obsidian';
-import { HelperGeneral } from './Helper/General';
-
 /**
  * Represents a helper class with various utility methods.
+ * @deprecated Will be removed in the future.
  */
 export default class Helper {
-    /**
-     * Formats a date string according to the specified format.
-     * @param date - The date string to be formatted.
-     * @param format - The format string specifying the desired output format.
-     * @returns The formatted date string, or the original date string if it is not in a valid format.
-     * @deprecated Use {@link HelperGeneral.formatDate} instead.
-     */
-    static formatDate(date: string, format: string): string {
-        const regexDate =
-            /^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:\d{2}(\.\d{3})?)?)?)?$/;
-
-        if (!regexDate.test(date)) {
-            return date;
-        }
-        const formatedDate = moment(date).format(format);
-
-        if (formatedDate === 'Invalid date') {
-            return date;
-        }
-
-        return formatedDate;
-    }
-
     /**
      * Checks if any of the tags in `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
      * @param tagsToCheck The tags to check as substrings
