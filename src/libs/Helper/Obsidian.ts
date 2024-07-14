@@ -44,7 +44,7 @@ export class HelperObsidian {
     /**
      * This method is called when the application is unloaded.
      */
-    public static afterInit(): void {
+    public static beforeLoad(): void {
         const instance = new HelperObsidian();
         DIContainer.getInstance().register('IHelperObsidian_', instance);
     }
