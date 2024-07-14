@@ -163,8 +163,6 @@ export default class SingletonBlockProcessor {
                 preview,
             );
         }
-
-        return true;
     }
 
     /**
