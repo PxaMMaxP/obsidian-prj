@@ -18,10 +18,10 @@ import SearchInput from './InnerComponents/SearchInput';
 import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
-import Helper from '../Helper';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
+import { Tags } from '../Tags/Tags';
 
 /**
  * Represents a block render component for `PrjTaskManagementModel`.
@@ -507,18 +507,14 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             IPrjData & IPrjTaskManagement & BaseData<unknown>
         >,
     ): boolean {
+        const settingTags = new Tags(this.settings.tags);
+
         if (this.settings.reactOnActiveFile) {
-            return !Helper.isTagIncluded(
-                this.settings.tags,
-                document.data.tags?.toStringArray() ?? [],
-            );
+            return !document.data.tags?.contains(settingTags);
         } else if (this.settings.filter.includes('DeepHierarchy')) {
             return false;
         } else {
-            return !Helper.isTagDirectlyBelow(
-                this.settings.tags,
-                document.data.tags?.toStringArray() ?? [],
-            );
+            return !document.data.tags?.areTagsAtHierarchyLevel(settingTags);
         }
     }
 

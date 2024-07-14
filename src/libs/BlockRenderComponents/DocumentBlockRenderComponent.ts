@@ -11,10 +11,10 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Helper from '../Helper';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
+import { Tags } from '../Tags/Tags';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -456,11 +456,10 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * @returns If the document should be  shown returns `true`, else `false`.
      */
     private determineTagHideState(document: DocumentModel): boolean {
+        const settingTags = new Tags(this.settings.tags);
+
         return this.settings.reactOnActiveFile
-            ? !Helper.isTagIncluded(
-                  this.settings.tags,
-                  document.data.tags?.toStringArray() ?? [],
-              )
+            ? !document.data.tags?.contains(settingTags)
             : false;
     }
 
