@@ -6,6 +6,7 @@ import { Tag } from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
 import { HelperGeneral } from './Helper/General';
 import { HelperObsidian } from './Helper/Obsidian';
+import { IWikilink } from './Wikilink/IWikilink';
 import { Wikilink } from './Wikilink/Wikilink';
 
 /**
@@ -22,6 +23,7 @@ export default class Helper {
      */
     static extractDataFromWikilink(
         wikilink: string | null | undefined,
+        // eslint-disable-next-line deprecation/deprecation
     ): WikilinkData {
         if (wikilink && typeof wikilink === 'string') {
             const dismantledLinkMatch = wikilink.match(
@@ -472,6 +474,7 @@ export default class Helper {
             clonedObj = [];
 
             obj.forEach((val, i) => {
+                // eslint-disable-next-line deprecation/deprecation
                 clonedObj[i] = Helper.deepCloneFrontMatterCache(val);
             });
         } else {
@@ -479,6 +482,7 @@ export default class Helper {
             clonedObj = {};
 
             Object.keys(obj).forEach((key) => {
+                // eslint-disable-next-line deprecation/deprecation
                 clonedObj[key] = Helper.deepCloneFrontMatterCache(obj[key]);
             });
         }
@@ -487,6 +491,9 @@ export default class Helper {
     }
 }
 
+/**
+ * @deprecated Use {@link Wikilink}/{@link IWikilink} instead.
+ */
 export type WikilinkData = {
     date: Date | undefined;
     basename: string | undefined;
