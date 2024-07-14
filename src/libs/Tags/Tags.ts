@@ -253,7 +253,9 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @returns Whether the tag exists in the tags array.
      */
     public includes(tag: ITag): boolean {
-        return this._tags.some((existingTag) => existingTag.equals(tag));
+        return this._tags.some((existingTag) =>
+            existingTag.includes(tag.toString()),
+        );
     }
 
     /**

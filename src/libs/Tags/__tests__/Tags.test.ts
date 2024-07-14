@@ -82,7 +82,7 @@ describe('Tags', () => {
             }
 
             includes(substring: string): boolean {
-                throw new Error('Method not implemented.');
+                return this.value.includes(substring);
             }
 
             getObsidianLink(tagLabel?: string): HTMLAnchorElement {
