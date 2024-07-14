@@ -7,7 +7,6 @@ import { FileType } from 'src/types/PrjTypes';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import Helper from '../Helper';
 import { IHelperObsidian_ } from '../Helper/Obsidian';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
