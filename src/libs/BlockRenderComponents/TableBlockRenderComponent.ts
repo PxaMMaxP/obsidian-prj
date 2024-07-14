@@ -5,7 +5,7 @@ import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import IPrjModel from 'src/interfaces/IPrjModel';
 import { PrjSettings } from 'src/types/PrjSettings';
-import { FileType } from 'src/types/PrjTypes';
+import PrjTypes, { FileType } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import Helper from '../Helper';
@@ -282,7 +282,7 @@ export default abstract class TableBlockRenderComponent<
         const templateFolder = this.global.settings.templateFolder;
 
         const allDocumentFiles = this.metadataCache.cache.filter((file) => {
-            const typeFilter = Helper.isTypeIncluded(
+            const typeFilter = PrjTypes.isTypeIncluded(
                 types,
                 file.metadata.frontmatter?.type,
             );
