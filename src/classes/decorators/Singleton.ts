@@ -1,4 +1,29 @@
-import { copyStaticProperties } from 'src/libs/LifecycleManager/decorators/Lifecycle';
+/**
+ * Copies static properties from the source to the target.
+ * @param target The target to copy the properties to.
+ * @param source The source to copy the properties from.
+ */
+export function copyStaticProperties(target: unknown, source: unknown): void {
+    let currentSource = source;
+
+    while (currentSource && currentSource !== Function.prototype) {
+        Object.getOwnPropertyNames(currentSource)
+            .concat(Object.getOwnPropertySymbols(currentSource).toString())
+            .forEach((prop) => {
+                if (prop !== 'prototype') {
+                    const descriptor = Object.getOwnPropertyDescriptor(
+                        currentSource,
+                        prop,
+                    );
+
+                    if (descriptor && descriptor.configurable) {
+                        Object.defineProperty(target, prop, descriptor);
+                    }
+                }
+            });
+        currentSource = Object.getPrototypeOf(currentSource);
+    }
+}
 
 /**
  * Singleton decorator.
