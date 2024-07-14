@@ -60,3 +60,22 @@ export interface MarkdownSectionInformation {
     lineStart: number;
     lineEnd: number;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const _moment = require('moment');
+
+const mockMoment = jest.fn((...args) => {
+    const actualMoment = _moment(...args);
+
+    actualMoment.format = jest.fn((format: string) => {
+        if (format === 'invalid-format') {
+            return 'Invalid date';
+        }
+
+        return _moment(...args).format(format);
+    });
+
+    return actualMoment;
+});
+
+export { mockMoment as moment };
