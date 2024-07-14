@@ -61,6 +61,102 @@ describe('SingletonBlockProcessor', () => {
         expect(processor['workspaceLeafContent']).toBe(workspaceLeafContent);
     });
 
+    test('workspaceLeafState returns closest workspace leaf data-mode attribute', () => {
+        const workspaceLeafContent = document.createElement('div');
+        workspaceLeafContent.classList.add('workspace-leaf-content');
+        workspaceLeafContent.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(mockEl);
+        document.body.appendChild(workspaceLeafContent);
+
+        expect(processor['workspaceLeafState']).toBe('source');
+    });
+
+    test('siblingBlocks returns all sibling blocks with the same uid', () => {
+        const workspaceLeafContent = document.createElement('div');
+        workspaceLeafContent.classList.add('workspace-leaf-content');
+        workspaceLeafContent.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(mockEl);
+        document.body.appendChild(workspaceLeafContent);
+
+        const siblingBlock = document.createElement('div');
+        siblingBlock.classList.add('singleton-block');
+        siblingBlock.id = 'test-uid';
+        workspaceLeafContent.appendChild(siblingBlock);
+
+        const siblingBlock2 = document.createElement('div');
+        siblingBlock2.classList.add('singleton-block');
+        siblingBlock2.id = 'test-uid';
+        workspaceLeafContent.appendChild(siblingBlock2);
+
+        expect(processor['siblingBlocks']?.length).toBe(2);
+    });
+
+    test('sourceSiblingBlock returns source sibling block', () => {
+        const workspaceLeafContent = document.createElement('div');
+        workspaceLeafContent.classList.add('workspace-leaf-content');
+        workspaceLeafContent.setAttribute('data-mode', 'preview');
+        workspaceLeafContent.appendChild(mockEl);
+        document.body.appendChild(workspaceLeafContent);
+
+        const siblingBlock = document.createElement('div');
+        siblingBlock.classList.add('singleton-block');
+        siblingBlock.id = 'test-uid';
+        siblingBlock.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(siblingBlock);
+
+        const siblingBlock2 = document.createElement('div');
+        siblingBlock2.classList.add('singleton-block');
+        siblingBlock2.setAttribute('data-mode', 'preview');
+        siblingBlock2.id = 'test-uid';
+        workspaceLeafContent.appendChild(siblingBlock2);
+
+        expect(processor['sourceSiblingBlock']).toBe(siblingBlock);
+    });
+
+    test('previewSiblingBlock returns preview sibling block', () => {
+        const workspaceLeafContent = document.createElement('div');
+        workspaceLeafContent.classList.add('workspace-leaf-content');
+        workspaceLeafContent.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(mockEl);
+        document.body.appendChild(workspaceLeafContent);
+
+        const siblingBlock = document.createElement('div');
+        siblingBlock.classList.add('singleton-block');
+        siblingBlock.id = 'test-uid';
+        siblingBlock.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(siblingBlock);
+
+        const siblingBlock2 = document.createElement('div');
+        siblingBlock2.classList.add('singleton-block');
+        siblingBlock2.setAttribute('data-mode', 'preview');
+        siblingBlock2.id = 'test-uid';
+        workspaceLeafContent.appendChild(siblingBlock2);
+
+        expect(processor['previewSiblingBlock']).toBe(siblingBlock2);
+    });
+
+    test('checkForSiblingBlocks returns true if sibling blocks exist', () => {
+        const workspaceLeafContent = document.createElement('div');
+        workspaceLeafContent.classList.add('workspace-leaf-content');
+        workspaceLeafContent.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(mockEl);
+        document.body.appendChild(workspaceLeafContent);
+
+        const siblingBlock = document.createElement('div');
+        siblingBlock.classList.add('markdown-source-view', 'singleton-block');
+        siblingBlock.id = 'test-uid';
+        siblingBlock.setAttribute('data-mode', 'source');
+        workspaceLeafContent.appendChild(siblingBlock);
+
+        const siblingBlock2 = document.createElement('div');
+        siblingBlock2.classList.add('markdown-reading-view', 'singleton-block');
+        siblingBlock2.setAttribute('data-mode', 'preview');
+        siblingBlock2.id = 'test-uid';
+        workspaceLeafContent.appendChild(siblingBlock2);
+
+        expect(processor['checkForSiblingBlocks']()).toBe(true);
+    });
+
     test('moveChilds moves children from source to target', () => {
         const source = document.createElement('div');
         const target = document.createElement('div');
