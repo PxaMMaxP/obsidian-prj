@@ -6,6 +6,7 @@ import { Tag } from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
 import { HelperGeneral } from './Helper/General';
 import { HelperObsidian } from './Helper/Obsidian';
+import { Wikilink } from './Wikilink/Wikilink';
 
 /**
  * Represents a helper class with various utility methods.
@@ -17,6 +18,7 @@ export default class Helper {
      * Extracts the date, filename, file extension and display text from a wikilink
      * @param wikilink Wikilink to extract the data from, eg. [[2021.01.01 - file.txt|Display text]]
      * @returns Object containing the date, filename, file extension and display text
+     * @deprecated Use {@link Wikilink} instead.
      */
     static extractDataFromWikilink(
         wikilink: string | null | undefined,
