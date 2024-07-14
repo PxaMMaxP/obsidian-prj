@@ -3,7 +3,6 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
-import Helper from 'src/libs/Helper';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
@@ -116,7 +115,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
             return automaticFilename;
         }
 
-        const date = Helper.formatDate(
+        const date = HelperGeneral.formatDate(
             history.date,
             this.global.settings.dateFormat,
         );

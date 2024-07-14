@@ -13,7 +13,6 @@ import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
 import IPrjModel from '../interfaces/IPrjModel';
-import Helper from '../libs/Helper';
 
 /**
  * Represents the model for a document.
@@ -270,7 +269,7 @@ export class DocumentModel
 
         if (model.data.date) {
             newFileName.push(
-                `${Helper.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+                `${HelperGeneral.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
             );
         }
 
