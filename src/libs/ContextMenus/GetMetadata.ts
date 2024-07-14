@@ -8,6 +8,7 @@ import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import Helper from '../Helper';
+import { IHelperObsidian_ } from '../Helper/Obsidian';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 import { FileMetadata } from '../MetadataCache';
@@ -25,6 +26,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
     protected bindContextMenu = this.onContextMenu.bind(this);
     private _translationService: ITranslationService;
     private _metadataCache: IMetadataCache;
+    private _helperObsidian: IHelperObsidian_;
     protected eventsRegistered = false;
 
     /**
@@ -41,6 +43,9 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
 
         this._metadataCache =
             this._dependencies.resolve<IMetadataCache>('IMetadataCache');
+
+        this._helperObsidian =
+            this._dependencies.resolve<IHelperObsidian_>('IHelperObsidian_');
     }
 
     /**
@@ -110,7 +115,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
                 )
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
-                        await Helper.openFile(document.file);
+                        await this._helperObsidian.openFile(document.file);
                     });
             });
         }
@@ -169,6 +174,6 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
             return;
         }
         const document = new DocumentModel(metadataFile.file);
-        await Helper.openFile(document.file);
+        await this._helperObsidian.openFile(document.file);
     }
 }
