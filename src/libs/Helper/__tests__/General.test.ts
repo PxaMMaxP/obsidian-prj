@@ -1,3 +1,4 @@
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { HelperGeneral } from '../General';
 
 describe('HelperGeneral', () => {
@@ -104,6 +105,50 @@ describe('HelperGeneral', () => {
 
         it('should return false if the string is not an emoji', () => {
             expect(HelperGeneral.isEmoji('test')).toBe(false);
+        });
+    });
+
+    describe('formatDate', () => {
+        it('should return the formatted date string for a valid date', () => {
+            const date = '2023-07-14T15:20:30';
+            const format = 'YYYY-MM-DD';
+            const formattedDate = HelperGeneral.formatDate(date, format);
+            expect(formattedDate).toBe('2023-07-14');
+        });
+
+        it('should return the original date string for an invalid date', () => {
+            const date = 'invalid-date';
+            const format = 'YYYY-MM-DD';
+            const formattedDate = HelperGeneral.formatDate(date, format);
+            expect(formattedDate).toBe('invalid-date');
+        });
+
+        it('should return the original date string if the formatted date is "Invalid date"', () => {
+            const date = '2023-07-14T15:20:30';
+            const format = 'invalid-format';
+            const formattedDate = HelperGeneral.formatDate(date, format);
+            expect(formattedDate).toBe(date);
+        });
+
+        it('should return the original date string for a non-ISO format date', () => {
+            const date = '07/14/2023';
+            const format = 'YYYY-MM-DD';
+            const formattedDate = HelperGeneral.formatDate(date, format);
+            expect(formattedDate).toBe(date);
+        });
+    });
+
+    describe('should register the class in the DI container', () => {
+        it('should register the class in the DI container', () => {
+            const diContainerMock = DIContainer.getInstance();
+            diContainerMock.register = jest.fn();
+
+            HelperGeneral.beforeLoad();
+
+            expect(diContainerMock.register).toHaveBeenCalledWith(
+                'IHelperGeneral_',
+                HelperGeneral,
+            );
         });
     });
 });

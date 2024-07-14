@@ -1,3 +1,4 @@
+import { moment } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import { DIContainer } from '../DependencyInjection/DIContainer';
@@ -38,6 +39,28 @@ export class HelperGeneral {
      */
     public static beforeLoad(): void {
         DIContainer.getInstance().register('IHelperGeneral_', HelperGeneral);
+    }
+
+    /**
+     * Formats a date string according to the specified format.
+     * @param date - The date string to be formatted.
+     * @param format - The format string specifying the desired output format.
+     * @returns The formatted date string, or the original date string if it is not in a valid format.
+     */
+    public static formatDate(date: string, format: string): string {
+        const regexDate =
+            /^\d{4}-\d{2}-\d{2}(T\d{2}(:\d{2}(:\d{2}(\.\d{3})?)?)?)?$/;
+
+        if (!regexDate.test(date)) {
+            return date;
+        }
+        const formatedDate = moment(date).format(format);
+
+        if (formatedDate === 'Invalid date') {
+            return date;
+        }
+
+        return formatedDate;
     }
 
     /**
