@@ -1,6 +1,5 @@
-import { TFile, moment } from 'obsidian';
-import Global from 'src/classes/Global';
-import PrjTypes, { FileType } from 'src/types/PrjTypes';
+import { moment } from 'obsidian';
+import { HelperGeneral } from './Helper/General';
 
 /**
  * Represents a helper class with various utility methods.
@@ -11,7 +10,7 @@ export default class Helper {
      * @param date - The date string to be formatted.
      * @param format - The format string specifying the desired output format.
      * @returns The formatted date string, or the original date string if it is not in a valid format.
-     * @deprecated Will be removed in the future.
+     * @deprecated Use {@link HelperGeneral.formatDate} instead.
      */
     static formatDate(date: string, format: string): string {
         const regexDate =
@@ -91,30 +90,5 @@ export default class Helper {
                 return pattern.test(tagToBeChecked);
             }),
         );
-    }
-
-    /**
-     * Checks if the given file is a valid PrjTaskManagement file (Topic, Project or Task).
-     * @param file The file to check.
-     * @returns Whether the file is a valid PrjTaskManagement file (true or false).
-     * @deprecated Will be removed in the future.
-     */
-    static isPrjTaskManagementFile(file: TFile): boolean {
-        const metadata = Global.getInstance().metadataCache.getEntry(file);
-
-        if (!metadata) {
-            return false;
-        }
-
-        const type = metadata.metadata.frontmatter?.type as
-            | FileType
-            | undefined
-            | null;
-
-        if (!type) {
-            return false;
-        }
-
-        return ['Topic', 'Project', 'Task'].includes(type);
     }
 }
