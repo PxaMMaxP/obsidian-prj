@@ -12,10 +12,10 @@ import TableBlockRenderComponent, {
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import EditableDataView from '../EditableDataView/EditableDataView';
-import Helper from '../Helper';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
+import { Tags } from '../Tags/Tags';
 
 /**
  * Document block render component class for `TableBlockRenderComponent`.
@@ -273,7 +273,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         GeneralComponents.createCellTags(
             tags,
             this.component,
-            noteModel.getTags(),
+            noteModel.data.tags?.toStringArray() ?? [],
         );
 
         const row = {
@@ -328,8 +328,10 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
      * @returns A boolean indicating whether the tag should be hidden or not.
      */
     private determineTagHideState(document: NoteModel): boolean {
+        const settingTags = new Tags(this.settings.tags);
+
         return this.settings.reactOnActiveFile
-            ? !Helper.isTagIncluded(this.settings.tags, document.getTags())
+            ? !document.data.tags?.contains(settingTags)
             : false;
     }
 

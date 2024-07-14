@@ -8,12 +8,12 @@ import { PrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileType } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
-import Helper from '../Helper';
 import { HelperGeneral } from '../Helper/General';
 import MetadataCache, { FileMetadata } from '../MetadataCache';
 import { ISearch } from '../Search/interfaces/ISearch';
 import { Search } from '../Search/Search';
 import Table, { RowsState, TableHeader } from '../Table';
+import { Tags } from '../Tags/Tags';
 
 /**
  * Represents the base class for table block render components.
@@ -281,6 +281,9 @@ export default abstract class TableBlockRenderComponent<
     ): Promise<T[]> {
         const templateFolder = this.global.settings.templateFolder;
 
+        // Create an instance of the Tags class for the provided tags
+        const filterTags = new Tags(tags);
+
         const allDocumentFiles = this.metadataCache.cache.filter((file) => {
             const typeFilter = PrjTypes.isTypeIncluded(
                 types,
@@ -292,10 +295,9 @@ export default abstract class TableBlockRenderComponent<
                 !file.file.path.startsWith(templateFolder);
 
             if (tags.length > 0) {
-                const tagFilter = Helper.isTagIncluded(
-                    tags,
-                    file.metadata.frontmatter?.tags,
-                );
+                const fileTags = new Tags(file.metadata.frontmatter?.tags);
+
+                const tagFilter = fileTags.contains(filterTags);
 
                 return thisFileAndTemplateFilter && typeFilter && tagFilter;
             }
