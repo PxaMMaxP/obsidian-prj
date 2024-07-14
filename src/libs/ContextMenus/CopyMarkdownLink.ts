@@ -21,8 +21,8 @@ export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
     private _translationService: ITranslationService;
 
     /**
-     * Creates an instance of CopyMarkdownLinkContextMenu.
-     * @param dependencies - The dependencies for the context menu.
+     * Creates an instance of CopyMarkdownLink.
+     * @param dependencies The dependencies for the context menu.
      */
     constructor(dependencies?: IDIContainer) {
         super(dependencies);
