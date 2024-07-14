@@ -9,6 +9,7 @@ import { FileType } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import Helper from '../Helper';
+import { HelperGeneral } from '../Helper/General';
 import MetadataCache, { FileMetadata } from '../MetadataCache';
 import { ISearch } from '../Search/interfaces/ISearch';
 import { Search } from '../Search/Search';
@@ -263,7 +264,7 @@ export default abstract class TableBlockRenderComponent<
      * @returns The unique identifier per model.
      */
     protected getUID(model: T): string {
-        return Helper.generateUID(model.file.path);
+        return HelperGeneral.generateUID(model.file.path);
     }
 
     /**
@@ -397,7 +398,7 @@ export default abstract class TableBlockRenderComponent<
                 );
                 await this.table.changeShowHideStateRows(rows);
                 rows.length = 0;
-                sleepPromise = Helper.sleep(sleepBetweenBatches);
+                sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }
         }
 

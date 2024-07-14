@@ -8,7 +8,7 @@ import {
     IModalForm,
     IResultData,
 } from 'src/types/ModalFormType';
-import Helper from '../Helper';
+import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Represents a base class for modal forms.
@@ -96,7 +96,7 @@ export default abstract class BaseModalForm {
      * @returns The tags from the file.
      */
     protected getTagsFromActiveFile(
-        activeFile: TFile | undefined = Helper.getActiveFile(),
+        activeFile: TFile | undefined = HelperObsidian.getActiveFile(),
     ): string[] {
         const activeFileTags = new Tags(undefined);
         activeFileTags.loadTagsFromFile(activeFile);

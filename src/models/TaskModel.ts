@@ -4,6 +4,7 @@ import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import { Tags } from 'src/libs/Tags/Tags';
@@ -96,7 +97,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
      * - The first three characters of the title.
      */
     public override getAcronym(): string {
-        return Helper.generateAcronym(this.data.title as string, 4, 't');
+        return HelperGeneral.generateAcronym(this.data.title as string, 4, 't');
     }
 
     /**

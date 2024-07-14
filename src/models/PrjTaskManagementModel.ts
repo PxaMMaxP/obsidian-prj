@@ -3,7 +3,7 @@ import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import { Tag } from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
 import BaseData from './Data/BaseData';
@@ -72,7 +72,7 @@ export class PrjTaskManagementModel<
      * - Override if the acronym should be generated differently!
      */
     public getAcronym(): string {
-        return Helper.generateAcronym(this.data.title as string);
+        return HelperGeneral.generateAcronym(this.data.title as string);
     }
 
     /**

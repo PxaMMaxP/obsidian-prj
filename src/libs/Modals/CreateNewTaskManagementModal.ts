@@ -10,7 +10,7 @@ import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
-import Helper from '../Helper';
+import { HelperObsidian } from '../Helper/Obsidian';
 import { ITags } from '../Tags/interfaces/ITags';
 import { Tag } from '../Tags/Tag';
 
@@ -461,7 +461,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 if (result) {
                     const prj = await modal.evaluateForm(result);
 
-                    if (prj) await Helper.openFile(prj.file);
+                    if (prj) await HelperObsidian.openFile(prj.file);
                 }
             },
         });

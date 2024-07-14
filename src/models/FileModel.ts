@@ -2,7 +2,7 @@ import { App, TFile } from 'obsidian';
 import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileManager, { Filename } from 'src/libs/FileManager';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import MetadataCache from 'src/libs/MetadataCache';
 import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
 import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';
@@ -251,7 +251,7 @@ export class FileModel<
             cachedMetadata.metadata.frontmatter
         ) {
             // Without the deep clone, the data object in the Obsidian Metadata Cache is changed: Problems with dataview..
-            const clone = Helper.deepCloneFrontMatterCache(
+            const clone = HelperGeneral.deepClone(
                 cachedMetadata.metadata.frontmatter,
             );
 

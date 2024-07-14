@@ -12,6 +12,7 @@ import TableBlockRenderComponent, {
 } from './TableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import Helper from '../Helper';
+import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
 
@@ -270,7 +271,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
                 await sleepPromise;
                 this.table.addRows(rows);
                 rows.length = 0;
-                sleepPromise = Helper.sleep(sleepBetweenBatches);
+                sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }
         }
     }

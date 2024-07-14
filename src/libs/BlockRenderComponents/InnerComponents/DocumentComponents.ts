@@ -4,6 +4,8 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
+import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import { DocumentModel } from 'src/models/DocumentModel';
 
 /**
@@ -281,9 +283,7 @@ export default class DocumentComponents {
                 .setTitle(Lng.gt('PDF file'))
                 .setLinkType('file')
                 .setFormator((value: string) => {
-                    const baseFileData = Helper.extractDataFromWikilink(
-                        documentModel.data.file,
-                    );
+                    const baseFileData = new Wikilink(documentModel.data.file);
 
                     const baseFile = fileCache.findFileByLinkText(
                         baseFileData.filename ?? '',
@@ -296,7 +296,7 @@ export default class DocumentComponents {
                     }
                     let docFragment: DocumentFragment | undefined = undefined;
 
-                    if (Helper.isPossiblyMarkdown(value)) {
+                    if (HelperGeneral.containsMarkdown(value)) {
                         docFragment = document.createDocumentFragment();
                         const div = document.createElement('div');
 

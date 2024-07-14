@@ -7,6 +7,8 @@ import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileCache from 'src/libs/FileCache';
 import FileManager, { Filename } from 'src/libs/FileManager';
+import { HelperGeneral } from 'src/libs/Helper/General';
+import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -59,8 +61,7 @@ export class DocumentModel
 
             if (relatedFiles) {
                 relatedFiles.map((relatedFile) => {
-                    const wikilinkData =
-                        Helper.extractDataFromWikilink(relatedFile);
+                    const wikilinkData = new Wikilink(relatedFile);
 
                     const mdFilename = wikilinkData.basename
                         ? `${wikilinkData.basename}.md`
@@ -163,7 +164,7 @@ export class DocumentModel
     public getLinkedFile(): TFile | undefined {
         if (!this.data.file) return undefined;
 
-        const fileLinkData = Helper.extractDataFromWikilink(this.data.file);
+        const fileLinkData = new Wikilink(this.data.file);
 
         const file = this._fileCache.findFileByLinkText(
             fileLinkData.filename ?? '',
@@ -211,7 +212,7 @@ export class DocumentModel
         if (this.data.uid === undefined || this.data.uid === '') {
             const random = Math.floor(Math.random() * 1000);
 
-            this.data.uid = Helper.generateUID(
+            this.data.uid = HelperGeneral.generateUID(
                 this._data?.toString?.() + random.toString(),
                 4,
                 'U',
