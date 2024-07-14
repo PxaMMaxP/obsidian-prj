@@ -1,8 +1,16 @@
-import { IWikilink, IWikilinkMatch } from './IWikilink';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { IWikilink, IWikilink_, IWikilinkMatch } from './IWikilink';
+import { DIContainer } from '../DependencyInjection/DIContainer';
+import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 
 /**
  * Represents a Wikilink and its parsed components.
+ * @see {@link Lifecycle}
  */
+@ImplementsStatic<ILifecycleObject>()
+@ImplementsStatic<IWikilink_>()
+@Lifecycle
 export class Wikilink implements IWikilink {
     /**
      * The date of the wikilink.
@@ -36,6 +44,13 @@ export class Wikilink implements IWikilink {
      */
     constructor(wikilink: string | null | undefined) {
         this.extractDataFromLink(wikilink);
+    }
+
+    /**
+     * Registers the Wikilink class with the DI
+     */
+    public static onLoad(): void {
+        DIContainer.getInstance().register('IWikilink_', Wikilink);
     }
 
     /**
