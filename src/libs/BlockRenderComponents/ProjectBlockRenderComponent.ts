@@ -19,6 +19,7 @@ import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
 import Helper from '../Helper';
+import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
 
@@ -258,7 +259,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
                 await sleepPromise;
                 this.table.addRows(rows);
                 rows.length = 0;
-                sleepPromise = Helper.sleep(sleepBetweenBatches);
+                sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }
         }
     }

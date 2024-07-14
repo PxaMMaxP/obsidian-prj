@@ -8,7 +8,7 @@ import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRende
 import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';
 import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
 import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRenderChild';
-import Helper from './Helper';
+import { HelperGeneral } from './Helper/General';
 import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from './LifecycleManager/interfaces/ILifecycleManager';
 import SingletonBlockProcessor from './SingletonBlockProcessor';
@@ -50,7 +50,7 @@ export default class MarkdownBlockProcessor {
         const logger = Logging.getLogger('BlockProcessor');
         logger.trace(`DocId: ${ctx.docId}`);
 
-        const uid = Helper.generateUID(source.trim(), 15);
+        const uid = HelperGeneral.generateUID(source.trim(), 15);
 
         const setting: IProcessorSettings = yaml.load(
             source,

@@ -2,7 +2,7 @@ import { Component, MarkdownRenderer, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { FileType, Status, UrgencySymbols } from 'src/types/PrjTypes';
 
@@ -39,7 +39,7 @@ export default class ProjectComponents {
                             title as unknown as HTMLDivElement,
                             'paperclip',
                         );
-                    } else if (Helper.isPossiblyMarkdown(value)) {
+                    } else if (HelperGeneral.containsMarkdown(value)) {
                         const div = document.createElement('div');
 
                         MarkdownRenderer.render(

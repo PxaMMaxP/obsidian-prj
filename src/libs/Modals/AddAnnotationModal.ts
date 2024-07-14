@@ -3,7 +3,8 @@ import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Field, FormConfiguration, IFormResult } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
-import Helper from '../Helper';
+import { HelperGeneral } from '../Helper/General';
+import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Modal to create a new metadata file
@@ -86,8 +87,8 @@ export default class AddAnnotationModal extends BaseModalForm {
             }
         }
 
-        const id = Helper.generateUID(uidBase, 11);
-        const activeFile = Helper.getActiveFile();
+        const id = HelperGeneral.generateUID(uidBase, 11);
+        const activeFile = HelperObsidian.getActiveFile();
 
         const template = `
 >_${result.data.prefix ?? ' '}_

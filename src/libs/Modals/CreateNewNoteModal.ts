@@ -12,7 +12,7 @@ import {
     IResultData,
 } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
-import Helper from '../Helper';
+import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Modal to create a new metadata file
@@ -47,7 +47,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
                 if (result) {
                     const document = await modal.evaluateForm(result);
 
-                    if (document) await Helper.openFile(document.file);
+                    if (document) await HelperObsidian.openFile(document.file);
                 }
             },
         });

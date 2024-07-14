@@ -1,6 +1,6 @@
 import { Component, MarkdownRenderer } from 'obsidian';
 import Global from 'src/classes/Global';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import BaseComponent from './BaseComponent';
 
 /**
@@ -118,7 +118,7 @@ export default class TextareaComponent extends BaseComponent {
          * @returns A promise that resolves when the presentation is set.
          */
         this._onMarkdownPresentation = (value: string): Promise<void> => {
-            if (Helper.isPossiblyMarkdown(value)) {
+            if (HelperGeneral.containsMarkdown(value)) {
                 const app = Global.getInstance().app;
 
                 return MarkdownRenderer.render(

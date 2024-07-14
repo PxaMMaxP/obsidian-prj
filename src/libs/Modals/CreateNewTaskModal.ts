@@ -3,7 +3,7 @@ import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
-import Helper from '../Helper';
+import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Represents a modal to create a new task.
@@ -86,7 +86,7 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
                 if (result) {
                     const prj = await modal.evaluateForm(result);
 
-                    if (prj) await Helper.openFile(prj.file);
+                    if (prj) await HelperObsidian.openFile(prj.file);
                 }
             },
         });

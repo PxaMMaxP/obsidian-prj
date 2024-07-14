@@ -13,7 +13,7 @@ import {
 } from 'src/types/ModalFormType';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
-import Helper from '../Helper';
+import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Modal to create a new metadata file
@@ -50,7 +50,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
                 if (result) {
                     const document = await modal.evaluateForm(result);
 
-                    if (document) await Helper.openFile(document.file);
+                    if (document) await HelperObsidian.openFile(document.file);
                 }
             },
         });
