@@ -205,6 +205,38 @@ export class Tag
     }
 
     /**
+     * Checks if the tag is below another tag within a specified number of levels in the hierarchy.
+     * @param tag The tag to compare with.
+     * @param levels The number of levels in the hierarchy to check. Defaults to 1.
+     * @returns Whether the tag is below the specified tag within the given number of levels.
+     */
+    public isTagAtHierarchyLevel(tag: ITag, levels = 1): boolean {
+        const thisElements = this.getElements();
+        const tagElements = tag.getElements();
+
+        // Check if the hierarchy level is valid
+        if (levels < 1) {
+            return false;
+        }
+
+        // Check if the number of elements in the tag is sufficient for the comparison
+        if (tagElements.length + levels > thisElements.length) {
+            return false;
+        }
+
+        // Compare the relevant parts of the hierarchy
+        const start = thisElements.length - levels - tagElements.length;
+
+        for (let i = 0; i < tagElements.length; i++) {
+            if (thisElements[start + i] !== tagElements[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Returns a frontmatter compatible object.
      * @returns The Tag as a string.
      */
