@@ -1,6 +1,5 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
@@ -23,22 +22,15 @@ export interface IHelperGeneral_ {
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IHelperGeneral_>()
-@Singleton
 export class HelperGeneral {
     private static _md5 = require('crypto-js/md5');
-    protected _dependencies: IDIContainer;
-    protected _logger: ILogger | undefined;
 
     /**
      * Create a Singleton instance of the HelperObsidian class.
      * @param dependencies The dependencies for the class.
      */
-    constructor(dependencies?: IDIContainer) {
-        this._dependencies = dependencies ?? DIContainer.getInstance();
-
-        this._logger = this._dependencies
-            .resolve<ILogger_>('ILogger_', false)
-            ?.getLogger('HelperGeneral');
+    public constructor(dependencies?: IDIContainer) {
+        throw new Error('This class is not meant to be instantiated');
     }
 
     /**
