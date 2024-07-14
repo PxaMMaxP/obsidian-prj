@@ -11,7 +11,7 @@ import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRende
 import { HelperGeneral } from './Helper/General';
 import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from './LifecycleManager/interfaces/ILifecycleManager';
-import SingletonBlockProcessor from './SingletonBlockProcessor';
+import SingletonBlockProcessor from './SingletonBlockProcessor/SingletonBlockProcessor';
 import Global from '../classes/Global';
 import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 
