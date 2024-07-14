@@ -5,7 +5,6 @@ import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
 import { Logging } from './classes/Logging';
-import { CopyMarkdownLink } from './libs/ContextMenus/CopyMarkdownLink';
 import GetMetadata from './libs/ContextMenus/GetMetadata';
 import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
@@ -110,8 +109,6 @@ export default class Prj extends Plugin {
      * Register the Obsidian Commands an Events
      */
     private registerCommandsAndEvents(): void {
-        new CopyMarkdownLink();
-
         // Create New Metadata File Command
         CreateNewMetadataModal.registerCommand();
 
@@ -201,7 +198,6 @@ export default class Prj extends Plugin {
         new LifecycleManager().onUnload();
 
         GetMetadata.deconstructor();
-        new CopyMarkdownLink().deconstructor();
         Global.deconstructor();
     }
 
