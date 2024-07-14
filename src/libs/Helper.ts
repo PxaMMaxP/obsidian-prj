@@ -4,6 +4,7 @@ import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { Tag } from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
+import { HelperObsidian } from './Helper/Obsidian';
 
 /**
  * Represents a helper class with various utility methods.
@@ -339,6 +340,7 @@ export default class Helper {
     /**
      * Gets the active file in the workspace.
      * @returns The active file in the workspace, or undefined if no file is active.
+     * @deprecated Use {@link HelperObsidian.getActiveFile} instead.
      */
     static getActiveFile(): TFile | undefined {
         const workspace = Global.getInstance().app.workspace;
@@ -400,6 +402,7 @@ export default class Helper {
     /**
      * Opens the specified file in the active leaf.
      * @param file The file to open.
+     * @deprecated Use {@link HelperObsidian.openFile} instead.
      */
     static async openFile(file: TFile): Promise<void> {
         Logging.getLogger('Helper').trace(`Opening file for ${file.name}`);
@@ -423,6 +426,7 @@ export default class Helper {
 
     /**
      * Rebuilds the active view.
+     * @deprecated Use {@link HelperObsidian.rebuildActiveView} instead.
      */
     static rebuildActiveView(): void {
         const workspace = Global.getInstance().app.workspace;
