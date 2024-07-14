@@ -17,6 +17,7 @@
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --fix --ext .ts .",
     "format": "prettier --write .",
+    "docs": "typedoc",
     "version:show": "node -e \"console.log(require('./package.json').version)\"",
     "test": "jest",
     "test:file": "jest --watch --onlyChanged --coverage=true --verbose",
