@@ -85,6 +85,32 @@ describe('Tags', () => {
                 return this.value.includes(substring);
             }
 
+            isTagAtHierarchyLevel(tag: ITag, levels = 1): boolean {
+                const thisElements = this.getElements();
+                const tagElements = tag.getElements();
+
+                // Check if the hierarchy level is valid
+                if (levels < 1) {
+                    return false;
+                }
+
+                // Check if the number of elements in the tag is sufficient for the comparison
+                if (tagElements.length + levels > thisElements.length) {
+                    return false;
+                }
+
+                // Compare the relevant parts of the hierarchy
+                const start = thisElements.length - levels - tagElements.length;
+
+                for (let i = 0; i < tagElements.length; i++) {
+                    if (thisElements[start + i] !== tagElements[i]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
             getObsidianLink(tagLabel?: string): HTMLAnchorElement {
                 throw new Error('Method not implemented.');
             }
@@ -376,5 +402,234 @@ describe('Tags', () => {
     test('should return undefined as last tag', () => {
         const tagsArray = new Tags(undefined, dependencies);
         expect(tagsArray.last()).toBe(undefined);
+    });
+
+    test('should return true when tag exists in the tags array', () => {
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag1', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(true);
+    });
+
+    // Test when a single tag exists in the tags array
+    test('should return true when a single tag exists in the tags array', () => {
+        const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag1', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(true);
+    });
+
+    // Test when a single tag does not exist in the tags array
+    test('should return false when a single tag does not exist in the tags array', () => {
+        const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag2', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(false);
+    });
+
+    // Test when the tag partially matches an existing tag
+    test('should return true when a tag partially matches an existing tag', () => {
+        const tagsArray = new Tags(['tag1/part'], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag1', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(false);
+    });
+
+    // Test when the tag does not match any part of existing tags
+    test('should return false when the tag does not match any part of existing tags', () => {
+        const tagsArray = new Tags(['tag1/part'], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag2', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(false);
+    });
+
+    // Test when the tag array is empty
+    test('should return false when the tags array is empty', () => {
+        const tagsArray = new Tags([], dependenciesWithoutLogger);
+        const tagToCheck = new MockTagClass('tag1', dependencies);
+        expect(tagsArray.includes(tagToCheck)).toBe(false);
+    });
+
+    // Test when checking a complex tag that contains multiple tags
+    test('should return true when all tags in a complex tag exist in the tags array', () => {
+        const complexTag = new Tags(
+            ['tag1', 'tag2'],
+            dependenciesWithoutLogger,
+        );
+        const tagsArray = new Tags(['tag1', 'tag2'], dependenciesWithoutLogger);
+        expect(tagsArray.includes(complexTag)).toBe(true);
+    });
+
+    // Test when checking a complex tag where not all tags exist in the tags array
+    test('should return false when not all tags in a complex tag exist in the tags array', () => {
+        const complexTag = new Tags(
+            ['tag1', 'tag2'],
+            dependenciesWithoutLogger,
+        );
+        const tagsArray = new Tags(['tag1'], dependenciesWithoutLogger);
+        expect(tagsArray.includes(complexTag)).toBe(false);
+    });
+
+    // Test when checking a complex tag with empty tags array
+    test('should return false when checking a complex tag with an empty tags array', () => {
+        const complexTag = new Tags(
+            ['tag1', 'tag2'],
+            dependenciesWithoutLogger,
+        );
+        const tagsArray = new Tags([], dependenciesWithoutLogger);
+        expect(tagsArray.includes(complexTag)).toBe(false);
+    });
+
+    // Tests for contains method
+    test('should return true if any tag in the given tags is a substring of any tag in the instance', () => {
+        const tagsArray = new Tags(['tag1/part1', 'tag2'], dependencies);
+        const tagsToCheck = new Tags(['part1'], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(true);
+    });
+
+    test('should return false if no tag in the given tags is a substring of any tag in the instance', () => {
+        const tagsArray = new Tags(['tag1/part1', 'tag2'], dependencies);
+        const tagsToCheck = new Tags(['part2'], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(false);
+    });
+
+    test('should return true if multiple tags in the given tags are substrings of any tag in the instance', () => {
+        const tagsArray = new Tags(['tag1/part1', 'tag2/part2'], dependencies);
+        const tagsToCheck = new Tags(['part1', 'part2'], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(true);
+    });
+
+    test('should return true if a tag in the given tags is a substring of a tag in the instance', () => {
+        const tagsArray = new Tags(['tag1/part1'], dependencies);
+        const tagsToCheck = new Tags(['tag1'], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(true);
+    });
+
+    test('should return false if the tags array is empty', () => {
+        const tagsArray = new Tags([], dependencies);
+        const tagsToCheck = new Tags(['tag1'], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(false);
+    });
+
+    test('should return false if the given tags are empty', () => {
+        const tagsArray = new Tags(['tag1'], dependencies);
+        const tagsToCheck = new Tags([], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(false);
+    });
+
+    test('should return false if both the instance and given tags arrays are empty', () => {
+        const tagsArray = new Tags([], dependencies);
+        const tagsToCheck = new Tags([], dependencies);
+        expect(tagsArray.contains(tagsToCheck)).toBe(false);
+    });
+
+    // Tests for `areTagsAtHierarchyLevel` method
+    test('should return true if a tag in the given tags is directly below a tag in the instance', () => {
+        const tagsArray = new Tags(['Tag1/Tag2'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(true);
+    });
+
+    test('should return false if no tag in the given tags is directly below a tag in the instance', () => {
+        const tagsArray = new Tags(['Tag1/Tag2'], dependencies);
+        const tagsToCheck = new Tags(['Tag3'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return false if a tag in the given tags is two levels below a tag in the instance', () => {
+        const tagsArray = new Tags(['Tag1/Tag2/Tag3'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return true if multiple tags in the given tags are directly below tags in the instance', () => {
+        const tagsArray = new Tags(['Tag1/Tag2', 'Tag3/Tag4'], dependencies);
+        const tagsToCheck = new Tags(['Tag1', 'Tag3'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(true);
+    });
+
+    test('should return false if the instance tags array is empty', () => {
+        const tagsArray = new Tags([], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return false if the given tags array is empty', () => {
+        const tagsArray = new Tags(['Tag1/Tag2'], dependencies);
+        const tagsToCheck = new Tags([], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return false if both the instance and given tags arrays are empty', () => {
+        const tagsArray = new Tags([], dependencies);
+        const tagsToCheck = new Tags([], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return true if a tag in the given tags matches exactly with a tag in the instance at the next hierarchy level', () => {
+        const tagsArray = new Tags(['Tag1/Tag2'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(true);
+    });
+
+    test('should return false if a tag in the given tags is a substring but not at the next hierarchy level', () => {
+        const tagsArray = new Tags(['Tag1/Tag2/Tag3'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(false);
+    });
+
+    test('should return true if any tag in the given tags is directly below a tag in the instance with special characters', () => {
+        const tagsArray = new Tags(['Tag1/Tag-2'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck)).toBe(true);
+    });
+
+    test('should return true if any tag is directly below another tag at the specified hierarchy level', () => {
+        const tagsArray = new Tags(['Tag1/Tag2', 'Tag3/Tag4'], dependencies);
+        const tagsToCheck = new Tags(['Tag1', 'Tag3'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 1)).toBe(true);
+    });
+
+    test('should return false if no tag is directly below another tag at the specified hierarchy level', () => {
+        const tagsArray = new Tags(['Tag1/Tag2', 'Tag3/Tag4'], dependencies);
+        const tagsToCheck = new Tags(['Tag5'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 1)).toBe(false);
+    });
+
+    test('should return true if any tag is two levels below another tag when checking for two levels', () => {
+        const tagsArray = new Tags(
+            ['Tag1/Tag2/Tag3', 'Tag4/Tag5/Tag6'],
+            dependencies,
+        );
+        const tagsToCheck = new Tags(['Tag1', 'Tag4'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 2)).toBe(true);
+    });
+
+    test('should return false if no tag is two levels below another tag when checking for two levels', () => {
+        const tagsArray = new Tags(['Tag1/Tag2', 'Tag3/Tag4'], dependencies);
+        const tagsToCheck = new Tags(['Tag1', 'Tag3'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 2)).toBe(false);
+    });
+
+    test('should return false if levels parameter is 0', () => {
+        const tagsArray = new Tags(['Tag1/Tag2/Tag3'], dependencies);
+        const tagsToCheck = new Tags(['Tag3'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 0)).toBe(false);
+    });
+
+    test('should return false if levels parameter is greater than or equal to the number of elements in the tag', () => {
+        const tagsArray = new Tags(['Tag1'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 1)).toBe(false);
+    });
+
+    test('should return true if any tag is exactly the specified levels below another tag', () => {
+        const tagsArray = new Tags(
+            ['Tag1/Tag2/Tag3', 'Tag4/Tag5/Tag6'],
+            dependencies,
+        );
+        const tagsToCheck = new Tags(['Tag1', 'Tag4'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 2)).toBe(true);
+    });
+
+    test('should return false if no tag is exactly the specified levels below another tag', () => {
+        const tagsArray = new Tags(['Tag1/Tag2/Tag3/Tag4'], dependencies);
+        const tagsToCheck = new Tags(['Tag1'], dependencies);
+        expect(tagsArray.areTagsAtHierarchyLevel(tagsToCheck, 2)).toBe(false);
     });
 });
