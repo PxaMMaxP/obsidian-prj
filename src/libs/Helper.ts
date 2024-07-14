@@ -1,6 +1,5 @@
 /**
  * Represents a helper class with various utility methods.
- * @deprecated Will be removed in the future.
  */
 export default class Helper {
     /**
