@@ -1,5 +1,5 @@
 import { ILogger } from 'src/interfaces/ILogger';
-import Helper from './Helper';
+import { HelperGeneral } from './Helper/General';
 
 /**
  * Represents a HTML table.
@@ -240,7 +240,7 @@ export default class Table {
             // Add Label attribute to the cell
             tableCell.setAttribute('data-label', this._headers[index].text);
 
-            if (Helper.isEmoji(this._headers[index].text)) {
+            if (HelperGeneral.isEmoji(this._headers[index].text)) {
                 tableCell.classList.add(...this._defaultClasses.emojiCell);
             }
             tableCell.appendChild(data);
