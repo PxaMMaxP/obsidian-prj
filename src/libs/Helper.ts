@@ -1,3 +1,5 @@
+import { ITags } from './Tags/interfaces/ITags';
+
 /**
  * Represents a helper class with various utility methods.
  */
@@ -7,7 +9,7 @@ export default class Helper {
      * @param tagsToCheck The tags to check as substrings
      * @param tagsToBeChecked The tags to be checked against
      * @returns Whether any tag from `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
-     * @deprecated Will be removed in the future.
+     * @deprecated Use {@link ITags.contains} instead.
      */
     static isTagIncluded(
         tagsToCheck: string | string[],
@@ -39,7 +41,7 @@ export default class Helper {
      * @param tagsToCheck The tags to check for an exact match
      * @param tagsToBeChecked The tags to be checked against
      * @returns Whether any tag from `tagsToCheck` matches exactly with any tag in `tagsToBeChecked` at the next hierarchy level
-     * @deprecated Will be removed in the future.
+     * @deprecated Use {@link ITags.areTagsAtHierarchyLevel} instead.
      */
     static isTagDirectlyBelow(
         tagsToCheck: string | string[],
