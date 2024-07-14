@@ -1,4 +1,5 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
@@ -9,13 +10,13 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 
 /**
  * Represents a context menu for copying markdown links.
+ * @see {@link Singleton}
+ * @see {@link Lifecycle}
  */
 @Lifecycle
+@ImplementsStatic<ILifecycleObject>()
 @Singleton
-export class CopyMarkdownLink
-    extends ContextMenu
-    implements IContextMenu, ILifecycleObject
-{
+export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
     protected bindContextMenu = this.onContextMenu.bind(this);
     private _translationService: ITranslationService;
 
@@ -35,15 +36,17 @@ export class CopyMarkdownLink
     /**
      * This method is called when the application is unloaded.
      */
-    public onLoad(): void {
-        this.isInitialized();
+    public static onLoad(): void {
+        const instance = new CopyMarkdownLink();
+        instance.isInitialized();
     }
 
     /**
      * This method is called when the application is unloaded.
      */
-    public onUnload(): void {
-        this.deconstructor();
+    public static onUnload(): void {
+        const instance = new CopyMarkdownLink();
+        instance.deconstructor();
     }
 
     /**
