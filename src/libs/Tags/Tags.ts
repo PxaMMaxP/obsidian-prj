@@ -252,9 +252,42 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @param tag The tag to check.
      * @returns Whether the tag exists in the tags array.
      */
-    public includes(tag: ITag): boolean {
-        return this._tags.some((existingTag) =>
-            existingTag.includes(tag.toString()),
+    public includes(tag: ITag | ITags): boolean {
+        if (this.isInstanceOfTags(tag)) {
+            return tag.values.every((t) => this.includes(t));
+        } else {
+            return this._tags.some((existingTag) => existingTag.equals(tag));
+        }
+    }
+
+    /**
+     * Checks if any of the tags in the instance's tags array are below any of the tags in the provided tags array within a specified number of levels in the hierarchy.
+     * @param tags The tags to compare with.
+     * @param levels The number of levels in the hierarchy to check. Defaults to 1.
+     * @returns Whether any tag from the instance's tags array is below any tag in the provided tags array within the given number of levels.
+     */
+    public areTagsAtHierarchyLevel(tags: ITags, levels = 1): boolean {
+        const _tagsToCheck = tags.values;
+
+        return this._tags.some((tagToBeChecked) =>
+            _tagsToCheck.some((tagToCheck) =>
+                tagToBeChecked.isTagAtHierarchyLevel(tagToCheck, levels),
+            ),
+        );
+    }
+
+    /**
+     * Checks if any of the tags in `tags` is a **substring** of any tag in the instance's tags array
+     * @param tags The tags to check as substrings
+     * @returns Whether any tag from `tags` is a **substring** of any tag in the instance's tags array
+     */
+    public contains(tags: ITags): boolean {
+        const _tagsToCheck = tags.toStringArray();
+
+        return _tagsToCheck.some((tagToCheck) =>
+            this._tags.some((tagToBeChecked) =>
+                tagToBeChecked.value.includes(tagToCheck),
+            ),
         );
     }
 
