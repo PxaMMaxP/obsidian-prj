@@ -1,4 +1,11 @@
 /**
+ * Represents a Wikilink constructor.
+ */
+export interface IWikilink_ {
+    new (wikilink: string | null | undefined): IWikilink;
+}
+
+/**
  * Represents a Wikilink and its parsed components.
  */
 export interface IWikilink {
