@@ -76,6 +76,35 @@ export default class PrjTypes {
     }
 
     /**
+     * Checks if a given file type or an array of file types is included in another given file type or an array of file types.
+     * @param typesToCheck The file type or array of file types to check.
+     * @param typesToBeChecked The file type or array of file types to be checked against.
+     * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
+     */
+    public static isTypeIncluded(
+        typesToCheck: FileType | FileType[],
+        typesToBeChecked: FileType | FileType[],
+    ): boolean {
+        const _typesToCheck: FileType[] = Array.isArray(typesToCheck)
+            ? typesToCheck
+            : typesToCheck
+              ? [typesToCheck]
+              : [];
+
+        const _typesToBeChecked: FileType[] = Array.isArray(typesToBeChecked)
+            ? typesToBeChecked
+            : typesToBeChecked
+              ? [typesToBeChecked]
+              : [];
+
+        return _typesToCheck.some((typeToCheck) =>
+            _typesToBeChecked.some(
+                (typeToBeChecked) => typeToBeChecked === typeToCheck,
+            ),
+        );
+    }
+
+    /**
      * An array of valid file subtypes.
      */
     public static readonly fileSubTypes: FileSubType[] = [

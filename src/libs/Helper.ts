@@ -1,6 +1,6 @@
 import { TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
-import { FileType } from 'src/types/PrjTypes';
+import PrjTypes, { FileType } from 'src/types/PrjTypes';
 
 /**
  * Represents a helper class with various utility methods.
@@ -11,6 +11,7 @@ export default class Helper {
      * @param date - The date string to be formatted.
      * @param format - The format string specifying the desired output format.
      * @returns The formatted date string, or the original date string if it is not in a valid format.
+     * @deprecated Will be removed in the future.
      */
     static formatDate(date: string, format: string): string {
         const regexDate =
@@ -33,6 +34,7 @@ export default class Helper {
      * @param tagsToCheck The tags to check as substrings
      * @param tagsToBeChecked The tags to be checked against
      * @returns Whether any tag from `tagsToCheck` is a substring of any tag in `tagsToBeChecked`
+     * @deprecated Will be removed in the future.
      */
     static isTagIncluded(
         tagsToCheck: string | string[],
@@ -64,6 +66,7 @@ export default class Helper {
      * @param tagsToCheck The tags to check for an exact match
      * @param tagsToBeChecked The tags to be checked against
      * @returns Whether any tag from `tagsToCheck` matches exactly with any tag in `tagsToBeChecked` at the next hierarchy level
+     * @deprecated Will be removed in the future.
      */
     static isTagDirectlyBelow(
         tagsToCheck: string | string[],
@@ -91,38 +94,10 @@ export default class Helper {
     }
 
     /**
-     * Checks if a given file type or an array of file types is included in another given file type or an array of file types.
-     * @param typesToCheck The file type or array of file types to check.
-     * @param typesToBeChecked The file type or array of file types to be checked against.
-     * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
-     */
-    static isTypeIncluded(
-        typesToCheck: FileType | FileType[],
-        typesToBeChecked: FileType | FileType[],
-    ): boolean {
-        const _typesToCheck: FileType[] = Array.isArray(typesToCheck)
-            ? typesToCheck
-            : typesToCheck
-              ? [typesToCheck]
-              : [];
-
-        const _typesToBeChecked: FileType[] = Array.isArray(typesToBeChecked)
-            ? typesToBeChecked
-            : typesToBeChecked
-              ? [typesToBeChecked]
-              : [];
-
-        return _typesToCheck.some((typeToCheck) =>
-            _typesToBeChecked.some(
-                (typeToBeChecked) => typeToBeChecked === typeToCheck,
-            ),
-        );
-    }
-
-    /**
      * Checks if the given file is a valid PrjTaskManagement file (Topic, Project or Task).
      * @param file The file to check.
      * @returns Whether the file is a valid PrjTaskManagement file (true or false).
+     * @deprecated Will be removed in the future.
      */
     static isPrjTaskManagementFile(file: TFile): boolean {
         const metadata = Global.getInstance().metadataCache.getEntry(file);
