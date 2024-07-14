@@ -1,6 +1,6 @@
 import { MarkdownPostProcessorContext } from 'obsidian';
 import { ILogger } from 'src/interfaces/ILogger';
-import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRenderChild';
+import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
 
 /**
  * Type for the view state.
