@@ -58,6 +58,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "jest-environment-jsdom": "^29.7.0",
     "js-yaml": "^4.1.0",
+    "moment": "^2.30.1",
     "remark": "^15.0.1",
     "remark-parse": "^11.0.0",
     "unist-util-visit": "^5.0.0"
