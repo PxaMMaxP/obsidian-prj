@@ -7,8 +7,7 @@ import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import BaseData from 'src/models/Data/BaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Status } from 'src/types/PrjTypes';
-import Helper from '../Helper';
+import PrjTypes, { Status } from 'src/types/PrjTypes';
 
 /**
  * Represents a modal to change the status of a project.
@@ -18,6 +17,7 @@ export default class ChangeStatusModal extends Modal {
     model: PrjTaskManagementModel<
         IPrjData & IPrjTaskManagement & BaseData<unknown>
     >;
+    private _metadataCache = Global.getInstance().metadataCache;
 
     /**
      * Creates a new instance of the modal.
@@ -35,7 +35,11 @@ export default class ChangeStatusModal extends Modal {
 
         if (!activeFile) {
             return;
-        } else if (!Helper.isPrjTaskManagementFile(activeFile)) {
+        }
+        const activeFileMetadata = this._metadataCache.getEntry(activeFile);
+        const type = activeFileMetadata?.metadata.frontmatter?.type;
+
+        if (!PrjTypes.isTypeIncluded(type, ['Topic', 'Project', 'Task'])) {
             return;
         }
 
