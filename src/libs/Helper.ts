@@ -4,6 +4,7 @@ import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { Tag } from 'src/libs/Tags/Tag';
 import { FileType } from 'src/types/PrjTypes';
+import { HelperGeneral } from './Helper/General';
 import { HelperObsidian } from './Helper/Obsidian';
 
 /**
@@ -78,6 +79,7 @@ export default class Helper {
      * @returns The generated UID with the given length
      * @remarks - This method uses the MD5 hash algorithm to generate the UID
      * - The UID is prefixed with a "U" to prevent the UID from starting with a number. The "U" counts to the length of the UID
+     * @deprecated Use {@link HelperGeneral.generateUID} instead.
      */
     static generateUID(input: string, length = 8, sufix = 'U'): string {
         const hash = sufix + this._md5(input).toString();
@@ -111,6 +113,7 @@ export default class Helper {
      * Sleeps for the given amount of milliseconds
      * @param ms The amount of milliseconds to sleep
      * @returns A promise that resolves after the given amount of milliseconds
+     * @deprecated Use {@link HelperGeneral.sleep} instead.
      */
     static async sleep(ms: number): Promise<void> {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -122,6 +125,7 @@ export default class Helper {
      * @returns Whether the text is possibly markdown (true or false)
      * @remarks - This method checks if the text contains any of the following symbols:
      * - `*`, `_`, `[`, `]`, `=` and `-` if there is a line break
+     * @deprecated Use {@link HelperGeneral.containsMarkdown} instead.
      */
     static isPossiblyMarkdown(text: string): boolean {
         let regexMarkdownSymbols;
@@ -143,6 +147,7 @@ export default class Helper {
      * Checks if the given text contains HTML
      * @param text The text to check
      * @returns Whether the text contains HTML (true or false)
+     * @deprecated This method will be removed in a future release.
      */
     static containsHTML(text: string) {
         const htmlRegex = /<[^>]*>/;
@@ -269,6 +274,7 @@ export default class Helper {
      * Checks if the given string is an emoji
      * @param str The string to check
      * @returns Whether the string is an emoji (true or false)
+     * Use {@link HelperGeneral.isEmoji} instead.
      */
     static isEmoji(str: string) {
         const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u;
@@ -282,6 +288,7 @@ export default class Helper {
      * @param length The desired length of the acronym, default is 6.
      * @param prefix The prefix for the acronym, default is current year.
      * @returns The generated acronym with the specified prefix.
+     * @deprecated Use {@link HelperGeneral.generateAcronym} instead.
      */
     static generateAcronym(text: string, length = 6, prefix = 'year'): string {
         // Return an empty string if text is not provided
@@ -447,6 +454,7 @@ export default class Helper {
      * Deep clones a FrontMatterCache object.
      * @param obj - The object to be cloned.
      * @returns The cloned object.
+     * @deprecated Use {@link HelperGeneral.deepClone} instead.
      */
     static deepCloneFrontMatterCache(obj: FrontMatterCache) {
         if (obj === null || typeof obj !== 'object') {
