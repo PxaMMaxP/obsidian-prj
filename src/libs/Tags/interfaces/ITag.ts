@@ -97,4 +97,12 @@ export interface ITag extends IBaseComplexDataType {
      * @param position The position to start the search.
      */
     startsWith(searchString: string, position?: number): boolean;
+
+    /**
+     * Checks if the tag is below another tag within a specified number of levels in the hierarchy.
+     * @param tag The tag to compare with.
+     * @param levels The number of levels in the hierarchy to check. Defaults to 1.
+     * @returns Whether the tag is below the specified tag within the given number of levels.
+     */
+    isTagAtHierarchyLevel(tag: ITag, levels?: number): boolean;
 }

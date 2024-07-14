@@ -86,6 +86,13 @@ export interface ITags extends IBaseComplexDataType {
     includes(tag: ITag): boolean;
 
     /**
+     * Checks if any of the tags in `tags` is a **substring** of any tag in the instance's tags array
+     * @param tags The tags to check as substrings
+     * @returns Whether any tag from `tags` is a **substring** of any tag in the instance's tags array
+     */
+    contains(tags: ITags): boolean;
+
+    /**
      * Finds the index of the tag in the tags array.
      * @param tag The tag to find.
      * @returns The index of the tag in the tags array. If the tag is not found, -1 is returned.
@@ -109,6 +116,14 @@ export interface ITags extends IBaseComplexDataType {
      * @returns The last tag in the tags array or `undefined` if the tags array is empty.
      */
     last(): ITag | undefined;
+
+    /**
+     * Checks if any of the tags in the instance's tags array are below any of the tags in the provided tags array within a specified number of levels in the hierarchy.
+     * @param tags The tags to compare with.
+     * @param levels The number of levels in the hierarchy to check. Defaults to 1.
+     * @returns Whether any tag from the instance's tags array is below any tag in the provided tags array within the given number of levels.
+     */
+    areTagsAtHierarchyLevel(tags: ITags, levels?: number): boolean;
 
     /**
      * Creates a tag tree from an array of tags.
