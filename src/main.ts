@@ -5,7 +5,6 @@ import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
 import { Logging } from './classes/Logging';
-import GetMetadata from './libs/ContextMenus/GetMetadata';
 import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { IDIContainer } from './libs/DependencyInjection/interfaces/IDIContainer';
 import Helper from './libs/Helper';
@@ -81,9 +80,6 @@ export default class Prj extends Plugin {
     async onLayoutReady(): Promise<void> {
         this._dependencies = DIContainer.getInstance();
         this.registerDependencies();
-
-        // Get Metadata File Context Menu & Command
-        GetMetadata.getInstance();
 
         // Copy Markdown Link Context Menu
         //CopyMarkdownLink.getInstance();
@@ -197,7 +193,6 @@ export default class Prj extends Plugin {
         console.log("Unloading plugin 'PRJ'");
         new LifecycleManager().onUnload();
 
-        GetMetadata.deconstructor();
         Global.deconstructor();
     }
 
