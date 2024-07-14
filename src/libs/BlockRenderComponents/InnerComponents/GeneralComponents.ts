@@ -2,7 +2,7 @@ import { Component, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import { FileType } from 'src/types/PrjTypes';
 
 /**
@@ -62,7 +62,7 @@ export default class GeneralComponents {
                 .setTitle(title)
                 .enableEditability()
                 .setFormator((value: string) =>
-                    Helper.formatDate(value, format),
+                    HelperGeneral.formatDate(value, format),
                 )
                 .onSave((value: string) => {
                     onWrite(value);

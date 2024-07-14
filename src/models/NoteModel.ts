@@ -4,7 +4,7 @@ import { TFile } from 'obsidian';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
-import Helper from 'src/libs/Helper';
+import { HelperGeneral } from 'src/libs/Helper/General';
 import NoteData from './Data/NoteData';
 import { FileModel } from './FileModel';
 import Global from '../classes/Global';
@@ -96,7 +96,7 @@ export class NoteModel
 
         if (model.data.date) {
             newFileName.push(
-                `${Helper.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+                `${HelperGeneral.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
             );
         }
 

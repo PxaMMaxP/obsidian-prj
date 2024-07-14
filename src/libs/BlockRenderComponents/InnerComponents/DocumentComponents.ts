@@ -3,7 +3,6 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
-import Helper from 'src/libs/Helper';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import { DocumentModel } from 'src/models/DocumentModel';
@@ -115,9 +114,9 @@ export default class DocumentComponents {
                     .setValue(relatedFile.data.date ?? 'na')
                     .setTitle('Document Date')
                     .setFormator((value: string) =>
-                        Helper.formatDate(
+                        HelperGeneral.formatDate(
                             value,
-                            Helper.formatDate(value, dateFormatShort),
+                            HelperGeneral.formatDate(value, dateFormatShort),
                         ),
                     ),
             );
