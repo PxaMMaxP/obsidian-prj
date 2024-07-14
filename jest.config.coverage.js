@@ -12,7 +12,8 @@ module.exports = {
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',
         '!src/**/*.d.ts',
-        '!src/**/*.performance.test.ts'
+        '!src/**/*.performance.test.ts',
+        '!src/auto-imports.ts'
     ],
     coverageThreshold: {
         global: {
