@@ -4,4 +4,4 @@
 
 # Test Abdeckung
 
-[Test Abdeckung..](coverage/lcov-report/index.html)
+[Test Abdeckung..](./coverage/lcov-report/index.html)
