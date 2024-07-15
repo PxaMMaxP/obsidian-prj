@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const coverageDir = path.join(__dirname, 'coverage');
+const coverageDir = path.join(__dirname, '..', 'coverage');
 const typedocUrl = 'https://pxammaxp.github.io/obsidian-prj/'; // Ersetze dies durch die tatsächliche URL deiner TypeDoc-Dokumentation
 
 // Funktion, um alle Dateien in einem Verzeichnis rekursiv zu durchsuchen
