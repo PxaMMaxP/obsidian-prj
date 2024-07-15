@@ -6,7 +6,7 @@
     "excludeProtected": false,
     "excludeExternals": false,
     "includeVersion": true,
-    "readme": "README.md",
+    "readme": "Docs.md",
     "exclude": ["**/*.test.ts"],
     "theme": "default",
     "hideGenerator": false
