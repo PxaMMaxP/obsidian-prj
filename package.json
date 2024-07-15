@@ -24,7 +24,7 @@
     "test:verbose": "jest --verbose",
     "test:watch": "jest --watch --onlyChanged --verbose",
     "test:performance": "jest --config jest.config.performance.js --runInBand --verbose",
-    "test:coverage": "jest --config jest.config.coverage.js --coverage || true && node fix-coverage-paths.js",
+    "test:coverage": "jest --config jest.config.coverage.js --coverage || true && npm run jest:fix-coverage-paths && npm run jest:badges",
     "jest:fix-coverage-paths": "node scripts/fix-coverage-paths.js",
     "jest:badges": "node scripts/generate-badge.js"
   },
@@ -57,6 +57,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "crypto-js": "^4.2.0",
     "eslint-plugin-prettier": "^5.1.3",
     "jest-environment-jsdom": "^29.7.0",
