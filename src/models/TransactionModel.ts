@@ -1,6 +1,8 @@
-import { ILogger } from 'src/interfaces/ILogger';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { IBaseComplexDataType } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { isIBaseComplexDataType } from 'src/libs/BaseComplexDataType/isIBaseComplexDataType';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 
 /**
  * The type of return value of the `callWriteChanges` method.
@@ -26,7 +28,8 @@ type WriteChangesReturnType = {
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel<T> {
-    protected logger: ILogger | undefined;
+    protected _dependencies: IDIContainer;
+    protected _logger: ILogger | undefined;
     /**
      * A promise that resolves when the changes are written to the file.
      */
@@ -69,16 +72,20 @@ export class TransactionModel<T> {
     /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
-     * @param logger A optional logger that logs messages.
+     * @param dependencies The optional dependencies to use.
      * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
      */
     constructor(
         writeChanges:
             | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
             | undefined,
-        logger?: ILogger,
+        dependencies?: IDIContainer,
     ) {
-        this.logger = logger;
+        this._dependencies = dependencies ?? DIContainer.getInstance();
+
+        this._logger = this._dependencies
+            .resolve<ILogger_>('ILogger_', false)
+            ?.getLogger('Model');
 
         // Bind the updateKeyValue method to the instance; its required for the ProxyHandler Delegate.
         this.updateKeyValue = this.updateKeyValue.bind(this);
@@ -138,10 +145,10 @@ export class TransactionModel<T> {
 
             promise
                 .then(() => {
-                    this.logger?.debug('Changes written to file');
+                    this._logger?.debug('Changes written to file');
                 })
                 .catch((error) => {
-                    this.logger?.error(
+                    this._logger?.error(
                         'Failed to write changes to file:',
                         error,
                     );
@@ -150,7 +157,7 @@ export class TransactionModel<T> {
             writeChanges.promise = promise;
             writeChanges.writeTriggered = true;
         } else {
-            this.logger?.debug('No `writeChanges` function available');
+            this._logger?.debug('No `writeChanges` function available');
         }
 
         // Reset changes if writeChanges was called
@@ -170,7 +177,7 @@ export class TransactionModel<T> {
      */
     public startTransaction(): void {
         if (this.isTransactionActive) {
-            this.logger?.warn('Transaction already active');
+            this._logger?.warn('Transaction already active');
 
             return;
         }
@@ -185,7 +192,7 @@ export class TransactionModel<T> {
      */
     public finishTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger?.warn('No transaction active');
+            this._logger?.warn('No transaction active');
 
             return;
         }
@@ -203,11 +210,11 @@ export class TransactionModel<T> {
      */
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger?.warn('No transaction active');
+            this._logger?.warn('No transaction active');
 
             return;
         } else if (!this.writeChanges) {
-            this.logger?.warn('No `writeChanges` function available');
+            this._logger?.warn('No `writeChanges` function available');
 
             return;
         }

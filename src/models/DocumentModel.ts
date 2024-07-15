@@ -5,7 +5,6 @@ import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import MetadataCache from 'src/libs/MetadataCache';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
@@ -19,8 +18,7 @@ export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
 {
-    protected logger: ILogger;
-    private _metadataCache: MetadataCache;
+    protected _logger: ILogger;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     /**
@@ -44,7 +42,7 @@ export class DocumentModel
     constructor(file: TFile | undefined, logger?: ILogger) {
         super(file, DocumentData, DocumentData.yamlKeyMap);
 
-        this.logger = logger ?? Logging.getLogger('DocumentModel');
+        this._logger = logger ?? Logging.getLogger('DocumentModel');
         this._metadataCache = Global.getInstance().metadataCache;
     }
 
@@ -102,9 +100,9 @@ export class DocumentModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this.app.vault.read(this.file);
+            return this._app.vault.read(this.file);
         } catch (error) {
-            this.logger.error(error);
+            this._logger.error(error);
         }
     }
 
@@ -115,11 +113,11 @@ export class DocumentModel
     public getCorospondingSymbol(): string {
         if (this.data.type?.toString() === 'Metadata') {
             if (this.data.subType === 'Cluster') {
-                return this.global.settings.documentSettings.clusterSymbol;
+                return this._pluginSettings.documentSettings.clusterSymbol;
             } else if (this.data.hide) {
-                return this.global.settings.documentSettings.hideSymbol;
+                return this._pluginSettings.documentSettings.hideSymbol;
             } else {
-                return this.global.settings.documentSettings.symbol;
+                return this._pluginSettings.documentSettings.symbol;
             }
         }
 
@@ -132,8 +130,8 @@ export class DocumentModel
      * E.g. `Input` if the document is addressed to the user or `Output` if it comes from the user. Otherwise `null`.
      */
     public getInputOutputState(): null | 'Input' | 'Output' {
-        const username = this.global.settings.user.name;
-        const shortUsername = this.global.settings.user.shortName;
+        const username = this._pluginSettings.user.name;
+        const shortUsername = this._pluginSettings.user.shortName;
 
         if (this.data && (this.data.sender || this.data.recipient)) {
             if (
@@ -171,7 +169,7 @@ export class DocumentModel
         if (file instanceof TFile) {
             return file;
         } else {
-            this.logger.warn(`No files found for ${fileLinkData.filename}`);
+            this._logger.warn(`No files found for ${fileLinkData.filename}`);
 
             return undefined;
         }
@@ -191,7 +189,7 @@ export class DocumentModel
     ): string | undefined {
         if (!file || !(file instanceof TFile)) return;
 
-        const linktext = this.global.app.metadataCache.fileToLinktext(
+        const linktext = this._global.app.metadataCache.fileToLinktext(
             file,
             path ? path : this.file.path,
         );

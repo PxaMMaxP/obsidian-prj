@@ -13,7 +13,7 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
 export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
-    protected logger: ILogger = Logging.getLogger('ProjectModel');
+    protected _logger: ILogger = Logging.getLogger('ProjectModel');
 
     /**
      * Creates a new instance of the Project model.
