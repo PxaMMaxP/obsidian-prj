@@ -3,6 +3,7 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { FileType } from 'src/libs/FileType/FileType';
+import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
 
 /**
@@ -21,7 +22,7 @@ export default class GeneralComponents {
         container: DocumentFragment,
         component: Component,
         path: string,
-        type: FileType | undefined | null,
+        type: FileType | FileTypes | undefined | null,
         corospondingSymbol: string,
     ) {
         new EditableDataView(container, component).addLink((link) =>
