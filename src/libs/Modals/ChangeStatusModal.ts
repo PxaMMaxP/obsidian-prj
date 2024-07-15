@@ -3,10 +3,10 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { FileType } from 'src/libs/FileType/FileType';
 import BaseData from 'src/models/Data/BaseData';
+import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 

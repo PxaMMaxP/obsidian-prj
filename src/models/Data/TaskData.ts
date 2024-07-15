@@ -1,6 +1,5 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { IFileType_, IFileType } from 'src/libs/FileType/interfaces/IFileType';
@@ -14,6 +13,7 @@ import {
     HistoryEntries,
 } from 'src/types/PrjTypes';
 import BaseData from './BaseData';
+import { IPrjData } from './interfaces/IPrjData';
 
 /**
  * Represents a task.

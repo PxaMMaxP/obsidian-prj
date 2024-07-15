@@ -1,10 +1,10 @@
 import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import BaseData from 'src/models/Data/BaseData';
+import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
 import ProjectData from 'src/models/Data/ProjectData';
 import TaskData from 'src/models/Data/TaskData';
 import TopicData from 'src/models/Data/TopicData';

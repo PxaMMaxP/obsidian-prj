@@ -1,11 +1,11 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import IPrjData from 'src/interfaces/IPrjData';
 import IPrjDocument from 'src/interfaces/IPrjDocument';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { IFileType, IFileType_ } from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
+import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
 import { FileSubType } from 'src/types/PrjTypes';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import BaseData from './BaseData';
