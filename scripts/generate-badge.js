@@ -27,7 +27,7 @@ exec('npx istanbul-badges-readme --coverageDir=./coverage --readmeDir=./coverage
     const badgeLines = updatedReadmeContent.split('\n').filter(line => line.includes('https://img.shields.io'));
 
     // Ensure the target directory exists
-    const badgesDir = path.join(__dirname, '..', 'docs', 'badges');
+    const badgesDir = path.join(__dirname, '..', 'coverage', 'badges');
     if (!fs.existsSync(badgesDir)) {
         fs.mkdirSync(badgesDir, { recursive: true });
     }
