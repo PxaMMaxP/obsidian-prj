@@ -1,4 +1,4 @@
-import { FileType } from 'src/types/FileType/FileType';
+import { FileType } from 'src/libs/FileType/FileType';
 import {
     Energy,
     FileSubType,

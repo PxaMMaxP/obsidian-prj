@@ -3,7 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { DocumentModel } from 'src/models/DocumentModel';
-import { FileType } from 'src/types/FileType/FileType';
+import { FileType } from 'src/libs/FileType/FileType';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
