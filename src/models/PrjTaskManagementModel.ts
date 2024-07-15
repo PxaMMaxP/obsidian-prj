@@ -7,11 +7,11 @@ import { HelperGeneral } from 'src/libs/Helper/General';
 import { Tag } from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
 import BaseData from './Data/BaseData';
+import IPrjData from './Data/interfaces/IPrjData';
 import ProjectData from './Data/ProjectData';
 import TaskData from './Data/TaskData';
 import TopicData from './Data/TopicData';
 import { FileModel } from './FileModel';
-import IPrjData from '../interfaces/IPrjData';
 import IPrjModel from '../interfaces/IPrjModel';
 import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 
