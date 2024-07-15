@@ -1,7 +1,11 @@
-import MockLogger from 'src/__mocks__/ILogger.mock';
+import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { TransactionModel } from '../TransactionModel';
 
 describe('TransactionModel', () => {
+    let diContainerMock: IDIContainer;
+
     class TestTransactionModel<T> extends TransactionModel<T> {
         public testUpdateKeyValue(key: string, value: unknown): void {
             this.updateKeyValue(key, value);
@@ -15,10 +19,17 @@ describe('TransactionModel', () => {
 
     beforeEach(() => {
         writeChangesMock = jest.fn().mockResolvedValue(undefined);
+
+        diContainerMock = DIContainer.getInstance();
+
+        diContainerMock.register('ILogger_', MockLogger_);
     });
 
     test('should initialize with active transaction if no writeChanges is provided', () => {
-        const transactionModel = new TransactionModel(undefined, MockLogger);
+        const transactionModel = new TransactionModel(
+            undefined,
+            diContainerMock,
+        );
 
         expect(transactionModel.isTransactionActive).toBe(true);
         expect(MockLogger.warn).not.toHaveBeenCalled();
@@ -27,7 +38,7 @@ describe('TransactionModel', () => {
     test('should initialize with inactive transaction if writeChanges is provided', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         expect(transactionModel.isTransactionActive).toBe(false);
@@ -37,7 +48,7 @@ describe('TransactionModel', () => {
     test('should start and finish a transaction', async () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.startTransaction();
@@ -55,7 +66,10 @@ describe('TransactionModel', () => {
     });
 
     test('should log warning if starting an already active transaction', () => {
-        const transactionModel = new TransactionModel(undefined, MockLogger);
+        const transactionModel = new TransactionModel(
+            undefined,
+            diContainerMock,
+        );
 
         transactionModel.startTransaction();
         transactionModel.startTransaction();
@@ -68,7 +82,7 @@ describe('TransactionModel', () => {
     test('should log warning if finishing an inactive transaction', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.finishTransaction();
@@ -79,7 +93,7 @@ describe('TransactionModel', () => {
     test('should abort a transaction and discard changes', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.startTransaction();
@@ -94,7 +108,7 @@ describe('TransactionModel', () => {
     test('should log warning if aborting an inactive transaction', () => {
         const transactionModel = new TransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.abortTransaction();
@@ -105,7 +119,7 @@ describe('TransactionModel', () => {
     test('should update key value and call writeChanges if no transaction is active', () => {
         const transactionModel = new TestTransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.testUpdateKeyValue('data.title', 'new title');
@@ -119,7 +133,7 @@ describe('TransactionModel', () => {
     test('should update key value and not call writeChanges if transaction is active', () => {
         const transactionModel = new TestTransactionModel(
             writeChangesMock,
-            MockLogger,
+            diContainerMock,
         );
 
         transactionModel.startTransaction();
@@ -132,7 +146,10 @@ describe('TransactionModel', () => {
     });
 
     test('should set writeChanges and finish or abort transaction based on changes existence', () => {
-        const transactionModel = new TransactionModel(undefined, MockLogger);
+        const transactionModel = new TransactionModel(
+            undefined,
+            diContainerMock,
+        );
 
         transactionModel.startTransaction();
         transactionModel['changes'] = { key: 'value' } as Partial<unknown>;
@@ -147,7 +164,10 @@ describe('TransactionModel', () => {
     });
 
     test('should set writeChanges and abort transaction if no changes exist', () => {
-        const transactionModel = new TransactionModel(undefined, MockLogger);
+        const transactionModel = new TransactionModel(
+            undefined,
+            diContainerMock,
+        );
 
         transactionModel.startTransaction();
 
