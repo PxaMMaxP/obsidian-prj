@@ -462,6 +462,19 @@ export default class MetadataCache implements IMetadataCache {
     }
 
     /**
+     * Get the file object for a file link.
+     * @param link The file link to get the file object for.
+     * @param path The path of the file where the link is located.
+     * @returns The file object for the file link or undefined if no file is found.
+     */
+    public getFileByLink(link: string, path = ''): TFile | undefined {
+        return (
+            this._app.metadataCache.getFirstLinkpathDest(link, path) ??
+            undefined
+        );
+    }
+
+    /**
      * Get the backlinks for a file.
      * @param file The file to get the backlinks for.
      * @returns Array of files that link to the file.

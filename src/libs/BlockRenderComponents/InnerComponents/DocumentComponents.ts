@@ -274,7 +274,7 @@ export default class DocumentComponents {
         documentModel: DocumentModel,
         editability = true,
     ) {
-        const fileCache = Global.getInstance().fileCache;
+        const metadataCache = Global.getInstance().metadataCache;
         const app = Global.getInstance().app;
 
         new EditableDataView(fileLink, component).addLink((link) => {
@@ -284,7 +284,7 @@ export default class DocumentComponents {
                 .setFormator((value: string) => {
                     const baseFileData = new Wikilink(documentModel.data.file);
 
-                    const baseFile = fileCache.findFileByLinkText(
+                    const baseFile = metadataCache.getFileByLink(
                         baseFileData.filename ?? '',
                         documentModel.file.path,
                     );

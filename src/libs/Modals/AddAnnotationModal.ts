@@ -11,11 +11,6 @@ import { HelperObsidian } from '../Helper/Obsidian';
  */
 export default class AddAnnotationModal extends BaseModalForm {
     /**
-     * @deprecated This property is deprecated and will be removed in a future version.
-     */
-    private _fileCache = Global.getInstance().fileCache;
-
-    /**
      * Creates an instance of AddAnnotationModal.
      */
     constructor() {

@@ -1,13 +1,11 @@
-// Note: DocumentModel class
-
 import { TFile } from 'obsidian';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { ILogger } from 'src/interfaces/ILogger';
-import FileCache from 'src/libs/FileCache';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
+import MetadataCache from 'src/libs/MetadataCache';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
@@ -22,10 +20,7 @@ export class DocumentModel
     implements IPrjModel<DocumentData>
 {
     protected logger: ILogger;
-    /**
-     * @deprecated This property is deprecated and will be removed in a future version.
-     */
-    private _fileCache: FileCache;
+    private _metadataCache: MetadataCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     /**
@@ -50,7 +45,7 @@ export class DocumentModel
         super(file, DocumentData, DocumentData.yamlKeyMap);
 
         this.logger = logger ?? Logging.getLogger('DocumentModel');
-        this._fileCache = Global.getInstance().fileCache;
+        this._metadataCache = Global.getInstance().metadataCache;
     }
 
     /**
@@ -69,7 +64,7 @@ export class DocumentModel
                         ? `${wikilinkData.basename}.md`
                         : '';
 
-                    const file = this._fileCache.findFileByLinkText(
+                    const file = this._metadataCache.getFileByLink(
                         mdFilename,
                         this.file.path,
                     );
@@ -168,7 +163,7 @@ export class DocumentModel
 
         const fileLinkData = new Wikilink(this.data.file);
 
-        const file = this._fileCache.findFileByLinkText(
+        const file = this._metadataCache.getFileByLink(
             fileLinkData.filename ?? '',
             this.file.path,
         );
