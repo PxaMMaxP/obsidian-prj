@@ -144,10 +144,10 @@
           "ClassDeclaration": true,
           "ArrowFunctionExpression": false,
           "FunctionExpression": false
-        }
+        },
       }
     ],
-    "jsdoc/require-param": ["warn", { "exemptedBy": ["deprecated"] }],
+    "jsdoc/require-param": ["warn", { "exemptedBy": ["deprecated", "inheritdoc"] }],
     "jsdoc/require-description": [
       "warn",
       {
@@ -158,14 +158,14 @@
           "ClassExpression"
         ],
         "descriptionStyle": "body",
-        "exemptedBy": ["deprecated"]
+        "exemptedBy": ["deprecated", "inheritdoc"]
       }
     ],
     "jsdoc/require-returns": [
       "warn",
       {
         "checkGetters": false,
-        "exemptedBy": ["deprecated"]
+        "exemptedBy": ["deprecated", "inheritdoc"]
       }
     ],
     "jsdoc/check-tag-names": [
