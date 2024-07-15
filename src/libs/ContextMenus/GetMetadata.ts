@@ -3,7 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { DocumentModel } from 'src/models/DocumentModel';
-import { FileType } from 'src/types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
@@ -129,17 +129,14 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
         file: TFile,
     ): FileMetadata | undefined {
         return this._metadataCache.cache.find((metadata) => {
-            const type = metadata.metadata.frontmatter?.type as
-                | FileType
-                | undefined
-                | null;
+            const type = new FileType(metadata.metadata.frontmatter?.type);
 
             const fileLink = metadata.metadata.frontmatter?.file as
                 | string
                 | undefined
                 | null;
 
-            if (type && fileLink && type === 'Metadata') {
+            if (type.value && fileLink && type.equals('Metadata')) {
                 return fileLink.contains(file.name);
             } else {
                 return false;

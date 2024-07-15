@@ -5,7 +5,8 @@ import IPrjDocument from 'src/interfaces/IPrjDocument';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { Tags } from 'src/libs/Tags/Tags';
-import { FileType, FileSubType } from 'src/types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
+import { FileSubType } from 'src/types/PrjTypes';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import BaseData from './BaseData';
 
@@ -18,11 +19,24 @@ export default class DocumentData
     implements IPrjData, IPrjDocument
 {
     /**
-     * The type of the document.
-     * @see {@link FileType}
+     * The type of the Document.
+     */
+    private _type: FileType | null | undefined;
+
+    /**
+     * Sets the type of the Document.
      */
     @fieldConfig('Metadata')
-    type: FileType | null | undefined;
+    set type(value: unknown) {
+        this._type = new FileType(value);
+    }
+
+    /**
+     * Gets the type of the Document.
+     */
+    get type(): FileType | null | undefined {
+        return this._type?.valueOf() as FileType | null | undefined;
+    }
 
     /**
      * The subtype of the document.

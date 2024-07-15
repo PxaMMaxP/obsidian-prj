@@ -7,7 +7,8 @@ import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import BaseData from 'src/models/Data/BaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import PrjTypes, { Status } from 'src/types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
+import { Status } from 'src/types/PrjTypes';
 
 /**
  * Represents a modal to change the status of a project.
@@ -39,7 +40,7 @@ export default class ChangeStatusModal extends Modal {
         const activeFileMetadata = this._metadataCache.getEntry(activeFile);
         const type = activeFileMetadata?.metadata.frontmatter?.type;
 
-        if (!PrjTypes.isTypeIncluded(type, ['Topic', 'Project', 'Task'])) {
+        if (!FileType.isValidOf(type, ['Topic', 'Project', 'Task'])) {
             return;
         }
 

@@ -5,6 +5,7 @@ import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { Tags } from 'src/libs/Tags/Tags';
+import { FileType } from 'src/types/FileType/FileType';
 import {
     FileSubType,
     Status,
@@ -21,8 +22,25 @@ export default class TaskData
     extends BaseData<TaskData>
     implements IPrjData, IPrjTaskManagement
 {
+    /**
+     * The type of the Task.
+     */
+    private _type: FileType | null | undefined;
+
+    /**
+     * Sets the type of the Task.
+     */
     @fieldConfig('Task')
-    type: 'Task' | null | undefined;
+    set type(value: unknown) {
+        this._type = new FileType(value);
+    }
+
+    /**
+     * Gets the type of the Task.
+     */
+    get type(): FileType | null | undefined {
+        return this._type?.valueOf() as FileType | null | undefined;
+    }
 
     @fieldConfig()
     subType: FileSubType | null | undefined;

@@ -3,7 +3,7 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import { FileType } from 'src/types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
 
 /**
  * General components class for `BlockRenderComponent`.
@@ -27,7 +27,7 @@ export default class GeneralComponents {
         new EditableDataView(container, component).addLink((link) =>
             link
                 .setValue(path)
-                .setTitle(Lng.gt(type ?? 'File'))
+                .setTitle(Lng.gt(type?.valueOf() ?? 'File'))
                 .setLinkType('file')
                 .setFormator((value: string) => {
                     const icon = document.createDocumentFragment();
