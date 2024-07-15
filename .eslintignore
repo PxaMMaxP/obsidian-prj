@@ -4,3 +4,6 @@ main.js
 
 **/*.js
 *.js
+
+**/*.mjs
+*.mjs
