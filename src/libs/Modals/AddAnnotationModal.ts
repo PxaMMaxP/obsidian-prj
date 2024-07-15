@@ -10,6 +10,9 @@ import { HelperObsidian } from '../Helper/Obsidian';
  * Modal to create a new metadata file
  */
 export default class AddAnnotationModal extends BaseModalForm {
+    /**
+     * @deprecated This property is deprecated and will be removed in a future version.
+     */
     private _fileCache = Global.getInstance().fileCache;
 
     /**

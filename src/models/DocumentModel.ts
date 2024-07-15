@@ -22,6 +22,9 @@ export class DocumentModel
     implements IPrjModel<DocumentData>
 {
     protected logger: ILogger;
+    /**
+     * @deprecated This property is deprecated and will be removed in a future version.
+     */
     private _fileCache: FileCache;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
