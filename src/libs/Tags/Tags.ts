@@ -27,7 +27,11 @@ export class Tags extends BaseComplexDataType implements ITags {
      * Register the markdown block processor and update the workspace options.
      */
     public static onLoad(): void {
+        /**
+         * @deprecated Use the `ITags_` interface instead.
+         */
         DIContainer.getInstance().register('ITags', Tags);
+        DIContainer.getInstance().register('ITags_', Tags);
     }
 
     /**

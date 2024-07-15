@@ -29,7 +29,11 @@ export class Tag
      * Register the markdown block processor and update the workspace options.
      */
     public static onLoad(): void {
+        /**
+         * @deprecated Use the `ITag_` interface instead.
+         */
         DIContainer.getInstance().register('ITag', Tag);
+        DIContainer.getInstance().register('ITag_', Tag);
     }
 
     /**
