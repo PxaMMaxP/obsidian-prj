@@ -4,7 +4,7 @@ import IPrjData from 'src/interfaces/IPrjData';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { Tags } from 'src/libs/Tags/Tags';
-import { FileType } from 'src/types/FileType/FileType';
+import { FileType } from 'src/libs/FileType/FileType';
 import BaseData from './BaseData';
 
 /**

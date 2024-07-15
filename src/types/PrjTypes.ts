@@ -1,7 +1,7 @@
 /* eslint-disable deprecation/deprecation */
 import Lng from 'src/classes/Lng';
-import { FileType as FileType_ } from './FileType/FileType';
-import { FileTypes } from './FileType/interfaces/IFileType';
+import { FileType as FileType_ } from '../libs/FileType/FileType';
+import { FileTypes } from '../libs/FileType/interfaces/IFileType';
 
 /**
  * Represents the types used in the app.

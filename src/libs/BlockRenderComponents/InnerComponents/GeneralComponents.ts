@@ -3,7 +3,7 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import { FileType } from 'src/types/FileType/FileType';
+import { FileType } from 'src/libs/FileType/FileType';
 
 /**
  * General components class for `BlockRenderComponent`.

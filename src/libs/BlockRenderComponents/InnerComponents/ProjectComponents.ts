@@ -4,7 +4,7 @@ import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { FileTypes } from 'src/types/FileType/interfaces/IFileType';
+import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { Status, UrgencySymbols } from 'src/types/PrjTypes';
 
 /**
