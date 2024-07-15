@@ -3,6 +3,7 @@ import { FieldConfigSymbol } from 'src/classes/decorators/FieldConfigDecorator';
 import { ToStringFieldSymbol } from 'src/classes/decorators/ToStringFieldDecorator';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { YamlKeyMap } from 'src/types/YamlKeyMap';
 
 /**
  * An abstract base class that provides common functionality for data classes.
@@ -21,6 +22,13 @@ export default abstract class BaseData<T> {
 
         this.mergeData(data);
     }
+
+    /**
+     * The mapping of YAML keys to the corresponding properties.
+     * @remarks This property should be overridden in
+     * derived classes to provide the mapping if necessary.
+     */
+    static yamlKeyMap: YamlKeyMap | undefined;
 
     /**
      * Initializes the dependencies of the data class.

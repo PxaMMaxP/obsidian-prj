@@ -5,6 +5,7 @@ import { IFileType, IFileType_ } from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
+import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import BaseData from './BaseData';
 import { IPrjData, IPrjData_ } from './interfaces/IPrjData';
 
@@ -29,6 +30,8 @@ export class PrjData<T> extends BaseData<T> implements IPrjData {
     private _tags: ITags | null | undefined;
     private _title: string | null | undefined;
     private _description: string | null | undefined;
+
+    static yamlKeyMap: YamlKeyMap | undefined = {};
 
     /**
      * @inheritdoc
