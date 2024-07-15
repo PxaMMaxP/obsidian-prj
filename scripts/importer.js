@@ -35,7 +35,7 @@ function generateImports(files) {
 
 // Hauptfunktion
 function main() {
-    const srcDir = path.join(__dirname, 'src');
+    const srcDir = path.join(__dirname, '..', 'src');
     const allFiles = getAllFiles(srcDir);
     const filesWithComment = findFilesWithComment(allFiles);
 

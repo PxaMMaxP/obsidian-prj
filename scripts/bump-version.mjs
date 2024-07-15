@@ -31,21 +31,21 @@ function main() {
     const versionPart = process.argv[2];
 
     // Update package.json
-    const packageJsonPath = join(__dirname, 'package.json');
+    const packageJsonPath = join(__dirname, '..', 'package.json');
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
     packageJson.version = bumpVersion(packageJson.version, versionPart);
     writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
     console.log(`package.json version updated to ${packageJson.version}`);
 
     // Update manifest.json
-    const manifestPath = join(__dirname, 'manifest.json');
+    const manifestPath = join(__dirname, '..', 'manifest.json');
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     manifest.version = packageJson.version;
     writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
     console.log(`manifest.json version updated to ${manifest.version}`);
 
     // Update versions.json
-    const versionsPath = join(__dirname, 'versions.json');
+    const versionsPath = join(__dirname, '..', 'versions.json');
     const versions = JSON.parse(readFileSync(versionsPath, 'utf8'));
     versions[packageJson.version] = manifest.minAppVersion;
     writeFileSync(versionsPath, JSON.stringify(versions, null, 2));
