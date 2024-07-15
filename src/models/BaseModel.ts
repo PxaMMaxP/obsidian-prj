@@ -7,11 +7,12 @@ import { FileModel } from './FileModel';
 
 /**
  * Base class for models that are stored in files.
+ * @deprecated Use the FileModel class instead.
  */
 export default class BaseModel<
     T extends BaseData<unknown>,
 > extends FileModel<T> {
-    protected logger: ILogger;
+    protected _logger: ILogger;
 
     /**
      * Creates a new BaseModel instance.
@@ -28,6 +29,6 @@ export default class BaseModel<
     ) {
         super(file, ctor, yamlKeyMap);
 
-        this.logger = logger ?? Logging.getLogger('BaseModel');
+        this._logger = logger ?? Logging.getLogger('BaseModel');
     }
 }
