@@ -1,4 +1,4 @@
-import { FileType } from 'src/libs/FileType/FileType';
+import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import {
     Energy,
     FileSubType,
@@ -8,7 +8,7 @@ import {
 } from '../types/PrjTypes';
 
 export default interface IPrjTaskManagement {
-    type: FileType | null | undefined;
+    type: IFileType | null | undefined;
     subType: FileSubType | null | undefined;
     title: string | null | undefined;
     description: string | null | undefined;

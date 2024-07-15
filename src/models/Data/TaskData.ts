@@ -2,10 +2,10 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
 import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
-import { FileType } from 'src/libs/FileType/FileType';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { IFileType_, IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
-import { ITags } from 'src/libs/Tags/interfaces/ITags';
-import { Tags } from 'src/libs/Tags/Tags';
+import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import {
     FileSubType,
     Status,
@@ -22,24 +22,27 @@ export default class TaskData
     extends BaseData<TaskData>
     implements IPrjData, IPrjTaskManagement
 {
+    private _iTags: ITags_;
+    private _iFileType: IFileType_;
+
     /**
      * The type of the Task.
      */
-    private _type: FileType | null | undefined;
+    private _type: IFileType | null | undefined;
 
     /**
      * Sets the type of the Task.
      */
     @fieldConfig('Task')
     set type(value: unknown) {
-        this._type = new FileType(value);
+        this._type = new this._iFileType(value);
     }
 
     /**
      * Gets the type of the Task.
      */
-    get type(): FileType | null | undefined {
-        return this._type?.valueOf() as FileType | null | undefined;
+    get type(): IFileType | null | undefined {
+        return this._type as IFileType | null | undefined;
     }
 
     @fieldConfig()
@@ -79,10 +82,10 @@ export default class TaskData
     @fieldConfig()
     @toStringField
     set tags(value: ITags | ITag | string | string[] | null | undefined) {
-        if (Tags.isInstanceOf(value)) {
+        if (this._iTags.isInstanceOf(value)) {
             this._tags = value;
         } else {
-            this._tags = new Tags(value);
+            this._tags = new this._iTags(value);
         }
     }
 
@@ -107,8 +110,17 @@ export default class TaskData
      * @param data - The data to use for the model.
      * - If no data is provided, the default values e.g. `undefined` are used.
      * - If only partial data is provided, the missing values are set to `undefined`.
+     * @param dependencies The optional dependencies to use for the model. {@link BaseData}
      */
-    constructor(data: Partial<TaskData>) {
-        super(data);
+    constructor(data: Partial<TaskData>, dependencies?: IDIContainer) {
+        super(data, dependencies);
+    }
+
+    /**
+     * Initializes the dependencies of the class.
+     */
+    protected initializeDependencies(): void {
+        this._iTags = this._dependencies.resolve<ITags_>('ITags_');
+        this._iFileType = this._dependencies.resolve<IFileType_>('IFileType_');
     }
 }
