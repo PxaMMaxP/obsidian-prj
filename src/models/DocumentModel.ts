@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
@@ -18,7 +18,6 @@ export class DocumentModel
     extends FileModel<DocumentData>
     implements IPrjModel<DocumentData>
 {
-    protected _logger: ILogger;
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     /**
@@ -37,13 +36,10 @@ export class DocumentModel
     /**
      * Creates a new instance of the document model.
      * @param file The file to create the model for.
-     * @param logger The optional logger to use.
+     * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, logger?: ILogger) {
-        super(file, DocumentData, DocumentData.yamlKeyMap);
-
-        this._logger = logger ?? Logging.getLogger('DocumentModel');
-        this._metadataCache = Global.getInstance().metadataCache;
+    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+        super(file, DocumentData, DocumentData.yamlKeyMap, dependencies);
     }
 
     /**

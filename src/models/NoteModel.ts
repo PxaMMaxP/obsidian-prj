@@ -1,9 +1,8 @@
 // Note: DocumentModel class
 
 import { TFile } from 'obsidian';
-import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import NoteData from './Data/NoteData';
 import { FileModel } from './FileModel';
@@ -17,8 +16,6 @@ export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
-    protected _logger: ILogger = Logging.getLogger('NoteModel');
-
     /**
      * The data of the note.
      */
@@ -35,9 +32,10 @@ export class NoteModel
     /**
      * Creates a new instance of the note model.
      * @param file The file to create the model for.
+     * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined) {
-        super(file, NoteData, undefined);
+    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+        super(file, NoteData, undefined, dependencies);
     }
 
     /**

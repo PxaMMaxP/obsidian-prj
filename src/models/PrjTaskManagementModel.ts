@@ -2,7 +2,7 @@ import { TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Tag } from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
@@ -24,8 +24,6 @@ export class PrjTaskManagementModel<
     extends FileModel<T>
     implements IPrjModel<T>
 {
-    protected _logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
-
     /**
      * The data of the model.
      */
@@ -43,9 +41,14 @@ export class PrjTaskManagementModel<
      * Creates a new instance of the PrjTaskManagementModel.
      * @param file The file to create the PrjTaskManagementModel from.
      * @param ctor The constructor of the data class.
+     * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, ctor: new (data?: Partial<T>) => T) {
-        super(file, ctor, undefined);
+    constructor(
+        file: TFile | undefined,
+        ctor: new (data?: Partial<T>) => T,
+        dependencies?: IDIContainer,
+    ) {
+        super(file, ctor, undefined, dependencies);
     }
 
     /**

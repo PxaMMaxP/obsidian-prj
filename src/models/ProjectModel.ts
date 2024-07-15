@@ -1,7 +1,6 @@
 import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { Logging } from 'src/classes/Logging';
-import { ILogger } from 'src/interfaces/ILogger';
+import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import ProjectData from './Data/ProjectData';
@@ -13,14 +12,13 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
 export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
-    protected _logger: ILogger = Logging.getLogger('ProjectModel');
-
     /**
      * Creates a new instance of the Project model.
      * @param file The file to create the model for.
+     * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined) {
-        super(file, ProjectData);
+    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+        super(file, ProjectData, dependencies);
     }
 
     /**
