@@ -2,7 +2,6 @@ import { App } from 'obsidian';
 import Prj from 'src/main';
 import { PrjSettings } from 'src/types/PrjSettings';
 import { Logging, LoggingLevel } from './Logging';
-import FileCache from '../libs/FileCache';
 import MetadataCache from '../libs/MetadataCache';
 
 /**
@@ -12,10 +11,6 @@ export default class Global {
     static instance: Global;
     plugin: Prj;
     app: App;
-    /**
-     * @deprecated This property is deprecated and will be removed in a future version.
-     */
-    fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;
     private _logger = Logging.getLogger('Global');
@@ -43,9 +38,6 @@ export default class Global {
         // Singleton; before creating the cache instances, because they need the app instance
         Global.instance = this;
 
-        // File cache
-        this.fileCache = FileCache.getInstance();
-
         // Metadata cache
         this.metadataCache = MetadataCache.getInstance();
     }
@@ -55,7 +47,6 @@ export default class Global {
      */
     public async awaitCacheInitialization() {
         this._logger.debug('Waiting for cache initialization');
-        await this.fileCache.waitForCacheReady();
         await this.metadataCache.waitForCacheReady();
         this._logger.debug('Cache initialized');
     }
@@ -64,7 +55,6 @@ export default class Global {
      * Cleans up resources used by the Global instance.
      */
     public static deconstructor() {
-        FileCache.deconstructor();
         MetadataCache.deconstructor();
     }
 

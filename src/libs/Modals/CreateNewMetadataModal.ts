@@ -19,10 +19,7 @@ import { HelperObsidian } from '../Helper/Obsidian';
  * Modal to create a new metadata file
  */
 export default class CreateNewMetadataModal extends BaseModalForm {
-    /**
-     * @deprecated This property is deprecated and will be removed in a future version.
-     */
-    private _fileCache = Global.getInstance().fileCache;
+    private _metadataCache = Global.getInstance().metadataCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.
@@ -125,7 +122,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         (result.data.subType as FileSubType | undefined) =
             PrjTypes.isValidFileSubType(result.data.subType);
 
-        const linkedFile = this._fileCache.findFileByLinkText(
+        const linkedFile = this._metadataCache.getFileByLink(
             result.data.file as string,
             '',
         );
