@@ -5,7 +5,7 @@ import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRend
 /**
  * Type for the view state.
  */
-export type ViewState = 'source' | 'preview';
+type ViewState = 'source' | 'preview';
 
 /**
  * Class for the singleton block processor.
