@@ -45,8 +45,22 @@
         {
           "selector": "classProperty",
           "modifiers": ["private"],
-          "format": ["camelCase"],
-          "leadingUnderscore": "require"
+          "format": [ ],
+          "custom": {
+            "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+            "match": true,
+            "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
+          }
+        },
+        {
+          "selector": "classProperty",
+          "modifiers": ["protected"],
+          "format": [ ],
+          "custom": {
+            "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+            "match": true,
+            "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
+          }
         },
         {
           "selector": "memberLike",
