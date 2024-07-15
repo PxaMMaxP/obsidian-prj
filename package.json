@@ -24,7 +24,7 @@
     "test:verbose": "jest --verbose",
     "test:watch": "jest --watch --onlyChanged --verbose",
     "test:performance": "jest --config jest.config.performance.js --runInBand --verbose",
-    "test:coverage": "jest --config jest.config.coverage.js --coverage || true && node fix-lcov-paths.js"
+    "test:coverage": "jest --config jest.config.coverage.js --coverage || true && node fix-coverage-paths.js"
   },
   "keywords": [],
   "author": "",

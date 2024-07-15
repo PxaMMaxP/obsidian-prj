@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 
 const coverageDir = path.join(__dirname, 'coverage');
-const typedocUrl = 'https://pxammaxp.github.io/obsidian-prj/'; // Ersetze dies durch die tatsächliche URL deiner TypeDoc-Dokumentation
 
 // Funktion, um alle Dateien in einem Verzeichnis rekursiv zu durchsuchen
 const getAllFiles = (dir, files = []) => {
@@ -28,12 +27,7 @@ htmlFiles.forEach(filePath => {
             return;
         }
 
-        // Relative Pfade anpassen
-        let fixedData = data.replace(/(src|href)="(?!\.)/g, '$1="./');
-
-        // Link zur TypeDoc-Dokumentation hinzufügen
-        const linkHtml = `<div style="position: fixed; bottom: 10px; right: 10px;"><a href="${typedocUrl}" target="_blank">Zur TypeDoc-Dokumentation</a></div>`;
-        fixedData = fixedData.replace('</body>', `${linkHtml}</body>`);
+        const fixedData = data.replace(/(src|href)="(?!\.)/g, '$1="./');
 
         fs.writeFile(filePath, fixedData, 'utf8', (err) => {
             if (err) {
@@ -41,7 +35,7 @@ htmlFiles.forEach(filePath => {
                 return;
             }
 
-            console.log(`Fixed paths and added link in ${filePath}`);
+            console.log(`Fixed paths in ${filePath}`);
         });
     });
 });
