@@ -1,5 +1,5 @@
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { IFileType_, FileTypes } from '../IFileType';
+import { IFileType_, FileTypes } from '../interfaces/IFileType';
 
 /**
  * Tests the implementation of the IFileType_/IFileType interface.

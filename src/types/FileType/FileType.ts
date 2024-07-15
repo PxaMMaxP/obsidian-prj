@@ -4,7 +4,7 @@ import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/I
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import { IFileType, FileTypes, IFileType_ } from './IFileType';
+import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
 
 /**
  * Represents the types used in the app for files.
