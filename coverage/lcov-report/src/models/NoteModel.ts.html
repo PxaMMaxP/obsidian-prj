@@ -180,7 +180,11 @@
 <a name='L115'></a><a href='#L115'>115</a>
 <a name='L116'></a><a href='#L116'>116</a>
 <a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -226,17 +230,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -250,6 +243,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -260,6 +267,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,6 +349,7 @@ import IPrjModel from '../interfaces/IPrjModel';
      * Get a wikilink for the note
      * @param text The text to display in the wikilink
      * @returns The wikilink. E.g. `[[FileName]]` or `[[FileName|Text]]`
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public <span class="fstat-no" title="function not covered" >getWikilink(</span>text: string | undefined): string {
 <span class="cstat-no" title="statement not covered" >        if (text) {</span>
@@ -353,6 +362,7 @@ import IPrjModel from '../interfaces/IPrjModel';
     /**
      * Returns the file contents of the document
      * @returns String containing the file contents
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public async <span class="fstat-no" title="function not covered" >getFileContents(</span>): Promise&lt;string | undefined&gt; {
 <span class="cstat-no" title="statement not covered" >        try {</span>
@@ -365,6 +375,7 @@ import IPrjModel from '../interfaces/IPrjModel';
     /**
      * Returns the tags of the document as an array of strings
      * @returns Array of strings containing the tags
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public <span class="fstat-no" title="function not covered" >getTags(</span>): string[] {
         const tags = <span class="cstat-no" title="statement not covered" >this.data.tags;</span>
@@ -379,10 +390,11 @@ import IPrjModel from '../interfaces/IPrjModel';
 <span class="cstat-no" title="statement not covered" >        return formattedTags;</span>
     }
 &nbsp;
+    //#region Static API
     /**
      * Static API for the NoteModel class.
      */
-    //#region Static API
+&nbsp;
     /**
      * Generates a filename based on the provided NoteModel.
      * @param model The NoteModel object used to generate the filename.
@@ -421,7 +433,7 @@ import IPrjModel from '../interfaces/IPrjModel';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T12:23:53.202Z
+                at 2024-07-15T13:05:51.538Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
