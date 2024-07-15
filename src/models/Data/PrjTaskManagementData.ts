@@ -2,6 +2,7 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import { Status, Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
+import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjTaskManagementData } from './interfaces/IPrjTaskManagementData';
 import { PrjData } from './PrjData';
@@ -10,8 +11,8 @@ import { PrjData } from './PrjData';
  * Implementation of the PrjTaskManagementModel class.
  */
 @ImplementsStatic<IPrjData_<unknown>>()
-export class PrjTaskManagementModel
-    extends PrjData<PrjTaskManagementModel>
+export class PrjTaskManagementData
+    extends PrjData<PrjTaskManagementData>
     implements IPrjTaskManagementData
 {
     /**
@@ -27,6 +28,8 @@ export class PrjTaskManagementModel
     private _due: string | null | undefined;
     private _history: HistoryEntries | null | undefined;
     private _aliases: string[] | null | undefined;
+
+    static yamlKeyMap: YamlKeyMap | undefined = {};
 
     /**
      * @inheritdoc
