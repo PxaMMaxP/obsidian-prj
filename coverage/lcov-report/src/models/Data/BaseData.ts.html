@@ -172,18 +172,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -197,6 +185,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -238,11 +243,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable @typescript-eslint/no-explicit-any */
@@ -258,18 +258,6 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
     protected _dependencies: IDIContainer;
 &nbsp;
     /**
-     * The field configuration for the data.
-     * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
-     * @remarks Will be used to determine which fields to merge and their default values when calling {@link mergeData}.
-     */
-<span class="fstat-no" title="function not covered" >    protected get f</span>ieldConfig(): {
-        key: keyof T | string | number | symbol;
-        defaultValue?: any;
-    }[] {
-<span class="cstat-no" title="statement not covered" >        return (this.constructor as any)[FieldConfigSymbol] || [];</span>
-    }
-&nbsp;
-    /**
      * Initializes a new instance of the BaseData class.
      * @param data The optional data to merge into the current instance.
      * @param dependencies The optional dependencies to use for the model.
@@ -279,6 +267,23 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
 <span class="cstat-no" title="statement not covered" >        this.initializeDependencies();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this.mergeData(data);</span>
+    }
+&nbsp;
+    /**
+     * Initializes the dependencies of the data class.
+     */
+    protected abstract initializeDependencies(): void;
+&nbsp;
+    /**
+     * The field configuration for the data.
+     * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
+     * @remarks Will be used to determine which fields to merge and their default values when calling {@link mergeData}.
+     */
+<span class="fstat-no" title="function not covered" >    protected get f</span>ieldConfig(): {
+        key: keyof T | string | number | symbol;
+        defaultValue?: any;
+    }[] {
+<span class="cstat-no" title="statement not covered" >        return (this.constructor as any)[FieldConfigSymbol] || [];</span>
     }
 &nbsp;
     /**
@@ -330,11 +335,6 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return dataFields.join(' ');</span>
     }
-&nbsp;
-    /**
-     * Initializes the dependencies of the data class.
-     */
-    protected abstract initializeDependencies(): void;
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -343,7 +343,7 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:05:51.538Z
+                at 2024-07-15T13:18:15.451Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
