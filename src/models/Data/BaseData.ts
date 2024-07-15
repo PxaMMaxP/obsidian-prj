@@ -11,18 +11,6 @@ export default abstract class BaseData<T> {
     protected _dependencies: IDIContainer;
 
     /**
-     * The field configuration for the data.
-     * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
-     * @remarks Will be used to determine which fields to merge and their default values when calling {@link mergeData}.
-     */
-    protected get fieldConfig(): {
-        key: keyof T | string | number | symbol;
-        defaultValue?: any;
-    }[] {
-        return (this.constructor as any)[FieldConfigSymbol] || [];
-    }
-
-    /**
      * Initializes a new instance of the BaseData class.
      * @param data The optional data to merge into the current instance.
      * @param dependencies The optional dependencies to use for the model.
@@ -32,6 +20,23 @@ export default abstract class BaseData<T> {
         this.initializeDependencies();
 
         this.mergeData(data);
+    }
+
+    /**
+     * Initializes the dependencies of the data class.
+     */
+    protected abstract initializeDependencies(): void;
+
+    /**
+     * The field configuration for the data.
+     * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
+     * @remarks Will be used to determine which fields to merge and their default values when calling {@link mergeData}.
+     */
+    protected get fieldConfig(): {
+        key: keyof T | string | number | symbol;
+        defaultValue?: any;
+    }[] {
+        return (this.constructor as any)[FieldConfigSymbol] || [];
     }
 
     /**
@@ -83,9 +88,4 @@ export default abstract class BaseData<T> {
 
         return dataFields.join(' ');
     }
-
-    /**
-     * Initializes the dependencies of the data class.
-     */
-    protected abstract initializeDependencies(): void;
 }
