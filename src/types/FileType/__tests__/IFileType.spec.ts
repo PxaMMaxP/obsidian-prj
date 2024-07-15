@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { IFileType_, FileTypes } from '../interfaces/IFileType';
 

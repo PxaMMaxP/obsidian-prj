@@ -17,7 +17,11 @@ export interface IFileType_ extends IBaseComplexDataType_, ILifecycleObject {
      * Initializes a new instance of the FileType class.
      * @param value The value of the file type.
      */
-    new (value: string | FileTypes | null | undefined): IFileType;
+    new (value: unknown): IFileType;
+    /**
+     * Gets the array of valid file types.
+     */
+    get types(): FileTypes[];
     /**
      * Registers the FileType class in the DIContainer.
      * @remarks This class has no dependencies. Therefore, it is registered in the beforeInit stage.
@@ -71,5 +75,5 @@ export interface IFileType extends IBaseComplexDataType {
      * @param other The other File Type to compare.
      * @returns Whether the File Type is equal to the other File Type.
      */
-    equals(other: IFileType): boolean;
+    equals(other: IFileType | FileTypes): boolean;
 }
