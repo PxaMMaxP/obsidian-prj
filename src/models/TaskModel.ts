@@ -17,7 +17,7 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
 export class TaskModel extends PrjTaskManagementModel<TaskData> {
-    protected logger: ILogger = Logging.getLogger('TaskModel');
+    protected _logger: ILogger = Logging.getLogger('TaskModel');
 
     /**
      * Initializes the model.
@@ -66,7 +66,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
     private getRelatedTasks(
         status?: (status: Status | undefined) => boolean,
     ): TaskModel[] {
-        const filesWithSameTags = this.metadataCache.cache.filter((file) => {
+        const filesWithSameTags = this._metadataCache.cache.filter((file) => {
             const fileTags = new Tags(file.metadata?.frontmatter?.tags);
             const thisTags = this.data.tags;
 
@@ -117,7 +117,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
 
         const date = HelperGeneral.formatDate(
             history.date,
-            this.global.settings.dateFormat,
+            this._pluginSettings.dateFormat,
         );
 
         const newFileName = Path.sanitizeFilename(

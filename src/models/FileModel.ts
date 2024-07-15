@@ -1,11 +1,12 @@
 import { App, TFile } from 'obsidian';
-import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import MetadataCache from 'src/libs/MetadataCache';
 import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
 import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import BaseData from './Data/BaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
@@ -17,11 +18,15 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
 export class FileModel<
     T extends BaseData<unknown>,
 > extends TransactionModel<T> {
-    protected global: Global;
-    protected app: App;
-    protected metadataCache: MetadataCache;
+    /**
+     * @deprecated This property is deprecated and will be removed in the future.
+     */
+    protected _global: Global;
+    protected _pluginSettings: IPrjSettings;
+    protected _app: App;
+    protected _metadataCache: IMetadataCache;
     private _proxyHandler: IProxyHandler<T>;
-    protected logger: ILogger;
+    protected _logger: ILogger;
 
     private _file: TFile | undefined;
     /**
@@ -29,10 +34,10 @@ export class FileModel<
      */
     public get file(): TFile {
         if (this._file === undefined) {
-            this.logger?.warn('File not set');
+            this._logger?.warn('File not set');
         }
 
-        this.logger?.trace('File get:', this._file);
+        this._logger?.trace('File get:', this._file);
 
         return this._file as TFile;
     }
@@ -47,7 +52,7 @@ export class FileModel<
         if (this._file === undefined) {
             this._file = value;
 
-            this.logger?.trace('File set:', this._file);
+            this._logger?.trace('File set:', this._file);
 
             super.setWriteChanges((update, previousPromise) => {
                 return this.setFrontmatter(
@@ -56,7 +61,7 @@ export class FileModel<
                 );
             });
         } else {
-            this.logger?.warn('File already set');
+            this._logger?.warn('File already set');
         }
     }
     /**
@@ -84,24 +89,18 @@ export class FileModel<
      * @param file The file to create the model for.
      * @param ctor The constructor of the data object.
      * @param yamlKeyMap The yaml key map to use.
-     * @param logger The optional logger to use.
+     * @param dependencies The optional dependencies to use.
      */
     constructor(
         file: TFile | undefined,
         ctor: new (data?: Partial<T>) => T,
         yamlKeyMap: YamlKeyMap | undefined,
-        logger?: ILogger,
+        dependencies?: IDIContainer,
     ) {
-        super(undefined, Logging.getLogger('TransactionModel'));
+        super(undefined, dependencies);
 
-        this.logger = logger ?? Logging.getLogger('FileModel');
-
-        // Initialize the `global`, `app`, and `metadataCache` properties.
-        this.global = Global.getInstance();
-        this.app = this.global.app;
-        this.metadataCache = this.global.metadataCache;
-
-        this._proxyHandler = new ProxyHandler(undefined, this.updateKeyValue);
+        // eslint-disable-next-line deprecation/deprecation
+        this.initializeDependencies();
 
         if (file) {
             // Set the file and indirectly the `writeChanges` function.
@@ -109,6 +108,24 @@ export class FileModel<
         }
         this._ctor = ctor;
         this.initYamlKeyMap(yamlKeyMap);
+    }
+
+    /**
+     * Initializes the dependencies of the class.
+     */
+    private initializeDependencies() {
+        // eslint-disable-next-line deprecation/deprecation
+        this._global = Global.getInstance();
+
+        this._app = this._dependencies.resolve<App>('App');
+
+        this._pluginSettings =
+            this._dependencies.resolve<IPrjSettings>('IPrjSettings');
+
+        this._metadataCache =
+            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
+
+        this._proxyHandler = new ProxyHandler(undefined, this.updateKeyValue);
     }
 
     /**
@@ -126,7 +143,7 @@ export class FileModel<
         const frontmatter = this.getMetadata();
 
         if (!frontmatter) {
-            this.logger?.trace('Creating empty object');
+            this._logger?.trace('Creating empty object');
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
             this.changes = emptyObject.defaultData;
@@ -206,21 +223,21 @@ export class FileModel<
             await previousPromise;
         }
 
-        this.logger?.trace(`Updating with:`, value);
+        this._logger?.trace(`Updating with:`, value);
 
         try {
-            await this.app.fileManager.processFrontMatter(
+            await this._app.fileManager.processFrontMatter(
                 this._file,
                 (frontmatter) => {
                     this.updateNestedFrontmatterObjects(frontmatter, value);
                 },
             );
 
-            this.logger?.debug(
+            this._logger?.debug(
                 `Frontmatter for file ${this._file.path} successfully updated.`,
             );
         } catch (error) {
-            this.logger?.error(
+            this._logger?.error(
                 `Error updating the frontmatter for file ${this._file.path}:`,
                 error,
             );
@@ -243,7 +260,7 @@ export class FileModel<
      */
     private getMetadata(): Record<string, unknown> | null {
         if (!this._file) return null;
-        const cachedMetadata = this.metadataCache.getEntry(this._file);
+        const cachedMetadata = this._metadataCache.getEntry(this._file);
 
         if (
             cachedMetadata &&
@@ -257,7 +274,7 @@ export class FileModel<
 
             return clone as Record<string, unknown>;
         } else {
-            this.logger?.error(`No Metadata found for ${this._file.path}`);
+            this._logger?.error(`No Metadata found for ${this._file.path}`);
 
             return null;
         }

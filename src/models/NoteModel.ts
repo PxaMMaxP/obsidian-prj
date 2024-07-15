@@ -17,7 +17,7 @@ export class NoteModel
     extends FileModel<NoteData>
     implements IPrjModel<NoteData>
 {
-    protected logger: ILogger = Logging.getLogger('NoteModel');
+    protected _logger: ILogger = Logging.getLogger('NoteModel');
 
     /**
      * The data of the note.
@@ -59,9 +59,9 @@ export class NoteModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this.app.vault.read(this.file);
+            return this._app.vault.read(this.file);
         } catch (error) {
-            this.logger.error(error);
+            this._logger.error(error);
         }
     }
 

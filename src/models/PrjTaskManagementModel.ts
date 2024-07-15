@@ -24,7 +24,7 @@ export class PrjTaskManagementModel<
     extends FileModel<T>
     implements IPrjModel<T>
 {
-    protected logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
+    protected _logger: ILogger = Logging.getLogger('PrjTaskManagementModel');
 
     /**
      * The data of the model.
@@ -55,11 +55,11 @@ export class PrjTaskManagementModel<
     public getCorospondingSymbol(): string {
         switch (this.data.type?.toString()) {
             case 'Topic':
-                return this.global.settings.prjSettings.topicSymbol;
+                return this._pluginSettings.prjSettings.topicSymbol;
             case 'Project':
-                return this.global.settings.prjSettings.projectSymbol;
+                return this._pluginSettings.prjSettings.projectSymbol;
             case 'Task':
-                return this.global.settings.prjSettings.taskSymbol;
+                return this._pluginSettings.prjSettings.taskSymbol;
             default:
                 return 'x-circle';
         }
@@ -121,7 +121,7 @@ export class PrjTaskManagementModel<
         if (!status) {
             if (this.data.status) status = this.data.status;
             else {
-                this.logger.error('No status aviable to add to history');
+                this._logger.error('No status aviable to add to history');
 
                 return;
             }
@@ -172,13 +172,13 @@ export class PrjTaskManagementModel<
         let filename: string;
 
         if (!title) {
-            this.logger.warn(`No title found for file ${this.file?.path}`);
+            this._logger.warn(`No title found for file ${this.file?.path}`);
 
             return;
         }
 
         if (!aliases) {
-            this.logger.info(`No aliases found for file ${this.file?.path}`);
+            this._logger.info(`No aliases found for file ${this.file?.path}`);
             filename = title;
         } else {
             filename = `${aliases.last()} - ${title}`;
@@ -187,7 +187,7 @@ export class PrjTaskManagementModel<
         if (this.file.parent?.path) {
             const newFileName = Path.sanitizeFilename(filename);
 
-            this.logger.debug(
+            this._logger.debug(
                 `New filename for ${this.file.path}: ${newFileName}`,
             );
 
