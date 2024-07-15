@@ -1,5 +1,5 @@
 TN:
-SF:src/main.ts
+SF:obsidian-prj/src/main.ts
 FN:29,(anonymous_0)
 FN:37,(anonymous_1)
 FN:44,(anonymous_3)
@@ -123,7 +123,7 @@ BRF:2
 BRH:0
 end_of_record
 TN:
-SF:src/classes/Global.ts
+SF:obsidian-prj/src/classes/Global.ts
 FN:24,(anonymous_0)
 FN:48,(anonymous_1)
 FN:57,(anonymous_3)
@@ -170,7 +170,7 @@ BRF:9
 BRH:0
 end_of_record
 TN:
-SF:src/classes/Logging.ts
+SF:obsidian-prj/src/classes/Logging.ts
 FN:7,(anonymous_0)
 FN:37,(anonymous_1)
 FN:52,(anonymous_2)
@@ -312,7 +312,7 @@ BRF:21
 BRH:21
 end_of_record
 TN:
-SF:src/classes/Path.ts
+SF:obsidian-prj/src/classes/Path.ts
 FN:12,(anonymous_0)
 FN:14,(anonymous_1)
 FN:25,(anonymous_2)
@@ -338,7 +338,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:src/classes/decorators/FieldConfigDecorator.ts
+SF:obsidian-prj/src/classes/decorators/FieldConfigDecorator.ts
 FN:13,fieldConfig
 FN:14,(anonymous_1)
 FNF:2
@@ -358,7 +358,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:src/classes/decorators/ImplementsStatic.ts
+SF:obsidian-prj/src/classes/decorators/ImplementsStatic.ts
 FN:5,ImplementsStatic
 FN:6,(anonymous_1)
 FNF:2
@@ -373,7 +373,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/classes/decorators/Singleton.ts
+SF:obsidian-prj/src/classes/decorators/Singleton.ts
 FN:6,copyStaticProperties
 FN:12,(anonymous_1)
 FN:52,Singleton
@@ -415,7 +415,7 @@ BRF:7
 BRH:7
 end_of_record
 TN:
-SF:src/classes/decorators/ToStringFieldDecorator.ts
+SF:obsidian-prj/src/classes/decorators/ToStringFieldDecorator.ts
 FN:13,toStringField
 FNF:1
 FNH:1
@@ -432,7 +432,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:src/libs/FileManager.ts
+SF:obsidian-prj/src/libs/FileManager.ts
 FN:22,(anonymous_0)
 FN:73,(anonymous_2)
 FN:114,(anonymous_4)
@@ -588,7 +588,7 @@ BRF:81
 BRH:0
 end_of_record
 TN:
-SF:src/libs/GenericEvents.ts
+SF:obsidian-prj/src/libs/GenericEvents.ts
 FN:69,(anonymous_0)
 FN:78,(anonymous_1)
 FN:96,(anonymous_2)
@@ -669,7 +669,7 @@ BRF:33
 BRH:33
 end_of_record
 TN:
-SF:src/libs/MarkdownBlockProcessor.ts
+SF:obsidian-prj/src/libs/MarkdownBlockProcessor.ts
 FN:27,(anonymous_0)
 FN:42,(anonymous_1)
 FN:98,(anonymous_3)
@@ -770,7 +770,7 @@ BRF:16
 BRH:0
 end_of_record
 TN:
-SF:src/libs/MetadataCache.ts
+SF:obsidian-prj/src/libs/MetadataCache.ts
 FN:47,(anonymous_0)
 FN:68,(anonymous_1)
 FN:80,(anonymous_2)
@@ -1087,7 +1087,7 @@ BRF:86
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Table.ts
+SF:obsidian-prj/src/libs/Table.ts
 FN:11,(anonymous_0)
 FN:55,(anonymous_1)
 FN:71,(anonymous_2)
@@ -1535,7 +1535,7 @@ BRF:118
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BaseComplexDataType/BaseComplexDataType.ts
+SF:obsidian-prj/src/libs/BaseComplexDataType/BaseComplexDataType.ts
 FN:11,(anonymous_0)
 FN:23,(anonymous_1)
 FNF:2
@@ -1552,7 +1552,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BaseComplexDataType/isIBaseComplexDataType.ts
+SF:obsidian-prj/src/libs/BaseComplexDataType/isIBaseComplexDataType.ts
 FN:11,isIBaseComplexDataType
 FNF:1
 FNH:1
@@ -1569,7 +1569,7 @@ BRF:3
 BRH:3
 end_of_record
 TN:
-SF:src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType.ts
+SF:obsidian-prj/src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType.ts
 FNF:0
 FNH:0
 DA:1,5
@@ -1579,7 +1579,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/DocumentBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/DocumentBlockRenderComponent.ts
 FN:71,(anonymous_0)
 FN:80,(anonymous_1)
 FN:92,(anonymous_2)
@@ -1862,7 +1862,7 @@ BRF:75
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/HeaderBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/HeaderBlockRenderComponent.ts
 FN:52,(anonymous_0)
 FN:60,(anonymous_1)
 FN:68,(anonymous_2)
@@ -2212,7 +2212,7 @@ BRF:95
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/NoteBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/NoteBlockRenderComponent.ts
 FN:57,(anonymous_0)
 FN:66,(anonymous_1)
 FN:78,(anonymous_2)
@@ -2448,7 +2448,7 @@ BRF:65
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/ProjectBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/ProjectBlockRenderComponent.ts
 FN:74,(anonymous_0)
 FN:83,(anonymous_1)
 FN:91,(anonymous_2)
@@ -2799,7 +2799,7 @@ BRF:111
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/RedrawableBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/RedrawableBlockRenderComponent.ts
 FNF:0
 FNH:0
 DA:4,0
@@ -2809,7 +2809,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/TableBlockRenderComponent.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/TableBlockRenderComponent.ts
 FN:53,(anonymous_0)
 FN:71,(anonymous_1)
 FN:82,(anonymous_3)
@@ -3105,7 +3105,7 @@ BRF:102
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/DocumentComponents.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/DocumentComponents.ts
 FN:20,(anonymous_0)
 FN:28,(anonymous_1)
 FN:34,(anonymous_2)
@@ -3348,7 +3348,7 @@ BRF:55
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/FilterButton.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/FilterButton.ts
 FN:27,(anonymous_0)
 FN:64,(anonymous_1)
 FN:88,(anonymous_2)
@@ -3393,7 +3393,7 @@ BRF:1
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/GeneralComponents.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/GeneralComponents.ts
 FN:20,(anonymous_0)
 FN:27,(anonymous_1)
 FN:32,(anonymous_2)
@@ -3461,7 +3461,7 @@ BRF:12
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/MaxShownModelsInput.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/MaxShownModelsInput.ts
 FN:28,(anonymous_0)
 FN:59,(anonymous_1)
 FN:62,(anonymous_2)
@@ -3566,7 +3566,7 @@ BRF:16
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/ProjectComponents.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/ProjectComponents.ts
 FN:22,(anonymous_0)
 FN:29,(anonymous_1)
 FN:34,(anonymous_2)
@@ -3731,7 +3731,7 @@ BRF:30
 BRH:0
 end_of_record
 TN:
-SF:src/libs/BlockRenderComponents/InnerComponents/SearchInput.ts
+SF:obsidian-prj/src/libs/BlockRenderComponents/InnerComponents/SearchInput.ts
 FN:27,(anonymous_0)
 FN:56,(anonymous_1)
 FN:56,(anonymous_2)
@@ -3804,7 +3804,7 @@ BRF:1
 BRH:0
 end_of_record
 TN:
-SF:src/libs/ContextMenus/ContextMenu.ts
+SF:obsidian-prj/src/libs/ContextMenus/ContextMenu.ts
 FN:23,(anonymous_0)
 FN:37,(anonymous_1)
 FN:44,(anonymous_2)
@@ -3883,7 +3883,7 @@ BRF:26
 BRH:0
 end_of_record
 TN:
-SF:src/libs/ContextMenus/CopyMarkdownLink.ts
+SF:obsidian-prj/src/libs/ContextMenus/CopyMarkdownLink.ts
 FN:27,(anonymous_0)
 FN:39,(anonymous_1)
 FN:47,(anonymous_2)
@@ -3941,7 +3941,7 @@ BRF:2
 BRH:0
 end_of_record
 TN:
-SF:src/libs/ContextMenus/GetMetadata.ts
+SF:obsidian-prj/src/libs/ContextMenus/GetMetadata.ts
 FN:35,(anonymous_0)
 FN:53,(anonymous_1)
 FN:61,(anonymous_2)
@@ -4058,7 +4058,7 @@ BRF:31
 BRH:0
 end_of_record
 TN:
-SF:src/libs/CustomizableRenderChild/CustomizableRenderChild.ts
+SF:obsidian-prj/src/libs/CustomizableRenderChild/CustomizableRenderChild.ts
 FN:26,(anonymous_0)
 FN:43,(anonymous_1)
 FN:54,(anonymous_2)
@@ -4105,7 +4105,7 @@ BRF:20
 BRH:20
 end_of_record
 TN:
-SF:src/libs/DependencyInjection/DIContainer.ts
+SF:obsidian-prj/src/libs/DependencyInjection/DIContainer.ts
 FN:13,(anonymous_0)
 FN:19,(anonymous_1)
 FN:32,(anonymous_2)
@@ -4142,7 +4142,7 @@ BRF:7
 BRH:6
 end_of_record
 TN:
-SF:src/libs/DependencyInjection/__tests__/IDIContainer.spec.ts
+SF:obsidian-prj/src/libs/DependencyInjection/__tests__/IDIContainer.spec.ts
 FN:8,test_IDIContainer
 FN:9,(anonymous_1)
 FN:12,(anonymous_2)
@@ -4176,7 +4176,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/EditableDataView.ts
+SF:obsidian-prj/src/libs/EditableDataView/EditableDataView.ts
 FN:21,(anonymous_0)
 FN:34,(anonymous_1)
 FN:52,(anonymous_2)
@@ -4256,7 +4256,7 @@ BRF:20
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/BaseComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/BaseComponent.ts
 FN:17,(anonymous_0)
 FN:84,(anonymous_1)
 FN:99,(anonymous_2)
@@ -4430,7 +4430,7 @@ BRF:53
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/DateComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/DateComponent.ts
 FN:31,(anonymous_0)
 FN:45,(anonymous_1)
 FN:56,(anonymous_2)
@@ -4508,7 +4508,7 @@ BRF:10
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/DropdownComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/DropdownComponent.ts
 FN:24,(anonymous_0)
 FN:26,(anonymous_1)
 FN:44,(anonymous_2)
@@ -4635,7 +4635,7 @@ BRF:18
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/LinkComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/LinkComponent.ts
 FN:37,(anonymous_0)
 FN:51,(anonymous_1)
 FN:62,(anonymous_2)
@@ -4835,7 +4835,7 @@ BRF:51
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/SuggestionComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/SuggestionComponent.ts
 FN:45,(anonymous_0)
 FN:56,(anonymous_1)
 FN:68,(anonymous_2)
@@ -5130,7 +5130,7 @@ BRF:127
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/TextComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/TextComponent.ts
 FN:40,(anonymous_0)
 FN:48,(anonymous_1)
 FN:62,(anonymous_2)
@@ -5293,7 +5293,7 @@ BRF:38
 BRH:0
 end_of_record
 TN:
-SF:src/libs/EditableDataView/Components/TextareaComponent.ts
+SF:obsidian-prj/src/libs/EditableDataView/Components/TextareaComponent.ts
 FN:36,(anonymous_0)
 FN:50,(anonymous_1)
 FN:61,(anonymous_2)
@@ -5431,7 +5431,7 @@ BRF:25
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Helper/General.ts
+SF:obsidian-prj/src/libs/Helper/General.ts
 FN:33,(anonymous_0)
 FN:40,(anonymous_1)
 FN:50,(anonymous_2)
@@ -5546,7 +5546,7 @@ BRF:22
 BRH:19
 end_of_record
 TN:
-SF:src/libs/Helper/Obsidian.ts
+SF:obsidian-prj/src/libs/Helper/Obsidian.ts
 FN:34,(anonymous_0)
 FN:47,(anonymous_1)
 FN:55,(anonymous_2)
@@ -5624,7 +5624,7 @@ BRF:22
 BRH:21
 end_of_record
 TN:
-SF:src/libs/KanbanSync/KanbanMarkdownGenerator.ts
+SF:obsidian-prj/src/libs/KanbanSync/KanbanMarkdownGenerator.ts
 FN:22,(anonymous_0)
 FN:33,(anonymous_1)
 FN:33,(anonymous_2)
@@ -5703,7 +5703,7 @@ BRF:15
 BRH:0
 end_of_record
 TN:
-SF:src/libs/KanbanSync/KanbanModels.ts
+SF:obsidian-prj/src/libs/KanbanSync/KanbanModels.ts
 FN:22,(anonymous_0)
 FN:30,(anonymous_1)
 FN:38,(anonymous_2)
@@ -5870,7 +5870,7 @@ BRF:22
 BRH:0
 end_of_record
 TN:
-SF:src/libs/KanbanSync/KanbanParser.ts
+SF:obsidian-prj/src/libs/KanbanSync/KanbanParser.ts
 FN:26,(anonymous_0)
 FN:34,(anonymous_1)
 FN:65,(anonymous_3)
@@ -5953,7 +5953,7 @@ BRF:11
 BRH:0
 end_of_record
 TN:
-SF:src/libs/KanbanSync/KanbanSync.ts
+SF:obsidian-prj/src/libs/KanbanSync/KanbanSync.ts
 FN:33,(anonymous_0)
 FN:51,(anonymous_1)
 FN:60,(anonymous_3)
@@ -6117,7 +6117,7 @@ BRF:55
 BRH:0
 end_of_record
 TN:
-SF:src/libs/KanbanSync/KanbanTypes.ts
+SF:obsidian-prj/src/libs/KanbanSync/KanbanTypes.ts
 FNF:0
 FNH:0
 DA:6,0
@@ -6128,7 +6128,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/LifecycleManager/LifecycleManager.ts
+SF:obsidian-prj/src/libs/LifecycleManager/LifecycleManager.ts
 FN:23,(anonymous_0)
 FN:31,(anonymous_1)
 FN:38,(anonymous_2)
@@ -6217,7 +6217,7 @@ BRF:22
 BRH:18
 end_of_record
 TN:
-SF:src/libs/LifecycleManager/decorators/Lifecycle.ts
+SF:obsidian-prj/src/libs/LifecycleManager/decorators/Lifecycle.ts
 FN:16,copyStaticProperties
 FN:22,(anonymous_1)
 FN:45,registerLifecycleMethod
@@ -6289,7 +6289,7 @@ BRF:11
 BRH:10
 end_of_record
 TN:
-SF:src/libs/Modals/AddAnnotationModal.ts
+SF:obsidian-prj/src/libs/Modals/AddAnnotationModal.ts
 FN:16,(anonymous_0)
 FN:24,(anonymous_1)
 FN:35,(anonymous_2)
@@ -6388,7 +6388,7 @@ BRF:30
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/BaseModalForm.ts
+SF:obsidian-prj/src/libs/Modals/BaseModalForm.ts
 FN:26,(anonymous_0)
 FN:39,(anonymous_1)
 FN:56,(anonymous_2)
@@ -6466,7 +6466,7 @@ BRF:18
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/ChangeStatusModal.ts
+SF:obsidian-prj/src/libs/Modals/ChangeStatusModal.ts
 FN:26,(anonymous_0)
 FN:33,(anonymous_1)
 FN:60,(anonymous_2)
@@ -6554,7 +6554,7 @@ BRF:15
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/CreateNewMetadataModal.ts
+SF:obsidian-prj/src/libs/Modals/CreateNewMetadataModal.ts
 FN:27,(anonymous_0)
 FN:35,(anonymous_1)
 FN:46,(anonymous_2)
@@ -6689,7 +6689,7 @@ BRF:35
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/CreateNewNoteModal.ts
+SF:obsidian-prj/src/libs/Modals/CreateNewNoteModal.ts
 FN:24,(anonymous_0)
 FN:32,(anonymous_1)
 FN:43,(anonymous_2)
@@ -6807,7 +6807,7 @@ BRF:33
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/CreateNewProjectModal.ts
+SF:obsidian-prj/src/libs/Modals/CreateNewProjectModal.ts
 FN:16,(anonymous_0)
 FN:21,(anonymous_1)
 FN:53,(anonymous_2)
@@ -6873,7 +6873,7 @@ BRF:13
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/CreateNewTaskManagementModal.ts
+SF:obsidian-prj/src/libs/Modals/CreateNewTaskManagementModal.ts
 FN:24,(anonymous_0)
 FN:33,(anonymous_1)
 FN:59,(anonymous_3)
@@ -7103,7 +7103,7 @@ BRF:62
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Modals/CreateNewTaskModal.ts
+SF:obsidian-prj/src/libs/Modals/CreateNewTaskModal.ts
 FN:16,(anonymous_0)
 FN:21,(anonymous_1)
 FN:51,(anonymous_2)
@@ -7169,7 +7169,7 @@ BRF:13
 BRH:0
 end_of_record
 TN:
-SF:src/libs/ProxyHandler/ProxyHandler.ts
+SF:obsidian-prj/src/libs/ProxyHandler/ProxyHandler.ts
 FN:49,(anonymous_0)
 FN:65,(anonymous_1)
 FN:80,(anonymous_2)
@@ -7323,7 +7323,7 @@ BRF:44
 BRH:44
 end_of_record
 TN:
-SF:src/libs/Search/Search.ts
+SF:obsidian-prj/src/libs/Search/Search.ts
 FN:16,(anonymous_0)
 FN:23,(anonymous_1)
 FN:32,(anonymous_2)
@@ -7355,7 +7355,7 @@ BRF:9
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Search/SearchElement.ts
+SF:obsidian-prj/src/libs/Search/SearchElement.ts
 FN:14,(anonymous_0)
 FN:29,(anonymous_1)
 FN:37,(anonymous_2)
@@ -7383,7 +7383,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:src/libs/Search/SearchOperator.ts
+SF:obsidian-prj/src/libs/Search/SearchOperator.ts
 FN:13,(anonymous_0)
 FN:20,(anonymous_1)
 FN:28,(anonymous_2)
@@ -7406,7 +7406,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Search/SearchOperatorTypes.ts
+SF:obsidian-prj/src/libs/Search/SearchOperatorTypes.ts
 FNF:0
 FNH:0
 DA:7,2
@@ -7417,7 +7417,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/Search/SearchParser.ts
+SF:obsidian-prj/src/libs/Search/SearchParser.ts
 FN:20,(anonymous_0)
 FN:94,(anonymous_1)
 FN:116,(anonymous_2)
@@ -7527,7 +7527,7 @@ BRF:27
 BRH:27
 end_of_record
 TN:
-SF:src/libs/Search/SearchQuery.ts
+SF:obsidian-prj/src/libs/Search/SearchQuery.ts
 FN:9,(anonymous_0)
 FN:16,(anonymous_1)
 FN:24,(anonymous_2)
@@ -7597,7 +7597,7 @@ BRF:20
 BRH:20
 end_of_record
 TN:
-SF:src/libs/Search/SearchTerm.ts
+SF:obsidian-prj/src/libs/Search/SearchTerm.ts
 FN:12,(anonymous_0)
 FN:19,(anonymous_1)
 FN:27,(anonymous_2)
@@ -7620,7 +7620,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/libs/SingletonBlockProcessor/SingletonBlockProcessor.ts
+SF:obsidian-prj/src/libs/SingletonBlockProcessor/SingletonBlockProcessor.ts
 FN:52,(anonymous_0)
 FN:62,(anonymous_1)
 FN:69,(anonymous_2)
@@ -7849,7 +7849,7 @@ BRF:113
 BRH:59
 end_of_record
 TN:
-SF:src/libs/Tags/Tag.ts
+SF:obsidian-prj/src/libs/Tags/Tag.ts
 FN:31,(anonymous_0)
 FN:45,(anonymous_1)
 FN:52,(anonymous_2)
@@ -7982,7 +7982,7 @@ BRF:34
 BRH:27
 end_of_record
 TN:
-SF:src/libs/Tags/Tags.ts
+SF:obsidian-prj/src/libs/Tags/Tags.ts
 FN:29,(anonymous_0)
 FN:62,(anonymous_1)
 FN:78,(anonymous_2)
@@ -8239,7 +8239,7 @@ BRF:70
 BRH:64
 end_of_record
 TN:
-SF:src/libs/TranslationService/TranslationService.ts
+SF:obsidian-prj/src/libs/TranslationService/TranslationService.ts
 FN:20,(anonymous_0)
 FN:34,(anonymous_1)
 FN:53,(anonymous_2)
@@ -8293,7 +8293,7 @@ BRF:13
 BRH:13
 end_of_record
 TN:
-SF:src/libs/Wikilink/Wikilink.ts
+SF:obsidian-prj/src/libs/Wikilink/Wikilink.ts
 FN:45,(anonymous_0)
 FN:52,(anonymous_1)
 FN:60,(anonymous_2)
@@ -8358,7 +8358,7 @@ BRF:18
 BRH:17
 end_of_record
 TN:
-SF:src/models/BaseModel.ts
+SF:obsidian-prj/src/models/BaseModel.ts
 FN:23,(anonymous_0)
 FNF:1
 FNH:0
@@ -8378,7 +8378,7 @@ BRF:4
 BRH:0
 end_of_record
 TN:
-SF:src/models/DocumentModel.ts
+SF:obsidian-prj/src/models/DocumentModel.ts
 FN:29,(anonymous_0)
 FN:35,(anonymous_1)
 FN:44,(anonymous_2)
@@ -8822,7 +8822,7 @@ BRF:195
 BRH:0
 end_of_record
 TN:
-SF:src/models/FileModel.ts
+SF:obsidian-prj/src/models/FileModel.ts
 FN:30,(anonymous_0)
 FN:46,(anonymous_1)
 FN:52,(anonymous_2)
@@ -9033,7 +9033,7 @@ BRF:76
 BRH:0
 end_of_record
 TN:
-SF:src/models/NoteModel.ts
+SF:obsidian-prj/src/models/NoteModel.ts
 FN:25,(anonymous_0)
 FN:31,(anonymous_1)
 FN:39,(anonymous_2)
@@ -9106,7 +9106,7 @@ BRF:15
 BRH:0
 end_of_record
 TN:
-SF:src/models/PrjTaskManagementModel.ts
+SF:obsidian-prj/src/models/PrjTaskManagementModel.ts
 FN:32,(anonymous_0)
 FN:38,(anonymous_1)
 FN:47,(anonymous_2)
@@ -9420,7 +9420,7 @@ BRF:113
 BRH:0
 end_of_record
 TN:
-SF:src/models/ProjectModel.ts
+SF:obsidian-prj/src/models/ProjectModel.ts
 FN:22,(anonymous_0)
 FN:29,(anonymous_1)
 FN:36,(anonymous_2)
@@ -9449,7 +9449,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/models/TaskModel.ts
+SF:obsidian-prj/src/models/TaskModel.ts
 FN:25,(anonymous_0)
 FN:32,(anonymous_1)
 FN:38,(anonymous_2)
@@ -9571,7 +9571,7 @@ BRF:51
 BRH:0
 end_of_record
 TN:
-SF:src/models/TopicModel.ts
+SF:obsidian-prj/src/models/TopicModel.ts
 FN:21,(anonymous_0)
 FN:28,(anonymous_1)
 FN:34,(anonymous_2)
@@ -9600,7 +9600,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/models/TransactionModel.ts
+SF:obsidian-prj/src/models/TransactionModel.ts
 FN:37,(anonymous_0)
 FN:55,(anonymous_1)
 FN:62,(anonymous_2)
@@ -9748,7 +9748,7 @@ BRF:56
 BRH:34
 end_of_record
 TN:
-SF:src/models/Data/BaseData.ts
+SF:obsidian-prj/src/models/Data/BaseData.ts
 FN:14,(anonymous_0)
 FN:25,(anonymous_1)
 FN:35,(anonymous_2)
@@ -9801,7 +9801,7 @@ BRF:12
 BRH:0
 end_of_record
 TN:
-SF:src/models/Data/DocumentData.ts
+SF:obsidian-prj/src/models/Data/DocumentData.ts
 FN:29,(anonymous_0)
 FN:37,(anonymous_1)
 FN:150,(anonymous_2)
@@ -9856,7 +9856,7 @@ BRF:6
 BRH:0
 end_of_record
 TN:
-SF:src/models/Data/NoteData.ts
+SF:obsidian-prj/src/models/Data/NoteData.ts
 FN:22,(anonymous_0)
 FN:30,(anonymous_1)
 FN:55,(anonymous_2)
@@ -9899,7 +9899,7 @@ BRF:6
 BRH:0
 end_of_record
 TN:
-SF:src/models/Data/ProjectData.ts
+SF:obsidian-prj/src/models/Data/ProjectData.ts
 FN:33,(anonymous_0)
 FN:41,(anonymous_1)
 FN:79,(anonymous_2)
@@ -9948,7 +9948,7 @@ BRF:6
 BRH:0
 end_of_record
 TN:
-SF:src/models/Data/TaskData.ts
+SF:obsidian-prj/src/models/Data/TaskData.ts
 FN:33,(anonymous_0)
 FN:41,(anonymous_1)
 FN:79,(anonymous_2)
@@ -9998,7 +9998,7 @@ BRF:6
 BRH:0
 end_of_record
 TN:
-SF:src/models/Data/TopicData.ts
+SF:obsidian-prj/src/models/Data/TopicData.ts
 FN:33,(anonymous_0)
 FN:41,(anonymous_1)
 FN:79,(anonymous_2)
@@ -10047,7 +10047,7 @@ BRF:6
 BRH:0
 end_of_record
 TN:
-SF:src/translations/Translations.ts
+SF:obsidian-prj/src/translations/Translations.ts
 FNF:0
 FNH:0
 DA:3,0
@@ -10058,7 +10058,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/types/PrjSettings.ts
+SF:obsidian-prj/src/types/PrjSettings.ts
 FNF:0
 FNH:0
 DA:51,1
@@ -10068,7 +10068,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:src/types/PrjTypes.ts
+SF:obsidian-prj/src/types/PrjTypes.ts
 FN:72,(anonymous_0)
 FN:91,(anonymous_1)
 FN:107,(anonymous_2)
@@ -10171,7 +10171,7 @@ BRF:33
 BRH:0
 end_of_record
 TN:
-SF:src/types/FileType/FileType.ts
+SF:obsidian-prj/src/types/FileType/FileType.ts
 FN:32,(anonymous_0)
 FN:40,(anonymous_1)
 FN:49,(anonymous_2)
