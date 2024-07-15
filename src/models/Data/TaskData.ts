@@ -102,9 +102,6 @@ export default class TaskData
     @fieldConfig()
     aliases: string[] | null | undefined;
 
-    @fieldConfig()
-    sort: number | null | undefined;
-
     /**
      * Creates a new instance of the TaskData class.
      * @param data - The data to use for the model.
