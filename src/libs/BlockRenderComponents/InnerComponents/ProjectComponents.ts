@@ -2,9 +2,9 @@ import { Component, MarkdownRenderer, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
+import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { Status, UrgencySymbols } from 'src/types/PrjTypes';
 
 /**
