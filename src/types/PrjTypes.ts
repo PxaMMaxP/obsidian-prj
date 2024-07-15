@@ -1,7 +1,11 @@
+/* eslint-disable deprecation/deprecation */
 import Lng from 'src/classes/Lng';
+import { FileType as FileType_ } from './FileType/FileType';
+import { FileTypes } from './FileType/interfaces/IFileType';
 
 /**
  * Represents the types used in the app.
+ * @deprecated Use {@link FileTypes} instead.
  */
 export type FileType = 'Topic' | 'Project' | 'Task' | 'Metadata' | 'Note';
 
@@ -49,6 +53,7 @@ export type UrgencySymbols = '🔴' | '🟠' | '🟡' | '🟢' | '🔵';
 export default class PrjTypes {
     /**
      * An array of valid file types.
+     * @deprecated Use {@link FileType_.types} instead.
      */
     public static readonly fileTypes: FileType[] = [
         'Topic',
@@ -62,6 +67,7 @@ export default class PrjTypes {
      * Checks if a given value is a valid file type.
      * @param fileType - The value to check.
      * @returns The valid file type or undefined if the value is not valid.
+     * @deprecated Use {@link FileType_.validate} instead.
      */
     public static isValidFileType(fileType: unknown): FileType | undefined {
         if (
@@ -80,6 +86,7 @@ export default class PrjTypes {
      * @param typesToCheck The file type or array of file types to check.
      * @param typesToBeChecked The file type or array of file types to be checked against.
      * @returns A boolean indicating whether the file type(s) to be checked are included in the file type(s) to check.
+     * @deprecated Use {@link FileType_.isValidOf} instead.
      */
     public static isTypeIncluded(
         typesToCheck: FileType | FileType[],
