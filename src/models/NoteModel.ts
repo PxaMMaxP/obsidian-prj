@@ -42,6 +42,7 @@ export class NoteModel
      * Get a wikilink for the note
      * @param text The text to display in the wikilink
      * @returns The wikilink. E.g. `[[FileName]]` or `[[FileName|Text]]`
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public getWikilink(text: string | undefined): string {
         if (text) {
@@ -54,6 +55,7 @@ export class NoteModel
     /**
      * Returns the file contents of the document
      * @returns String containing the file contents
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
@@ -66,6 +68,7 @@ export class NoteModel
     /**
      * Returns the tags of the document as an array of strings
      * @returns Array of strings containing the tags
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public getTags(): string[] {
         const tags = this.data.tags;
@@ -80,10 +83,11 @@ export class NoteModel
         return formattedTags;
     }
 
+    //#region Static API
     /**
      * Static API for the NoteModel class.
      */
-    //#region Static API
+
     /**
      * Generates a filename based on the provided NoteModel.
      * @param model The NoteModel object used to generate the filename.
