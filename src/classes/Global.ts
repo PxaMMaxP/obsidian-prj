@@ -12,6 +12,9 @@ export default class Global {
     static instance: Global;
     plugin: Prj;
     app: App;
+    /**
+     * @deprecated This property is deprecated and will be removed in a future version.
+     */
     fileCache: FileCache;
     metadataCache: MetadataCache;
     settings: PrjSettings;

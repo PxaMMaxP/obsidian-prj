@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 // Note: FileCache class
 
 import { App, TAbstractFile, TFile } from 'obsidian';
@@ -7,6 +8,7 @@ import Global from '../classes/Global';
 /**
  * FileCache class
  * @description Caches the files in the vault with file name as the key
+ * @deprecated This class is deprecated and will be removed in the future.
  */
 export default class FileCache {
     private _app: App = Global.getInstance().app;
@@ -22,6 +24,7 @@ export default class FileCache {
     /**
      * Returns the FileCache instance if it exists, otherwise creates a new instance
      * @returns The FileCache instance
+     * @deprecated This property is deprecated and will be removed in a future version.
      */
     static getInstance() {
         if (!FileCache.instance) {
@@ -34,6 +37,7 @@ export default class FileCache {
     /**
      * Creates a new FileCache instance
      * @remarks Events are disabled: We do not need them for now
+     * @deprecated This property is deprecated and will be removed in a future version.
      */
     constructor() {
         if (!this._fileCache) {
@@ -50,6 +54,7 @@ export default class FileCache {
     /**
      * Deconstructs the FileCache instance
      * unregisters all events
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     static deconstructor() {
         const logger = Logging.getLogger('FileCache');
@@ -88,6 +93,7 @@ export default class FileCache {
      * Wait for the file cache to be ready
      * @returns Promise that resolves when the file cache is ready
      * @description This method returns a promise that resolves when the file cache is ready.
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public async waitForCacheReady(): Promise<void> {
         while (!this._fileCacheReady) {
@@ -467,6 +473,7 @@ export default class FileCache {
      * @param linkText The link text of the file to find.
      * @param sourcePath The original path of the file from which the link originates.
      * @returns The file as `TFile` if found, `undefined` otherwise.
+     * @deprecated Use {@link app.metadataCache.getFirstLinkpathDest} instead.
      */
     public findFileByLinkText(
         linkText: string,
