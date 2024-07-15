@@ -1,0 +1,210 @@
+@import 'renderedMarkdown';
+
+/* Editable DataView */
+.editable-data-view.container {
+    display: inline-flex;
+    align-items: baseline;
+    background: transparent;
+    border: none;
+    padding: 2px 0 0 0;
+    max-width: 100%;
+    width: fit-content;
+    min-width: fit-content;
+}
+
+/** To display rendered Markdown correct **/
+.editable-data-view.container {
+    @include renderedMarkdown;
+}
+
+/**.editable-data-view.presentation-container {
+    display: inline !important;
+}**/
+
+.editable-data-view.presentation-container,
+.editable-data-view.data-input-container,
+.editable-data-view.button-container {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+}
+
+.editable-data-view.suggestions-container {
+    width: max-content;
+    z-index: 1000;
+    opacity: 0.8;
+    white-space: pre;
+}
+
+.editable-data-view.button {
+    display: flex;
+    align-items: flex-start;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-right: 0px;
+    padding: 0;
+    box-shadow: none;
+    --icon-size: var(--icon-xs);
+    height: auto;
+}
+
+.editable-data-view.button svg {
+    --icon-size: var(--icon-xxs) !important;
+}
+
+.editable-data-view .hidden {
+    display: none;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Text input */
+.editable-data-view.text-input-sizer,
+.editable-data-view.text-input,
+.editable-data-view.text-presentation {
+    font-size: inherit;
+    font-family: inherit;
+    white-space: normal;
+    word-wrap: normal;
+    hyphens: auto;
+}
+
+.editable-data-view.text-presentation[contenteditable="true"] {
+    white-space: pre;
+}
+
+.editable-data-view.text-input-sizer {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0px 0px 1px 0px #999;
+}
+
+.editable-data-view.text-input-sizer::after {
+    content: attr(data-value) ' ';
+    visibility: hidden;
+    white-space: pre;
+}
+
+.editable-data-view.text-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+}
+
+.editable-data-view.text-input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+.editable-data-view.text-input:-webkit-autofill,
+.editable-data-view.text-input:-webkit-autofill:focus {
+    transition: background-color 0s 600000s, color 0s 600000s;
+}
+
+/* Date input */
+.editable-data-view.date-presentation {
+    font-size: inherit;
+    font-family: inherit;
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    white-space: nowrap
+}
+
+.editable-data-view.date-input {
+    display: flex;
+    position: relative;
+    max-width: 16ch;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    padding-left: var(--size-4-6);
+    font-size: inherit;
+    font-family: inherit;
+}
+
+/* Select input */
+.editable-data-view.select-input {
+    font-size: inherit !important;
+    font-family: inherit;
+    display: flex;
+    max-width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    font-weight: var(--font-normal);
+    box-shadow: 0px 0px 1px 0px #999;
+}
+
+.editable-data-view.select-input option {
+    background: var(--interactive-normal);
+}
+
+/* Textarea input */
+.editable-data-view.textarea-input-sizer,
+.editable-data-view.textarea-input,
+.editable-data-view.textarea-presentation {
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.editable-data-view.textarea-presentation[contenteditable="true"] {
+    white-space: pre-wrap;
+    display: inline-block;
+}
+
+.editable-data-view.textarea-input-sizer {
+    display: flex;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0px 0px 1px 0px #999;
+    padding: 1em 1em 1em 1em;
+    align-items: stretch;
+}
+
+.editable-data-view.textarea-input-sizer::after {
+    content: attr(data-value) ' ';
+    visibility: hidden;
+    white-space: pre;
+}
+
+.editable-data-view.textarea-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #FFF;
+    border: none;
+    background: transparent;
+    resize: none;
+    padding: 0.5em 0em 0.5em 0.5em;
+}
+
+/** Link input **/
+.editable-data-view.link-presentation.tag {
+    white-space: nowrap;
+}
+
+.editable-data-view.link-presentation.internal-link {
+    white-space: pre-wrap;
+    word-break: keep-all;
+}

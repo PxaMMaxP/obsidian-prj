@@ -1,0 +1,85 @@
+name: Create Release
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'manifest.json'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.8.0'
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Run Tests
+              run: npm run test:verbose
+
+            - name: Build the Project
+              run: npm run build:action
+
+            - name: Get the version
+              id: get_version
+              run: |
+                  VERSION=$(npm run version:show | tail -n 1)
+                  echo "VERSION=$VERSION" >> $GITHUB_ENV
+              shell: bash
+
+            - name: Get previous release tag
+              id: get_previous_release
+              run: |
+                  echo "Fetching previous release tag..."
+                  previous_tag=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+                  if [ -z "$previous_tag" ]; then
+                    echo "No previous tag found, using initial commit."
+                    previous_tag=$(git rev-list --max-parents=0 HEAD)
+                  fi
+                  echo "Previous tag: $previous_tag"
+                  echo "PREVIOUS_TAG=$previous_tag" >> $GITHUB_ENV
+              shell: bash
+
+            - name: Generate release notes
+              id: generate_notes
+              run: |
+                  echo "Generating release notes from ${{ env.PREVIOUS_TAG }} to HEAD..."
+                  repo_url=$(git config --get remote.origin.url)
+                  notes=$(git log ${{ env.PREVIOUS_TAG }}..HEAD --pretty=format:"- [\`%h\`]($repo_url/commit/%H): %s%n")
+                  echo "Release notes:"
+                  echo "$notes"
+                  echo "### Changes in this release" > release_notes.md
+                  echo "$notes" >> release_notes.md
+              shell: bash
+
+            - name: Create Tag
+              id: create_tag
+              run: |
+                  git tag ${{ env.VERSION }}
+                  git push origin ${{ env.VERSION }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              shell: bash
+
+            - name: Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ env.VERSION }}
+                  name: Release ${{ env.VERSION }}
+                  body_path: release_notes.md
+                  files: |
+                      ./build/main.js
+                      ./build/styles.css
+                      ./manifest.json
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

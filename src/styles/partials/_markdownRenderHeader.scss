@@ -1,0 +1,104 @@
+@import 'renderedMarkdown';
+
+.header-block-component {
+    .title {
+        span {
+            font-variant: var(--h1-variant);
+            letter-spacing: -0.015em;
+            line-height: var(--h1-line-height);
+            font-size: var(--h1-size);
+            color: var(--h1-color);
+            font-weight: var(--h1-weight);
+            font-style: var(--h1-style);
+            font-family: var(--h1-font);
+            margin-block-start: var(--p-spacing);
+            margin-block-end: var(--p-spacing);
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+    }
+
+    .status {
+        .status-label {
+            white-space: pre-wrap;
+        }
+
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+    }
+
+    .description {
+        width: 90%;
+        height: max-content;
+        text-shadow: 2px -2px 4px #000000;
+        @include renderedMarkdown;
+    }
+
+    .tag-tree {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+
+        .tag-label {
+            padding-right: 5px;
+            height: max-content;
+        }
+
+        a.tag {
+            height: max-content;
+        }
+
+        li>ul::before {
+            display: none;
+        }
+
+        ul {
+            list-style: none;
+            margin-top: 0px;
+            padding-bottom: 0px;
+            margin-bottom: 0px;
+        }
+
+        >ul {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            width: max-content;
+        }
+
+        >ul>li {
+            display: flex;
+            padding-top: 5px;
+        }
+
+        ul ul {
+            /** display: none; **/
+            margin-top: 0px;
+            padding-left: 0px;
+        }
+
+        ul li
+
+        /**:hover**/
+        >ul {
+            display: flex;
+            flex-direction: column;
+        }
+
+        ul ul li {
+            margin-right: 0;
+            margin-top: 5px;
+            margin-bottom: 0px;
+            margin-left: 5px;
+            display: flex;
+        }
+
+        ul ul li:before {
+            content: "/";
+            padding-right: 2px;
+            padding-left: 1px;
+        }
+    }
+}
