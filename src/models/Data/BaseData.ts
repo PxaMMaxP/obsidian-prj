@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldConfigSymbol } from 'src/classes/decorators/FieldConfigDecorator';
 import { ToStringFieldSymbol } from 'src/classes/decorators/ToStringFieldDecorator';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 
 /**
  * An abstract base class that provides common functionality for data classes.
  */
 export default abstract class BaseData<T> {
+    protected _dependencies: IDIContainer;
+
     /**
      * The field configuration for the data.
      * Only fields marked with the {@link FieldConfigSymbol|@fieldConfig} decorator will be included in the output.
@@ -21,8 +25,12 @@ export default abstract class BaseData<T> {
     /**
      * Initializes a new instance of the BaseData class.
      * @param data The optional data to merge into the current instance.
+     * @param dependencies The optional dependencies to use for the model.
      */
-    constructor(data?: Partial<T>) {
+    constructor(data?: Partial<T>, dependencies?: IDIContainer) {
+        this._dependencies = dependencies ?? DIContainer.getInstance();
+        this.initializeDependencies();
+
         this.mergeData(data);
     }
 
@@ -75,4 +83,9 @@ export default abstract class BaseData<T> {
 
         return dataFields.join(' ');
     }
+
+    /**
+     * Initializes the dependencies of the data class.
+     */
+    protected abstract initializeDependencies(): void;
 }
