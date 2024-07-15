@@ -32,7 +32,7 @@ htmlFiles.forEach(filePath => {
         let fixedData = data.replace(/(src|href)="(?!\.)/g, '$1="./');
 
         // Link zur TypeDoc-Dokumentation hinzufügen
-        const linkHtml = `<div style="position: fixed; bottom: 10px; right: 10px;"><a href="${typedocUrl}" target="_blank">Zur TypeDoc-Dokumentation</a></div>`;
+        const linkHtml = `<div style="position: fixed; bottom: 10px; right: 10px;"><a href="${typedocUrl}">Zur TypeDoc-Dokumentation</a></div>`;
         fixedData = fixedData.replace('</body>', `${linkHtml}</body>`);
 
         fs.writeFile(filePath, fixedData, 'utf8', (err) => {
