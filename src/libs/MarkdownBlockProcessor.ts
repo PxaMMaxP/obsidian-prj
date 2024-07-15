@@ -11,7 +11,7 @@ import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRende
 import { HelperGeneral } from './Helper/General';
 import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from './LifecycleManager/interfaces/ILifecycleManager';
-import SingletonBlockProcessor from './SingletonBlockProcessor';
+import SingletonBlockProcessor from './SingletonBlockProcessor/SingletonBlockProcessor';
 import Global from '../classes/Global';
 import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 
@@ -76,8 +76,8 @@ export default class MarkdownBlockProcessor {
             Logging.getLogger('SingletonBlockProcessor'),
         );
 
-        const singleToneBlock = singletonBlockProcessor.singletoneContainer;
-        el.append(singleToneBlock);
+        const singletonBlock = singletonBlockProcessor.singletoneContainer;
+        el.append(singletonBlock);
 
         if (!singletonBlockProcessor.checkForSiblingBlocks()) {
             const endTime = Date.now();
@@ -90,7 +90,7 @@ export default class MarkdownBlockProcessor {
         }
 
         const blockContainer = document.createElement('div');
-        singleToneBlock.append(blockContainer);
+        singletonBlock.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
         blockContainer.lang = global.settings.language;
 
