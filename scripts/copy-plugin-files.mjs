@@ -7,11 +7,11 @@ const __dirname = dirname(__filename);
 
 // Configuration for file paths and destinations
 const filesToCopy = [
-    { name: 'main.js', sourceDir: join(__dirname, 'build'), destDir: '../' },
-    { name: 'styles.css', sourceDir: join(__dirname, 'build'), destDir: '../' },
-    { name: 'manifest.json', sourceDir: __dirname, destDir: '../' }
+    { name: 'main.js', sourceDir: join(__dirname, '../build'), destDir: join(__dirname, '../../') },
+    { name: 'styles.css', sourceDir: join(__dirname, '../build'), destDir: join(__dirname, '../../') },
+    { name: 'manifest.json', sourceDir: join(__dirname, '../'), destDir: join(__dirname, '../../') }
 ];
-const releaseDir = './build'; // Directory for release mode
+const releaseDir = join(__dirname, '../build'); // Directory for release mode
 const mode = process.argv[2]; // 'watch', 'release', or 'dev'
 
 // Function to copy specified files
