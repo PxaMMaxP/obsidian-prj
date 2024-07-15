@@ -2,8 +2,8 @@ import { Component, setIcon } from 'obsidian';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
-import { HelperGeneral } from 'src/libs/Helper/General';
 import { FileType } from 'src/libs/FileType/FileType';
+import { HelperGeneral } from 'src/libs/Helper/General';
 
 /**
  * General components class for `BlockRenderComponent`.

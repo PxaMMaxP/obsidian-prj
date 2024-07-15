@@ -1,10 +1,10 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import IPrjData from 'src/interfaces/IPrjData';
+import { FileType } from 'src/libs/FileType/FileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { Tags } from 'src/libs/Tags/Tags';
-import { FileType } from 'src/libs/FileType/FileType';
 import BaseData from './BaseData';
 
 /**
