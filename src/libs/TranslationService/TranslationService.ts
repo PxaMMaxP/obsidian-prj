@@ -1,5 +1,5 @@
 import { ILogger } from 'src/interfaces/ILogger';
-import { PrjSettings } from 'src/types/PrjSettings';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import ILanguageTranslations from './interfaces/ILanguageTranslations';
 import ITranslationService from './interfaces/ITranslationService';
 
@@ -33,7 +33,7 @@ export class TranslationService implements ITranslationService {
      */
     constructor(
         translations: ILanguageTranslations[],
-        settings: PrjSettings,
+        settings: IPrjSettings,
         logger?: ILogger,
     ) {
         TranslationService.instance = this;

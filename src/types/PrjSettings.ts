@@ -1,4 +1,4 @@
-export interface PrjSettings {
+export interface IPrjSettings {
     logLevel: string;
     mobile: boolean;
     language: string;
@@ -48,7 +48,7 @@ export interface PrjSettings {
     templateFolder: string;
 }
 
-export const DEFAULT_SETTINGS: PrjSettings = {
+export const DEFAULT_SETTINGS: IPrjSettings = {
     logLevel: 'none',
     mobile: false,
     language: 'en',

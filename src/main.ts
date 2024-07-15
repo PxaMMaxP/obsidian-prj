@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
-import { PrjSettings } from 'src/types/PrjSettings';
+import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
 import Global from './classes/Global';
 import Lng from './classes/Lng';
@@ -28,7 +28,7 @@ import './auto-imports';
  */
 export default class Prj extends Plugin {
     private _dependencies: IDIContainer;
-    public settings: PrjSettings;
+    public settings: IPrjSettings;
     public api: API = API;
 
     /**
@@ -184,6 +184,8 @@ export default class Prj extends Plugin {
 
         this._dependencies.register('Prj', this);
         this._dependencies.register('App', this.app);
+
+        this._dependencies.register('IPrjSettings', this.settings);
     }
 
     /**
