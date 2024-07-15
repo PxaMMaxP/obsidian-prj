@@ -5,6 +5,7 @@ import { Path } from 'src/classes/Path';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
+import CreateNewMetadataModal from 'src/libs/Modals/CreateNewMetadataModal';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import DocumentData from './Data/DocumentData';
 import { FileModel } from './FileModel';
@@ -213,13 +214,15 @@ export class DocumentModel
         return this.data.uid ?? '';
     }
 
+    //#region Static API
     /**
      * Static API for the DocumentModel class.
      */
-    //#region Static API
+
     /**
      * Returns all documents
      * @returns List of all documents
+     * @deprecated This method is deprecated and will be removed in a future release.
      */
     public static getAllDocuments(): DocumentModel[] {
         const metadataCache = Global.getInstance().metadataCache.cache;
@@ -290,6 +293,7 @@ export class DocumentModel
      * @returns List of PDFs without metadata files
      * @remarks - This function searches for all PDFs without a corresponding metadata file.
      * - The function uses the metadataCache and fileCache to find all PDFs without a metadata file.
+     * @see {@link CreateNewMetadataModal.constructForm}
      */
     public static getAllPDFsWithoutMetadata(): TFile[] {
         const metadataCache = Global.getInstance().metadataCache.cache;

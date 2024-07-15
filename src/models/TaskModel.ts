@@ -38,8 +38,10 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
 
     /**
      * The related tasks.
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     public get relatedTasks(): TaskModel[] {
+        // eslint-disable-next-line deprecation/deprecation
         this._relatedTasks = this._relatedTasks ?? this.getRelatedTasks();
 
         return this._relatedTasks;
@@ -60,6 +62,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
      * Returns the related tasks.
      * @param status A delegate to filter the tasks by status.
      * @returns The related tasks.
+     * @deprecated This method is deprecated and will be removed in a future version.
      */
     private getRelatedTasks(
         status?: (status: Status | undefined) => boolean,
