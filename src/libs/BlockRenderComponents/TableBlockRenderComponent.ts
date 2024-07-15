@@ -6,7 +6,7 @@ import { ILogger } from 'src/interfaces/ILogger';
 import IPrjModel from 'src/interfaces/IPrjModel';
 import { FileType } from 'src/libs/FileType/FileType';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
-import { PrjSettings } from 'src/types/PrjSettings';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { HelperGeneral } from '../Helper/General';
@@ -25,7 +25,7 @@ export default abstract class TableBlockRenderComponent<
 {
     //#region General properties
     protected global: Global;
-    protected globalSettings: PrjSettings;
+    protected globalSettings: IPrjSettings;
     protected logger: ILogger;
     protected metadataCache: MetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;

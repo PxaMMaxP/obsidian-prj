@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import MockLogger from 'src/__mocks__/ILogger.mock';
-import { DEFAULT_SETTINGS, PrjSettings } from 'src/types/PrjSettings';
+import { DEFAULT_SETTINGS, IPrjSettings } from 'src/types/PrjSettings';
 import ILanguageTranslations from '../interfaces/ILanguageTranslations';
 import { TranslationService } from '../TranslationService';
 
@@ -23,7 +23,7 @@ const mockTranslations: ILanguageTranslations[] = [
     },
 ];
 
-const mockSettings: PrjSettings = { ...DEFAULT_SETTINGS, language: 'en' };
+const mockSettings: IPrjSettings = { ...DEFAULT_SETTINGS, language: 'en' };
 
 describe('TranslationService', () => {
     let translationService: TranslationService;

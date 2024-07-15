@@ -1,6 +1,6 @@
 import { App } from 'obsidian';
 import Prj from 'src/main';
-import { PrjSettings } from 'src/types/PrjSettings';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import { Logging, LoggingLevel } from './Logging';
 import MetadataCache from '../libs/MetadataCache';
 
@@ -12,7 +12,7 @@ export default class Global {
     plugin: Prj;
     app: App;
     metadataCache: MetadataCache;
-    settings: PrjSettings;
+    settings: IPrjSettings;
     private _logger = Logging.getLogger('Global');
 
     /**
@@ -21,7 +21,7 @@ export default class Global {
      * @param app - The Obsidian App instance.
      * @param settings - The plugin settings.
      */
-    constructor(prj: Prj, app: App, settings: PrjSettings) {
+    constructor(prj: Prj, app: App, settings: IPrjSettings) {
         if (Global.instance) {
             return Global.instance;
         }
@@ -70,7 +70,7 @@ export default class Global {
     static getInstance(
         prj: Prj | null = null,
         app: App | null = null,
-        settings: PrjSettings | null = null,
+        settings: IPrjSettings | null = null,
     ): Global {
         if (!Global.instance) {
             if (!prj || !app || !settings) {

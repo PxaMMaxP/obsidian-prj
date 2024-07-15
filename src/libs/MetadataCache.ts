@@ -5,7 +5,7 @@ import { Logging } from 'src/classes/Logging';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
 import { FileType } from 'src/libs/FileType/FileType';
-import { PrjSettings } from 'src/types/PrjSettings';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import GenericEvents, { IEvent } from './GenericEvents';
 import Global from '../classes/Global';
 
@@ -27,7 +27,7 @@ export class FileMetadata {
 export default class MetadataCache implements IMetadataCache {
     private _eventHandler: GenericEvents<IMetadataCacheEvents>;
     private _app: App = Global.getInstance().app;
-    private _settings: PrjSettings = Global.getInstance().settings;
+    private _settings: IPrjSettings = Global.getInstance().settings;
     private _logger = Logging.getLogger('MetadataCache');
     private _metadataCachePromise: Promise<void> | undefined = undefined;
     private _metadataCache: Map<string, FileMetadata> | undefined = undefined;
