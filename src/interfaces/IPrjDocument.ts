@@ -1,4 +1,5 @@
-import { FileSubType, FileType } from '../types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
+import { FileSubType } from '../types/PrjTypes';
 
 export default interface IPrjDocument {
     type: FileType | null | undefined;

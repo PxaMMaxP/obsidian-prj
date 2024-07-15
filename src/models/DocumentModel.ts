@@ -113,7 +113,7 @@ export class DocumentModel
      * @returns The symbol for the document as Lucide icon string.
      */
     public getCorospondingSymbol(): string {
-        if (this.data.type === 'Metadata') {
+        if (this.data.type?.toString() === 'Metadata') {
             if (this.data.subType === 'Cluster') {
                 return this.global.settings.documentSettings.clusterSymbol;
             } else if (this.data.hide) {

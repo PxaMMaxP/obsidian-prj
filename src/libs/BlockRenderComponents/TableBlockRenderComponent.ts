@@ -4,8 +4,9 @@ import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
 import IPrjModel from 'src/interfaces/IPrjModel';
+import { FileType } from 'src/types/FileType/FileType';
+import { FileTypes } from 'src/types/FileType/interfaces/IFileType';
 import { PrjSettings } from 'src/types/PrjSettings';
-import PrjTypes, { FileType } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { HelperGeneral } from '../Helper/General';
@@ -275,7 +276,7 @@ export default abstract class TableBlockRenderComponent<
      * @returns A promise that resolves to an array of models.
      */
     protected getModels(
-        types: FileType[],
+        types: FileTypes[],
         tags: string[],
         modelFactory: (metadata: FileMetadata) => T | undefined,
     ): Promise<T[]> {
@@ -285,9 +286,9 @@ export default abstract class TableBlockRenderComponent<
         const filterTags = new Tags(tags);
 
         const allDocumentFiles = this.metadataCache.cache.filter((file) => {
-            const typeFilter = PrjTypes.isTypeIncluded(
-                types,
+            const typeFilter = FileType.isValidOf(
                 file.metadata.frontmatter?.type,
+                types,
             );
 
             const thisFileAndTemplateFilter =

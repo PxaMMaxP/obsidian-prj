@@ -53,7 +53,7 @@ export class PrjTaskManagementModel<
      * @returns The corosponding symbol for the model. (Lucide icon string)
      */
     public getCorospondingSymbol(): string {
-        switch (this.data.type) {
+        switch (this.data.type?.toString()) {
             case 'Topic':
                 return this.global.settings.prjSettings.topicSymbol;
             case 'Project':
@@ -469,7 +469,7 @@ export class PrjTaskManagementModel<
         let parentPath: string | undefined;
 
         if (model.file.parent?.path) {
-            switch (model.data.type) {
+            switch (model.data.type?.toString()) {
                 case 'Topic':
                     if (settings.topicFolder) {
                         parentPath = settings.topicFolder;

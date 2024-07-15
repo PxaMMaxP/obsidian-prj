@@ -4,7 +4,8 @@ import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { FileType, Status, UrgencySymbols } from 'src/types/PrjTypes';
+import { FileTypes } from 'src/types/FileType/interfaces/IFileType';
+import { Status, UrgencySymbols } from 'src/types/PrjTypes';
 
 /**
  * Represents the project components.
@@ -218,7 +219,7 @@ export default class ProjectComponents {
         container: DocumentFragment,
         component: Component,
         path: string,
-        type: FileType | undefined | null,
+        type: FileTypes | undefined | null,
         corospondingSymbol: string,
     ) {
         new EditableDataView(container, component).addLink((link) =>

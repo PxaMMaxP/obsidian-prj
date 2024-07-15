@@ -4,8 +4,8 @@ import { App, CachedMetadata, TFile } from 'obsidian';
 import { Logging } from 'src/classes/Logging';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
+import { FileType } from 'src/types/FileType/FileType';
 import { PrjSettings } from 'src/types/PrjSettings';
-import PrjTypes from 'src/types/PrjTypes';
 import GenericEvents, { IEvent } from './GenericEvents';
 import Global from '../classes/Global';
 
@@ -273,7 +273,7 @@ export default class MetadataCache implements IMetadataCache {
         // Check if the file is plugin file
         if (
             newMetadata.frontmatter?.type &&
-            PrjTypes.isValidFileType(newMetadata.frontmatter.type)
+            FileType.validate(newMetadata.frontmatter.type)
         ) {
             switch (newMetadata.frontmatter.type) {
                 case 'Topic':

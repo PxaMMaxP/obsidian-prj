@@ -1,7 +1,7 @@
+import { FileType } from 'src/types/FileType/FileType';
 import {
     Energy,
     FileSubType,
-    FileType,
     HistoryEntries,
     Priority,
     Status,

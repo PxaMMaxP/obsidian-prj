@@ -4,15 +4,32 @@ import IPrjData from 'src/interfaces/IPrjData';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { Tags } from 'src/libs/Tags/Tags';
-import { FileType } from 'src/types/PrjTypes';
+import { FileType } from 'src/types/FileType/FileType';
 import BaseData from './BaseData';
 
 /**
  * Represents a note.
  */
 export default class NoteData extends BaseData<NoteData> implements IPrjData {
+    /**
+     * The type of the note.
+     */
+    private _type: FileType | null | undefined;
+
+    /**
+     * Sets the type of the note.
+     */
     @fieldConfig('Note')
-    type: FileType | null | undefined;
+    set type(value: unknown) {
+        this._type = new FileType(value);
+    }
+
+    /**
+     * Gets the type of the note.
+     */
+    get type(): FileType | null | undefined {
+        return this._type?.valueOf() as FileType | null | undefined;
+    }
 
     @toStringField
     @fieldConfig()

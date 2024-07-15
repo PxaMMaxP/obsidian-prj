@@ -475,21 +475,21 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     ): boolean {
         if (
             this.settings.filter.includes('Topic') &&
-            model.data.type === 'Topic'
+            model.data.type?.toString() === 'Topic'
         ) {
             return false;
         }
 
         if (
             this.settings.filter.includes('Project') &&
-            model.data.type === 'Project'
+            model.data.type?.toString() === 'Project'
         ) {
             return false;
         }
 
         if (
             this.settings.filter.includes('Task') &&
-            model.data.type === 'Task'
+            model.data.type?.toString() === 'Task'
         ) {
             return false;
         }
