@@ -27,6 +27,13 @@ export class FileType extends BaseComplexDataType implements IFileType {
     ];
 
     /**
+     * Gets the array of valid file types.
+     */
+    public static get types(): FileTypes[] {
+        return FileType._fileTypes;
+    }
+
+    /**
      * Registers the FileType class in the DIContainer.
      * @remarks This class has no dependencies. Therefore, it is registered in the beforeInit stage.
      */
@@ -101,7 +108,7 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * Initializes a new instance of the FileType class.
      * @param value The value of the file type.
      */
-    constructor(value: string | FileTypes | null | undefined) {
+    constructor(value: unknown) {
         super();
         this.value = value;
     }
@@ -131,7 +138,7 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * @param other The other File Type to compare.
      * @returns Whether the File Type is equal to the other File Type.
      */
-    equals(other: IFileType): boolean {
-        return this._value === other.value;
+    equals(other: IFileType | FileTypes): boolean {
+        return this._value === other.valueOf();
     }
 }
