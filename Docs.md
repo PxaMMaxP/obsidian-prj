@@ -4,4 +4,4 @@
 
 # Test Abdeckung
 
-<a href="./coverage/lcov-report/index.html">Test Abdeckung..</a>
+[Test Abdeckung..](https://pxammaxp.github.io/obsidian-prj/coverage/lcov-report/index.html)
