@@ -18,6 +18,7 @@ import SearchInput from './InnerComponents/SearchInput';
 import TableBlockRenderComponent, {
     BlockRenderSettings,
 } from './TableBlockRenderComponent';
+import { FileTypes } from '../FileType/interfaces/IFileType';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import Table, { Row, TableHeader } from '../Table';
@@ -286,7 +287,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             metadataLink,
             this.component,
             model.file.path,
-            model.data.type,
+            model.data.type?.toString() as FileTypes,
             model.getCorospondingSymbol(),
         );
 
