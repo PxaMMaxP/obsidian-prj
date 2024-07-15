@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/159</span>
+                <span class='fraction'>0/158</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/154</span>
+                <span class='fraction'>0/153</span>
             </div>
         
             
@@ -572,7 +572,10 @@
 <a name='L507'></a><a href='#L507'>507</a>
 <a name='L508'></a><a href='#L508'>508</a>
 <a name='L509'></a><a href='#L509'>509</a>
-<a name='L510'></a><a href='#L510'>510</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -598,19 +601,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1085,7 +1091,7 @@
 <span class="cstat-no" title="statement not covered" >import Global from 'src/classes/Global';</span>
 <span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 <span class="cstat-no" title="statement not covered" >import { Path } from 'src/classes/Path';</span>
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import { HelperGeneral } from 'src/libs/Helper/General';</span>
 <span class="cstat-no" title="statement not covered" >import { Tag } from 'src/libs/Tags/Tag';</span>
 <span class="cstat-no" title="statement not covered" >import PrjTypes, { Status } from 'src/types/PrjTypes';</span>
@@ -1107,8 +1113,6 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
     extends FileModel&lt;T&gt;
     implements IPrjModel&lt;T&gt;
 {
-    protected <span class="cstat-no" title="statement not covered" >logger: ILogger = Logging.getLogger('PrjTaskManagementModel');</span>
-&nbsp;
     /**
      * The data of the model.
      */
@@ -1126,9 +1130,14 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
      * Creates a new instance of the PrjTaskManagementModel.
      * @param file The file to create the PrjTaskManagementModel from.
      * @param ctor The constructor of the data class.
+     * @param dependencies The optional dependencies to use.
      */
-<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined, ctor: new (data?: Partial&lt;T&gt;) =&gt; T) {
-<span class="cstat-no" title="statement not covered" >        super(file, ctor, undefined);</span>
+<span class="fstat-no" title="function not covered" >    constructor(</span>
+        file: TFile | undefined,
+        ctor: new (data?: Partial&lt;T&gt;) =&gt; T,
+        dependencies?: IDIContainer,
+    ) {
+<span class="cstat-no" title="statement not covered" >        super(file, ctor, undefined, dependencies);</span>
     }
 &nbsp;
     /**
@@ -1138,11 +1147,11 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
     public <span class="fstat-no" title="function not covered" >getCorospondingSymbol(</span>): string {
 <span class="cstat-no" title="statement not covered" >        switch (this.data.type?.toString()) {</span>
             case 'Topic':
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.prjSettings.topicSymbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.prjSettings.topicSymbol;</span>
             case 'Project':
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.prjSettings.projectSymbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.prjSettings.projectSymbol;</span>
             case 'Task':
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.prjSettings.taskSymbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.prjSettings.taskSymbol;</span>
             default:
 <span class="cstat-no" title="statement not covered" >                return 'x-circle';</span>
         }
@@ -1204,7 +1213,7 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!status) {</span>
 <span class="cstat-no" title="statement not covered" >            if (this.data.status) <span class="cstat-no" title="statement not covered" >status = this.data.status;</span></span>
             else {
-<span class="cstat-no" title="statement not covered" >                this.logger.error('No status aviable to add to history');</span>
+<span class="cstat-no" title="statement not covered" >                this._logger.error('No status aviable to add to history');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                return;</span>
             }
@@ -1255,13 +1264,13 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
         let filename: string;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!title) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.warn(`No title found for file ${this.file?.path}`);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.warn(`No title found for file ${this.file?.path}`);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (!aliases) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.info(`No aliases found for file ${this.file?.path}`);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.info(`No aliases found for file ${this.file?.path}`);</span>
 <span class="cstat-no" title="statement not covered" >            filename = title;</span>
         } else {
 <span class="cstat-no" title="statement not covered" >            filename = `${aliases.last()} - ${title}`;</span>
@@ -1270,7 +1279,7 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.file.parent?.path) {</span>
             const newFileName = <span class="cstat-no" title="statement not covered" >Path.sanitizeFilename(filename);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            this.logger.debug(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.debug(</span>
                 `New filename for ${this.file.path}: ${newFileName}`,
             );
 &nbsp;
@@ -1286,7 +1295,7 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
     /**
      * The model factories for the PrjTaskManagementModel class.
      */
-    private static <span class="cstat-no" title="statement not covered" >_modelFactories = n</span>ew Map&lt;
+    private static <span class="cstat-no" title="statement not covered" >_modelFactories = new Map&lt;</span>
         string,
         (
             file: TFile,
@@ -1597,7 +1606,7 @@ import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T11:13:01.647Z
+                at 2024-07-15T12:23:53.202Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

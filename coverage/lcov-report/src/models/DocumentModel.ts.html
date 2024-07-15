@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/167</span>
+                <span class='fraction'>0/165</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/195</span>
+                <span class='fraction'>0/191</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/164</span>
+                <span class='fraction'>0/162</span>
             </div>
         
             
@@ -546,26 +546,23 @@
 <a name='L481'></a><a href='#L481'>481</a>
 <a name='L482'></a><a href='#L482'>482</a>
 <a name='L483'></a><a href='#L483'>483</a>
-<a name='L484'></a><a href='#L484'>484</a>
-<a name='L485'></a><a href='#L485'>485</a>
-<a name='L486'></a><a href='#L486'>486</a>
-<a name='L487'></a><a href='#L487'>487</a>
-<a name='L488'></a><a href='#L488'>488</a>
-<a name='L489'></a><a href='#L489'>489</a>
-<a name='L490'></a><a href='#L490'>490</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L484'></a><a href='#L484'>484</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -587,18 +584,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1045,10 +1033,9 @@
 <span class="cstat-no" title="statement not covered" >import Lng from 'src/classes/Lng';</span>
 <span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 <span class="cstat-no" title="statement not covered" >import { Path } from 'src/classes/Path';</span>
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import FileManager, { Filename } from 'src/libs/FileManager';</span>
 <span class="cstat-no" title="statement not covered" >import { HelperGeneral } from 'src/libs/Helper/General';</span>
-import MetadataCache from 'src/libs/MetadataCache';
 <span class="cstat-no" title="statement not covered" >import { Wikilink } from 'src/libs/Wikilink/Wikilink';</span>
 <span class="cstat-no" title="statement not covered" >import DocumentData from './Data/DocumentData';</span>
 <span class="cstat-no" title="statement not covered" >import { FileModel } from './FileModel';</span>
@@ -1062,8 +1049,6 @@ import IPrjModel from '../interfaces/IPrjModel';
     extends FileModel&lt;DocumentData&gt;
     implements IPrjModel&lt;DocumentData&gt;
 {
-    protected logger: ILogger;
-    private _metadataCache: MetadataCache;
     private <span class="cstat-no" title="statement not covered" >_relatedFiles: DocumentModel[] | null | undefined = undefined;</span>
 &nbsp;
     /**
@@ -1082,13 +1067,10 @@ import IPrjModel from '../interfaces/IPrjModel';
     /**
      * Creates a new instance of the document model.
      * @param file The file to create the model for.
-     * @param logger The optional logger to use.
+     * @param dependencies The optional dependencies to use.
      */
-<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined, logger?: ILogger) {
-<span class="cstat-no" title="statement not covered" >        super(file, DocumentData, DocumentData.yamlKeyMap);</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this.logger = logger ?? Logging.getLogger('DocumentModel');</span>
-<span class="cstat-no" title="statement not covered" >        this._metadataCache = Global.getInstance().metadataCache;</span>
+<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined, dependencies?: IDIContainer) {
+<span class="cstat-no" title="statement not covered" >        super(file, DocumentData, DocumentData.yamlKeyMap, dependencies);</span>
     }
 &nbsp;
     /**
@@ -1145,9 +1127,9 @@ import IPrjModel from '../interfaces/IPrjModel';
      */
     public async <span class="fstat-no" title="function not covered" >getFileContents(</span>): Promise&lt;string | undefined&gt; {
 <span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            return this.app.vault.read(this.file);</span>
+<span class="cstat-no" title="statement not covered" >            return this._app.vault.read(this.file);</span>
         } catch (error) {
-<span class="cstat-no" title="statement not covered" >            this.logger.error(error);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error(error);</span>
         }
     }
 &nbsp;
@@ -1158,11 +1140,11 @@ import IPrjModel from '../interfaces/IPrjModel';
     public <span class="fstat-no" title="function not covered" >getCorospondingSymbol(</span>): string {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.data.type?.toString() === 'Metadata') {</span>
 <span class="cstat-no" title="statement not covered" >            if (this.data.subType === 'Cluster') {</span>
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.documentSettings.clusterSymbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.documentSettings.clusterSymbol;</span>
             } else <span class="cstat-no" title="statement not covered" >if (this.data.hide) {</span>
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.documentSettings.hideSymbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.documentSettings.hideSymbol;</span>
             } else {
-<span class="cstat-no" title="statement not covered" >                return this.global.settings.documentSettings.symbol;</span>
+<span class="cstat-no" title="statement not covered" >                return this._pluginSettings.documentSettings.symbol;</span>
             }
         }
 &nbsp;
@@ -1175,8 +1157,8 @@ import IPrjModel from '../interfaces/IPrjModel';
      * E.g. `Input` if the document is addressed to the user or `Output` if it comes from the user. Otherwise `null`.
      */
     public <span class="fstat-no" title="function not covered" >getInputOutputState(</span>): null | 'Input' | 'Output' {
-        const username = <span class="cstat-no" title="statement not covered" >this.global.settings.user.name;</span>
-        const shortUsername = <span class="cstat-no" title="statement not covered" >this.global.settings.user.shortName;</span>
+        const username = <span class="cstat-no" title="statement not covered" >this._pluginSettings.user.name;</span>
+        const shortUsername = <span class="cstat-no" title="statement not covered" >this._pluginSettings.user.shortName;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (this.data &amp;&amp; (this.data.sender || this.data.recipient)) {</span>
 <span class="cstat-no" title="statement not covered" >            if (</span>
@@ -1214,7 +1196,7 @@ import IPrjModel from '../interfaces/IPrjModel';
 <span class="cstat-no" title="statement not covered" >        if (file instanceof TFile) {</span>
 <span class="cstat-no" title="statement not covered" >            return file;</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this.logger.warn(`No files found for ${fileLinkData.filename}`);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.warn(`No files found for ${fileLinkData.filename}`);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return undefined;</span>
         }
@@ -1234,7 +1216,7 @@ import IPrjModel from '../interfaces/IPrjModel';
     ): string | undefined {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!file || !(file instanceof TFile)) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-        const linktext = <span class="cstat-no" title="statement not covered" >this.global.app.metadataCache.fileToLinktext(</span>
+        const linktext = <span class="cstat-no" title="statement not covered" >this._global.app.metadataCache.fileToLinktext(</span>
             file,
             path ? path : this.file.path,
         );
@@ -1537,7 +1519,7 @@ import IPrjModel from '../interfaces/IPrjModel';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T11:13:01.647Z
+                at 2024-07-15T12:23:53.202Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

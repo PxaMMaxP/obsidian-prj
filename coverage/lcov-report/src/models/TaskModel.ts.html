@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/42</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -190,10 +190,7 @@
 <a name='L125'></a><a href='#L125'>125</a>
 <a name='L126'></a><a href='#L126'>126</a>
 <a name='L127'></a><a href='#L127'>127</a>
-<a name='L128'></a><a href='#L128'>128</a>
-<a name='L129'></a><a href='#L129'>129</a>
-<a name='L130'></a><a href='#L130'>130</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L128'></a><a href='#L128'>128</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -211,8 +208,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -243,6 +238,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -323,9 +319,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { TFile } from 'obsidian';</span>
 <span class="cstat-no" title="statement not covered" >import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';</span>
-<span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 <span class="cstat-no" title="statement not covered" >import { Path } from 'src/classes/Path';</span>
-import { ILogger } from 'src/interfaces/ILogger';
+import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import { HelperGeneral } from 'src/libs/Helper/General';</span>
 <span class="cstat-no" title="statement not covered" >import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';</span>
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
@@ -340,8 +335,6 @@ import { Status } from 'src/types/PrjTypes';
 @Lifecycle
 @ImplementsStatic&lt;ILifecycleObject&gt;()
 export class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >TaskModel<span class="cstat-no" title="statement not covered" > </span>extends PrjTaskManagementModel&lt;TaskData&gt; {</span></span>
-    protected <span class="cstat-no" title="statement not covered" >logger: ILogger = Logging.getLogger('TaskModel');</span>
-&nbsp;
     /**
      * Initializes the model.
      */
@@ -376,9 +369,10 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     /**
      * Creates a new instance of the TaskModel.
      * @param file The file to create the TaskModel from.
+     * @param dependencies The optional dependencies to use.
      */
-<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined) {
-<span class="cstat-no" title="statement not covered" >        super(file, TaskData);</span>
+<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined, dependencies?: IDIContainer) {
+<span class="cstat-no" title="statement not covered" >        super(file, TaskData, dependencies);</span>
     }
 &nbsp;
     /**
@@ -389,7 +383,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     private <span class="fstat-no" title="function not covered" >getRelatedTasks(</span>
         status?: (status: Status | undefined) =&gt; boolean,
     ): TaskModel[] {
-        const filesWithSameTags = <span class="cstat-no" title="statement not covered" >this.metadataCache.cache.filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
+        const filesWithSameTags = <span class="cstat-no" title="statement not covered" >this._metadataCache.cache.filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
             const fileTags = <span class="cstat-no" title="statement not covered" >new Tags(file.metadata?.frontmatter?.tags);</span>
             const thisTags = <span class="cstat-no" title="statement not covered" >this.data.tags;</span>
 &nbsp;
@@ -440,7 +434,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
         const date = <span class="cstat-no" title="statement not covered" >HelperGeneral.formatDate(</span>
             history.date,
-            this.global.settings.dateFormat,
+            this._pluginSettings.dateFormat,
         );
 &nbsp;
         const newFileName = <span class="cstat-no" title="statement not covered" >Path.sanitizeFilename(</span>
@@ -457,7 +451,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T11:13:01.647Z
+                at 2024-07-15T12:23:53.202Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

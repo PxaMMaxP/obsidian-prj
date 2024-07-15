@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.47% </span>
+                <span class="strong">89.83% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>51/57</span>
+                <span class='fraction'>53/59</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60.71% </span>
+                <span class="strong">62.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>34/56</span>
+                <span class='fraction'>40/64</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.47% </span>
+                <span class="strong">89.83% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>51/57</span>
+                <span class='fraction'>53/59</span>
             </div>
         
             
@@ -311,8 +311,16 @@
 <a name='L246'></a><a href='#L246'>246</a>
 <a name='L247'></a><a href='#L247'>247</a>
 <a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -338,7 +346,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -393,6 +403,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -559,9 +573,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ILogger } from 'src/interfaces/ILogger';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { IBaseComplexDataType } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { isIBaseComplexDataType } from 'src/libs/BaseComplexDataType/isIBaseComplexDataType';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 &nbsp;
 /**
  * The type of return value of the `callWriteChanges` method.
@@ -587,7 +603,8 @@ type WriteChangesReturnType = {
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel&lt;T&gt; {
-    protected logger: ILogger | undefined;
+    protected _dependencies: IDIContainer;
+    protected _logger: ILogger | undefined;
     /**
      * A promise that resolves when the changes are written to the file.
      */
@@ -630,16 +647,20 @@ export class TransactionModel&lt;T&gt; {
     /**
      * Creates a new instance of the TransactionModel class.
      * @param writeChanges A function that writes the changes to the file.
-     * @param logger A optional logger that logs messages.
+     * @param dependencies The optional dependencies to use.
      * @remarks - If no `writeChanges` function is provided, a transaction is started immediately.
      */
     constructor(
         writeChanges:
             | ((update: T, previousPromise?: Promise&lt;void&gt;) =&gt; Promise&lt;void&gt;)
             | undefined,
-        logger?: ILogger,
+        dependencies?: IDIContainer,
     ) {
-        this.logger = logger;
+        this._dependencies = dependencies ?? <span class="branch-1 cbranch-no" title="branch not covered" >DIContainer.getInstance();</span>
+&nbsp;
+        this._logger = this._dependencies
+            .resolve&lt;ILogger_&gt;('ILogger_', false)<span class="branch-0 cbranch-no" title="branch not covered" ></span>
+            ?.getLogger('Model');
 &nbsp;
         // Bind the updateKeyValue method to the instance; its required for the ProxyHandler Delegate.
         this.updateKeyValue = this.updateKeyValue.bind(this);
@@ -699,10 +720,10 @@ export class TransactionModel&lt;T&gt; {
 &nbsp;
             promise
                 .then(() =&gt; {
-                    this.logger<span class="branch-0 cbranch-no" title="branch not covered" >?.d</span>ebug('Changes written to file');
+                    this._logger<span class="branch-0 cbranch-no" title="branch not covered" >?.d</span>ebug('Changes written to file');
                 })
                 .catch(<span class="fstat-no" title="function not covered" >(e</span>rror) =&gt; {
-<span class="cstat-no" title="statement not covered" >                    this.logger?.error(</span>
+<span class="cstat-no" title="statement not covered" >                    this._logger?.error(</span>
                         'Failed to write changes to file:',
                         error,
                     );
@@ -711,7 +732,7 @@ export class TransactionModel&lt;T&gt; {
             writeChanges.promise = promise;
             writeChanges.writeTriggered = true;
         } else <span class="missing-if-branch" title="else path not taken" >E</span>{
-<span class="cstat-no" title="statement not covered" >            this.logger?.debug('No `writeChanges` function available');</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.debug('No `writeChanges` function available');</span>
         }
 &nbsp;
         // Reset changes if writeChanges was called
@@ -731,7 +752,7 @@ export class TransactionModel&lt;T&gt; {
      */
     public startTransaction(): void {
         if (this.isTransactionActive) {
-            this.logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('Transaction already active');
+            this._logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('Transaction already active');
 &nbsp;
             return;
         }
@@ -746,7 +767,7 @@ export class TransactionModel&lt;T&gt; {
      */
     public finishTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('No transaction active');
+            this._logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('No transaction active');
 &nbsp;
             return;
         }
@@ -764,11 +785,11 @@ export class TransactionModel&lt;T&gt; {
      */
     public abortTransaction(): void {
         if (!this.isTransactionActive) {
-            this.logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('No transaction active');
+            this._logger<span class="branch-0 cbranch-no" title="branch not covered" >?.w</span>arn('No transaction active');
 &nbsp;
             return;
         } else <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.writeChanges) {
-<span class="cstat-no" title="statement not covered" >            this.logger?.warn('No `writeChanges` function available');</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.warn('No `writeChanges` function available');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
@@ -814,7 +835,7 @@ export class TransactionModel&lt;T&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T11:13:01.647Z
+                at 2024-07-15T12:23:53.202Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

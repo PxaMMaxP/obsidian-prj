@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -180,12 +180,9 @@
 <a name='L115'></a><a href='#L115'>115</a>
 <a name='L116'></a><a href='#L116'>116</a>
 <a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a>
-<a name='L119'></a><a href='#L119'>119</a>
-<a name='L120'></a><a href='#L120'>120</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -201,19 +198,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -304,9 +300,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Note: DocumentModel class
 &nbsp;
 import { TFile } from 'obsidian';
-<span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 <span class="cstat-no" title="statement not covered" >import { Path } from 'src/classes/Path';</span>
-import { ILogger } from 'src/interfaces/ILogger';
+import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import { HelperGeneral } from 'src/libs/Helper/General';</span>
 <span class="cstat-no" title="statement not covered" >import NoteData from './Data/NoteData';</span>
 <span class="cstat-no" title="statement not covered" >import { FileModel } from './FileModel';</span>
@@ -320,8 +315,6 @@ import IPrjModel from '../interfaces/IPrjModel';
     extends FileModel&lt;NoteData&gt;
     implements IPrjModel&lt;NoteData&gt;
 {
-    protected <span class="cstat-no" title="statement not covered" >logger: ILogger = Logging.getLogger('NoteModel');</span>
-&nbsp;
     /**
      * The data of the note.
      */
@@ -338,9 +331,10 @@ import IPrjModel from '../interfaces/IPrjModel';
     /**
      * Creates a new instance of the note model.
      * @param file The file to create the model for.
+     * @param dependencies The optional dependencies to use.
      */
-<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined) {
-<span class="cstat-no" title="statement not covered" >        super(file, NoteData, undefined);</span>
+<span class="fstat-no" title="function not covered" >    constructor(f</span>ile: TFile | undefined, dependencies?: IDIContainer) {
+<span class="cstat-no" title="statement not covered" >        super(file, NoteData, undefined, dependencies);</span>
     }
 &nbsp;
     /**
@@ -362,9 +356,9 @@ import IPrjModel from '../interfaces/IPrjModel';
      */
     public async <span class="fstat-no" title="function not covered" >getFileContents(</span>): Promise&lt;string | undefined&gt; {
 <span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            return this.app.vault.read(this.file);</span>
+<span class="cstat-no" title="statement not covered" >            return this._app.vault.read(this.file);</span>
         } catch (error) {
-<span class="cstat-no" title="statement not covered" >            this.logger.error(error);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error(error);</span>
         }
     }
 &nbsp;
@@ -427,7 +421,7 @@ import IPrjModel from '../interfaces/IPrjModel';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T11:13:01.647Z
+                at 2024-07-15T12:23:53.202Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
