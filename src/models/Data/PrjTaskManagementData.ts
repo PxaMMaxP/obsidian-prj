@@ -22,12 +22,12 @@ export class PrjTaskManagementData
         super.initializeDependencies();
     }
 
-    private _status: Status | null | undefined;
-    private _priority: Priority | null | undefined;
-    private _energy: Energy | null | undefined;
-    private _due: string | null | undefined;
-    private _history: HistoryEntries | null | undefined;
-    private _aliases: string[] | null | undefined;
+    protected _status: Status | null | undefined;
+    protected _priority: Priority | null | undefined;
+    protected _energy: Energy | null | undefined;
+    protected _due: string | null | undefined;
+    protected _history: HistoryEntries | null | undefined;
+    protected _aliases: string[] | null | undefined;
 
     static yamlKeyMap: YamlKeyMap | undefined = {};
 

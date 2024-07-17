@@ -3,7 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import ProjectData from './Data/ProjectData';
+import PrjProjectData from './Data/PrjProjectData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 
 /**
@@ -11,14 +11,14 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
  */
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
-export class ProjectModel extends PrjTaskManagementModel<ProjectData> {
+export class ProjectModel extends PrjTaskManagementModel<PrjProjectData> {
     /**
      * Creates a new instance of the Project model.
      * @param file The file to create the model for.
      * @param dependencies The optional dependencies to use.
      */
     constructor(file: TFile | undefined, dependencies?: IDIContainer) {
-        super(file, ProjectData, dependencies);
+        super(file, PrjProjectData, dependencies);
     }
 
     /**

@@ -1,7 +1,9 @@
+import { IPrjData } from './IPrjData';
+
 /**
  * Represents data from a note.
  */
-export interface IPrjNote {
+export interface IPrjNote extends IPrjData {
     /**
      * Get the **date** of the note.
      */

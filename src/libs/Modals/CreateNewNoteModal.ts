@@ -3,7 +3,7 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import NoteData from 'src/models/Data/NoteData';
+import PrjNoteData from 'src/models/Data/PrjNoteData';
 import { NoteModel } from 'src/models/NoteModel';
 import {
     Field,
@@ -59,7 +59,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
      * @returns Result of the form
      */
     public async openForm(
-        preset?: Partial<NoteData>,
+        preset?: Partial<PrjNoteData>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewNoteModal' form");
@@ -116,7 +116,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
             ? existingFile.parent?.path
             : this.settings.noteSettings.defaultFolder;
 
-        note.data = result.data as Partial<NoteData>;
+        note.data = result.data as Partial<PrjNoteData>;
 
         if (!existingFile) {
             // No existing file, create a new one

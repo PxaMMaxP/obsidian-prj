@@ -10,7 +10,10 @@ import { PrjData } from './PrjData';
  * Represents a note.
  */
 @ImplementsStatic<IPrjData_<unknown>>()
-export default class NoteData extends PrjData<NoteData> implements IPrjNote {
+export default class PrjNoteData
+    extends PrjData<PrjNoteData>
+    implements IPrjNote
+{
     /**
      * @inheritdoc
      */

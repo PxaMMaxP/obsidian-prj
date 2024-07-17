@@ -3,10 +3,9 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import BaseData from 'src/models/Data/BaseData';
-import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
+import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
+import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
@@ -35,9 +34,7 @@ export default class HeaderBlockRenderComponent
     private _logger = Logging.getLogger('HeaderBlockRenderComponent');
     private _metadataCache = this._global.metadataCache;
     private _model:
-        | PrjTaskManagementModel<
-              IPrjData & IPrjTaskManagement & BaseData<unknown>
-          >
+        | PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
         | undefined;
 
     private _processorSettings: IProcessorSettings;
@@ -136,9 +133,7 @@ export default class HeaderBlockRenderComponent
      * The model of the Prj File.
      */
     private get model():
-        | PrjTaskManagementModel<
-              IPrjData & IPrjTaskManagement & BaseData<unknown>
-          >
+        | PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
         | undefined {
         if (this._model) return this._model;
 
@@ -158,7 +153,7 @@ export default class HeaderBlockRenderComponent
     private set model(
         value:
             | PrjTaskManagementModel<
-                  IPrjData & IPrjTaskManagement & BaseData<unknown>
+                  IPrjTaskManagementData & PrjBaseData<unknown>
               >
             | undefined,
     ) {

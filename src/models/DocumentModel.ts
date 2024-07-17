@@ -7,30 +7,30 @@ import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import CreateNewMetadataModal from 'src/libs/Modals/CreateNewMetadataModal';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
-import DocumentData from './Data/DocumentData';
+import { PrjDocumentData } from './Data/PrjDocumentData';
 import { FileModel } from './FileModel';
+import IPrjModel from './interfaces/IPrjModel';
 import Global from '../classes/Global';
-import IPrjModel from '../interfaces/IPrjModel';
 
 /**
  * Represents the model for a document.
  */
 export class DocumentModel
-    extends FileModel<DocumentData>
-    implements IPrjModel<DocumentData>
+    extends FileModel<PrjDocumentData>
+    implements IPrjModel<PrjDocumentData>
 {
     private _relatedFiles: DocumentModel[] | null | undefined = undefined;
 
     /**
      * The data of the document.
      */
-    public get data(): Partial<DocumentData> {
+    public get data(): Partial<PrjDocumentData> {
         return this._data;
     }
     /**
      * The data of the document.
      */
-    public set data(value: Partial<DocumentData>) {
+    public set data(value: Partial<PrjDocumentData>) {
         this._data = value;
     }
 
@@ -40,7 +40,7 @@ export class DocumentModel
      * @param dependencies The optional dependencies to use.
      */
     constructor(file: TFile | undefined, dependencies?: IDIContainer) {
-        super(file, DocumentData, DocumentData.yamlKeyMap, dependencies);
+        super(file, PrjDocumentData, PrjDocumentData.yamlKeyMap, dependencies);
     }
 
     /**
@@ -99,7 +99,7 @@ export class DocumentModel
         try {
             return this._app.vault.read(this.file);
         } catch (error) {
-            this._logger.error(error);
+            this._logger?.error(error);
         }
     }
 
@@ -166,7 +166,7 @@ export class DocumentModel
         if (file instanceof TFile) {
             return file;
         } else {
-            this._logger.warn(`No files found for ${fileLinkData.filename}`);
+            this._logger?.warn(`No files found for ${fileLinkData.filename}`);
 
             return undefined;
         }

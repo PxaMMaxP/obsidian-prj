@@ -7,6 +7,9 @@ import {
     Status,
 } from '../types/PrjTypes';
 
+/**
+ * @deprecated Will be removed in the future.
+ */
 export default interface IPrjTaskManagement {
     type: IFileType | null | undefined;
     subType: FileSubType | null | undefined;

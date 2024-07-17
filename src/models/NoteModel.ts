@@ -4,28 +4,28 @@ import { TFile } from 'obsidian';
 import { Path } from 'src/classes/Path';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import NoteData from './Data/NoteData';
+import PrjNoteData from './Data/PrjNoteData';
 import { FileModel } from './FileModel';
+import IPrjModel from './interfaces/IPrjModel';
 import Global from '../classes/Global';
-import IPrjModel from '../interfaces/IPrjModel';
 
 /**
  * Represents the model for a note.
  */
 export class NoteModel
-    extends FileModel<NoteData>
-    implements IPrjModel<NoteData>
+    extends FileModel<PrjNoteData>
+    implements IPrjModel<PrjNoteData>
 {
     /**
      * The data of the note.
      */
-    public get data(): Partial<NoteData> {
+    public get data(): Partial<PrjNoteData> {
         return this._data;
     }
     /**
      * The data of the note.
      */
-    public set data(value: Partial<NoteData>) {
+    public set data(value: Partial<PrjNoteData>) {
         this._data = value;
     }
 
@@ -35,7 +35,7 @@ export class NoteModel
      * @param dependencies The optional dependencies to use.
      */
     constructor(file: TFile | undefined, dependencies?: IDIContainer) {
-        super(file, NoteData, undefined, dependencies);
+        super(file, PrjNoteData, undefined, dependencies);
     }
 
     /**
@@ -61,7 +61,7 @@ export class NoteModel
         try {
             return this._app.vault.read(this.file);
         } catch (error) {
-            this._logger.error(error);
+            this._logger?.error(error);
         }
     }
 

@@ -7,7 +7,7 @@ import { HelperGeneral } from 'src/libs/Helper/General';
 import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
 import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';
 import { IPrjSettings } from 'src/types/PrjSettings';
-import BaseData from './Data/BaseData';
+import PrjBaseData from './Data/PrjBaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
@@ -16,16 +16,16 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
  * Represents a model for a file.
  */
 export class FileModel<
-    T extends BaseData<unknown>,
+    T extends PrjBaseData<unknown>,
 > extends TransactionModel<T> {
     /**
      * @deprecated This property is deprecated and will be removed in the future.
      */
-    protected _global?: Global;
-    protected _pluginSettings?: IPrjSettings;
-    protected _app?: App;
-    protected _metadataCache?: IMetadataCache;
-    private _proxyHandler?: IProxyHandler<T>;
+    protected _global!: Global;
+    protected _pluginSettings!: IPrjSettings;
+    protected _app!: App;
+    protected _metadataCache!: IMetadataCache;
+    private _proxyHandler!: IProxyHandler<T>;
     protected _logger?: ILogger;
 
     private _file: TFile | undefined;

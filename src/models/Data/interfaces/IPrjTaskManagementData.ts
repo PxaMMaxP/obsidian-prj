@@ -1,10 +1,11 @@
 import { Status, Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
+import { IPrjData } from './IPrjData';
 
 /**
  * Represents task management data
  * form a Task, Project or Topic.
  */
-export interface IPrjTaskManagementData {
+export interface IPrjTaskManagementData extends IPrjData {
     /**
      * Get the **status** of the task.
      */
