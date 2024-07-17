@@ -1,29 +1,4 @@
-/**
- * Copies static properties from the source to the target.
- * @param target The target to copy the properties to.
- * @param source The source to copy the properties from.
- */
-export function copyStaticProperties(target: unknown, source: unknown): void {
-    let currentSource = source;
-
-    while (currentSource && currentSource !== Function.prototype) {
-        Object.getOwnPropertyNames(currentSource)
-            .concat(Object.getOwnPropertySymbols(currentSource).toString())
-            .forEach((prop) => {
-                if (prop !== 'prototype') {
-                    const descriptor = Object.getOwnPropertyDescriptor(
-                        currentSource,
-                        prop,
-                    );
-
-                    if (descriptor && descriptor.configurable) {
-                        Object.defineProperty(target, prop, descriptor);
-                    }
-                }
-            });
-        currentSource = Object.getPrototypeOf(currentSource);
-    }
-}
+import { copyStaticProperties } from './Helper';
 
 /**
  * Singleton decorator.
@@ -50,29 +25,29 @@ export function copyStaticProperties(target: unknown, source: unknown): void {
  * ```
  */
 export function Singleton<
-    T extends { new (...args: unknown[]): NonNullable<unknown> },
->(constructor: T, ...args: unknown[]): T {
+    TargetType extends new (...args: unknown[]) => InstanceType<TargetType>,
+>(constructor: TargetType, ...args: unknown[]): TargetType {
     const original = constructor;
-    let instance: T;
+    let instance: InstanceType<TargetType>;
 
     /**
      * Wraps the constructor to create a singleton.
      * @param args The arguments for the constructor.
      * @returns The singleton instance.
      */
-    const wrappedConstructor: T = function (...args: unknown[]) {
+    const wrappedConstructor = function (
+        ...args: unknown[]
+    ): InstanceType<TargetType> {
         if (!instance) {
-            instance = new constructor(...args) as T;
+            instance = new constructor(...args) as InstanceType<TargetType>;
         }
 
         return instance;
-    } as unknown as T;
+    };
 
     // Transfer prototype
     wrappedConstructor.prototype = constructor.prototype;
 
     // Copy static methods and properties
-    copyStaticProperties(wrappedConstructor, original);
-
-    return wrappedConstructor as T;
+    return copyStaticProperties(wrappedConstructor, original);
 }
