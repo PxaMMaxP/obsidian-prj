@@ -39,10 +39,7 @@ export interface IFieldConfigEntry {
  * - Create a {@link FieldConfigSymbol} property in the class to get the field configurations.
  */
 export function fieldConfig(defaultValue?: unknown) {
-    return function (
-        target: unknown,
-        propertyKey: string | number | symbol,
-    ): void {
+    return function (target: unknown, propertyKey: string | symbol): void {
         // Check if the target is an object guard the optional `FieldConfigSymbol` property.
         if (
             !target ||
