@@ -337,20 +337,20 @@ import {
  * Represents a base class for modal forms.
  */
 <span class="cstat-no" title="statement not covered" >export default abstract class B</span>aseModalForm {
-    protected <span class="cstat-no" title="statement not covered" >app: App = Global.getInstance().app;</span>
-    protected <span class="cstat-no" title="statement not covered" >settings = Global.getInstance().settings;</span>
-    protected <span class="cstat-no" title="statement not covered" >global = Global.getInstance();</span>
-    protected <span class="cstat-no" title="statement not covered" >logger = Logging.getLogger('BaseModalForm');</span>
-    protected <span class="cstat-no" title="statement not covered" >modalFormApi: IModalForm | null | undefined = null;</span>
+    protected <span class="cstat-no" title="statement not covered" >_app: App = Global.getInstance().app;</span>
+    protected <span class="cstat-no" title="statement not covered" >_settings = Global.getInstance().settings;</span>
+    protected <span class="cstat-no" title="statement not covered" >_global = Global.getInstance();</span>
+    protected <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('BaseModalForm');</span>
+    protected <span class="cstat-no" title="statement not covered" >_modalFormApi: IModalForm | null | undefined = null;</span>
 &nbsp;
     /**
      * Creates an instance an loads the ModalForms API.
      */
 <span class="fstat-no" title="function not covered" >    constructor() {</span>
-<span class="cstat-no" title="statement not covered" >        if (this.modalFormApi === undefined) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.error('ModalForms API not found');</span>
+<span class="cstat-no" title="statement not covered" >        if (this._modalFormApi === undefined) {</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error('ModalForms API not found');</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this.modalFormApi = this.setApi();</span>
+<span class="cstat-no" title="statement not covered" >            this._modalFormApi = this.setApi();</span>
         }
     }
 &nbsp;
@@ -360,14 +360,14 @@ import {
      * @remarks Log an error if the API is not available
      */
     protected <span class="fstat-no" title="function not covered" >isApiAvailable(</span>): boolean {
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.modalFormApi === undefined)</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.error('ModalForms API not found');</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._modalFormApi === undefined)</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error('ModalForms API not found');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.modalFormApi === null) {</span>
-<span class="cstat-no" title="statement not covered" >            this.modalFormApi = this.setApi();</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._modalFormApi === null) {</span>
+<span class="cstat-no" title="statement not covered" >            this._modalFormApi = this.setApi();</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.modalFormApi === null) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._modalFormApi === null) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return true;</span>
     }
@@ -377,11 +377,11 @@ import {
      * @returns The ModalForms API
      */
     protected <span class="fstat-no" title="function not covered" >getApi(</span>): IModalForm {
-<span class="cstat-no" title="statement not covered" >        if (this.modalFormApi === undefined || this.modalFormApi === null) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.error('ModalForms API not found');</span>
+<span class="cstat-no" title="statement not covered" >        if (this._modalFormApi === undefined || this._modalFormApi === null) {</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error('ModalForms API not found');</span>
 <span class="cstat-no" title="statement not covered" >            throw new Error('ModalForms API not found');</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            return this.modalFormApi;</span>
+<span class="cstat-no" title="statement not covered" >            return this._modalFormApi;</span>
         }
     }
 &nbsp;
@@ -391,15 +391,15 @@ import {
      */
     private <span class="fstat-no" title="function not covered" >setApi(</span>): IModalForm | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const modalFormApi = (<span class="cstat-no" title="statement not covered" >this.app as any).plugins.plugins.modalforms</span>
+        const modalFormApi = (<span class="cstat-no" title="statement not covered" >this._app as any).plugins.plugins.modalforms</span>
             .api as IModalForm;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (!modalFormApi) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger.error('ModalForms API not found');</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.error('ModalForms API not found');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return undefined;</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this.logger.trace('ModalForms API found');</span>
+<span class="cstat-no" title="statement not covered" >            this._logger.trace('ModalForms API found');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return modalFormApi;</span>
         }
@@ -457,7 +457,7 @@ import {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:18:15.451Z
+                at 2024-07-17T18:45:07.879Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

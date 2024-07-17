@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/88</span>
             </div>
         
             
@@ -442,10 +442,7 @@
 <a name='L377'></a><a href='#L377'>377</a>
 <a name='L378'></a><a href='#L378'>378</a>
 <a name='L379'></a><a href='#L379'>379</a>
-<a name='L380'></a><a href='#L380'>380</a>
-<a name='L381'></a><a href='#L381'>381</a>
-<a name='L382'></a><a href='#L382'>382</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L380'></a><a href='#L380'>380</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -462,7 +459,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -826,7 +822,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { App, TFile } from 'obsidian';
-import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import FileManager, { Filename } from 'src/libs/FileManager';</span>
@@ -834,7 +829,7 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
 import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
 <span class="cstat-no" title="statement not covered" >import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';</span>
 import { IPrjSettings } from 'src/types/PrjSettings';
-import BaseData from './Data/BaseData';
+import PrjBaseData from './Data/PrjBaseData';
 <span class="cstat-no" title="statement not covered" >import { TransactionModel } from './TransactionModel';</span>
 <span class="cstat-no" title="statement not covered" >import Global from '../classes/Global';</span>
 import { YamlKeyMap } from '../types/YamlKeyMap';
@@ -843,17 +838,16 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
  * Represents a model for a file.
  */
 <span class="cstat-no" title="statement not covered" >export class F</span>ileModel&lt;
-    T extends BaseData&lt;unknown&gt;,
+    T extends PrjBaseData&lt;unknown&gt;,
 &gt; extends TransactionModel&lt;T&gt; {
     /**
      * @deprecated This property is deprecated and will be removed in the future.
      */
-    protected _global: Global;
-    protected _pluginSettings: IPrjSettings;
-    protected _app: App;
-    protected _metadataCache: IMetadataCache;
-    private _proxyHandler: IProxyHandler&lt;T&gt;;
-    protected _logger: ILogger;
+    protected _global!: Global;
+    protected _pluginSettings!: IPrjSettings;
+    protected _app!: App;
+    protected _metadataCache!: IMetadataCache;
+    private _proxyHandler!: IProxyHandler&lt;T&gt;;
 &nbsp;
     private _file: TFile | undefined;
     /**
@@ -973,8 +967,8 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
 <span class="cstat-no" title="statement not covered" >            this._logger?.trace('Creating empty object');</span>
             const emptyObject = <span class="cstat-no" title="statement not covered" >new this._ctor();</span>
             // Save the default values to the changes object in `TransactionModel`
-<span class="cstat-no" title="statement not covered" >            this.changes = emptyObject.defaultData;</span>
-<span class="cstat-no" title="statement not covered" >            this._dataProxy = this._proxyHandler.createProxy(emptyObject) as T;</span>
+<span class="cstat-no" title="statement not covered" >            this._changes = emptyObject.defaultData;</span>
+<span class="cstat-no" title="statement not covered" >            this._dataProxy = this._proxyHandler?.createProxy(emptyObject) as T;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return this._dataProxy;</span>
         }
@@ -989,7 +983,7 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
         }
 &nbsp;
         const dataObject: T = <span class="cstat-no" title="statement not covered" >new this._ctor(frontmatter as Partial&lt;T&gt;);</span>
-<span class="cstat-no" title="statement not covered" >        this._dataProxy = this._proxyHandler.createProxy(dataObject) as T;</span>
+<span class="cstat-no" title="statement not covered" >        this._dataProxy = this._proxyHandler?.createProxy(dataObject) as T;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this._dataProxy;</span>
     }
@@ -1053,7 +1047,7 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
 <span class="cstat-no" title="statement not covered" >        this._logger?.trace(`Updating with:`, value);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await this._app.fileManager.processFrontMatter(</span>
+<span class="cstat-no" title="statement not covered" >            await this._app?.fileManager.processFrontMatter(</span>
                 this._file,
 <span class="fstat-no" title="function not covered" >                (f</span>rontmatter) =&gt; {
 <span class="cstat-no" title="statement not covered" >                    this.updateNestedFrontmatterObjects(frontmatter, value);</span>
@@ -1087,7 +1081,7 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
      */
     private <span class="fstat-no" title="function not covered" >getMetadata(</span>): Record&lt;string, unknown&gt; | null {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._file) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-        const cachedMetadata = <span class="cstat-no" title="statement not covered" >this._metadataCache.getEntry(this._file);</span>
+        const cachedMetadata = <span class="cstat-no" title="statement not covered" >this._metadataCache?.getEntry(this._file);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (</span>
             cachedMetadata &amp;&amp;
@@ -1213,7 +1207,7 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:18:15.451Z
+                at 2024-07-17T18:45:07.879Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

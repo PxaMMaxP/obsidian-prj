@@ -684,26 +684,26 @@ export type CursorPosition = number | 'start' | 'end';
 <span class="fstat-no" title="function not covered" >    public get c</span>ontainer(): HTMLDivElement {
 <span class="cstat-no" title="statement not covered" >        return this._shippingContainer;</span>
     }
-    protected component: Component;
+    protected _component: Component;
     public thenCallback: ((container: HTMLDivElement) =&gt; void) | undefined;
 &nbsp;
     /**
      * If `true`, the component will be created to allow editing.
      * @remarks Create a configuration option for this property in the child class.
      */
-    protected abstract editabilityEnabled: boolean;
+    protected abstract _editabilityEnabled: boolean;
     //#region HTML Elements
     private _shippingContainer: HTMLDivElement;
     /**
      * The container that holds the input elements.
      * @remarks Has the CSS classes `editable-data-view` &amp; `data-input-container`.
      */
-    protected dataInputContainer: HTMLElement;
+    protected _dataInputContainer: HTMLElement;
     /**
      * The container that holds the elements which show the data in `not-edit` mode.
      * @remarks Has the CSS classes `editable-data-view` &amp; `presentation-container`.
      */
-    protected presentationContainer: HTMLElement;
+    protected _presentationContainer: HTMLElement;
     private _buttonContainer: HTMLElement;
     private _editButton: HTMLButtonElement;
     private <span class="cstat-no" title="statement not covered" >_cancelButton: HTMLButtonElement | undefined = undefined;</span>
@@ -749,7 +749,7 @@ export type CursorPosition = number | 'start' | 'end';
      * @param component The component that should be created.
      */
 <span class="fstat-no" title="function not covered" >    constructor(c</span>omponent: Component) {
-<span class="cstat-no" title="statement not covered" >        this.component = component;</span>
+<span class="cstat-no" title="statement not covered" >        this._component = component;</span>
 <span class="cstat-no" title="statement not covered" >        this._shippingContainer = document.createElement('div');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._shippingContainer.classList.add(</span>
@@ -764,15 +764,15 @@ export type CursorPosition = number | 'start' | 'end';
      * @tutorial Run this methode in the `finalize`-methode of the child class before creating your elements.
      */
     protected <span class="fstat-no" title="function not covered" >createBaseStructure(</span>
-        editabilityEnabled: boolean = <span class="branch-0 cbranch-no" title="branch not covered" >this.editabilityEnabled,</span>
+        editabilityEnabled: boolean = <span class="branch-0 cbranch-no" title="branch not covered" >this._editabilityEnabled,</span>
     ): void {
-<span class="cstat-no" title="statement not covered" >        this.presentationContainer = document.createElement('div');</span>
+<span class="cstat-no" title="statement not covered" >        this._presentationContainer = document.createElement('div');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.presentationContainer.classList.add(</span>
+<span class="cstat-no" title="statement not covered" >        this._presentationContainer.classList.add(</span>
             'editable-data-view',
             'presentation-container',
         );
-<span class="cstat-no" title="statement not covered" >        this._shippingContainer.appendChild(this.presentationContainer);</span>
+<span class="cstat-no" title="statement not covered" >        this._shippingContainer.appendChild(this._presentationContainer);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
             editabilityEnabled &amp;&amp;
@@ -799,7 +799,7 @@ export type CursorPosition = number | 'start' | 'end';
 <span class="cstat-no" title="statement not covered" >        this._editButton.classList.add('button');</span>
 <span class="cstat-no" title="statement not covered" >        setIcon(this._editButton, 'pen');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.component.registerDomEvent(this._editButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
+<span class="cstat-no" title="statement not covered" >        this._component.registerDomEvent(this._editButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >            this.enableEditMode(),</span>
         );
     }
@@ -808,17 +808,17 @@ export type CursorPosition = number | 'start' | 'end';
      * Creates the `save` and `cancel` buttons and the `input` container and adds them to the `buttonContainer`.
      */
     private <span class="fstat-no" title="function not covered" >createComponentsForEdit(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this.dataInputContainer = document.createElement('div');</span>
+<span class="cstat-no" title="statement not covered" >        this._dataInputContainer = document.createElement('div');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.dataInputContainer.classList.add(</span>
+<span class="cstat-no" title="statement not covered" >        this._dataInputContainer.classList.add(</span>
             'editable-data-view',
             'data-input-container',
             'hidden',
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._shippingContainer.insertBefore(</span>
-            this.dataInputContainer,
-            this.presentationContainer,
+            this._dataInputContainer,
+            this._presentationContainer,
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._cancelButton = document.createElement('button');</span>
@@ -828,7 +828,7 @@ export type CursorPosition = number | 'start' | 'end';
 <span class="cstat-no" title="statement not covered" >        this._cancelButton.classList.add('hidden');</span>
 <span class="cstat-no" title="statement not covered" >        setIcon(this._cancelButton, 'x');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.component.registerDomEvent(this._cancelButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
+<span class="cstat-no" title="statement not covered" >        this._component.registerDomEvent(this._cancelButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >            this.disableEditMode(),</span>
         );
 &nbsp;
@@ -839,7 +839,7 @@ export type CursorPosition = number | 'start' | 'end';
 <span class="cstat-no" title="statement not covered" >        this._saveButton.classList.add('hidden');</span>
 <span class="cstat-no" title="statement not covered" >        setIcon(this._saveButton, 'check');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.component.registerDomEvent(this._saveButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
+<span class="cstat-no" title="statement not covered" >        this._component.registerDomEvent(this._saveButton, 'click', <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >            this.saveChanges(),</span>
         );
     }
@@ -867,8 +867,8 @@ export type CursorPosition = number | 'start' | 'end';
 &nbsp;
         // Switch mode to Edit: hide the `edit` button and show the `save` and `cancel` buttons.
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._cancelButton &amp;&amp; this._saveButton) {</span>
-<span class="cstat-no" title="statement not covered" >            this.presentationContainer.classList.add('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            this.dataInputContainer.classList.remove('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            this._presentationContainer.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            this._dataInputContainer.classList.remove('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._cancelButton.classList.remove('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._saveButton.classList.remove('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._editButton.classList.add('hidden');</span>
@@ -884,8 +884,8 @@ export type CursorPosition = number | 'start' | 'end';
     protected <span class="fstat-no" title="function not covered" >disableEditMode(</span>): void {
         // Switch mode to View: hide the `save` and `cancel` buttons and show the `edit` button.
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._cancelButton &amp;&amp; this._saveButton) {</span>
-<span class="cstat-no" title="statement not covered" >            this.presentationContainer.classList.remove('hidden');</span>
-<span class="cstat-no" title="statement not covered" >            this.dataInputContainer.classList.add('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            this._presentationContainer.classList.remove('hidden');</span>
+<span class="cstat-no" title="statement not covered" >            this._dataInputContainer.classList.add('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._cancelButton.classList.add('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._saveButton.classList.add('hidden');</span>
 <span class="cstat-no" title="statement not covered" >            this._editButton.classList.remove('hidden');</span>
@@ -973,7 +973,7 @@ export type CursorPosition = number | 'start' | 'end';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:18:15.451Z
+                at 2024-07-17T18:45:07.879Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

@@ -536,8 +536,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1004,9 +1004,9 @@
 <span class="cstat-no" title="statement not covered" >import Lng from 'src/classes/Lng';</span>
 <span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 import { ILogger } from 'src/interfaces/ILogger';
-import IPrjModel from 'src/interfaces/IPrjModel';
 <span class="cstat-no" title="statement not covered" >import { FileType } from 'src/libs/FileType/FileType';</span>
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
+import IPrjModel from 'src/models/interfaces/IPrjModel';
 import { IPrjSettings } from 'src/types/PrjSettings';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
@@ -1025,25 +1025,25 @@ import Table, { RowsState, TableHeader } from '../Table';
 &gt; implements RedrawableBlockRenderComponent
 {
     //#region General properties
-    protected global: Global;
-    protected globalSettings: IPrjSettings;
-    protected logger: ILogger;
-    protected metadataCache: MetadataCache;
+    protected _global: Global;
+    protected _globalSettings: IPrjSettings;
+    protected _logger: ILogger;
+    protected _metadataCache: MetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
-    protected processorSettings: IProcessorSettings;
-    protected component: Component;
-    protected settings: BlockRenderSettings;
+    protected _processorSettings: IProcessorSettings;
+    protected _component: Component;
+    protected _settings: BlockRenderSettings;
     //#endregion
     //#region Models
-    protected models: T[];
+    protected _models: T[];
     //#endregion
     //#region HTML properties
-    protected table: Table;
-    protected tableHeaders: TableHeader[];
-    protected headerContainer: HTMLElement;
-    protected tableContainer: HTMLElement;
+    protected _table: Table;
+    protected _tableHeaders: TableHeader[];
+    protected _headerContainer: HTMLElement;
+    protected _tableContainer: HTMLElement;
     //#endregion
 &nbsp;
     /**
@@ -1053,13 +1053,13 @@ import Table, { RowsState, TableHeader } from '../Table';
      */
 <span class="fstat-no" title="function not covered" >    constructor(s</span>ettings: IProcessorSettings, logger?: ILogger) {
         // General properties
-<span class="cstat-no" title="statement not covered" >        this.logger = logger ?? Logging.getLogger('TableBlockRenderComponent');</span>
-<span class="cstat-no" title="statement not covered" >        this.global = Global.getInstance();</span>
-<span class="cstat-no" title="statement not covered" >        this.globalSettings = this.global.settings;</span>
-<span class="cstat-no" title="statement not covered" >        this.metadataCache = this.global.metadataCache;</span>
+<span class="cstat-no" title="statement not covered" >        this._logger = logger ?? Logging.getLogger('TableBlockRenderComponent');</span>
+<span class="cstat-no" title="statement not covered" >        this._global = Global.getInstance();</span>
+<span class="cstat-no" title="statement not covered" >        this._globalSettings = this._global.settings;</span>
+<span class="cstat-no" title="statement not covered" >        this._metadataCache = this._global.metadataCache;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.processorSettings = settings;</span>
-<span class="cstat-no" title="statement not covered" >        this.component = settings.component;</span>
+<span class="cstat-no" title="statement not covered" >        this._processorSettings = settings;</span>
+<span class="cstat-no" title="statement not covered" >        this._component = settings.component;</span>
 <span class="cstat-no" title="statement not covered" >        this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);</span>
         //this.parseSettings();
     }
@@ -1082,13 +1082,13 @@ import Table, { RowsState, TableHeader } from '../Table';
      */
     protected async <span class="fstat-no" title="function not covered" >draw(</span>): Promise&lt;void&gt; {
         //Create header container
-<span class="cstat-no" title="statement not covered" >        this.headerContainer = document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >        this.processorSettings.container.appendChild(this.headerContainer);</span>
-<span class="cstat-no" title="statement not covered" >        this.headerContainer.classList.add('header-container');</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer = document.createElement('div');</span>
+<span class="cstat-no" title="statement not covered" >        this._processorSettings.container.appendChild(this._headerContainer);</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer.classList.add('header-container');</span>
 &nbsp;
         //Create controle block
         const blockControle = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >        this.headerContainer.appendChild(blockControle);</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer.appendChild(blockControle);</span>
 <span class="cstat-no" title="statement not covered" >        blockControle.classList.add('block-controle');</span>
 &nbsp;
         //Create refresh Button
@@ -1099,7 +1099,7 @@ import Table, { RowsState, TableHeader } from '../Table';
 <span class="cstat-no" title="statement not covered" >        refreshButton.href = '#';</span>
 <span class="cstat-no" title="statement not covered" >        setIcon(refreshButton, 'refresh-cw');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.component.registerDomEvent(</span>
+<span class="cstat-no" title="statement not covered" >        this._component.registerDomEvent(</span>
             refreshButton,
             'click',
 <span class="fstat-no" title="function not covered" >            async (e</span>vent: MouseEvent) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
@@ -1108,9 +1108,9 @@ import Table, { RowsState, TableHeader } from '../Table';
             },
         );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.tableContainer = document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >        this.processorSettings.container.appendChild(this.tableContainer);</span>
-<span class="cstat-no" title="statement not covered" >        this.tableContainer.classList.add('table-container');</span>
+<span class="cstat-no" title="statement not covered" >        this._tableContainer = document.createElement('div');</span>
+<span class="cstat-no" title="statement not covered" >        this._processorSettings.container.appendChild(this._tableContainer);</span>
+<span class="cstat-no" title="statement not covered" >        this._tableContainer.classList.add('table-container');</span>
     }
 &nbsp;
     /**
@@ -1119,7 +1119,7 @@ import Table, { RowsState, TableHeader } from '../Table';
      * @remarks This methode clears the container and calls the `draw` methode.
      */
     public async <span class="fstat-no" title="function not covered" >redraw(</span>): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >        this.processorSettings.container.innerHTML = '';</span>
+<span class="cstat-no" title="statement not covered" >        this._processorSettings.container.innerHTML = '';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this.draw();</span>
     }
@@ -1130,7 +1130,7 @@ import Table, { RowsState, TableHeader } from '../Table';
      * - The header is not grayed out anymore.
      */
     protected <span class="fstat-no" title="function not covered" >normalizeHeader(</span>) {
-<span class="cstat-no" title="statement not covered" >        this.headerContainer.removeClass('disable');</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer.removeClass('disable');</span>
     }
 &nbsp;
     /**
@@ -1139,7 +1139,7 @@ import Table, { RowsState, TableHeader } from '../Table';
      * - The header is grayed out.
      */
     protected <span class="fstat-no" title="function not covered" >grayOutHeader(</span>) {
-<span class="cstat-no" title="statement not covered" >        this.headerContainer.addClass('disable');</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer.addClass('disable');</span>
     }
 &nbsp;
     /**
@@ -1154,39 +1154,39 @@ import Table, { RowsState, TableHeader } from '../Table';
      * All values that are in the array are shown.
      */
     protected <span class="fstat-no" title="function not covered" >parseSettings(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this.processorSettings.options.forEach(<span class="fstat-no" title="function not covered" >(o</span>ption) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        this._processorSettings.options.forEach(<span class="fstat-no" title="function not covered" >(o</span>ption) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            switch (option.label) {</span>
                 case 'tags':
 <span class="cstat-no" title="statement not covered" >                    if (option.value === 'all') {</span>
-<span class="cstat-no" title="statement not covered" >                        this.settings.tags = [];</span>
+<span class="cstat-no" title="statement not covered" >                        this._settings.tags = [];</span>
                     } else <span class="cstat-no" title="statement not covered" >if (option.value === 'this') {</span>
-                        const tags = <span class="cstat-no" title="statement not covered" >this.processorSettings?.frontmatter?.tags;</span>
+                        const tags = <span class="cstat-no" title="statement not covered" >this._processorSettings?.frontmatter?.tags;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                        if (Array.isArray(tags)) {</span>
-<span class="cstat-no" title="statement not covered" >                            this.settings.tags.push(...tags);</span>
+<span class="cstat-no" title="statement not covered" >                            this._settings.tags.push(...tags);</span>
                         } else <span class="cstat-no" title="statement not covered" >if (tags) {</span>
-<span class="cstat-no" title="statement not covered" >                            this.settings.tags.push(tags);</span>
+<span class="cstat-no" title="statement not covered" >                            this._settings.tags.push(tags);</span>
                         } else {
-<span class="cstat-no" title="statement not covered" >                            this.settings.tags = ['NOTAGSNODATA'];</span>
+<span class="cstat-no" title="statement not covered" >                            this._settings.tags = ['NOTAGSNODATA'];</span>
                         }
                     } else <span class="cstat-no" title="statement not covered" >if (option.value === 'activeFile') {</span>
                         // Register event to update the tags when the active file changes
-<span class="cstat-no" title="statement not covered" >                        this.component.registerEvent(</span>
-                            this.global.app.workspace.on(
+<span class="cstat-no" title="statement not covered" >                        this._component.registerEvent(</span>
+                            this._global.app.workspace.on(
                                 'active-leaf-change',
 <span class="fstat-no" title="function not covered" >                                () =</span>&gt; <span class="cstat-no" title="statement not covered" >this.onActiveFileChange.bind(this)(),</span>
                             ),
                         );
-<span class="cstat-no" title="statement not covered" >                        this.settings.reactOnActiveFile = true;</span>
+<span class="cstat-no" title="statement not covered" >                        this._settings.reactOnActiveFile = true;</span>
                     } else {
-<span class="cstat-no" title="statement not covered" >                        this.settings.tags = option.value;</span>
+<span class="cstat-no" title="statement not covered" >                        this._settings.tags = option.value;</span>
                     }
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 case 'maxDocuments':
-<span class="cstat-no" title="statement not covered" >                    this.settings.maxDocuments = option.value;</span>
+<span class="cstat-no" title="statement not covered" >                    this._settings.maxDocuments = option.value;</span>
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 case 'filter':
-<span class="cstat-no" title="statement not covered" >                    this.settings.filter = option.value;</span>
+<span class="cstat-no" title="statement not covered" >                    this._settings.filter = option.value;</span>
 <span class="cstat-no" title="statement not covered" >                    break;</span>
                 default:
 <span class="cstat-no" title="statement not covered" >                    break;</span>
@@ -1201,13 +1201,13 @@ import Table, { RowsState, TableHeader } from '../Table';
      * @private
      */
     private <span class="fstat-no" title="function not covered" >onActiveFileChange(</span>): void {
-        const activeFile = <span class="cstat-no" title="statement not covered" >this.global.app.workspace.getActiveFile();</span>
+        const activeFile = <span class="cstat-no" title="statement not covered" >this._global.app.workspace.getActiveFile();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (activeFile &amp;&amp; !activeFile.path.contains('Ressourcen/Panels/')) {</span>
-<span class="cstat-no" title="statement not covered" >            this.logger?.trace('Active file changed: ', activeFile.path);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.trace('Active file changed: ', activeFile.path);</span>
 &nbsp;
             const tags =
-<span class="cstat-no" title="statement not covered" >                this.metadataCache.getEntry(activeFile)?.metadata?.frontmatter</span>
+<span class="cstat-no" title="statement not covered" >                this._metadataCache.getEntry(activeFile)?.metadata?.frontmatter</span>
                     ?.tags;
             let newTags: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -1236,8 +1236,8 @@ import Table, { RowsState, TableHeader } from '../Table';
 <span class="cstat-no" title="statement not covered" >                return false;</span>
             };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (areTagsDifferent(newTags, this.settings.tags)) {</span>
-<span class="cstat-no" title="statement not covered" >                this.settings.tags = newTags;</span>
+<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (areTagsDifferent(newTags, this._settings.tags)) {</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.tags = newTags;</span>
 <span class="cstat-no" title="statement not covered" >                this.onActiveFileDebounce();</span>
             }
         }
@@ -1247,7 +1247,7 @@ import Table, { RowsState, TableHeader } from '../Table';
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private <span class="fstat-no" title="function not covered" >onActiveFileDebounce(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this.logger?.trace('Active file changed: Debouncing');</span>
+<span class="cstat-no" title="statement not covered" >        this._logger?.trace('Active file changed: Debouncing');</span>
 <span class="cstat-no" title="statement not covered" >        clearTimeout(this._activeFileDebounceTimer);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._activeFileDebounceTimer = setTimeout(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
@@ -1281,19 +1281,19 @@ import Table, { RowsState, TableHeader } from '../Table';
         tags: string[],
         modelFactory: (metadata: FileMetadata) =&gt; T | undefined,
     ): Promise&lt;T[]&gt; {
-        const templateFolder = <span class="cstat-no" title="statement not covered" >this.global.settings.templateFolder;</span>
+        const templateFolder = <span class="cstat-no" title="statement not covered" >this._global.settings.templateFolder;</span>
 &nbsp;
         // Create an instance of the Tags class for the provided tags
         const filterTags = <span class="cstat-no" title="statement not covered" >new Tags(tags);</span>
 &nbsp;
-        const allDocumentFiles = <span class="cstat-no" title="statement not covered" >this.metadataCache.cache.filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
+        const allDocumentFiles = <span class="cstat-no" title="statement not covered" >this._metadataCache.cache.filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
             const typeFilter = <span class="cstat-no" title="statement not covered" >FileType.isValidOf(</span>
                 file.metadata.frontmatter?.type,
                 types,
             );
 &nbsp;
             const thisFileAndTemplateFilter =
-<span class="cstat-no" title="statement not covered" >                file.file.path !== this.processorSettings.source &amp;&amp;</span>
+<span class="cstat-no" title="statement not covered" >                file.file.path !== this._processorSettings.source &amp;&amp;</span>
                 !file.file.path.startsWith(templateFolder);
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (tags.length &gt; 0) {</span>
@@ -1333,18 +1333,18 @@ import Table, { RowsState, TableHeader } from '../Table';
     ): Promise&lt;string&gt; {
 <span class="cstat-no" title="statement not covered" >        if (key === 'Enter') {</span>
 <span class="cstat-no" title="statement not covered" >            if (searchQuery !== '') {</span>
-<span class="cstat-no" title="statement not covered" >                this.settings.searchText = searchQuery;</span>
-<span class="cstat-no" title="statement not covered" >                this.settings.search = new Search(searchQuery);</span>
-<span class="cstat-no" title="statement not covered" >                this.settings.search.parse();</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.searchText = searchQuery;</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.search = new Search(searchQuery);</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.search.parse();</span>
 <span class="cstat-no" title="statement not covered" >                this.onFilter();</span>
             } else {
-<span class="cstat-no" title="statement not covered" >                this.settings.searchText = undefined;</span>
-<span class="cstat-no" title="statement not covered" >                this.settings.search = undefined;</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.searchText = undefined;</span>
+<span class="cstat-no" title="statement not covered" >                this._settings.search = undefined;</span>
 <span class="cstat-no" title="statement not covered" >                this.onFilter();</span>
             }
         } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (key === 'Escape') {</span>
-<span class="cstat-no" title="statement not covered" >            this.settings.searchText = undefined;</span>
-<span class="cstat-no" title="statement not covered" >            this.settings.search = undefined;</span>
+<span class="cstat-no" title="statement not covered" >            this._settings.searchText = undefined;</span>
+<span class="cstat-no" title="statement not covered" >            this._settings.search = undefined;</span>
 <span class="cstat-no" title="statement not covered" >            this.onFilter();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            return '';</span>
@@ -1361,29 +1361,29 @@ import Table, { RowsState, TableHeader } from '../Table';
      */
     protected async <span class="fstat-no" title="function not covered" >onFilter(</span>) {
 <span class="cstat-no" title="statement not covered" >        this.grayOutHeader();</span>
-        const batchSize = <span class="cstat-no" title="statement not covered" >this.settings.batchSize;</span>
-        const sleepBetweenBatches = <span class="cstat-no" title="statement not covered" >this.settings.sleepBetweenBatches;</span>
+        const batchSize = <span class="cstat-no" title="statement not covered" >this._settings.batchSize;</span>
+        const sleepBetweenBatches = <span class="cstat-no" title="statement not covered" >this._settings.sleepBetweenBatches;</span>
         let sleepPromise = <span class="cstat-no" title="statement not covered" >Promise.resolve();</span>
-        const documentsLength = <span class="cstat-no" title="statement not covered" >this.models.length;</span>
+        const documentsLength = <span class="cstat-no" title="statement not covered" >this._models.length;</span>
         const rows: RowsState[] = <span class="cstat-no" title="statement not covered" >[];</span>
         let visibleRows = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; documentsLength; i++) {</span>
-            const document = <span class="cstat-no" title="statement not covered" >this.models[i];</span>
+            const document = <span class="cstat-no" title="statement not covered" >this._models[i];</span>
 &nbsp;
             const rowUid = <span class="cstat-no" title="statement not covered" >this.getUID(document);</span>
             let hide = <span class="cstat-no" title="statement not covered" >this.getHideState(document, undefined);</span>
-<span class="cstat-no" title="statement not covered" >            this.logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            this.logger?.trace(</span>
-                `Visible rows: ${visibleRows}; Max shown Models: ${this.settings.maxDocuments}`,
+<span class="cstat-no" title="statement not covered" >            this._logger?.trace(</span>
+                `Visible rows: ${visibleRows}; Max shown Models: ${this._settings.maxDocuments}`,
             );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (visibleRows &gt;= this.settings.maxDocuments) {</span>
+<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (visibleRows &gt;= this._settings.maxDocuments) {</span>
 <span class="cstat-no" title="statement not covered" >                hide = true;</span>
             }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            this.logger?.trace(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.trace(</span>
                 `Model ${rowUid} is hidden by max counts: ${hide}`,
             );
 &nbsp;
@@ -1397,10 +1397,10 @@ import Table, { RowsState, TableHeader } from '../Table';
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if ((i !== 0 &amp;&amp; i % batchSize === 0) || i === documentsLength - 1) {</span>
 <span class="cstat-no" title="statement not covered" >                await sleepPromise;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                this.logger?.trace(</span>
+<span class="cstat-no" title="statement not covered" >                this._logger?.trace(</span>
                     `Batchsize reached. Change rows: ${rows.length}`,
                 );
-<span class="cstat-no" title="statement not covered" >                await this.table.changeShowHideStateRows(rows);</span>
+<span class="cstat-no" title="statement not covered" >                await this._table.changeShowHideStateRows(rows);</span>
 <span class="cstat-no" title="statement not covered" >                rows.length = 0;</span>
 <span class="cstat-no" title="statement not covered" >                sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);</span>
             }
@@ -1474,7 +1474,7 @@ export type BlockRenderSettings = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:18:15.451Z
+                at 2024-07-17T18:45:07.879Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

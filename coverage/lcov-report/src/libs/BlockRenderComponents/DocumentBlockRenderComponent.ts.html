@@ -1098,11 +1098,11 @@ import { FileMetadata } from '../MetadataCache';
  */
 <span class="cstat-no" title="statement not covered" >export default class D</span>ocumentBlockRenderComponent extends TableBlockRenderComponent&lt;DocumentModel&gt; {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
-    protected <span class="cstat-no" title="statement not covered" >settings: BlockRenderSettings = {</span>
+    protected <span class="cstat-no" title="statement not covered" >_settings: BlockRenderSettings = {</span>
         tags: [],
         reactOnActiveFile: false,
         filter: ['Documents'],
-        maxDocuments: this.global.settings.defaultMaxShow,
+        maxDocuments: this._global.settings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -1113,7 +1113,7 @@ import { FileMetadata } from '../MetadataCache';
      * The table headers.
      * @remarks The table headers are used to create the table.
      */
-    protected <span class="cstat-no" title="statement not covered" >tableHeaders: TableHeader[] = [</span>
+    protected <span class="cstat-no" title="statement not covered" >_tableHeaders: TableHeader[] = [</span>
         {
             text: Lng.gt('DocumentType'),
             headerClass: [],
@@ -1169,22 +1169,22 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
         const documentsPromise = <span class="cstat-no" title="statement not covered" >super.getModels(</span>
             ['Metadata'],
-            this.settings.tags,
+            this._settings.tags,
 <span class="fstat-no" title="function not covered" >            (m</span>etadata: FileMetadata) =&gt; <span class="cstat-no" title="statement not covered" >new DocumentModel(metadata.file),</span>
         );
 <span class="cstat-no" title="statement not covered" >        await super.draw();</span>
 <span class="cstat-no" title="statement not covered" >        await this.buildTable();</span>
 <span class="cstat-no" title="statement not covered" >        await this.buildHeader();</span>
 <span class="cstat-no" title="statement not covered" >        this.grayOutHeader();</span>
-<span class="cstat-no" title="statement not covered" >        this.models = await documentsPromise;</span>
+<span class="cstat-no" title="statement not covered" >        this._models = await documentsPromise;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        API.documentModel.sortDocumentsByDateDesc(this.models);</span>
+<span class="cstat-no" title="statement not covered" >        API.documentModel.sortDocumentsByDateDesc(this._models);</span>
 <span class="cstat-no" title="statement not covered" >        await this.addDocumentsToTable();</span>
 <span class="cstat-no" title="statement not covered" >        this.normalizeHeader();</span>
         const endTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this.logger.debug(</span>
-            `Redraw Documents (for ${this.models.length} Docs.) runs for ${endTime - startTime}ms`,
+<span class="cstat-no" title="statement not covered" >        this._logger.debug(</span>
+            `Redraw Documents (for ${this._models.length} Docs.) runs for ${endTime - startTime}ms`,
         );
     }
 &nbsp;
@@ -1200,7 +1200,7 @@ import { FileMetadata } from '../MetadataCache';
     private async <span class="fstat-no" title="function not covered" >buildHeader(</span>): Promise&lt;void&gt; {
         // Filter container
         const headerFilterButtons = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
-<span class="cstat-no" title="statement not covered" >        this.headerContainer.appendChild(headerFilterButtons);</span>
+<span class="cstat-no" title="statement not covered" >        this._headerContainer.appendChild(headerFilterButtons);</span>
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.classList.add('header-item');</span>
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.classList.add('filter-symbols');</span>
 &nbsp;
@@ -1213,44 +1213,44 @@ import { FileMetadata } from '../MetadataCache';
 <span class="cstat-no" title="statement not covered" >        filterLabel.textContent = Lng.gt('Filter');</span>
 &nbsp;
         const documentFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
-            this.component,
+            this._component,
             'Documents',
-            this.globalSettings.documentSettings.symbol,
-            this.settings.filter.includes('Documents'),
+            this._globalSettings.documentSettings.symbol,
+            this._settings.filter.includes('Documents'),
             this.onFilterButton.bind(this),
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(documentFilterButton);</span>
 &nbsp;
         const hideDocumentFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
-            this.component,
+            this._component,
             'HideDocuments',
-            this.globalSettings.documentSettings.hideSymbol,
-            this.settings.filter.includes('HideDocuments'),
+            this._globalSettings.documentSettings.hideSymbol,
+            this._settings.filter.includes('HideDocuments'),
             this.onFilterButton.bind(this),
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(hideDocumentFilterButton);</span>
 &nbsp;
         const clusterFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
-            this.component,
+            this._component,
             'Cluster',
-            this.globalSettings.documentSettings.clusterSymbol,
-            this.settings.filter.includes('Cluster'),
+            this._globalSettings.documentSettings.clusterSymbol,
+            this._settings.filter.includes('Cluster'),
             this.onFilterButton.bind(this),
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(clusterFilterButton);</span>
 &nbsp;
         const maxDocuments = <span class="cstat-no" title="statement not covered" >MaxShownModelsInput.create(</span>
-            this.component,
-            this.settings.maxDocuments,
-            this.global.settings.defaultMaxShow,
+            this._component,
+            this._settings.maxDocuments,
+            this._global.settings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(maxDocuments);</span>
 &nbsp;
         const searchBox = <span class="cstat-no" title="statement not covered" >SearchInput.create(</span>
-            this.component,
+            this._component,
             this.onSearch.bind(this),
-            this.settings.searchText,
+            this._settings.searchText,
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(searchBox);</span>
     }
@@ -1262,12 +1262,12 @@ import { FileMetadata } from '../MetadataCache';
      * @remarks Runs the `onFilter` method.
      */
     private async <span class="fstat-no" title="function not covered" >onFilterButton(</span>type: string, status: boolean): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >        if (this.settings.filter.includes(type as FilteredDocument)) {</span>
-<span class="cstat-no" title="statement not covered" >            this.settings.filter = this.settings.filter.filter(</span>
+<span class="cstat-no" title="statement not covered" >        if (this._settings.filter.includes(type as FilteredDocument)) {</span>
+<span class="cstat-no" title="statement not covered" >            this._settings.filter = this._settings.filter.filter(</span>
 <span class="fstat-no" title="function not covered" >                (v</span>) =&gt; <span class="cstat-no" title="statement not covered" >v !== type,</span>
             );
         } else {
-<span class="cstat-no" title="statement not covered" >            this.settings.filter.push(type as FilteredDocument);</span>
+<span class="cstat-no" title="statement not covered" >            this._settings.filter.push(type as FilteredDocument);</span>
         }
 <span class="cstat-no" title="statement not covered" >        await this.onFilterDebounce();</span>
     }
@@ -1293,7 +1293,7 @@ import { FileMetadata } from '../MetadataCache';
     private async <span class="fstat-no" title="function not covered" >onMaxDocumentsChange(</span>
         maxDocuments: number,
     ): Promise&lt;undefined&gt; {
-<span class="cstat-no" title="statement not covered" >        this.settings.maxDocuments = maxDocuments;</span>
+<span class="cstat-no" title="statement not covered" >        this._settings.maxDocuments = maxDocuments;</span>
 <span class="cstat-no" title="statement not covered" >        this.onFilter();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return undefined;</span>
@@ -1309,16 +1309,16 @@ import { FileMetadata } from '../MetadataCache';
      * - The sleep time between the batches is defined in the `sleepBetweenBatches` parameter. Default is `settings.sleepBetweenBatches`.
      */
     private async <span class="fstat-no" title="function not covered" >addDocumentsToTable(</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >        batchSize </span>= <span class="branch-0 cbranch-no" title="branch not covered" >this.settings.batchSize,</span></span>
-        sleepBetweenBatches = <span class="branch-0 cbranch-no" title="branch not covered" >this.settings.sleepBetweenBatches,</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >        batchSize </span>= <span class="branch-0 cbranch-no" title="branch not covered" >this._settings.batchSize,</span></span>
+        sleepBetweenBatches = <span class="branch-0 cbranch-no" title="branch not covered" >this._settings.sleepBetweenBatches,</span>
     ): Promise&lt;void&gt; {
         let sleepPromise = <span class="cstat-no" title="statement not covered" >Promise.resolve();</span>
-        const documentsLength = <span class="cstat-no" title="statement not covered" >this.models.length;</span>
+        const documentsLength = <span class="cstat-no" title="statement not covered" >this._models.length;</span>
         const rows: Row[] = <span class="cstat-no" title="statement not covered" >[];</span>
         let rowPromise: Promise&lt;Row&gt; | undefined = <span class="cstat-no" title="statement not covered" >undefined;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (documentsLength &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >            rowPromise = this.generateTableRow(this.models[0]);</span>
+<span class="cstat-no" title="statement not covered" >            rowPromise = this.generateTableRow(this._models[0]);</span>
         } else {
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
@@ -1327,13 +1327,13 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; documentsLength; i++) {</span>
             const document =
-<span class="cstat-no" title="statement not covered" >                i + 1 &lt; documentsLength ? this.models[i + 1] : null;</span>
+<span class="cstat-no" title="statement not covered" >                i + 1 &lt; documentsLength ? this._models[i + 1] : null;</span>
 &nbsp;
             const row = <span class="cstat-no" title="statement not covered" >await rowPromise;</span>
 <span class="cstat-no" title="statement not covered" >            rowPromise = document ? this.generateTableRow(document) : undefined;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (row &amp;&amp; !row.hidden) {</span>
-<span class="cstat-no" title="statement not covered" >                if (visibleRows &lt; this.settings.maxDocuments) {</span>
+<span class="cstat-no" title="statement not covered" >                if (visibleRows &lt; this._settings.maxDocuments) {</span>
 <span class="cstat-no" title="statement not covered" >                    visibleRows++;</span>
                 } else {
 <span class="cstat-no" title="statement not covered" >                    row.hidden = true;</span>
@@ -1344,7 +1344,7 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if ((i !== 0 &amp;&amp; i % batchSize === 0) || i === documentsLength - 1) {</span>
 <span class="cstat-no" title="statement not covered" >                await sleepPromise;</span>
-<span class="cstat-no" title="statement not covered" >                this.table.addRows(rows);</span>
+<span class="cstat-no" title="statement not covered" >                this._table.addRows(rows);</span>
 <span class="cstat-no" title="statement not covered" >                rows.length = 0;</span>
 <span class="cstat-no" title="statement not covered" >                sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);</span>
             }
@@ -1367,7 +1367,7 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        DocumentComponents.createCellMetadatalink(</span>
             metadataLink,
-            this.component,
+            this._component,
             documentModel,
         );
 &nbsp;
@@ -1377,9 +1377,9 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        GeneralComponents.createCellDate(</span>
             date,
-            this.component,
+            this._component,
             Lng.gt('DocumentDate'),
-            this.global.settings.dateFormat,
+            this._global.settings.dateFormat,
 <span class="fstat-no" title="function not covered" >            () =</span>&gt; <span class="cstat-no" title="statement not covered" >documentModel.data.date ?? 'na',</span>
 <span class="fstat-no" title="function not covered" >            async (v</span>alue: string) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > <span class="cstat-no" title="statement not covered" >(</span>documentModel.data.date = value),</span></span>
         );
@@ -1390,15 +1390,15 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        DocumentComponents.createCellFileLink(</span>
             fileLink,
-            this.component,
+            this._component,
             documentModel,
         );
 &nbsp;
         // Row 3 -- Sender Recipient
         const senderRecipient = <span class="cstat-no" title="statement not covered" >DocumentComponents.createCellSenderRecipient(</span>
             documentModel,
-            this.component,
-            this.models,
+            this._component,
+            this._models,
         );
 <span class="cstat-no" title="statement not covered" >        rowData.push(senderRecipient);</span>
 &nbsp;
@@ -1408,16 +1408,16 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        DocumentComponents.createCellSummary(</span>
             documentModel,
-            this.component,
+            this._component,
             summaryRelatedFiles,
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        DocumentComponents.createRelatedFilesList(</span>
             summaryRelatedFiles,
-            this.component,
+            this._component,
             documentModel,
-            this.globalSettings.noneSymbol,
-            this.global.settings.dateFormatShort,
+            this._globalSettings.noneSymbol,
+            this._global.settings.dateFormatShort,
         );
 &nbsp;
         // Row 5 -- Date of delivery
@@ -1426,9 +1426,9 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        GeneralComponents.createCellDate(</span>
             deliveryDate,
-            this.component,
+            this._component,
             Lng.gt('DeliveryDate'),
-            this.global.settings.dateFormat,
+            this._global.settings.dateFormat,
 <span class="fstat-no" title="function not covered" >            () =</span>&gt; <span class="cstat-no" title="statement not covered" >documentModel.data.dateOfDelivery ?? 'na',</span>
 <span class="fstat-no" title="function not covered" >            async (v</span>alue: string) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" >                (documentModel.data.dateOfDelivery = value),</span>
@@ -1440,7 +1440,7 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        GeneralComponents.createCellTags(</span>
             tags,
-            this.component,
+            this._component,
             documentModel.data.tags?.toStringArray() ?? [],
         );
 &nbsp;
@@ -1469,13 +1469,13 @@ import { FileMetadata } from '../MetadataCache';
         let searchResult = <span class="cstat-no" title="statement not covered" >false;</span>
         let maxRows = <span class="cstat-no" title="statement not covered" >false;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.settings.search) {</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._settings.search) {</span>
             const text = <span class="cstat-no" title="statement not covered" >model.data.toString?.();</span>
-<span class="cstat-no" title="statement not covered" >            searchResult = this.settings.search.applySearchLogic(text ?? '');</span>
+<span class="cstat-no" title="statement not covered" >            searchResult = this._settings.search.applySearchLogic(text ?? '');</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (maxVisibleRows &amp;&amp; maxVisibleRows &gt; 0) {</span>
-            const rowStats = <span class="cstat-no" title="statement not covered" >this.table.getRowStats();</span>
+            const rowStats = <span class="cstat-no" title="statement not covered" >this._table.getRowStats();</span>
 <span class="cstat-no" title="statement not covered" >            maxRows = rowStats.visibleRows &gt;= maxVisibleRows;</span>
         }
 &nbsp;
@@ -1484,7 +1484,7 @@ import { FileMetadata } from '../MetadataCache';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (searchResult &amp;&amp; !hide) {</span>
 <span class="cstat-no" title="statement not covered" >            return false; </span>// Shows the document, if it is not hidden and the search was successful
-        } else <span class="cstat-no" title="statement not covered" >if (this.settings.search) {</span>
+        } else <span class="cstat-no" title="statement not covered" >if (this._settings.search) {</span>
 <span class="cstat-no" title="statement not covered" >            return true; </span>// Hide the document, if the search was not successful and aplicable
         } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (!searchResult) {</span>
 <span class="cstat-no" title="statement not covered" >            return maxRows || hide; </span>// Else the document is hidden, if the max rows are reached or the document type is hidden
@@ -1501,7 +1501,7 @@ import { FileMetadata } from '../MetadataCache';
      */
     private <span class="fstat-no" title="function not covered" >determineHideState(</span>document: DocumentModel): boolean {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
-            this.settings.filter.includes('Documents') &amp;&amp;
+            this._settings.filter.includes('Documents') &amp;&amp;
             document.data.hide !== true &amp;&amp;
             document.data.subType !== 'Cluster'
         ) {
@@ -1509,14 +1509,14 @@ import { FileMetadata } from '../MetadataCache';
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
-            this.settings.filter.includes('Cluster') &amp;&amp;
+            this._settings.filter.includes('Cluster') &amp;&amp;
             document.data.subType === 'Cluster'
         ) {
 <span class="cstat-no" title="statement not covered" >            return false;</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
-            this.settings.filter.includes('HideDocuments') &amp;&amp;
+            this._settings.filter.includes('HideDocuments') &amp;&amp;
             document.data.hide === true
         ) {
 <span class="cstat-no" title="statement not covered" >            return false;</span>
@@ -1531,9 +1531,9 @@ import { FileMetadata } from '../MetadataCache';
      * @returns If the document should be  shown returns `true`, else `false`.
      */
     private <span class="fstat-no" title="function not covered" >determineTagHideState(</span>document: DocumentModel): boolean {
-        const settingTags = <span class="cstat-no" title="statement not covered" >new Tags(this.settings.tags);</span>
+        const settingTags = <span class="cstat-no" title="statement not covered" >new Tags(this._settings.tags);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return this.settings.reactOnActiveFile</span>
+<span class="cstat-no" title="statement not covered" >        return this._settings.reactOnActiveFile</span>
             ? !document.data.tags?.contains(settingTags)
             : false;
     }
@@ -1553,13 +1553,13 @@ import { FileMetadata } from '../MetadataCache';
      * - The table has the headers from the `tableHeaders` property.
      */
     private async <span class="fstat-no" title="function not covered" >buildTable(</span>): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >        this.table = new Table(</span>
-            this.tableHeaders,
+<span class="cstat-no" title="statement not covered" >        this._table = new Table(</span>
+            this._tableHeaders,
             'document-table',
             undefined,
             Logging.getLogger('DocumentBlockRenderComponent/Table'),
         );
-<span class="cstat-no" title="statement not covered" >        this.tableContainer.appendChild(this.table.data.table);</span>
+<span class="cstat-no" title="statement not covered" >        this._tableContainer.appendChild(this._table.data.table);</span>
     }
 &nbsp;
     /**
@@ -1585,7 +1585,7 @@ type FilteredDocument = 'Documents' | 'HideDocuments' | 'Cluster';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-15T13:18:15.451Z
+                at 2024-07-17T18:45:07.879Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
