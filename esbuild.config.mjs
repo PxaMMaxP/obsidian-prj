@@ -26,7 +26,6 @@ const importerPlugin = {
 
 const prod = (process.argv[2] === "production");
 const dev = (process.argv[2] === "development");
-const sourcemap = (dev && !prod) ? "inline" : false;
 
 const context = await esbuild.context({
 	banner: {
@@ -52,7 +51,7 @@ const context = await esbuild.context({
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",
-	sourcemap: sourcemap,
+	sourcemap: prod ? false : "inline",
 	treeShaking: true,
 	outfile: "build/main.js",
 	plugins: [importerPlugin],
