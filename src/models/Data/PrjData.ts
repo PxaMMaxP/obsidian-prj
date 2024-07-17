@@ -1,11 +1,14 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { IFileType, IFileType_ } from 'src/libs/FileType/interfaces/IFileType';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import type {
+    IFileType,
+    IFileType_,
+} from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
-import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
+import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
-import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import { IPrjData, IPrjData_ } from './interfaces/IPrjData';
 import PrjBaseData from './PrjBaseData';
 
@@ -14,15 +17,9 @@ import PrjBaseData from './PrjBaseData';
  */
 @ImplementsStatic<IPrjData_<unknown>>()
 export class PrjData<T> extends PrjBaseData<T> implements IPrjData {
-    /**
-     * @inheritdoc
-     */
-    protected initializeDependencies(): void {
-        this._IFileType = this._dependencies.resolve<IFileType_>('IFileType_');
-        this._ITags = this._dependencies.resolve<ITags_>('ITags_');
-    }
-
+    @Inject('IFileType_')
     protected _IFileType!: IFileType_;
+    @Inject('ITags_')
     protected _ITags!: ITags_;
 
     protected _type: IFileType | null | undefined;
@@ -30,8 +27,6 @@ export class PrjData<T> extends PrjBaseData<T> implements IPrjData {
     protected _tags: ITags | null | undefined;
     protected _title: string | null | undefined;
     protected _description: string | null | undefined;
-
-    static yamlKeyMap: YamlKeyMap | undefined = {};
 
     /**
      * @inheritdoc
