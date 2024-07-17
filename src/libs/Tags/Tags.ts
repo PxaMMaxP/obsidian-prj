@@ -1,16 +1,15 @@
 import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { ITag, ITag_ } from './interfaces/ITag';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import type { ITag, ITag_ } from './interfaces/ITag';
 import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
 import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import { IBaseComplexDataType_ } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { DIContainer } from '../DependencyInjection/DIContainer';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Register } from '../DependencyInjection/decorators/Register';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 
 /**
  * Represents an array of tags.
@@ -19,21 +18,9 @@ import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManag
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
 @ImplementsStatic<ITags_>()
-@ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IBaseComplexDataType_>()
-@Lifecycle
+@Register('ITags_')
 export class Tags extends BaseComplexDataType implements ITags {
-    /**
-     * Register the markdown block processor and update the workspace options.
-     */
-    public static onLoad(): void {
-        /**
-         * @deprecated Use the identifier `Tags_` instead. This will be removed in a future version.
-         */
-        DIContainer.getInstance().register('ITags', Tags);
-        DIContainer.getInstance().register('ITags_', Tags);
-    }
-
     /**
      * The dependencies of the tags.
      */
@@ -42,18 +29,21 @@ export class Tags extends BaseComplexDataType implements ITags {
     /**
      * The dependency injection token for the `ITag` interface.
      */
-    private _tagClass: ITag_;
+    @Inject('ITag_')
+    private _ITag: ITag_;
 
     /**
      * The metadata cache.
      */
-    private _metadataCache: IMetadataCache;
+    @Inject('IMetadataCache')
+    private _IMetadataCache: IMetadataCache;
 
     /**
      * The logger to use for logging messages.
      * If not provided, no messages will be logged.
      */
-    private _logger: ILogger | undefined = undefined;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('Tags'), false)
+    private _logger?: ILogger;
 
     /**
      * The tags array.
@@ -109,23 +99,9 @@ export class Tags extends BaseComplexDataType implements ITags {
     /**
      * Creates a new instance of the TagsArray class.
      * @param tags The tags to use for the creation. Can be a string, an array of strings, or undefined.
-     * @param dependencies The dependencies of the tags; if not provided, the global dependency registry is used.
      */
-    constructor(
-        tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies?: IDIContainer,
-    ) {
+    constructor(tags: ITags | ITag | string | string[] | undefined | null) {
         super();
-
-        this._dependencies = dependencies ?? DIContainer.getInstance();
-
-        this._metadataCache =
-            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
-        this._tagClass = this._dependencies.resolve<ITag_>('ITag');
-
-        this._logger = this._dependencies
-            .resolve<ILogger_>('ILogger_', false)
-            ?.getLogger('Tags');
 
         this.add(tags);
     }
@@ -136,7 +112,7 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @returns The created tag.
      */
     private createTag(tagValue: string): ITag {
-        return new this._tagClass(tagValue, this._dependencies);
+        return new this._ITag(tagValue, this._dependencies);
     }
 
     /**
@@ -161,7 +137,7 @@ export class Tags extends BaseComplexDataType implements ITags {
     ): ITag[] {
         if (this.isInstanceOfTags(tag)) {
             return tag.toStringArray().map((t) => this.createTag(t));
-        } else if (this._tagClass.isInstanceOf(tag)) {
+        } else if (this._ITag.isInstanceOf(tag)) {
             return [this.createTag(tag.value)];
         } else if (Array.isArray(tag)) {
             return tag.map((t) => this.createTag(t));
@@ -377,7 +353,7 @@ export class Tags extends BaseComplexDataType implements ITags {
         this._tags = [];
 
         if (file) {
-            const cache = this._metadataCache.getEntry(file);
+            const cache = this._IMetadataCache.getEntry(file);
 
             if (cache && cache.metadata && cache.metadata.frontmatter) {
                 return this.add(cache.metadata.frontmatter.tags);

@@ -6,10 +6,9 @@ import {
     IBaseComplexDataType,
     IBaseComplexDataType_,
 } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
+import { Register } from '../DependencyInjection/decorators/Register';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 
 /**
  * Represents a tag.
@@ -18,24 +17,12 @@ import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManag
  * Class for the markdown block processor.
  */
 @ImplementsStatic<ITag_>()
-@ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IBaseComplexDataType_>()
-@Lifecycle
+@Register('ITag_')
 export class Tag
     extends BaseComplexDataType
     implements ITag, IBaseComplexDataType
 {
-    /**
-     * Register the markdown block processor and update the workspace options.
-     */
-    public static onLoad(): void {
-        /**
-         * @deprecated Use the `ITag_` interface instead.
-         */
-        DIContainer.getInstance().register('ITag', Tag);
-        DIContainer.getInstance().register('ITag_', Tag);
-    }
-
     /**
      * The tag.
      */
