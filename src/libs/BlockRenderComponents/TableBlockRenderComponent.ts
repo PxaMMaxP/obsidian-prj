@@ -3,6 +3,7 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { ILogger } from 'src/interfaces/ILogger';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { FileType } from 'src/libs/FileType/FileType';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import IPrjModel from 'src/models/interfaces/IPrjModel';
@@ -10,7 +11,7 @@ import { IPrjSettings } from 'src/types/PrjSettings';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
 import { HelperGeneral } from '../Helper/General';
-import MetadataCache, { FileMetadata } from '../MetadataCache';
+import { FileMetadata } from '../MetadataCache';
 import { ISearch } from '../Search/interfaces/ISearch';
 import { Search } from '../Search/Search';
 import Table, { RowsState, TableHeader } from '../Table';
@@ -27,7 +28,7 @@ export default abstract class TableBlockRenderComponent<
     protected _global: Global;
     protected _globalSettings: IPrjSettings;
     protected _logger: ILogger;
-    protected _metadataCache: MetadataCache;
+    protected _metadataCache: IMetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
