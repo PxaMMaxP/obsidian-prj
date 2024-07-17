@@ -21,12 +21,12 @@ export class FileModel<
     /**
      * @deprecated This property is deprecated and will be removed in the future.
      */
-    protected _global: Global;
-    protected _pluginSettings: IPrjSettings;
-    protected _app: App;
-    protected _metadataCache: IMetadataCache;
-    private _proxyHandler: IProxyHandler<T>;
-    protected _logger: ILogger;
+    protected _global?: Global;
+    protected _pluginSettings?: IPrjSettings;
+    protected _app?: App;
+    protected _metadataCache?: IMetadataCache;
+    private _proxyHandler?: IProxyHandler<T>;
+    protected _logger?: ILogger;
 
     private _file: TFile | undefined;
     /**
@@ -147,7 +147,7 @@ export class FileModel<
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
             this.changes = emptyObject.defaultData;
-            this._dataProxy = this._proxyHandler.createProxy(emptyObject) as T;
+            this._dataProxy = this._proxyHandler?.createProxy(emptyObject) as T;
 
             return this._dataProxy;
         }
@@ -162,7 +162,7 @@ export class FileModel<
         }
 
         const dataObject: T = new this._ctor(frontmatter as Partial<T>);
-        this._dataProxy = this._proxyHandler.createProxy(dataObject) as T;
+        this._dataProxy = this._proxyHandler?.createProxy(dataObject) as T;
 
         return this._dataProxy;
     }
@@ -226,7 +226,7 @@ export class FileModel<
         this._logger?.trace(`Updating with:`, value);
 
         try {
-            await this._app.fileManager.processFrontMatter(
+            await this._app?.fileManager.processFrontMatter(
                 this._file,
                 (frontmatter) => {
                     this.updateNestedFrontmatterObjects(frontmatter, value);
@@ -260,7 +260,7 @@ export class FileModel<
      */
     private getMetadata(): Record<string, unknown> | null {
         if (!this._file) return null;
-        const cachedMetadata = this._metadataCache.getEntry(this._file);
+        const cachedMetadata = this._metadataCache?.getEntry(this._file);
 
         if (
             cachedMetadata &&
