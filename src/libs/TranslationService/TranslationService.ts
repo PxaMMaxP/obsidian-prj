@@ -1,20 +1,33 @@
-import { ILogger } from 'src/interfaces/ILogger';
-import { IPrjSettings } from 'src/types/PrjSettings';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Translations } from 'src/translations/Translations';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import ILanguageTranslations from './interfaces/ILanguageTranslations';
-import ITranslationService from './interfaces/ITranslationService';
+import ITranslationService, {
+    ITranslationService_,
+} from './interfaces/ITranslationService';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import { RegisterInstance } from '../DependencyInjection/decorators/RegisterInstance';
 
 /**
  * A service that provides translations for the application.
  */
+@ImplementsStatic<ITranslationService_>()
+@RegisterInstance('ITranslationService', (x) => new x(Translations))
 export class TranslationService implements ITranslationService {
     static instance: TranslationService | undefined;
-    private _logger: ILogger | undefined;
+    @Inject('IPrjSettings', (x: IPrjSettings) => x.language)
+    private _language!: IPrjSettings['language'];
+    @Inject(
+        'ILogger_',
+        (x: ILogger_) => x.getLogger('TranslationService'),
+        false,
+    )
+    private _logger?: ILogger;
     private _translations: ILanguageTranslations[];
-    private _language: string;
 
     /**
-     * Gets the instance of the TranslationService.
-     * @remarks **Singleton**
+     * Gets the singleton instance of the translation service.
      * @returns The instance of the TranslationService.
      */
     static getInstance(): TranslationService {
@@ -26,21 +39,13 @@ export class TranslationService implements ITranslationService {
     }
 
     /**
-     * Creates a new instance of the TranslationService.
+     * Gets the singleton instance of the translation service..
      * @param translations The translations to use.
-     * @param settings The settings to use.
-     * @param logger The optional logger to use.
      */
-    constructor(
-        translations: ILanguageTranslations[],
-        settings: IPrjSettings,
-        logger?: ILogger,
-    ) {
+    constructor(translations: ILanguageTranslations[]) {
         TranslationService.instance = this;
 
-        this._logger = logger;
         this._translations = translations;
-        this._language = settings.language;
     }
 
     /**

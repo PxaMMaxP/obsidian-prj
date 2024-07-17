@@ -1,3 +1,29 @@
+import { ILogger } from 'src/interfaces/ILogger';
+import { IPrjSettings } from 'src/types/PrjSettings';
+import ILanguageTranslations from './ILanguageTranslations';
+
+/**
+ * Represents a static interface for {@link ITranslationService}.
+ */
+export interface ITranslationService_ {
+    /**
+     * Gets the singleton instance of the translation service.
+     */
+    new (
+        translations: ILanguageTranslations[],
+        settings?: IPrjSettings,
+        logger?: ILogger,
+    ): ITranslationService;
+    /**
+     * Gets the singleton instance of the translation service.
+     */
+    getInstance(): ITranslationService;
+}
+
+/**
+ * Represents a interface for the translation service.
+ * @see {@link ITranslationService_}
+ */
 export default interface ITranslationService {
     /**
      * Returns a translation for the given key.
