@@ -15,7 +15,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
 	  "strictNullChecks": true,
-    "strictPropertyInitialization": true,
     "lib": [
       "DOM",
       "ES5",
