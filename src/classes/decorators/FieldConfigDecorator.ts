@@ -8,7 +8,7 @@ export const FieldConfigSymbol: unique symbol = Symbol('FieldConfig');
 /**
  * Represents the field configuration properties.
  */
-export interface IFieldConfig_ {
+interface IFieldConfig_ {
     [FieldConfigSymbol]?: IFieldConfigEntry[];
 }
 
@@ -17,14 +17,14 @@ export interface IFieldConfig_ {
  * @param obj The object to check.
  * @returns Ever `True` because the {@link FieldConfigSymbol} property is optional.
  */
-export function isIFieldConfig_(obj: unknown): obj is IFieldConfig_ {
+function isIFieldConfig_(obj: unknown): obj is IFieldConfig_ {
     return true;
 }
 
 /**
  * Represents a entry in the field configuration.
  */
-export interface IFieldConfigEntry {
+interface IFieldConfigEntry {
     key: string | number | symbol;
     defaultValue?: unknown;
 }
@@ -52,7 +52,7 @@ export function fieldConfig(defaultValue?: unknown) {
             );
         }
 
-        // If the class does not have a `FieldConfigSymbol` property, create it. Type Safe!
+        // If the class does not have a `FieldConfigSymbol` property, create it.
         if (!target.constructor[FieldConfigSymbol]) {
             target.constructor[FieldConfigSymbol] = [];
         }
