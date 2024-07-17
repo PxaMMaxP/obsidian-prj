@@ -42,7 +42,7 @@ export class Logging implements ILogger {
      * @param value The value to set.
      */
     public setLogPrefix(value: string): void {
-        this._logPrefix = value;
+        this._logPrefix = value ?? '';
     }
 
     /**
@@ -65,6 +65,9 @@ export class Logging implements ILogger {
      */
     constructor(logLevel?: LoggingLevel | string | undefined, logPrefix = '') {
         if (Logging._instance) {
+            Logging._instance.setLogPrefix(logPrefix);
+            Logging._instance.setLogLevel(logLevel);
+
             return Logging._instance;
         }
         Logging._instance = this;
