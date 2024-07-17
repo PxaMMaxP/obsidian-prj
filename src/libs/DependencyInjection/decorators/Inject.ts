@@ -1,12 +1,23 @@
 import { DIContainer } from '../DIContainer';
 
 /**
+ * A function type representing an initializer that transforms an input of type `T`
+ * into an output of type `U`.
+ * @template T - The type of the input parameter.
+ * @template U - The type of the output parameter.
+ * @param x - The input parameter of type `T`.
+ * @returns The transformed output of type `U`.
+ */
+export type InitDelegate<T, U> = (x: T) => U;
+
+/**
  * A decorator to inject a dependency from a DI (Dependency Injection) container.
  * The dependency is lazily evaluated when the property is accessed for the first time.
  * This can help avoid issues like circular dependencies and not-found dependencies.
- * @template PropertieType The type of the property to be injected.
+ * @template ClassType The type of the property to be injected.
  * @param identifier The identifier used to resolve the dependency from the DI container.
- * @param necessary - Indicates if the dependency is necessary.
+ * @param init An optional initializer function to transform the dependency before injection.
+ * @param necessary Indicates if the dependency is necessary.
  * - If `true`, an error will be thrown if the dependency cannot be resolved.
  * - If `false`, `undefined` will be returned if the dependency cannot be resolved.
  * @returns A decorator function to be applied on the class property.
@@ -18,12 +29,20 @@ import { DIContainer } from '../DIContainer';
  *   private myDependency!: MyDependency;
  * }
  * ```
+ * @example
+ * ```ts
+ * class MyClass {
+ *   \@Inject('ILogger_', (x: ILogger_) => x.getLogger('Tags'), false)
+ *   private _logger?: ILogger;
+ * }
+ * ```
  */
-export function Inject<PropertieType>(identifier: string, necessary = true) {
-    return function (
-        target: PropertieType,
-        propertyKey: string | symbol,
-    ): void {
+export function Inject<T, U>(
+    identifier: string,
+    init?: InitDelegate<T, U>,
+    necessary = true,
+) {
+    return function (target: unknown, propertyKey: string | symbol): void {
         // Unique symbol to store the private property
         const privatePropertyKey: unique symbol = Symbol();
         // Get the DI container instance
@@ -32,7 +51,7 @@ export function Inject<PropertieType>(identifier: string, necessary = true) {
         // Function to evaluate the dependency lazily
         // to avoid circular dependencies, not found dependencies, etc.
         const evaluate = () => {
-            return diContainer.resolve<PropertieType>(identifier, necessary);
+            return diContainer.resolve<unknown>(identifier, necessary);
         };
 
         // Define the property
@@ -40,7 +59,17 @@ export function Inject<PropertieType>(identifier: string, necessary = true) {
             get() {
                 // If the property is not defined, evaluate the dependency
                 if (!this.hasOwnProperty(privatePropertyKey)) {
-                    this[privatePropertyKey] = evaluate();
+                    if (init) {
+                        try {
+                            this[privatePropertyKey] = init(evaluate() as T);
+                        } catch (error) {
+                            if (necessary) {
+                                throw error;
+                            }
+                        }
+                    } else {
+                        this[privatePropertyKey] = evaluate();
+                    }
                 }
 
                 return this[privatePropertyKey];
