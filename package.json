@@ -7,6 +7,7 @@
     "gen:imports": "node scripts/importer.js",
     "dev": "concurrently \"node esbuild.config.mjs\" \"npm run watch:sass\" \"node scripts/copy-plugin-files.mjs watch\"",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass && node scripts/copy-plugin-files.mjs release",
+    "build:check": "tsc -noEmit -skipLibCheck",
     "build:action": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass",
     "version:patch": "\"node scripts/bump-version.mjs patch\" && npm run postversion",
     "version:minor": "\"node scripts/bump-version.mjs minor\" && npm run postversion",
