@@ -1,3 +1,4 @@
+import { copyStaticProperties } from 'src/classes/decorators/Helper';
 import {
     ILifecycleManager_,
     ILifecycleObject,
@@ -7,33 +8,6 @@ import {
 import { LifecycleManager } from '../LifecycleManager';
 
 const manager: ILifecycleManager_ = LifecycleManager;
-
-/**
- * Copies static properties from the source to the target.
- * @param target The target to copy the properties to.
- * @param source The source to copy the properties from.
- */
-export function copyStaticProperties(target: unknown, source: unknown): void {
-    let currentSource = source;
-
-    while (currentSource && currentSource !== Function.prototype) {
-        Object.getOwnPropertyNames(currentSource)
-            .concat(Object.getOwnPropertySymbols(currentSource).toString())
-            .forEach((prop) => {
-                if (prop !== 'prototype') {
-                    const descriptor = Object.getOwnPropertyDescriptor(
-                        currentSource,
-                        prop,
-                    );
-
-                    if (descriptor && descriptor.configurable) {
-                        Object.defineProperty(target, prop, descriptor);
-                    }
-                }
-            });
-        currentSource = Object.getPrototypeOf(currentSource);
-    }
-}
 
 /**
  * Registers lifecycle methods based on time and state.
@@ -60,8 +34,10 @@ function registerLifecycleMethod(
  * @returns The decorated constructor with lifecycle management.
  */
 export function Lifecycle<
-    T extends { new (...args: unknown[]): ILifecycleObject } & ILifecycleObject,
->(constructor: T, ...args: unknown[]): T {
+    TargetType extends {
+        new (...args: unknown[]): ILifecycleObject;
+    } & ILifecycleObject,
+>(constructor: TargetType, ...args: unknown[]): TargetType {
     const original = constructor;
 
     /**
@@ -70,7 +46,10 @@ export function Lifecycle<
      * @param args The arguments for the constructor.
      * @returns The instance with registered lifecycle methods.
      */
-    function construct(constructor: T, args: unknown[]): ILifecycleObject {
+    function construct(
+        constructor: TargetType,
+        args: unknown[],
+    ): ILifecycleObject {
         const instance = new constructor(...args);
 
         registerLifecycleMethod(instance, 'before', 'init', 'beforeInit');
@@ -108,15 +87,13 @@ export function Lifecycle<
      * @param args The arguments for the constructor.
      * @returns The instance with registered lifecycle methods.
      */
-    const wrappedConstructor: T = function (...args: unknown[]) {
-        return construct(original, args) as T;
-    } as unknown as T;
+    const wrappedConstructor = function (...args: unknown[]) {
+        return construct(original, args);
+    };
 
     // Transfer prototype
     wrappedConstructor.prototype = original.prototype;
 
     // Copy static methods and properties
-    copyStaticProperties(wrappedConstructor, original);
-
-    return wrappedConstructor as T;
+    return copyStaticProperties(wrappedConstructor, original);
 }
