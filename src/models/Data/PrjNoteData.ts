@@ -1,6 +1,7 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
+import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjNote } from './interfaces/IPrjNote';
@@ -24,6 +25,22 @@ export default class PrjNoteData
     private _date: string | null | undefined;
 
     static yamlKeyMap: YamlKeyMap | undefined = {};
+
+    /**
+     * @inheritdoc
+     * @remarks The default value is `Note`.
+     */
+    @fieldConfig('Note')
+    get type(): IFileType | null | undefined {
+        return super.type;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    set type(value: unknown) {
+        super.type = value;
+    }
 
     /**
      * @inheritdoc
