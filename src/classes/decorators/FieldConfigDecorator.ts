@@ -43,7 +43,8 @@ export function fieldConfig(defaultValue?: unknown) {
         // Check if the target is an object guard the optional `FieldConfigSymbol` property.
         if (
             !target ||
-            target !== Object ||
+            typeof target !== 'object' ||
+            !(target instanceof Object) ||
             !isIFieldConfig_(target.constructor)
         ) {
             throw new Error(
