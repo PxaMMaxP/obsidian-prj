@@ -14,6 +14,7 @@ export default class PrjProjectData
 {
     /**
      * @inheritdoc
+     * @remarks The default value is `Project`.
      */
     @fieldConfig('Project')
     get type(): IFileType | null | undefined {
