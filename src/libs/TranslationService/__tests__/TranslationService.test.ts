@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import MockLogger from 'src/__mocks__/ILogger.mock';
+import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
 import { DEFAULT_SETTINGS, IPrjSettings } from 'src/types/PrjSettings';
+import { DIContainer } from '../../DependencyInjection/DIContainer';
 import ILanguageTranslations from '../interfaces/ILanguageTranslations';
 import { TranslationService } from '../TranslationService';
 
@@ -28,12 +29,11 @@ const mockSettings: IPrjSettings = { ...DEFAULT_SETTINGS, language: 'en' };
 describe('TranslationService', () => {
     let translationService: TranslationService;
 
+    DIContainer.getInstance().register('ILogger_', MockLogger_);
+    DIContainer.getInstance().register('IPrjSettings', mockSettings);
+
     beforeEach(() => {
-        translationService = new TranslationService(
-            mockTranslations,
-            mockSettings,
-            MockLogger,
-        );
+        translationService = new TranslationService(mockTranslations);
     });
 
     it('should return the correct translation for a given key', () => {
@@ -97,10 +97,10 @@ describe('TranslationService', () => {
 
     describe('without a logger', () => {
         beforeEach(() => {
-            translationService = new TranslationService(
-                mockTranslations,
-                mockSettings,
-            );
+            DIContainer.getInstance().register('ILogger_', null);
+            DIContainer.getInstance().register('IPrjSettings', mockSettings);
+
+            translationService = new TranslationService(mockTranslations);
         });
 
         it('should return the correct translation for a given key', () => {
