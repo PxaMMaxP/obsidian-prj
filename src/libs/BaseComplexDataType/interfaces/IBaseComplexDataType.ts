@@ -1,7 +1,9 @@
-export const IBaseComplexDataTypeSymbol = Symbol('IBaseComplexDataType');
+export const IBaseComplexDataTypeSymbol: unique symbol = Symbol(
+    'IBaseComplexDataType',
+);
 
 export interface IBaseComplexDataType {
-    [IBaseComplexDataTypeSymbol]: boolean;
+    readonly [IBaseComplexDataTypeSymbol]: NonNullable<boolean>;
     /**
      * Gets a frontmatter compatible object.
      */
