@@ -1,14 +1,33 @@
 import { LoggingLevel } from 'src/classes/Logging';
 
+/**
+ * Static interface for {@link ILogger}.
+ */
 export interface ILogger_ {
-    new (logLevel?: LoggingLevel, logPrefix?: string): ILogger;
+    /**
+     * Gets the singleton instance of the Logging class.
+     */
+    new (
+        logLevel?: LoggingLevel | string | undefined,
+        logPrefix?: string,
+    ): ILogger;
+    /**
+     * Returns an object with logging methods that prepend
+     * a specified prefix to messages.
+     * @param prefix The prefix to prepend to all log messages.
+     */
     getLogger(prefix: string): ILogger;
+    /**
+     * Gets the singleton instance of the Logging class.
+     */
     getInstance(): ILogger;
 }
 
 /**
  * Interface for the logger.
- * @remarks You can attach your own logger or `console` as logger.
+ * @see {@link ILogger_}
+ * @remarks You can attach your own logger
+ * or `console` as logger => `ILogger` is a wrapper for `console`.
  */
 export interface ILogger {
     /**
@@ -50,5 +69,10 @@ export interface ILogger {
      * Sets the log level
      * @param logLevel The log level to set
      */
-    setLogLevel(logLevel: LoggingLevel): void;
+    setLogLevel?(logLevel: LoggingLevel | string | undefined): void;
+
+    /**
+     * Sets the log prefix.
+     */
+    setLogPrefix?(value: string): void;
 }
