@@ -1,7 +1,10 @@
 import { App } from 'obsidian';
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import Prj from 'src/main';
-import { IPrjSettings } from 'src/types/PrjSettings';
-import { Logging, LoggingLevel } from './Logging';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import MetadataCache from '../libs/MetadataCache';
 
 /**
@@ -9,46 +12,51 @@ import MetadataCache from '../libs/MetadataCache';
  */
 export default class Global {
     static instance: Global;
+
+    @Inject('Prj')
     plugin: Prj;
+
+    @Inject('App')
     app: App;
-    metadataCache: MetadataCache;
+
+    @Inject('IMetadataCache')
+    metadataCache: IMetadataCache;
+
+    @Inject('IPrjSettings')
     settings: IPrjSettings;
-    private _logger = Logging.getLogger('Global');
+
+    @Inject(
+        'ILogger_',
+        (x: ILogger_) =>
+            new x(
+                DIContainer.getInstance().resolve<IPrjSettings>(
+                    'IPrjSettings',
+                    false,
+                )?.logLevel,
+                'Prj',
+            ),
+        false,
+    )
+    private _logger?: ILogger;
 
     /**
-     * Creates a new instance of the Global class.
-     * @param prj - The Prj instance.
-     * @param app - The Obsidian App instance.
-     * @param settings - The plugin settings.
+     * Creates a singleton instance of the Global class.
      */
-    constructor(prj: Prj, app: App, settings: IPrjSettings) {
+    constructor() {
         if (Global.instance) {
             return Global.instance;
         }
-        this.plugin = prj;
-
-        // Obsidian App
-        this.app = app;
-
-        // Settings
-        this.settings = settings;
-
-        new Logging(this.settings.logLevel as LoggingLevel, 'Prj');
-
         // Singleton; before creating the cache instances, because they need the app instance
         Global.instance = this;
-
-        // Metadata cache
-        this.metadataCache = MetadataCache.getInstance();
     }
 
     /**
      * Waits for the cache to be initialized.
      */
     public async awaitCacheInitialization() {
-        this._logger.debug('Waiting for cache initialization');
+        this._logger?.debug('Waiting for cache initialization');
         await this.metadataCache.waitForCacheReady();
-        this._logger.debug('Cache initialized');
+        this._logger?.debug('Cache initialized');
     }
 
     /**
@@ -68,17 +76,12 @@ export default class Global {
      * @throws Error if the global instance is not initialized and no app is provided.
      */
     static getInstance(
-        prj: Prj | null = null,
-        app: App | null = null,
-        settings: IPrjSettings | null = null,
+        prj?: Prj | null,
+        app?: App | null,
+        settings?: IPrjSettings | null,
     ): Global {
         if (!Global.instance) {
-            if (!prj || !app || !settings) {
-                throw new Error(
-                    'Global instance not initialized and no app provided',
-                );
-            }
-            Global.instance = new Global(prj, app, settings);
+            Global.instance = new Global();
         }
 
         return Global.instance;
