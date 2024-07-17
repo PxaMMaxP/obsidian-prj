@@ -17,26 +17,26 @@ export default abstract class BaseComponent {
     public get container(): HTMLDivElement {
         return this._shippingContainer;
     }
-    protected component: Component;
+    protected _component: Component;
     public thenCallback: ((container: HTMLDivElement) => void) | undefined;
 
     /**
      * If `true`, the component will be created to allow editing.
      * @remarks Create a configuration option for this property in the child class.
      */
-    protected abstract editabilityEnabled: boolean;
+    protected abstract _editabilityEnabled: boolean;
     //#region HTML Elements
     private _shippingContainer: HTMLDivElement;
     /**
      * The container that holds the input elements.
      * @remarks Has the CSS classes `editable-data-view` & `data-input-container`.
      */
-    protected dataInputContainer: HTMLElement;
+    protected _dataInputContainer: HTMLElement;
     /**
      * The container that holds the elements which show the data in `not-edit` mode.
      * @remarks Has the CSS classes `editable-data-view` & `presentation-container`.
      */
-    protected presentationContainer: HTMLElement;
+    protected _presentationContainer: HTMLElement;
     private _buttonContainer: HTMLElement;
     private _editButton: HTMLButtonElement;
     private _cancelButton: HTMLButtonElement | undefined = undefined;
@@ -82,7 +82,7 @@ export default abstract class BaseComponent {
      * @param component The component that should be created.
      */
     constructor(component: Component) {
-        this.component = component;
+        this._component = component;
         this._shippingContainer = document.createElement('div');
 
         this._shippingContainer.classList.add(
@@ -97,15 +97,15 @@ export default abstract class BaseComponent {
      * @tutorial Run this methode in the `finalize`-methode of the child class before creating your elements.
      */
     protected createBaseStructure(
-        editabilityEnabled: boolean = this.editabilityEnabled,
+        editabilityEnabled: boolean = this._editabilityEnabled,
     ): void {
-        this.presentationContainer = document.createElement('div');
+        this._presentationContainer = document.createElement('div');
 
-        this.presentationContainer.classList.add(
+        this._presentationContainer.classList.add(
             'editable-data-view',
             'presentation-container',
         );
-        this._shippingContainer.appendChild(this.presentationContainer);
+        this._shippingContainer.appendChild(this._presentationContainer);
 
         if (
             editabilityEnabled &&
@@ -132,7 +132,7 @@ export default abstract class BaseComponent {
         this._editButton.classList.add('button');
         setIcon(this._editButton, 'pen');
 
-        this.component.registerDomEvent(this._editButton, 'click', () =>
+        this._component.registerDomEvent(this._editButton, 'click', () =>
             this.enableEditMode(),
         );
     }
@@ -141,17 +141,17 @@ export default abstract class BaseComponent {
      * Creates the `save` and `cancel` buttons and the `input` container and adds them to the `buttonContainer`.
      */
     private createComponentsForEdit(): void {
-        this.dataInputContainer = document.createElement('div');
+        this._dataInputContainer = document.createElement('div');
 
-        this.dataInputContainer.classList.add(
+        this._dataInputContainer.classList.add(
             'editable-data-view',
             'data-input-container',
             'hidden',
         );
 
         this._shippingContainer.insertBefore(
-            this.dataInputContainer,
-            this.presentationContainer,
+            this._dataInputContainer,
+            this._presentationContainer,
         );
 
         this._cancelButton = document.createElement('button');
@@ -161,7 +161,7 @@ export default abstract class BaseComponent {
         this._cancelButton.classList.add('hidden');
         setIcon(this._cancelButton, 'x');
 
-        this.component.registerDomEvent(this._cancelButton, 'click', () =>
+        this._component.registerDomEvent(this._cancelButton, 'click', () =>
             this.disableEditMode(),
         );
 
@@ -172,7 +172,7 @@ export default abstract class BaseComponent {
         this._saveButton.classList.add('hidden');
         setIcon(this._saveButton, 'check');
 
-        this.component.registerDomEvent(this._saveButton, 'click', () =>
+        this._component.registerDomEvent(this._saveButton, 'click', () =>
             this.saveChanges(),
         );
     }
@@ -200,8 +200,8 @@ export default abstract class BaseComponent {
 
         // Switch mode to Edit: hide the `edit` button and show the `save` and `cancel` buttons.
         if (this._cancelButton && this._saveButton) {
-            this.presentationContainer.classList.add('hidden');
-            this.dataInputContainer.classList.remove('hidden');
+            this._presentationContainer.classList.add('hidden');
+            this._dataInputContainer.classList.remove('hidden');
             this._cancelButton.classList.remove('hidden');
             this._saveButton.classList.remove('hidden');
             this._editButton.classList.add('hidden');
@@ -217,8 +217,8 @@ export default abstract class BaseComponent {
     protected disableEditMode(): void {
         // Switch mode to View: hide the `save` and `cancel` buttons and show the `edit` button.
         if (this._cancelButton && this._saveButton) {
-            this.presentationContainer.classList.remove('hidden');
-            this.dataInputContainer.classList.add('hidden');
+            this._presentationContainer.classList.remove('hidden');
+            this._dataInputContainer.classList.add('hidden');
             this._cancelButton.classList.add('hidden');
             this._saveButton.classList.add('hidden');
             this._editButton.classList.remove('hidden');

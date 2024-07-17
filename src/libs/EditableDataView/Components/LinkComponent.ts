@@ -6,7 +6,7 @@ import BaseComponent from './BaseComponent';
  */
 export default class LinkComponent extends BaseComponent {
     //#region base properties
-    protected editabilityEnabled = false;
+    protected _editabilityEnabled = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -49,7 +49,7 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this.editabilityEnabled = true;
+        this._editabilityEnabled = true;
 
         return this;
     }
@@ -206,7 +206,7 @@ export default class LinkComponent extends BaseComponent {
      */
     private build() {
         this._link = document.createElement('a');
-        this.presentationContainer.appendChild(this._link);
+        this._presentationContainer.appendChild(this._link);
 
         this._link.title = this._title;
         this._link.classList.add('editable-data-view');
@@ -237,7 +237,7 @@ export default class LinkComponent extends BaseComponent {
     private buildInput() {
         this._label = document.createElement('label');
         this._label.title = this._title;
-        this.dataInputContainer.appendChild(this._label);
+        this._dataInputContainer.appendChild(this._label);
         this._label.classList.add('editable-data-view');
         this._label.classList.add('text-input-sizer');
 
@@ -247,7 +247,7 @@ export default class LinkComponent extends BaseComponent {
         this._input.classList.add('text-input');
         this._input.placeholder = this._placeholder ? this._placeholder : '';
 
-        this.component.registerDomEvent(this._input, 'input', () => {
+        this._component.registerDomEvent(this._input, 'input', () => {
             this._label.dataset.value = this._input.value
                 ? this._input.value
                 : this._placeholder
@@ -262,7 +262,7 @@ export default class LinkComponent extends BaseComponent {
                 this.setSuggestionsList(this._suggester(this._input.value));
         });
 
-        this.component.registerDomEvent(
+        this._component.registerDomEvent(
             this._input,
             'keydown',
             (event: KeyboardEvent) => {

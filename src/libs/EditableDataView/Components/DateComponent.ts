@@ -6,7 +6,7 @@ import BaseComponent from './BaseComponent';
  */
 export default class DateComponent extends BaseComponent {
     //#region base properties
-    protected editabilityEnabled = false;
+    protected _editabilityEnabled = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -43,7 +43,7 @@ export default class DateComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability(): DateComponent {
-        this.editabilityEnabled = true;
+        this._editabilityEnabled = true;
 
         return this;
     }
@@ -101,7 +101,7 @@ export default class DateComponent extends BaseComponent {
      */
     private build() {
         this._presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this._presentationSpan);
+        this._presentationContainer.appendChild(this._presentationSpan);
 
         this._presentationSpan.title = this._title;
         this._presentationSpan.classList.add('editable-data-view');
@@ -117,7 +117,7 @@ export default class DateComponent extends BaseComponent {
      */
     private buildInput() {
         this._input = document.createElement('input');
-        this.dataInputContainer.appendChild(this._input);
+        this._dataInputContainer.appendChild(this._input);
         this._input.type = 'date';
         this._input.title = this._title;
         this._input.classList.add('editable-data-view');

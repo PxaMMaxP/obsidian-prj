@@ -144,7 +144,7 @@ export class FileModel<
             this._logger?.trace('Creating empty object');
             const emptyObject = new this._ctor();
             // Save the default values to the changes object in `TransactionModel`
-            this.changes = emptyObject.defaultData;
+            this._changes = emptyObject.defaultData;
             this._dataProxy = this._proxyHandler?.createProxy(emptyObject) as T;
 
             return this._dataProxy;

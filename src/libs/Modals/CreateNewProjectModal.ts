@@ -49,7 +49,7 @@ export default class CreateNewProjectModal extends CreateNewTaskManagementModal 
         };
 
         const taskSubTypes =
-            this.global.plugin.settings.prjSettings.subProjectTemplates?.map(
+            this._global.plugin.settings.prjSettings.subProjectTemplates?.map(
                 (value) => ({ value: value.template, label: value.label }),
             );
 

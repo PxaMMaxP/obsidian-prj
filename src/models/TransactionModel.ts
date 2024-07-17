@@ -41,14 +41,14 @@ export class TransactionModel<T> {
         return this._writeChangesPromise;
     }
     private _transactionActive = false;
-    protected changes: Partial<T> = {};
+    protected _changes: Partial<T> = {};
     /**
      * A function that writes the changes to the file.
      * @remarks - This function is called when the transaction is finished or without a active transaction immediately.
      * @param update The changes to write.
      * @param previousPromise A promise that resolves when the previous changes are written to the file.
      */
-    protected writeChanges:
+    protected _writeChanges:
         | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
         | undefined;
 
@@ -64,8 +64,8 @@ export class TransactionModel<T> {
      */
     private get changesExisting(): boolean {
         return !(
-            Object.keys(this.changes).length === 0 &&
-            this.changes.constructor === Object
+            Object.keys(this._changes).length === 0 &&
+            this._changes.constructor === Object
         );
     }
 
@@ -91,7 +91,7 @@ export class TransactionModel<T> {
         this.updateKeyValue = this.updateKeyValue.bind(this);
 
         if (writeChanges) {
-            this.writeChanges = writeChanges;
+            this._writeChanges = writeChanges;
         } else {
             this.startTransaction();
         }
@@ -108,7 +108,7 @@ export class TransactionModel<T> {
             previousPromise?: Promise<void>,
         ) => Promise<void>,
     ) {
-        this.writeChanges = writeChanges;
+        this._writeChanges = writeChanges;
 
         if (this.isTransactionActive) {
             if (this.changesExisting) {
@@ -130,15 +130,15 @@ export class TransactionModel<T> {
      * - If the `writeChanges` function is not called, the `changes` property is not changed and the `_writeChangesPromise` property is set to itself or `undefined`.
      */
     private callWriteChanges(
-        update: T = this.changes as T,
+        update: T = this._changes as T,
     ): WriteChangesReturnType {
         const writeChanges: WriteChangesReturnType = {
             promise: undefined,
             writeTriggered: false,
         };
 
-        if (this.writeChanges) {
-            const promise = this.writeChanges(
+        if (this._writeChanges) {
+            const promise = this._writeChanges(
                 update,
                 this._writeChangesPromise,
             );
@@ -161,7 +161,7 @@ export class TransactionModel<T> {
         }
 
         // Reset changes if writeChanges was called
-        this.changes = writeChanges.writeTriggered ? {} : this.changes;
+        this._changes = writeChanges.writeTriggered ? {} : this._changes;
 
         // Set the promise if writeChanges was called and the promise is available.
         this._writeChangesPromise = writeChanges.promise
@@ -213,12 +213,12 @@ export class TransactionModel<T> {
             this._logger?.warn('No transaction active');
 
             return;
-        } else if (!this.writeChanges) {
+        } else if (!this._writeChanges) {
             this._logger?.warn('No `writeChanges` function available');
 
             return;
         }
-        this.changes = {};
+        this._changes = {};
         this._transactionActive = false;
     }
 
@@ -230,7 +230,7 @@ export class TransactionModel<T> {
      */
     protected updateKeyValue(key: string, value: unknown): void {
         const keys = key.split('.');
-        let current = this.changes as Record<string, unknown>;
+        let current = this._changes as Record<string, unknown>;
 
         keys.forEach((k, index) => {
             if (index === keys.length - 1) {

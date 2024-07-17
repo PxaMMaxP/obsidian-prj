@@ -24,25 +24,25 @@ export default abstract class TableBlockRenderComponent<
 > implements RedrawableBlockRenderComponent
 {
     //#region General properties
-    protected global: Global;
-    protected globalSettings: IPrjSettings;
-    protected logger: ILogger;
-    protected metadataCache: MetadataCache;
+    protected _global: Global;
+    protected _globalSettings: IPrjSettings;
+    protected _logger: ILogger;
+    protected _metadataCache: MetadataCache;
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
-    protected processorSettings: IProcessorSettings;
-    protected component: Component;
-    protected settings: BlockRenderSettings;
+    protected _processorSettings: IProcessorSettings;
+    protected _component: Component;
+    protected _settings: BlockRenderSettings;
     //#endregion
     //#region Models
-    protected models: T[];
+    protected _models: T[];
     //#endregion
     //#region HTML properties
-    protected table: Table;
-    protected tableHeaders: TableHeader[];
-    protected headerContainer: HTMLElement;
-    protected tableContainer: HTMLElement;
+    protected _table: Table;
+    protected _tableHeaders: TableHeader[];
+    protected _headerContainer: HTMLElement;
+    protected _tableContainer: HTMLElement;
     //#endregion
 
     /**
@@ -52,13 +52,13 @@ export default abstract class TableBlockRenderComponent<
      */
     constructor(settings: IProcessorSettings, logger?: ILogger) {
         // General properties
-        this.logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
-        this.global = Global.getInstance();
-        this.globalSettings = this.global.settings;
-        this.metadataCache = this.global.metadataCache;
+        this._logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
+        this._global = Global.getInstance();
+        this._globalSettings = this._global.settings;
+        this._metadataCache = this._global.metadataCache;
 
-        this.processorSettings = settings;
-        this.component = settings.component;
+        this._processorSettings = settings;
+        this._component = settings.component;
         this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
         //this.parseSettings();
     }
@@ -81,13 +81,13 @@ export default abstract class TableBlockRenderComponent<
      */
     protected async draw(): Promise<void> {
         //Create header container
-        this.headerContainer = document.createElement('div');
-        this.processorSettings.container.appendChild(this.headerContainer);
-        this.headerContainer.classList.add('header-container');
+        this._headerContainer = document.createElement('div');
+        this._processorSettings.container.appendChild(this._headerContainer);
+        this._headerContainer.classList.add('header-container');
 
         //Create controle block
         const blockControle = document.createElement('div');
-        this.headerContainer.appendChild(blockControle);
+        this._headerContainer.appendChild(blockControle);
         blockControle.classList.add('block-controle');
 
         //Create refresh Button
@@ -98,7 +98,7 @@ export default abstract class TableBlockRenderComponent<
         refreshButton.href = '#';
         setIcon(refreshButton, 'refresh-cw');
 
-        this.component.registerDomEvent(
+        this._component.registerDomEvent(
             refreshButton,
             'click',
             async (event: MouseEvent) => {
@@ -107,9 +107,9 @@ export default abstract class TableBlockRenderComponent<
             },
         );
 
-        this.tableContainer = document.createElement('div');
-        this.processorSettings.container.appendChild(this.tableContainer);
-        this.tableContainer.classList.add('table-container');
+        this._tableContainer = document.createElement('div');
+        this._processorSettings.container.appendChild(this._tableContainer);
+        this._tableContainer.classList.add('table-container');
     }
 
     /**
@@ -118,7 +118,7 @@ export default abstract class TableBlockRenderComponent<
      * @remarks This methode clears the container and calls the `draw` methode.
      */
     public async redraw(): Promise<void> {
-        this.processorSettings.container.innerHTML = '';
+        this._processorSettings.container.innerHTML = '';
 
         return this.draw();
     }
@@ -129,7 +129,7 @@ export default abstract class TableBlockRenderComponent<
      * - The header is not grayed out anymore.
      */
     protected normalizeHeader() {
-        this.headerContainer.removeClass('disable');
+        this._headerContainer.removeClass('disable');
     }
 
     /**
@@ -138,7 +138,7 @@ export default abstract class TableBlockRenderComponent<
      * - The header is grayed out.
      */
     protected grayOutHeader() {
-        this.headerContainer.addClass('disable');
+        this._headerContainer.addClass('disable');
     }
 
     /**
@@ -153,39 +153,39 @@ export default abstract class TableBlockRenderComponent<
      * All values that are in the array are shown.
      */
     protected parseSettings(): void {
-        this.processorSettings.options.forEach((option) => {
+        this._processorSettings.options.forEach((option) => {
             switch (option.label) {
                 case 'tags':
                     if (option.value === 'all') {
-                        this.settings.tags = [];
+                        this._settings.tags = [];
                     } else if (option.value === 'this') {
-                        const tags = this.processorSettings?.frontmatter?.tags;
+                        const tags = this._processorSettings?.frontmatter?.tags;
 
                         if (Array.isArray(tags)) {
-                            this.settings.tags.push(...tags);
+                            this._settings.tags.push(...tags);
                         } else if (tags) {
-                            this.settings.tags.push(tags);
+                            this._settings.tags.push(tags);
                         } else {
-                            this.settings.tags = ['NOTAGSNODATA'];
+                            this._settings.tags = ['NOTAGSNODATA'];
                         }
                     } else if (option.value === 'activeFile') {
                         // Register event to update the tags when the active file changes
-                        this.component.registerEvent(
-                            this.global.app.workspace.on(
+                        this._component.registerEvent(
+                            this._global.app.workspace.on(
                                 'active-leaf-change',
                                 () => this.onActiveFileChange.bind(this)(),
                             ),
                         );
-                        this.settings.reactOnActiveFile = true;
+                        this._settings.reactOnActiveFile = true;
                     } else {
-                        this.settings.tags = option.value;
+                        this._settings.tags = option.value;
                     }
                     break;
                 case 'maxDocuments':
-                    this.settings.maxDocuments = option.value;
+                    this._settings.maxDocuments = option.value;
                     break;
                 case 'filter':
-                    this.settings.filter = option.value;
+                    this._settings.filter = option.value;
                     break;
                 default:
                     break;
@@ -200,13 +200,13 @@ export default abstract class TableBlockRenderComponent<
      * @private
      */
     private onActiveFileChange(): void {
-        const activeFile = this.global.app.workspace.getActiveFile();
+        const activeFile = this._global.app.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
-            this.logger?.trace('Active file changed: ', activeFile.path);
+            this._logger?.trace('Active file changed: ', activeFile.path);
 
             const tags =
-                this.metadataCache.getEntry(activeFile)?.metadata?.frontmatter
+                this._metadataCache.getEntry(activeFile)?.metadata?.frontmatter
                     ?.tags;
             let newTags: string[] = [];
 
@@ -235,8 +235,8 @@ export default abstract class TableBlockRenderComponent<
                 return false;
             };
 
-            if (areTagsDifferent(newTags, this.settings.tags)) {
-                this.settings.tags = newTags;
+            if (areTagsDifferent(newTags, this._settings.tags)) {
+                this._settings.tags = newTags;
                 this.onActiveFileDebounce();
             }
         }
@@ -246,7 +246,7 @@ export default abstract class TableBlockRenderComponent<
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this.logger?.trace('Active file changed: Debouncing');
+        this._logger?.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
         this._activeFileDebounceTimer = setTimeout(async () => {
@@ -280,19 +280,19 @@ export default abstract class TableBlockRenderComponent<
         tags: string[],
         modelFactory: (metadata: FileMetadata) => T | undefined,
     ): Promise<T[]> {
-        const templateFolder = this.global.settings.templateFolder;
+        const templateFolder = this._global.settings.templateFolder;
 
         // Create an instance of the Tags class for the provided tags
         const filterTags = new Tags(tags);
 
-        const allDocumentFiles = this.metadataCache.cache.filter((file) => {
+        const allDocumentFiles = this._metadataCache.cache.filter((file) => {
             const typeFilter = FileType.isValidOf(
                 file.metadata.frontmatter?.type,
                 types,
             );
 
             const thisFileAndTemplateFilter =
-                file.file.path !== this.processorSettings.source &&
+                file.file.path !== this._processorSettings.source &&
                 !file.file.path.startsWith(templateFolder);
 
             if (tags.length > 0) {
@@ -332,18 +332,18 @@ export default abstract class TableBlockRenderComponent<
     ): Promise<string> {
         if (key === 'Enter') {
             if (searchQuery !== '') {
-                this.settings.searchText = searchQuery;
-                this.settings.search = new Search(searchQuery);
-                this.settings.search.parse();
+                this._settings.searchText = searchQuery;
+                this._settings.search = new Search(searchQuery);
+                this._settings.search.parse();
                 this.onFilter();
             } else {
-                this.settings.searchText = undefined;
-                this.settings.search = undefined;
+                this._settings.searchText = undefined;
+                this._settings.search = undefined;
                 this.onFilter();
             }
         } else if (key === 'Escape') {
-            this.settings.searchText = undefined;
-            this.settings.search = undefined;
+            this._settings.searchText = undefined;
+            this._settings.search = undefined;
             this.onFilter();
 
             return '';
@@ -360,29 +360,29 @@ export default abstract class TableBlockRenderComponent<
      */
     protected async onFilter() {
         this.grayOutHeader();
-        const batchSize = this.settings.batchSize;
-        const sleepBetweenBatches = this.settings.sleepBetweenBatches;
+        const batchSize = this._settings.batchSize;
+        const sleepBetweenBatches = this._settings.sleepBetweenBatches;
         let sleepPromise = Promise.resolve();
-        const documentsLength = this.models.length;
+        const documentsLength = this._models.length;
         const rows: RowsState[] = [];
         let visibleRows = 0;
 
         for (let i = 0; i < documentsLength; i++) {
-            const document = this.models[i];
+            const document = this._models[i];
 
             const rowUid = this.getUID(document);
             let hide = this.getHideState(document, undefined);
-            this.logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);
+            this._logger?.trace(`Model ${rowUid} is hidden by state: ${hide}`);
 
-            this.logger?.trace(
-                `Visible rows: ${visibleRows}; Max shown Models: ${this.settings.maxDocuments}`,
+            this._logger?.trace(
+                `Visible rows: ${visibleRows}; Max shown Models: ${this._settings.maxDocuments}`,
             );
 
-            if (visibleRows >= this.settings.maxDocuments) {
+            if (visibleRows >= this._settings.maxDocuments) {
                 hide = true;
             }
 
-            this.logger?.trace(
+            this._logger?.trace(
                 `Model ${rowUid} is hidden by max counts: ${hide}`,
             );
 
@@ -396,10 +396,10 @@ export default abstract class TableBlockRenderComponent<
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
 
-                this.logger?.trace(
+                this._logger?.trace(
                     `Batchsize reached. Change rows: ${rows.length}`,
                 );
-                await this.table.changeShowHideStateRows(rows);
+                await this._table.changeShowHideStateRows(rows);
                 rows.length = 0;
                 sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }

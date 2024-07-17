@@ -6,7 +6,7 @@ import BaseComponent from './BaseComponent';
  */
 export default class DropdownComponent extends BaseComponent {
     //#region base properties
-    protected editabilityEnabled = false;
+    protected _editabilityEnabled = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -56,7 +56,7 @@ export default class DropdownComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this.editabilityEnabled = true;
+        this._editabilityEnabled = true;
 
         return this;
     }
@@ -170,7 +170,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     private build() {
         this._presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this._presentationSpan);
+        this._presentationContainer.appendChild(this._presentationSpan);
 
         this._presentationSpan.title = this._title;
         this._presentationSpan.classList.add('editable-data-view');
@@ -184,7 +184,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     private buildInput() {
         this._select = document.createElement('select');
-        this.dataInputContainer.appendChild(this._select);
+        this._dataInputContainer.appendChild(this._select);
         this._select.title = this._title;
         this._select.classList.add('editable-data-view');
         this._select.classList.add('select-input');
