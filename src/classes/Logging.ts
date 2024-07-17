@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import { ImplementsStatic } from './decorators/ImplementsStatic';
 
 /**
  * Enum representing logging levels as numeric values.
@@ -27,10 +29,22 @@ export type LoggingLevel =
 /**
  * Logging class; encapsulates console.log, console.debug, console.warn and console.error.
  */
-export const Logging: ILogger_ = class Logging implements ILogger {
+@ImplementsStatic<ILogger_>()
+@Register('ILogger_')
+export class Logging implements ILogger {
     private static _instance: Logging;
     private _logLevel: LoggingLevelNumber;
+
     private _logPrefix: string;
+
+    /**
+     * Sets the log prefix.
+     * @param value The value to set.
+     */
+    public setLogPrefix(value: string): void {
+        this._logPrefix = value;
+    }
+
     /**
      * Gets the default log level.
      */
@@ -45,25 +59,29 @@ export const Logging: ILogger_ = class Logging implements ILogger {
     public error: (...args: unknown[]) => void;
 
     /**
-     * Creates a new Logging instance.
+     * Gets the singleton instance of the Logging class.
      * @param logLevel The log level to use. Defaults to "info".
      * @param logPrefix The prefix to prepend to log messages.
      */
-    constructor(logLevel?: LoggingLevel, logPrefix = '') {
+    constructor(logLevel?: LoggingLevel | string | undefined, logPrefix = '') {
+        if (Logging._instance) {
+            return Logging._instance;
+        }
+        Logging._instance = this;
+
         this._logPrefix = logPrefix ? `${logPrefix}-` : '';
         this.setLogLevel(logLevel);
 
         if (this._logLevel === LoggingLevelNumber.none) {
             console.info('Logging disabled');
         }
-        Logging._instance = this;
     }
 
     /**
      * Sets the log level and assigns the appropriate logging methods.
      * @param logLevel The log level to set.
      */
-    public setLogLevel(logLevel: LoggingLevel | undefined) {
+    public setLogLevel(logLevel: LoggingLevel | string | undefined) {
         this._setLogLevel(this.parseLoggingLevel(logLevel));
     }
 
@@ -99,8 +117,8 @@ export const Logging: ILogger_ = class Logging implements ILogger {
     }
 
     /**
-     * Returns the Logging instance.
-     * @returns The Logging instance.
+     * Gets the singleton instance of the Logging class.
+     * @returns The Logging singleton instance.
      */
     public static getInstance(): Logging {
         if (!Logging._instance) {
@@ -171,14 +189,6 @@ export const Logging: ILogger_ = class Logging implements ILogger {
              */
             error: (...args: unknown[]): void =>
                 instance.error(prefix, ...args),
-            /**
-             * Sets the log level
-             * @param logLevel The log level to set
-             * @throws Error: Method in individual loggers not implemented
-             */
-            setLogLevel: (logLevel: LoggingLevel): void => {
-                throw new Error('Method in individual loggers not implemented');
-            },
         };
     }
 
@@ -284,4 +294,4 @@ export const Logging: ILogger_ = class Logging implements ILogger {
                 return Logging._defaultLogLevel;
         }
     }
-};
+}
