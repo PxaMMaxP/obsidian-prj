@@ -3,9 +3,9 @@ import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import ProjectData from 'src/models/Data/ProjectData';
-import TaskData from 'src/models/Data/TaskData';
-import TopicData from 'src/models/Data/TopicData';
+import PrjProjectData from 'src/models/Data/PrjProjectData';
+import PrjTaskData from 'src/models/Data/PrjTaskData';
+import PrjTopicData from 'src/models/Data/PrjTopicData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
@@ -59,7 +59,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
     public async evaluateForm(
         result: IFormResult,
     ): Promise<
-        PrjTaskManagementModel<TaskData | TopicData | ProjectData> | undefined
+        | PrjTaskManagementModel<PrjTaskData | PrjTopicData | PrjProjectData>
+        | undefined
     > {
         if (result.status !== 'ok' || !result.data) return;
 
@@ -77,16 +78,18 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 return;
             })();
 
-        let model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>;
+        let model: PrjTaskManagementModel<
+            PrjTaskData | PrjTopicData | PrjProjectData
+        >;
         let modelFolderPath = '';
         let templateFilePath: string | undefined;
         let subTemplatePath: string | undefined;
 
         switch (result.data.type) {
             case 'Topic':
-                model = new PrjTaskManagementModel<TopicData>(
+                model = new PrjTaskManagementModel<PrjTopicData>(
                     undefined,
-                    TopicData,
+                    PrjTopicData,
                 );
 
                 templateFilePath =
@@ -94,9 +97,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 modelFolderPath = this.global.settings.prjSettings.topicFolder;
                 break;
             case 'Project':
-                model = new PrjTaskManagementModel<ProjectData>(
+                model = new PrjTaskManagementModel<PrjProjectData>(
                     undefined,
-                    ProjectData,
+                    PrjProjectData,
                 );
 
                 templateFilePath =
@@ -111,9 +114,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 delete result.data.subtype;
                 break;
             case 'Task':
-                model = new PrjTaskManagementModel<TaskData>(
+                model = new PrjTaskManagementModel<PrjTaskData>(
                     undefined,
-                    TaskData,
+                    PrjTaskData,
                 );
 
                 templateFilePath =

@@ -3,7 +3,7 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import DocumentData from 'src/models/Data/DocumentData';
+import { IPrjDocument } from 'src/models/Data/interfaces/IPrjDocument';
 import { DocumentModel } from 'src/models/DocumentModel';
 import {
     Field,
@@ -62,7 +62,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      * @returns Result of the form
      */
     public async openForm(
-        preset?: Partial<DocumentData>,
+        preset?: Partial<IPrjDocument>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
         this.logger.trace("Opening 'CreateNewMetadataModal' form");
@@ -131,7 +131,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             ? document.setLinkedFile(linkedFile, folder)
             : undefined;
 
-        document.data = result.data as Partial<DocumentData>;
+        document.data = result.data as Partial<IPrjDocument>;
 
         if (!existingFile) {
             // No existing file, create a new one

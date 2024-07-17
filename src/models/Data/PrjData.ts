@@ -1,36 +1,35 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IFileType, IFileType_ } from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
-import BaseData from './BaseData';
 import { IPrjData, IPrjData_ } from './interfaces/IPrjData';
+import PrjBaseData from './PrjBaseData';
 
 /**
  * Represents a project data.
  */
 @ImplementsStatic<IPrjData_<unknown>>()
-export class PrjData<T> extends BaseData<T> implements IPrjData {
+export class PrjData<T> extends PrjBaseData<T> implements IPrjData {
     /**
      * @inheritdoc
      */
     protected initializeDependencies(): void {
-        this._ITags = this._dependencies.resolve<ITags_>('ITags_');
-        this._IFileType = this._dependencies.resolve<IFileType_>('IFileType_');
+        /** empty */
     }
 
-    protected _IFileType!: IFileType_;
-    protected _ITags!: ITags_;
+    protected _IFileType: IFileType_ =
+        this._dependencies.resolve<IFileType_>('IFileType_');
+    protected _ITags: ITags_ = this._dependencies.resolve<ITags_>('ITags_');
 
-    private _type: IFileType | null | undefined;
-    private _subType: FileSubType | null | undefined;
-    private _tags: ITags | null | undefined;
-    private _title: string | null | undefined;
-    private _description: string | null | undefined;
+    protected _type: IFileType | null | undefined;
+    protected _subType: FileSubType | null | undefined;
+    protected _tags: ITags | null | undefined;
+    protected _title: string | null | undefined;
+    protected _description: string | null | undefined;
 
     static yamlKeyMap: YamlKeyMap | undefined = {};
 

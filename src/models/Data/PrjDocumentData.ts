@@ -21,20 +21,36 @@ export class PrjDocumentData
         super.initializeDependencies();
     }
 
-    private _date: string | null | undefined;
-    private _sender: string | null | undefined;
-    private _recipient: string | null | undefined;
-    private _dateOfDelivery: string | null | undefined;
-    private _hide: boolean | null | undefined;
-    private _dontChangePdfPath: boolean | null | undefined;
-    private _file: string | null | undefined;
-    private _relatedFiles: string[] | null | undefined;
-    private _citationTitle: string | null | undefined;
-    private _annotationTarget: string | null | undefined;
+    protected _uid: string | null | undefined;
+    protected _date: string | null | undefined;
+    protected _sender: string | null | undefined;
+    protected _recipient: string | null | undefined;
+    protected _dateOfDelivery: string | null | undefined;
+    protected _hide: boolean | null | undefined;
+    protected _dontChangePdfPath: boolean | null | undefined;
+    protected _file: string | null | undefined;
+    protected _relatedFiles: string[] | null | undefined;
+    protected _citationTitle: string | null | undefined;
+    protected _annotationTarget: string | null | undefined;
 
     static yamlKeyMap: YamlKeyMap = {
         annotationTarget: 'annotation-target',
     };
+
+    /**
+     * @inheritdoc
+     */
+    @toStringField
+    @fieldConfig()
+    get uid(): string | null | undefined {
+        return this._uid;
+    }
+    /**
+     * @inheritdoc
+     */
+    set uid(value: string | null | undefined) {
+        this._uid = value;
+    }
 
     /**
      * @inheritdoc

@@ -1,6 +1,9 @@
 import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import { FileSubType } from '../types/PrjTypes';
 
+/**
+ * @deprecated Will be removed in the future.
+ */
 export default interface IPrjDocument {
     type: IFileType | null | undefined;
     subType: FileSubType | null | undefined;

@@ -8,8 +8,8 @@ import { YamlKeyMap } from 'src/types/YamlKeyMap';
 /**
  * An abstract base class that provides common functionality for data classes.
  */
-export default abstract class BaseData<T> {
-    protected _dependencies: IDIContainer;
+export default abstract class PrjBaseData<T> {
+    protected _dependencies: IDIContainer = DIContainer.getInstance();
 
     /**
      * Initializes a new instance of the BaseData class.
@@ -28,7 +28,7 @@ export default abstract class BaseData<T> {
      * @remarks This property should be overridden in
      * derived classes to provide the mapping if necessary.
      */
-    static yamlKeyMap: YamlKeyMap | undefined;
+    public static yamlKeyMap: YamlKeyMap | undefined;
 
     /**
      * Initializes the dependencies of the data class.

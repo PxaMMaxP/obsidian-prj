@@ -6,20 +6,20 @@ import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContain
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Tag } from 'src/libs/Tags/Tag';
 import PrjTypes, { Status } from 'src/types/PrjTypes';
-import BaseData from './Data/BaseData';
 import { IPrjData } from './Data/interfaces/IPrjData';
-import ProjectData from './Data/ProjectData';
-import TaskData from './Data/TaskData';
-import TopicData from './Data/TopicData';
+import { IPrjTaskManagementData } from './Data/interfaces/IPrjTaskManagementData';
+import PrjBaseData from './Data/PrjBaseData';
+import PrjProjectData from './Data/PrjProjectData';
+import PrjTaskData from './Data/PrjTaskData';
+import PrjTopicData from './Data/PrjTopicData';
 import { FileModel } from './FileModel';
-import IPrjModel from '../interfaces/IPrjModel';
-import IPrjTaskManagement from '../interfaces/IPrjTaskManagement';
+import IPrjModel from './interfaces/IPrjModel';
 
 /**
  * Represents a project, task or topic.
  */
 export class PrjTaskManagementModel<
-        T extends IPrjData & IPrjTaskManagement & BaseData<unknown>,
+        T extends IPrjTaskManagementData & PrjBaseData<unknown>,
     >
     extends FileModel<T>
     implements IPrjModel<T>
@@ -109,7 +109,7 @@ export class PrjTaskManagementModel<
     public get urgency(): number {
         return PrjTaskManagementModel.calculateUrgency(
             this as unknown as PrjTaskManagementModel<
-                TaskData | TopicData | ProjectData
+                PrjTaskData | PrjTopicData | PrjProjectData
             >,
         );
     }
@@ -124,7 +124,7 @@ export class PrjTaskManagementModel<
         if (!status) {
             if (this.data.status) status = this.data.status;
             else {
-                this._logger.error('No status aviable to add to history');
+                this._logger?.error('No status aviable to add to history');
 
                 return;
             }
@@ -175,13 +175,13 @@ export class PrjTaskManagementModel<
         let filename: string;
 
         if (!title) {
-            this._logger.warn(`No title found for file ${this.file?.path}`);
+            this._logger?.warn(`No title found for file ${this.file?.path}`);
 
             return;
         }
 
         if (!aliases) {
-            this._logger.info(`No aliases found for file ${this.file?.path}`);
+            this._logger?.info(`No aliases found for file ${this.file?.path}`);
             filename = title;
         } else {
             filename = `${aliases.last()} - ${title}`;
@@ -190,7 +190,7 @@ export class PrjTaskManagementModel<
         if (this.file.parent?.path) {
             const newFileName = Path.sanitizeFilename(filename);
 
-            this._logger.debug(
+            this._logger?.debug(
                 `New filename for ${this.file.path}: ${newFileName}`,
             );
 
@@ -211,7 +211,7 @@ export class PrjTaskManagementModel<
         (
             file: TFile,
         ) => PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjData & IPrjTaskManagementData & PrjBaseData<unknown>
         >
     >();
 
@@ -225,7 +225,7 @@ export class PrjTaskManagementModel<
         factory: (
             file: TFile,
         ) => PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjData & IPrjTaskManagementData & PrjBaseData<unknown>
         >,
     ) {
         PrjTaskManagementModel._modelFactories.set(type, factory);
@@ -240,7 +240,7 @@ export class PrjTaskManagementModel<
         file: TFile,
     ):
         | PrjTaskManagementModel<
-              IPrjData & IPrjTaskManagement & BaseData<unknown>
+              IPrjData & IPrjTaskManagementData & PrjBaseData<unknown>
           >
         | undefined {
         const entry = Global.getInstance().metadataCache.getEntry(file);
@@ -269,7 +269,9 @@ export class PrjTaskManagementModel<
      * - Fallback to stop sorting
      */
     public static sortModelsByUrgency(
-        models: PrjTaskManagementModel<TaskData | TopicData | ProjectData>[],
+        models: PrjTaskManagementModel<
+            PrjTaskData | PrjTopicData | PrjProjectData
+        >[],
     ): void {
         models.sort((a, b) => {
             // If both are `done`, sort by last history entry
@@ -366,7 +368,9 @@ export class PrjTaskManagementModel<
      * - Due date is in more the future = 0
      */
     public static calculateUrgency(
-        model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        model: PrjTaskManagementModel<
+            PrjTaskData | PrjTopicData | PrjProjectData
+        >,
     ): number {
         if (!model.data.status || model.data.status === 'Done') {
             return -2;
@@ -408,7 +412,9 @@ export class PrjTaskManagementModel<
      * @returns The date of the last history entry.
      */
     private static getLastHistoryDate(
-        model: PrjTaskManagementModel<TaskData | TopicData | ProjectData>,
+        model: PrjTaskManagementModel<
+            PrjTaskData | PrjTopicData | PrjProjectData
+        >,
     ): Date | null {
         if (
             model.data.history &&

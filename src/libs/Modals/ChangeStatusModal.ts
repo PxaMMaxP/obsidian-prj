@@ -3,10 +3,9 @@ import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { FileType } from 'src/libs/FileType/FileType';
-import BaseData from 'src/models/Data/BaseData';
-import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
+import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
+import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Status } from 'src/types/PrjTypes';
 
@@ -16,7 +15,7 @@ import { Status } from 'src/types/PrjTypes';
 export default class ChangeStatusModal extends Modal {
     newStatus: Status;
     model: PrjTaskManagementModel<
-        IPrjData & IPrjTaskManagement & BaseData<unknown>
+        IPrjTaskManagementData & PrjBaseData<unknown>
     >;
     private _metadataCache = Global.getInstance().metadataCache;
 

@@ -7,7 +7,7 @@ import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import { Tags } from 'src/libs/Tags/Tags';
 import { Status } from 'src/types/PrjTypes';
-import TaskData from './Data/TaskData';
+import PrjTaskData from './Data/PrjTaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 // @import-me
 /**
@@ -15,7 +15,7 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
  */
 @Lifecycle
 @ImplementsStatic<ILifecycleObject>()
-export class TaskModel extends PrjTaskManagementModel<TaskData> {
+export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
     /**
      * Initializes the model.
      */
@@ -55,7 +55,7 @@ export class TaskModel extends PrjTaskManagementModel<TaskData> {
      * @param dependencies The optional dependencies to use.
      */
     constructor(file: TFile | undefined, dependencies?: IDIContainer) {
-        super(file, TaskData, dependencies);
+        super(file, PrjTaskData, dependencies);
     }
 
     /**

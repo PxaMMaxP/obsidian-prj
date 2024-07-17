@@ -1,13 +1,12 @@
 import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
-import IPrjTaskManagement from 'src/interfaces/IPrjTaskManagement';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
-import BaseData from 'src/models/Data/BaseData';
-import { IPrjData } from 'src/models/Data/interfaces/IPrjData';
-import ProjectData from 'src/models/Data/ProjectData';
-import TaskData from 'src/models/Data/TaskData';
-import TopicData from 'src/models/Data/TopicData';
+import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
+import PrjBaseData from 'src/models/Data/PrjBaseData';
+import PrjProjectData from 'src/models/Data/PrjProjectData';
+import PrjTaskData from 'src/models/Data/PrjTaskData';
+import PrjTopicData from 'src/models/Data/PrjTopicData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Priority, Status } from 'src/types/PrjTypes';
 import FilterButton from './InnerComponents/FilterButton';
@@ -28,7 +27,7 @@ import { Tags } from '../Tags/Tags';
  * Represents a block render component for `PrjTaskManagementModel`.
  */
 export default class ProjectBlockRenderComponent extends TableBlockRenderComponent<
-    PrjTaskManagementModel<IPrjData & IPrjTaskManagement & BaseData<unknown>>
+    PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
 > {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
     protected settings: BlockRenderSettings = {
@@ -114,7 +113,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         API.prjTaskManagementModel.sortModelsByUrgency(
             this.models as PrjTaskManagementModel<
-                TaskData | TopicData | ProjectData
+                PrjTaskData | PrjTopicData | PrjProjectData
             >[],
         );
         await this.addDocumentsToTable();
@@ -272,7 +271,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      */
     private async generateTableRow(
         model: PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjTaskManagementData & PrjBaseData<unknown>
         >,
     ): Promise<Row> {
         const rowClassList: string[] = [];
@@ -426,7 +425,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      */
     protected getHideState(
         model: PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjTaskManagementData & PrjBaseData<unknown>
         >,
         maxVisibleRows: number | undefined,
     ): boolean {
@@ -471,7 +470,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      */
     private determineHideState(
         model: PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjTaskManagementData & PrjBaseData<unknown>
         >,
     ): boolean {
         if (
@@ -505,7 +504,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      */
     private determineTagHideState(
         document: PrjTaskManagementModel<
-            IPrjData & IPrjTaskManagement & BaseData<unknown>
+            IPrjTaskManagementData & PrjBaseData<unknown>
         >,
     ): boolean {
         const settingTags = new Tags(this.settings.tags);
