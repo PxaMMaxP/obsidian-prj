@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { fieldConfig, FieldConfigSymbol } from '../FieldConfigDecorator';
+import {
+    fieldConfig,
+    FieldConfigSymbol,
+} from 'src/classes/decorators/FieldConfigDecorator';
 
 describe('fieldConfig Decorator Function', () => {
     it('should add propertyKey and defaultValue to the constructor using the FieldConfigSymbol', () => {
