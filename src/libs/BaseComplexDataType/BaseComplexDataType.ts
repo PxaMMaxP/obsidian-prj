@@ -12,7 +12,7 @@ export default abstract class BaseComplexDataType {
     /**
      * A public property to determine whether the specified object is an instance of the current class.
      */
-    public [IBaseComplexDataTypeSymbol] = true;
+    public [IBaseComplexDataTypeSymbol]: NonNullable<boolean> = true;
 
     /**
      * Determines whether the specified object is an instance of the current class.
