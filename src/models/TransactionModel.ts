@@ -29,7 +29,7 @@ type WriteChangesReturnType = {
  */
 export class TransactionModel<T> {
     protected _dependencies: IDIContainer;
-    protected _logger: ILogger | undefined;
+    protected _logger?: ILogger;
     /**
      * A promise that resolves when the changes are written to the file.
      */
