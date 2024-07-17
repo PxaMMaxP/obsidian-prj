@@ -32,7 +32,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
      */
     public async openForm(): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this.logger.trace("Opening 'CreateNewTaskManagementModal' form");
+        this._logger.trace("Opening 'CreateNewTaskManagementModal' form");
 
         const tags: string[] = this.getTagsFromActiveFile();
 
@@ -42,7 +42,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             values: { tags: tags },
         });
 
-        this.logger.trace(
+        this._logger.trace(
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -66,14 +66,14 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         result.data.title ??
             (() => {
-                this.logger.error('No title provided');
+                this._logger.error('No title provided');
 
                 return;
             })();
 
         result.data.tags ??
             (() => {
-                this.logger.error('No tags provided');
+                this._logger.error('No tags provided');
 
                 return;
             })();
@@ -93,8 +93,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 );
 
                 templateFilePath =
-                    this.global.settings.prjSettings.topicTemplate;
-                modelFolderPath = this.global.settings.prjSettings.topicFolder;
+                    this._global.settings.prjSettings.topicTemplate;
+                modelFolderPath = this._global.settings.prjSettings.topicFolder;
                 break;
             case 'Project':
                 model = new PrjTaskManagementModel<PrjProjectData>(
@@ -103,10 +103,10 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 );
 
                 templateFilePath =
-                    this.global.settings.prjSettings.projectTemplate;
+                    this._global.settings.prjSettings.projectTemplate;
 
                 modelFolderPath =
-                    this.global.settings.prjSettings.projectFolder;
+                    this._global.settings.prjSettings.projectFolder;
 
                 if (result.data.subtype && result.data.subtype !== '') {
                     subTemplatePath = result.data.subtype as string;
@@ -120,8 +120,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 );
 
                 templateFilePath =
-                    this.global.settings.prjSettings.taskTemplate;
-                modelFolderPath = this.global.settings.prjSettings.taskFolder;
+                    this._global.settings.prjSettings.taskTemplate;
+                modelFolderPath = this._global.settings.prjSettings.taskFolder;
 
                 if (result.data.subtype && result.data.subtype !== '') {
                     subTemplatePath = result.data.subtype as string;
@@ -129,7 +129,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 delete result.data.subtype;
                 break;
             default:
-                this.logger.error('No valid type provided');
+                this._logger.error('No valid type provided');
 
                 return;
         }
@@ -148,7 +148,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 return this.tag + (this.postfix ? this.postfix : '');
             },
         };
-        const baseTag = this.settings.baseTag;
+        const baseTag = this._settings.baseTag;
 
         result.data.tags = (result.data.tags as string[]).map((tag, index) => {
             if (index === 0) {
@@ -167,7 +167,10 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                         mainTag.postfix = 0;
                     }
                     mainTag.postfix++;
-                    this.logger.warn(`Tag '${mainTag.fullTag}' already exists`);
+
+                    this._logger.warn(
+                        `Tag '${mainTag.fullTag}' already exists`,
+                    );
                 }
 
                 return mainTag.fullTag;
@@ -181,7 +184,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             result.data.tags.splice(1, 0, mainTag.base);
 
         if (!mainTag.tag) {
-            this.logger.error('No main tag provided');
+            this._logger.error('No main tag provided');
 
             return;
         }
@@ -222,7 +225,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         /**
          * Check if file already exists and add postfix if needed.
          */
-        modelFile.file = this.app.vault.getAbstractFileByPath(
+        modelFile.file = this._app.vault.getAbstractFileByPath(
             modelFile.fullPath,
         ) as TFile;
 
@@ -230,10 +233,12 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             modelFile.postfix = 0;
 
             while (modelFile.file) {
-                this.logger.warn(`File '${modelFile.fullPath}' already exists`);
+                this._logger.warn(
+                    `File '${modelFile.fullPath}' already exists`,
+                );
                 modelFile.postfix++;
 
-                modelFile.file = this.app.vault.getAbstractFileByPath(
+                modelFile.file = this._app.vault.getAbstractFileByPath(
                     modelFile.fullPath,
                 ) as TFile;
             }
@@ -246,13 +251,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         if (subTemplatePath) {
             const subTemplateFile =
-                this.app.vault.getAbstractFileByPath(subTemplatePath);
+                this._app.vault.getAbstractFileByPath(subTemplatePath);
 
             if (subTemplateFile && subTemplateFile instanceof TFile) {
                 try {
-                    template = await this.app.vault.read(subTemplateFile);
+                    template = await this._app.vault.read(subTemplateFile);
                 } catch (error) {
-                    this.logger.error(
+                    this._logger.error(
                         `Error reading sub template file '${subTemplateFile.path}'`,
                         error,
                     );
@@ -260,13 +265,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             }
         } else if (templateFilePath) {
             const templateFile =
-                this.app.vault.getAbstractFileByPath(templateFilePath);
+                this._app.vault.getAbstractFileByPath(templateFilePath);
 
             if (templateFile && templateFile instanceof TFile) {
                 try {
-                    template = await this.app.vault.read(templateFile);
+                    template = await this._app.vault.read(templateFile);
                 } catch (error) {
-                    this.logger.error(
+                    this._logger.error(
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );

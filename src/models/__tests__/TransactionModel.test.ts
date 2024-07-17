@@ -54,7 +54,7 @@ describe('TransactionModel', () => {
         transactionModel.startTransaction();
         expect(transactionModel.isTransactionActive).toBe(true);
 
-        transactionModel['changes'] = { key: 'value' } as Partial<unknown>;
+        transactionModel['_changes'] = { key: 'value' } as Partial<unknown>;
         transactionModel.finishTransaction();
 
         expect(transactionModel.isTransactionActive).toBe(false);
@@ -97,12 +97,12 @@ describe('TransactionModel', () => {
         );
 
         transactionModel.startTransaction();
-        transactionModel['changes'] = { key: 'value' } as Partial<unknown>;
+        transactionModel['_changes'] = { key: 'value' } as Partial<unknown>;
 
         transactionModel.abortTransaction();
 
         expect(transactionModel.isTransactionActive).toBe(false);
-        expect(transactionModel['changes']).toEqual({});
+        expect(transactionModel['_changes']).toEqual({});
     });
 
     test('should log warning if aborting an inactive transaction', () => {
@@ -139,7 +139,7 @@ describe('TransactionModel', () => {
         transactionModel.startTransaction();
         transactionModel.testUpdateKeyValue('data.title', 'new title');
 
-        expect(transactionModel['changes']).toEqual({
+        expect(transactionModel['_changes']).toEqual({
             data: { title: 'new title' },
         });
         expect(writeChangesMock).not.toHaveBeenCalled();
@@ -152,7 +152,7 @@ describe('TransactionModel', () => {
         );
 
         transactionModel.startTransaction();
-        transactionModel['changes'] = { key: 'value' } as Partial<unknown>;
+        transactionModel['_changes'] = { key: 'value' } as Partial<unknown>;
 
         transactionModel.setWriteChanges(writeChangesMock);
 

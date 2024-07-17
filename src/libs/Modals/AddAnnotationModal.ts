@@ -52,12 +52,12 @@ export default class AddAnnotationModal extends BaseModalForm {
         preset?: Partial<unknown>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this.logger.trace("Opening 'CreateNewMetadataModal' form");
+        this._logger.trace("Opening 'CreateNewMetadataModal' form");
 
         const form = this.constructForm();
         const result = await this.getApi().openForm(form);
 
-        this.logger.trace(
+        this._logger.trace(
             `Form closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -104,7 +104,7 @@ export default class AddAnnotationModal extends BaseModalForm {
 `;
 
         if (!activeFile) return;
-        this.global.app.vault.append(activeFile, template);
+        this._global.app.vault.append(activeFile, template);
     }
 
     /**

@@ -8,7 +8,7 @@ import BaseComponent from './BaseComponent';
  */
 export default class TextareaComponent extends BaseComponent {
     //#region base properties
-    protected editabilityEnabled = false;
+    protected _editabilityEnabled = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -48,7 +48,7 @@ export default class TextareaComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this.editabilityEnabled = true;
+        this._editabilityEnabled = true;
 
         return this;
     }
@@ -126,7 +126,7 @@ export default class TextareaComponent extends BaseComponent {
                     value,
                     this._presentationSpan,
                     path,
-                    this.component,
+                    this._component,
                 );
             } else {
                 this._presentationSpan.innerHTML = '';
@@ -158,7 +158,7 @@ export default class TextareaComponent extends BaseComponent {
      */
     private build() {
         this._presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this._presentationSpan);
+        this._presentationContainer.appendChild(this._presentationSpan);
 
         this._presentationSpan.contentEditable = 'false';
         this._presentationSpan.title = this._title;
@@ -179,7 +179,7 @@ export default class TextareaComponent extends BaseComponent {
      * Builds the input element for editing.
      */
     private buildInput() {
-        this.component.registerDomEvent(
+        this._component.registerDomEvent(
             this._presentationSpan,
             'keydown',
             (event: KeyboardEvent) => {
@@ -204,7 +204,7 @@ export default class TextareaComponent extends BaseComponent {
      * Enables the edit mode of the component.
      */
     private enableEdit() {
-        this.presentationContainer.classList.remove('hidden');
+        this._presentationContainer.classList.remove('hidden');
         this._presentationSpan.textContent = this._value;
         this._presentationSpan.contentEditable = 'true';
         this._presentationSpan.focus();

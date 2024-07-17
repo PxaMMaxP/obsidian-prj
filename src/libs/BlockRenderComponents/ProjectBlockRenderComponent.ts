@@ -30,11 +30,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
 > {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
-    protected settings: BlockRenderSettings = {
+    protected _settings: BlockRenderSettings = {
         tags: [],
         reactOnActiveFile: false,
         filter: ['Topic', 'Project', 'Task'],
-        maxDocuments: this.global.settings.defaultMaxShow,
+        maxDocuments: this._global.settings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -45,7 +45,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      * The table headers.
      * @remarks The table headers are used to create the table.
      */
-    protected tableHeaders: TableHeader[] = [
+    protected _tableHeaders: TableHeader[] = [
         {
             text: Lng.gt('DocumentType'),
             headerClass: [],
@@ -101,7 +101,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         const getModelsPromise = super.getModels(
             ['Topic', 'Project', 'Task'],
-            this.settings.tags,
+            this._settings.tags,
             (metadata: FileMetadata) =>
                 API.prjTaskManagementModel.getCorospondingModel(metadata.file),
         );
@@ -109,10 +109,10 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         await this.buildTable();
         await this.buildHeader();
         this.grayOutHeader();
-        this.models = await getModelsPromise;
+        this._models = await getModelsPromise;
 
         API.prjTaskManagementModel.sortModelsByUrgency(
-            this.models as PrjTaskManagementModel<
+            this._models as PrjTaskManagementModel<
                 PrjTaskData | PrjTopicData | PrjProjectData
             >[],
         );
@@ -120,8 +120,8 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         this.normalizeHeader();
         const endTime = Date.now();
 
-        this.logger.debug(
-            `Redraw (for ${this.models.length} Models) runs for ${endTime - startTime}ms`,
+        this._logger.debug(
+            `Redraw (for ${this._models.length} Models) runs for ${endTime - startTime}ms`,
         );
     }
 
@@ -129,13 +129,13 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      * Build the basic table structure.
      */
     private async buildTable(): Promise<void> {
-        this.table = new Table(
-            this.tableHeaders,
+        this._table = new Table(
+            this._tableHeaders,
             'project-table',
             undefined,
             Logging.getLogger('ProjectBlockRenderComponent/Table'),
         );
-        this.tableContainer.appendChild(this.table.data.table);
+        this._tableContainer.appendChild(this._table.data.table);
     }
 
     /**
@@ -144,7 +144,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private async buildHeader(): Promise<void> {
         // Filter container
         const headerFilterButtons = document.createElement('div');
-        this.headerContainer.appendChild(headerFilterButtons);
+        this._headerContainer.appendChild(headerFilterButtons);
         headerFilterButtons.classList.add('header-item');
         headerFilterButtons.classList.add('filter-symbols');
 
@@ -157,62 +157,62 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         filterLabel.textContent = Lng.gt('Filter');
 
         const topicFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Topic',
-            this.globalSettings.prjSettings.topicSymbol,
-            this.settings.filter.includes('Topic'),
+            this._globalSettings.prjSettings.topicSymbol,
+            this._settings.filter.includes('Topic'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(topicFilterButton);
 
         const projectFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Project',
-            this.globalSettings.prjSettings.projectSymbol,
-            this.settings.filter.includes('Project'),
+            this._globalSettings.prjSettings.projectSymbol,
+            this._settings.filter.includes('Project'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(projectFilterButton);
 
         const taskFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Task',
-            this.globalSettings.prjSettings.taskSymbol,
-            this.settings.filter.includes('Task'),
+            this._globalSettings.prjSettings.taskSymbol,
+            this._settings.filter.includes('Task'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(taskFilterButton);
 
         const doneFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Done',
             'check-square',
-            this.settings.filter.includes('Done'),
+            this._settings.filter.includes('Done'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(doneFilterButton);
 
         const deepHierarchyFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'DeepHierarchy',
             'gantt-chart',
-            this.settings.filter.includes('DeepHierarchy'),
+            this._settings.filter.includes('DeepHierarchy'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(deepHierarchyFilterButton);
 
         const maxDocuments = MaxShownModelsInput.create(
-            this.component,
-            this.settings.maxDocuments,
-            this.global.settings.defaultMaxShow,
+            this._component,
+            this._settings.maxDocuments,
+            this._global.settings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
         headerFilterButtons.appendChild(maxDocuments);
 
         const searchBox = SearchInput.create(
-            this.component,
+            this._component,
             this.onSearch.bind(this),
-            this.settings.searchText,
+            this._settings.searchText,
         );
         headerFilterButtons.appendChild(searchBox);
     }
@@ -223,16 +223,16 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      * @param sleepBetweenBatches The time to sleep between batches.
      */
     private async addDocumentsToTable(
-        batchSize = this.settings.batchSize,
-        sleepBetweenBatches = this.settings.sleepBetweenBatches,
+        batchSize = this._settings.batchSize,
+        sleepBetweenBatches = this._settings.sleepBetweenBatches,
     ): Promise<void> {
         let sleepPromise = Promise.resolve();
-        const modelsLength = this.models.length;
+        const modelsLength = this._models.length;
         const rows: Row[] = [];
         let rowPromise: Promise<Row> | undefined = undefined;
 
         if (modelsLength > 0) {
-            rowPromise = this.generateTableRow(this.models[0]);
+            rowPromise = this.generateTableRow(this._models[0]);
         } else {
             return;
         }
@@ -240,13 +240,13 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         let visibleRows = 0;
 
         for (let i = 0; i < modelsLength; i++) {
-            const model = i + 1 < modelsLength ? this.models[i + 1] : null;
+            const model = i + 1 < modelsLength ? this._models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = model ? this.generateTableRow(model) : undefined;
 
             if (row && !row.hidden) {
-                if (visibleRows < this.settings.maxDocuments) {
+                if (visibleRows < this._settings.maxDocuments) {
                     visibleRows++;
                 } else {
                     row.hidden = true;
@@ -257,7 +257,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
             if ((i !== 0 && i % batchSize === 0) || i === modelsLength - 1) {
                 await sleepPromise;
-                this.table.addRows(rows);
+                this._table.addRows(rows);
                 rows.length = 0;
                 sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }
@@ -284,7 +284,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         GeneralComponents.createMetadataLink(
             metadataLink,
-            this.component,
+            this._component,
             model.file.path,
             model.data.type?.toString() as FileTypes,
             model.getCorospondingSymbol(),
@@ -301,7 +301,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         ProjectComponents.createTitle(
             titleAndSummary,
-            this.component,
+            this._component,
             model.file.path,
             () => model.data.title ?? '',
             async (value: string) => (model.data.title = value),
@@ -312,7 +312,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         ProjectComponents.createSummary(
             titleAndSummary,
-            this.component,
+            this._component,
             model.data.description ?? '',
             (value: string) => (model.data.description = value),
         );
@@ -323,7 +323,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         ProjectComponents.createPriority(
             priority,
-            this.component,
+            this._component,
             () => model.data.priority?.toString() ?? '0',
             async (value: string) =>
                 (model.data.priority = value as unknown as Priority),
@@ -335,9 +335,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         GeneralComponents.createCellDate(
             dueDate,
-            this.component,
+            this._component,
             Lng.gt('Due date'),
-            this.global.settings.dateFormat,
+            this._global.settings.dateFormat,
             () => model.data.due ?? 'na',
             async (value: string) => (model.data.due = value),
         );
@@ -348,7 +348,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         ProjectComponents.createStatus(
             status,
-            this.component,
+            this._component,
             () => model.data.status ?? 'Active',
             async (value: string) =>
                 (model.data.status = value as unknown as Status),
@@ -360,11 +360,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         GeneralComponents.createCellTags(
             tags,
-            this.component,
+            this._component,
             model.data.tags?.toStringArray() ?? [],
         );
 
-        const hide = this.getHideState(model, this.settings.maxDocuments);
+        const hide = this.getHideState(model, this._settings.maxDocuments);
 
         const row = {
             rowUid,
@@ -382,12 +382,12 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
      * @param status The status of the filter.
      */
     private async onFilterButton(type: string, status: boolean): Promise<void> {
-        if (this.settings.filter.includes(type as FilteredModels)) {
-            this.settings.filter = this.settings.filter.filter(
+        if (this._settings.filter.includes(type as FilteredModels)) {
+            this._settings.filter = this._settings.filter.filter(
                 (v) => v !== type,
             );
         } else {
-            this.settings.filter.push(type as FilteredModels);
+            this._settings.filter.push(type as FilteredModels);
         }
         await this.onFilterDebounce();
     }
@@ -411,7 +411,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private async onMaxDocumentsChange(
         maxDocuments: number,
     ): Promise<undefined> {
-        this.settings.maxDocuments = maxDocuments;
+        this._settings.maxDocuments = maxDocuments;
         this.onFilter();
 
         return undefined;
@@ -433,19 +433,19 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         let maxRows = false;
 
         if (
-            !this.settings.filter.includes('Done') &&
+            !this._settings.filter.includes('Done') &&
             model.data.status === 'Done'
         ) {
             return true;
         }
 
-        if (this.settings.search) {
+        if (this._settings.search) {
             const text = model.data.toString?.();
-            searchResult = this.settings.search.applySearchLogic(text ?? '');
+            searchResult = this._settings.search.applySearchLogic(text ?? '');
         }
 
         if (maxVisibleRows && maxVisibleRows > 0) {
-            const rowStats = this.table.getRowStats();
+            const rowStats = this._table.getRowStats();
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
@@ -454,7 +454,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
-        } else if (this.settings.search) {
+        } else if (this._settings.search) {
             return true; // Hide the document, if the search was not successful and aplicable
         } else if (!searchResult) {
             return maxRows || hide; // Else the document is hidden, if the max rows are reached or the document type is hidden
@@ -474,21 +474,21 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         >,
     ): boolean {
         if (
-            this.settings.filter.includes('Topic') &&
+            this._settings.filter.includes('Topic') &&
             model.data.type?.toString() === 'Topic'
         ) {
             return false;
         }
 
         if (
-            this.settings.filter.includes('Project') &&
+            this._settings.filter.includes('Project') &&
             model.data.type?.toString() === 'Project'
         ) {
             return false;
         }
 
         if (
-            this.settings.filter.includes('Task') &&
+            this._settings.filter.includes('Task') &&
             model.data.type?.toString() === 'Task'
         ) {
             return false;
@@ -507,11 +507,11 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             IPrjTaskManagementData & PrjBaseData<unknown>
         >,
     ): boolean {
-        const settingTags = new Tags(this.settings.tags);
+        const settingTags = new Tags(this._settings.tags);
 
-        if (this.settings.reactOnActiveFile) {
+        if (this._settings.reactOnActiveFile) {
             return !document.data.tags?.contains(settingTags);
-        } else if (this.settings.filter.includes('DeepHierarchy')) {
+        } else if (this._settings.filter.includes('DeepHierarchy')) {
             return false;
         } else {
             return !document.data.tags?.areTagsAtHierarchyLevel(settingTags);

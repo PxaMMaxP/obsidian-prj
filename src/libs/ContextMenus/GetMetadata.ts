@@ -22,11 +22,11 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @ImplementsStatic<ILifecycleObject>()
 @Singleton
 export class GetMetadata extends ContextMenu implements IContextMenu {
-    protected bindContextMenu = this.onContextMenu.bind(this);
+    protected _bindContextMenu = this.onContextMenu.bind(this);
     private _translationService: ITranslationService;
     private _metadataCache: IMetadataCache;
     private _helperObsidian: IHelperObsidian_;
-    protected eventsRegistered = false;
+    protected _eventsRegistered = false;
 
     /**
      * Initializes a instance of the GetMetadata class.
@@ -67,7 +67,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Initializes the context menu.
      */
     protected onConstruction(): void {
-        this._app.workspace.on('file-menu', this.bindContextMenu);
+        this._app.workspace.on('file-menu', this._bindContextMenu);
 
         this._plugin.addCommand({
             id: 'get-metadata-file',
@@ -85,7 +85,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Cleans up the context menu.
      */
     protected onDeconstruction(): void {
-        this._app.workspace.off('file-menu', this.bindContextMenu);
+        this._app.workspace.off('file-menu', this._bindContextMenu);
     }
 
     /**

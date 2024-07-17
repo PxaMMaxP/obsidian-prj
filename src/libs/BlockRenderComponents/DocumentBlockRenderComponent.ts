@@ -23,11 +23,11 @@ import { Tags } from '../Tags/Tags';
  */
 export default class DocumentBlockRenderComponent extends TableBlockRenderComponent<DocumentModel> {
     private _filterButtonDebounceTimer: NodeJS.Timeout;
-    protected settings: BlockRenderSettings = {
+    protected _settings: BlockRenderSettings = {
         tags: [],
         reactOnActiveFile: false,
         filter: ['Documents'],
-        maxDocuments: this.global.settings.defaultMaxShow,
+        maxDocuments: this._global.settings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -38,7 +38,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * The table headers.
      * @remarks The table headers are used to create the table.
      */
-    protected tableHeaders: TableHeader[] = [
+    protected _tableHeaders: TableHeader[] = [
         {
             text: Lng.gt('DocumentType'),
             headerClass: [],
@@ -94,22 +94,22 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         const documentsPromise = super.getModels(
             ['Metadata'],
-            this.settings.tags,
+            this._settings.tags,
             (metadata: FileMetadata) => new DocumentModel(metadata.file),
         );
         await super.draw();
         await this.buildTable();
         await this.buildHeader();
         this.grayOutHeader();
-        this.models = await documentsPromise;
+        this._models = await documentsPromise;
 
-        API.documentModel.sortDocumentsByDateDesc(this.models);
+        API.documentModel.sortDocumentsByDateDesc(this._models);
         await this.addDocumentsToTable();
         this.normalizeHeader();
         const endTime = Date.now();
 
-        this.logger.debug(
-            `Redraw Documents (for ${this.models.length} Docs.) runs for ${endTime - startTime}ms`,
+        this._logger.debug(
+            `Redraw Documents (for ${this._models.length} Docs.) runs for ${endTime - startTime}ms`,
         );
     }
 
@@ -125,7 +125,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     private async buildHeader(): Promise<void> {
         // Filter container
         const headerFilterButtons = document.createElement('div');
-        this.headerContainer.appendChild(headerFilterButtons);
+        this._headerContainer.appendChild(headerFilterButtons);
         headerFilterButtons.classList.add('header-item');
         headerFilterButtons.classList.add('filter-symbols');
 
@@ -138,44 +138,44 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         filterLabel.textContent = Lng.gt('Filter');
 
         const documentFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Documents',
-            this.globalSettings.documentSettings.symbol,
-            this.settings.filter.includes('Documents'),
+            this._globalSettings.documentSettings.symbol,
+            this._settings.filter.includes('Documents'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(documentFilterButton);
 
         const hideDocumentFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'HideDocuments',
-            this.globalSettings.documentSettings.hideSymbol,
-            this.settings.filter.includes('HideDocuments'),
+            this._globalSettings.documentSettings.hideSymbol,
+            this._settings.filter.includes('HideDocuments'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(hideDocumentFilterButton);
 
         const clusterFilterButton = FilterButton.create(
-            this.component,
+            this._component,
             'Cluster',
-            this.globalSettings.documentSettings.clusterSymbol,
-            this.settings.filter.includes('Cluster'),
+            this._globalSettings.documentSettings.clusterSymbol,
+            this._settings.filter.includes('Cluster'),
             this.onFilterButton.bind(this),
         );
         headerFilterButtons.appendChild(clusterFilterButton);
 
         const maxDocuments = MaxShownModelsInput.create(
-            this.component,
-            this.settings.maxDocuments,
-            this.global.settings.defaultMaxShow,
+            this._component,
+            this._settings.maxDocuments,
+            this._global.settings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
         headerFilterButtons.appendChild(maxDocuments);
 
         const searchBox = SearchInput.create(
-            this.component,
+            this._component,
             this.onSearch.bind(this),
-            this.settings.searchText,
+            this._settings.searchText,
         );
         headerFilterButtons.appendChild(searchBox);
     }
@@ -187,12 +187,12 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * @remarks Runs the `onFilter` method.
      */
     private async onFilterButton(type: string, status: boolean): Promise<void> {
-        if (this.settings.filter.includes(type as FilteredDocument)) {
-            this.settings.filter = this.settings.filter.filter(
+        if (this._settings.filter.includes(type as FilteredDocument)) {
+            this._settings.filter = this._settings.filter.filter(
                 (v) => v !== type,
             );
         } else {
-            this.settings.filter.push(type as FilteredDocument);
+            this._settings.filter.push(type as FilteredDocument);
         }
         await this.onFilterDebounce();
     }
@@ -218,7 +218,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     private async onMaxDocumentsChange(
         maxDocuments: number,
     ): Promise<undefined> {
-        this.settings.maxDocuments = maxDocuments;
+        this._settings.maxDocuments = maxDocuments;
         this.onFilter();
 
         return undefined;
@@ -234,16 +234,16 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * - The sleep time between the batches is defined in the `sleepBetweenBatches` parameter. Default is `settings.sleepBetweenBatches`.
      */
     private async addDocumentsToTable(
-        batchSize = this.settings.batchSize,
-        sleepBetweenBatches = this.settings.sleepBetweenBatches,
+        batchSize = this._settings.batchSize,
+        sleepBetweenBatches = this._settings.sleepBetweenBatches,
     ): Promise<void> {
         let sleepPromise = Promise.resolve();
-        const documentsLength = this.models.length;
+        const documentsLength = this._models.length;
         const rows: Row[] = [];
         let rowPromise: Promise<Row> | undefined = undefined;
 
         if (documentsLength > 0) {
-            rowPromise = this.generateTableRow(this.models[0]);
+            rowPromise = this.generateTableRow(this._models[0]);
         } else {
             return;
         }
@@ -252,13 +252,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         for (let i = 0; i < documentsLength; i++) {
             const document =
-                i + 1 < documentsLength ? this.models[i + 1] : null;
+                i + 1 < documentsLength ? this._models[i + 1] : null;
 
             const row = await rowPromise;
             rowPromise = document ? this.generateTableRow(document) : undefined;
 
             if (row && !row.hidden) {
-                if (visibleRows < this.settings.maxDocuments) {
+                if (visibleRows < this._settings.maxDocuments) {
                     visibleRows++;
                 } else {
                     row.hidden = true;
@@ -269,7 +269,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
             if ((i !== 0 && i % batchSize === 0) || i === documentsLength - 1) {
                 await sleepPromise;
-                this.table.addRows(rows);
+                this._table.addRows(rows);
                 rows.length = 0;
                 sleepPromise = HelperGeneral.sleep(sleepBetweenBatches);
             }
@@ -292,7 +292,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         DocumentComponents.createCellMetadatalink(
             metadataLink,
-            this.component,
+            this._component,
             documentModel,
         );
 
@@ -302,9 +302,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         GeneralComponents.createCellDate(
             date,
-            this.component,
+            this._component,
             Lng.gt('DocumentDate'),
-            this.global.settings.dateFormat,
+            this._global.settings.dateFormat,
             () => documentModel.data.date ?? 'na',
             async (value: string) => (documentModel.data.date = value),
         );
@@ -315,15 +315,15 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         DocumentComponents.createCellFileLink(
             fileLink,
-            this.component,
+            this._component,
             documentModel,
         );
 
         // Row 3 -- Sender Recipient
         const senderRecipient = DocumentComponents.createCellSenderRecipient(
             documentModel,
-            this.component,
-            this.models,
+            this._component,
+            this._models,
         );
         rowData.push(senderRecipient);
 
@@ -333,16 +333,16 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         DocumentComponents.createCellSummary(
             documentModel,
-            this.component,
+            this._component,
             summaryRelatedFiles,
         );
 
         DocumentComponents.createRelatedFilesList(
             summaryRelatedFiles,
-            this.component,
+            this._component,
             documentModel,
-            this.globalSettings.noneSymbol,
-            this.global.settings.dateFormatShort,
+            this._globalSettings.noneSymbol,
+            this._global.settings.dateFormatShort,
         );
 
         // Row 5 -- Date of delivery
@@ -351,9 +351,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         GeneralComponents.createCellDate(
             deliveryDate,
-            this.component,
+            this._component,
             Lng.gt('DeliveryDate'),
-            this.global.settings.dateFormat,
+            this._global.settings.dateFormat,
             () => documentModel.data.dateOfDelivery ?? 'na',
             async (value: string) =>
                 (documentModel.data.dateOfDelivery = value),
@@ -365,7 +365,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         GeneralComponents.createCellTags(
             tags,
-            this.component,
+            this._component,
             documentModel.data.tags?.toStringArray() ?? [],
         );
 
@@ -394,13 +394,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         let searchResult = false;
         let maxRows = false;
 
-        if (this.settings.search) {
+        if (this._settings.search) {
             const text = model.data.toString?.();
-            searchResult = this.settings.search.applySearchLogic(text ?? '');
+            searchResult = this._settings.search.applySearchLogic(text ?? '');
         }
 
         if (maxVisibleRows && maxVisibleRows > 0) {
-            const rowStats = this.table.getRowStats();
+            const rowStats = this._table.getRowStats();
             maxRows = rowStats.visibleRows >= maxVisibleRows;
         }
 
@@ -409,7 +409,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
 
         if (searchResult && !hide) {
             return false; // Shows the document, if it is not hidden and the search was successful
-        } else if (this.settings.search) {
+        } else if (this._settings.search) {
             return true; // Hide the document, if the search was not successful and aplicable
         } else if (!searchResult) {
             return maxRows || hide; // Else the document is hidden, if the max rows are reached or the document type is hidden
@@ -426,7 +426,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      */
     private determineHideState(document: DocumentModel): boolean {
         if (
-            this.settings.filter.includes('Documents') &&
+            this._settings.filter.includes('Documents') &&
             document.data.hide !== true &&
             document.data.subType !== 'Cluster'
         ) {
@@ -434,14 +434,14 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         }
 
         if (
-            this.settings.filter.includes('Cluster') &&
+            this._settings.filter.includes('Cluster') &&
             document.data.subType === 'Cluster'
         ) {
             return false;
         }
 
         if (
-            this.settings.filter.includes('HideDocuments') &&
+            this._settings.filter.includes('HideDocuments') &&
             document.data.hide === true
         ) {
             return false;
@@ -456,9 +456,9 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * @returns If the document should be  shown returns `true`, else `false`.
      */
     private determineTagHideState(document: DocumentModel): boolean {
-        const settingTags = new Tags(this.settings.tags);
+        const settingTags = new Tags(this._settings.tags);
 
-        return this.settings.reactOnActiveFile
+        return this._settings.reactOnActiveFile
             ? !document.data.tags?.contains(settingTags)
             : false;
     }
@@ -478,13 +478,13 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
      * - The table has the headers from the `tableHeaders` property.
      */
     private async buildTable(): Promise<void> {
-        this.table = new Table(
-            this.tableHeaders,
+        this._table = new Table(
+            this._tableHeaders,
             'document-table',
             undefined,
             Logging.getLogger('DocumentBlockRenderComponent/Table'),
         );
-        this.tableContainer.appendChild(this.table.data.table);
+        this._tableContainer.appendChild(this._table.data.table);
     }
 
     /**

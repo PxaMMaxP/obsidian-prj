@@ -65,7 +65,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         preset?: Partial<IPrjDocument>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this.logger.trace("Opening 'CreateNewMetadataModal' form");
+        this._logger.trace("Opening 'CreateNewMetadataModal' form");
 
         const convertedPreset: IResultData =
             this.convertPresetToIResultData(preset);
@@ -86,7 +86,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             values: convertedPreset,
         });
 
-        this.logger.trace(
+        this._logger.trace(
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -117,7 +117,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
 
         const folder = existingFile?.parent?.path
             ? existingFile.parent?.path
-            : this.settings.documentSettings.defaultFolder;
+            : this._settings.documentSettings.defaultFolder;
 
         (result.data.subType as FileSubType | undefined) =
             PrjTypes.isValidFileSubType(result.data.subType);
@@ -138,15 +138,15 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             let template = '';
 
             // If a template is set, use it
-            const templateFile = this.app.vault.getAbstractFileByPath(
-                this.settings.documentSettings.template,
+            const templateFile = this._app.vault.getAbstractFileByPath(
+                this._settings.documentSettings.template,
             );
 
             if (templateFile && templateFile instanceof TFile) {
                 try {
-                    template = await this.app.vault.read(templateFile);
+                    template = await this._app.vault.read(templateFile);
                 } catch (error) {
-                    this.logger.error(
+                    this._logger.error(
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );

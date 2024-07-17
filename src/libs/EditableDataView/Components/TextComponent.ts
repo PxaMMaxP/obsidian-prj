@@ -9,7 +9,7 @@ import SuggestionComponent, { Suggestions } from './SuggestionComponent';
  */
 export default class TextComponent extends BaseComponent {
     //#region base properties
-    protected editabilityEnabled = false;
+    protected _editabilityEnabled = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -60,7 +60,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this.editabilityEnabled = true;
+        this._editabilityEnabled = true;
 
         return this;
     }
@@ -161,7 +161,7 @@ export default class TextComponent extends BaseComponent {
                     value,
                     this._presentationSpan,
                     path,
-                    this.component,
+                    this._component,
                 );
             } else {
                 this._presentationSpan.innerHTML = '';
@@ -193,7 +193,7 @@ export default class TextComponent extends BaseComponent {
      */
     private build() {
         this._presentationSpan = document.createElement('span');
-        this.presentationContainer.appendChild(this._presentationSpan);
+        this._presentationContainer.appendChild(this._presentationSpan);
 
         this._presentationSpan.contentEditable = 'false';
         this._presentationSpan.title = this._title;
@@ -213,7 +213,7 @@ export default class TextComponent extends BaseComponent {
             if (!this._suggestionComponent) {
                 this._suggestionComponent = new SuggestionComponent(
                     this._presentationSpan,
-                    this.component,
+                    this._component,
                 );
             }
 
@@ -231,7 +231,7 @@ export default class TextComponent extends BaseComponent {
      * Builds the input element for editing the component.
      */
     private buildInput() {
-        this.component.registerDomEvent(
+        this._component.registerDomEvent(
             this._presentationSpan,
             'keydown',
             (event: KeyboardEvent) => {
@@ -248,7 +248,7 @@ export default class TextComponent extends BaseComponent {
      * Enables the edit mode for the component.
      */
     private enableEdit() {
-        this.presentationContainer.classList.remove('hidden');
+        this._presentationContainer.classList.remove('hidden');
         this._presentationSpan.contentEditable = 'true';
         this._presentationSpan.focus();
         this._suggestionComponent?.enableSuggestior();
