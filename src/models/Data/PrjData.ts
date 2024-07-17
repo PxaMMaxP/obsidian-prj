@@ -1,6 +1,7 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IFileType, IFileType_ } from 'src/libs/FileType/interfaces/IFileType';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
@@ -22,8 +23,8 @@ export class PrjData<T> extends BaseData<T> implements IPrjData {
         this._IFileType = this._dependencies.resolve<IFileType_>('IFileType_');
     }
 
-    protected _IFileType: IFileType_;
-    protected _ITags: ITags_;
+    protected _IFileType!: IFileType_;
+    protected _ITags!: ITags_;
 
     private _type: IFileType | null | undefined;
     private _subType: FileSubType | null | undefined;
