@@ -28,7 +28,7 @@ export class Tags extends BaseComplexDataType implements ITags {
      */
     public static onLoad(): void {
         /**
-         * @deprecated Use the `ITags_` interface instead.
+         * @deprecated Use the identifier `Tags_` instead. This will be removed in a future version.
          */
         DIContainer.getInstance().register('ITags', Tags);
         DIContainer.getInstance().register('ITags_', Tags);
