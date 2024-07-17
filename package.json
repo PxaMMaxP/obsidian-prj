@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "gen:imports": "node scripts/importer.js",
-    "dev": "concurrently \"node esbuild.config.mjs\" \"npm run watch:sass\" \"node scripts/copy-plugin-files.mjs watch\"",
+    "dev": "node scripts/watch-input.js",
+    "build:dev": "node esbuild.config.mjs development && npm run compile:sass && node scripts/copy-plugin-files.mjs dev",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass && node scripts/copy-plugin-files.mjs release",
     "build:check": "tsc -noEmit -skipLibCheck",
     "build:action": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && npm run compile:sass",
