@@ -2,12 +2,14 @@
 
 import { App, CachedMetadata, TFile } from 'obsidian';
 import { Logging } from 'src/classes/Logging';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
 import { FileType } from 'src/libs/FileType/FileType';
-import { IPrjSettings } from 'src/types/PrjSettings';
+import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject } from './DependencyInjection/decorators/Inject';
+import { RegisterInstance } from './DependencyInjection/decorators/RegisterInstance';
 import GenericEvents, { IEvent } from './GenericEvents';
-import Global from '../classes/Global';
 
 /**
  * FileMetadata interface
@@ -24,11 +26,16 @@ export class FileMetadata {
  * Singleton class for caching metadata
  * @description This class is used to cache metadata for all files in the vault. It is used to speed up processing of dataview queries.
  */
+@RegisterInstance('IMetadataCache')
 export default class MetadataCache implements IMetadataCache {
     private _eventHandler: GenericEvents<IMetadataCacheEvents>;
-    private _app: App = Global.getInstance().app;
-    private _settings: IPrjSettings = Global.getInstance().settings;
-    private _logger = Logging.getLogger('MetadataCache');
+    @Inject('App')
+    private _app!: App;
+    @Inject('IPrjSettings')
+    private _settings!: IPrjSettings;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('MetadataCache'), false)
+    private _logger?: ILogger;
+
     private _metadataCachePromise: Promise<void> | undefined = undefined;
     private _metadataCache: Map<string, FileMetadata> | undefined = undefined;
     private _metadataCacheArray: FileMetadata[] | undefined = undefined;
@@ -55,7 +62,7 @@ export default class MetadataCache implements IMetadataCache {
                 return this._metadataCacheArray;
             }
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
 
             return [];
         }
@@ -78,19 +85,25 @@ export default class MetadataCache implements IMetadataCache {
      * @description This constructor is private because the MetadataCache class is a singleton. Use the getInstance() method to get the singleton instance.
      */
     constructor() {
-        this.changedEventHandler = this.changedEventHandler.bind(this);
-        this.renameEventHandler = this.renameEventHandler.bind(this);
-        this.deleteEventHandler = this.deleteEventHandler.bind(this);
+        if (MetadataCache.instance) {
+            return MetadataCache.instance;
+        } else {
+            MetadataCache.instance = this;
 
-        this._eventHandler = new GenericEvents<IMetadataCacheEvents>(
-            this._logger,
-        );
+            this.changedEventHandler = this.changedEventHandler.bind(this);
+            this.renameEventHandler = this.renameEventHandler.bind(this);
+            this.deleteEventHandler = this.deleteEventHandler.bind(this);
 
-        if (!this._metadataCache) {
-            this.buildMetadataCache().then(() => {
-                this._logger.debug('Metadata cache built');
-                this.registerEvents();
-            });
+            this._eventHandler = new GenericEvents<IMetadataCacheEvents>(
+                this._logger,
+            );
+
+            if (!this._metadataCache) {
+                this.buildMetadataCache().then(() => {
+                    this._logger?.debug('Metadata cache built');
+                    this.registerEvents();
+                });
+            }
         }
     }
 
@@ -258,12 +271,12 @@ export default class MetadataCache implements IMetadataCache {
         oldMetadata: CachedMetadata,
         file: TFile,
     ) {
-        this._logger.trace(
+        this._logger?.trace(
             `Metadata changed for file ${file.path} and is processed.`,
         );
 
         if (file.path.startsWith(this._settings.templateFolder)) {
-            this._logger.trace(
+            this._logger?.trace(
                 `No event emitted for file ${file.path} because it is a template file.`,
             );
 
@@ -314,7 +327,7 @@ export default class MetadataCache implements IMetadataCache {
                 case 'Note':
                     break;
                 default:
-                    this._logger.error(
+                    this._logger?.error(
                         `Invalid file type ${newMetadata.frontmatter?.type} for file ${file.path}`,
                     );
                     break;
@@ -328,12 +341,12 @@ export default class MetadataCache implements IMetadataCache {
      * @param newFile The new file object representing the renamed file.
      */
     private async onRenamedFile(oldPath: string, newFile: TFile) {
-        this._logger.trace(
+        this._logger?.trace(
             `File renamed from ${oldPath} to ${newFile.path} and is processed.`,
         );
 
         if (newFile.path.startsWith(this._settings.templateFolder)) {
-            this._logger.trace(
+            this._logger?.trace(
                 `No event emitted for file ${newFile.path} because it is a template file.`,
             );
 
@@ -355,7 +368,7 @@ export default class MetadataCache implements IMetadataCache {
             if (this._metadataCache) {
                 this._metadataCacheArray = undefined;
             } else {
-                this._logger.error('Metadata cache not initialized');
+                this._logger?.error('Metadata cache not initialized');
             }
         }
     }
@@ -378,7 +391,7 @@ export default class MetadataCache implements IMetadataCache {
 
         const endTime = Date.now();
 
-        this._logger.debug(
+        this._logger?.debug(
             `Metadata cache for ${allFiles.length} files built in ${endTime - startTime}ms`,
         );
     }
@@ -404,14 +417,14 @@ export default class MetadataCache implements IMetadataCache {
                     return metadata;
                 }
 
-                this._logger.warn(
+                this._logger?.warn(
                     `No metadata cache entry found for file ${file.path}`,
                 );
 
                 return undefined;
             }
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
 
             return undefined;
         }
@@ -430,14 +443,14 @@ export default class MetadataCache implements IMetadataCache {
             if (metadata) {
                 return metadata;
             } else {
-                this._logger.warn(
+                this._logger?.warn(
                     `No metadata cache entry found for file ${path}`,
                 );
 
                 return undefined;
             }
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
 
             return undefined;
         }
@@ -455,7 +468,7 @@ export default class MetadataCache implements IMetadataCache {
         if (file) {
             return this.getEntry(file);
         } else {
-            this._logger.warn(`No file found for link ${link}`);
+            this._logger?.warn(`No file found for link ${link}`);
 
             return undefined;
         }
@@ -506,10 +519,10 @@ export default class MetadataCache implements IMetadataCache {
                 this._metadataCache.set(file.path, { file, metadata });
                 this.invalidateMetadataCacheArray();
             } else {
-                this._logger.warn(`No metadata found for file ${file.path}`);
+                this._logger?.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
         }
     }
 
@@ -522,10 +535,10 @@ export default class MetadataCache implements IMetadataCache {
             this._metadataCache.delete(file.path);
             this.invalidateMetadataCacheArray();
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
         }
 
-        this._logger.debug(
+        this._logger?.debug(
             `Metadata cache entry for file ${file.path} deleted`,
         );
     }
@@ -545,17 +558,17 @@ export default class MetadataCache implements IMetadataCache {
                 this.invalidateMetadataCacheArray();
                 this.onChangedMetadata(cache, oldMetadata, file);
             } else if (!entry) {
-                this._logger.warn(
+                this._logger?.warn(
                     `No metadata cache entry found for file ${file.path}`,
                 );
             } else {
-                this._logger.warn(`No metadata found for file ${file.path}`);
+                this._logger?.warn(`No metadata found for file ${file.path}`);
             }
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
         }
 
-        this._logger.debug(
+        this._logger?.debug(
             `Metadata cache entry for file ${file.path} updated`,
         );
     }
@@ -572,10 +585,10 @@ export default class MetadataCache implements IMetadataCache {
             this.invalidateMetadataCacheArray();
             this.onRenamedFile(oldPath, newFile);
         } else {
-            this._logger.error('Metadata cache not initialized');
+            this._logger?.error('Metadata cache not initialized');
         }
 
-        this._logger.debug(
+        this._logger?.debug(
             `Metadata cache entry for file ${oldPath} renamed to ${newFile.path}`,
         );
     }
@@ -586,7 +599,7 @@ export default class MetadataCache implements IMetadataCache {
      * @param oldPath Old path of the file
      */
     private renameEventHandler(file: TFile, oldPath: string) {
-        this._logger.debug(`File ${oldPath} renamed to ${file.path}`);
+        this._logger?.debug(`File ${oldPath} renamed to ${file.path}`);
         this.renameEntry(file, oldPath);
     }
 
@@ -595,7 +608,7 @@ export default class MetadataCache implements IMetadataCache {
      * @param file Deleted file object
      */
     private deleteEventHandler(file: TFile) {
-        this._logger.debug(`File ${file.path} deleted`);
+        this._logger?.debug(`File ${file.path} deleted`);
         this.deleteEntry(file);
     }
 
@@ -610,7 +623,7 @@ export default class MetadataCache implements IMetadataCache {
         data: string,
         cache: CachedMetadata,
     ) {
-        this._logger.trace(
+        this._logger?.trace(
             `File ${file.path} changed. Data-content:`,
             { data },
             'Cache-metadata:',
@@ -633,7 +646,7 @@ export default class MetadataCache implements IMetadataCache {
      * @deprecated This method is deprecated and will be removed in a future version.
      */
     private redrawMarkdownView() {
-        this._logger.debug(`Redrawing markdown view`);
+        this._logger?.debug(`Redrawing markdown view`);
         this._app.workspace.updateOptions();
     }
 
@@ -648,7 +661,7 @@ export default class MetadataCache implements IMetadataCache {
 
             this._eventsRegistered = true;
 
-            this._logger.debug('Metadata cache events registered');
+            this._logger?.debug('Metadata cache events registered');
         }
     }
 }
