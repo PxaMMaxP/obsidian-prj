@@ -2,7 +2,6 @@ import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
 import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
-import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjNote } from './interfaces/IPrjNote';
 import { PrjData } from './PrjData';
@@ -15,16 +14,7 @@ export default class PrjNoteData
     extends PrjData<PrjNoteData>
     implements IPrjNote
 {
-    /**
-     * @inheritdoc
-     */
-    protected initializeDependencies(): void {
-        super.initializeDependencies();
-    }
-
     private _date: string | null | undefined;
-
-    static yamlKeyMap: YamlKeyMap | undefined = {};
 
     /**
      * @inheritdoc

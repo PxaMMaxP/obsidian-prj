@@ -1,25 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldConfigSymbol } from 'src/classes/decorators/FieldConfigDecorator';
 import { ToStringFieldSymbol } from 'src/classes/decorators/ToStringFieldDecorator';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
 
 /**
  * An abstract base class that provides common functionality for data classes.
  */
 export default abstract class PrjBaseData<T> {
-    protected _dependencies: IDIContainer = DIContainer.getInstance();
-
     /**
      * Initializes a new instance of the BaseData class.
      * @param data The optional data to merge into the current instance.
-     * @param dependencies The optional dependencies to use for the model.
      */
-    constructor(data?: Partial<T>, dependencies?: IDIContainer) {
-        this._dependencies = dependencies ?? DIContainer.getInstance();
-        this.initializeDependencies();
-
+    constructor(data?: Partial<T>) {
         this.mergeData(data);
     }
 
@@ -29,11 +21,6 @@ export default abstract class PrjBaseData<T> {
      * derived classes to provide the mapping if necessary.
      */
     public static yamlKeyMap: YamlKeyMap | undefined;
-
-    /**
-     * Initializes the dependencies of the data class.
-     */
-    protected abstract initializeDependencies(): void;
 
     /**
      * The field configuration for the data.

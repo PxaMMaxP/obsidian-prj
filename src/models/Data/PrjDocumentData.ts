@@ -15,13 +15,6 @@ export class PrjDocumentData
     extends PrjData<PrjDocumentData>
     implements IPrjDocument
 {
-    /**
-     * @inheritdoc
-     */
-    protected initializeDependencies(): void {
-        super.initializeDependencies();
-    }
-
     protected _uid: string | null | undefined;
     protected _date: string | null | undefined;
     protected _sender: string | null | undefined;
