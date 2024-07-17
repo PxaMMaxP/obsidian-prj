@@ -14,6 +14,7 @@ export default class PrjTaskData
 {
     /**
      * @inheritdoc
+     * @remarks The default value is `Task`.
      */
     @fieldConfig('Task')
     get type(): IFileType | null | undefined {

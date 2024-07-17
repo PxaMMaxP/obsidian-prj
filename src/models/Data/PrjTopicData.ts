@@ -14,6 +14,7 @@ export default class PrjTopicData
 {
     /**
      * @inheritdoc
+     * @remarks The default value is `Topic`.
      */
     @fieldConfig('Topic')
     get type(): IFileType | null | undefined {

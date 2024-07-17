@@ -18,12 +18,12 @@ export class PrjData<T> extends PrjBaseData<T> implements IPrjData {
      * @inheritdoc
      */
     protected initializeDependencies(): void {
-        /** empty */
+        this._IFileType = this._dependencies.resolve<IFileType_>('IFileType_');
+        this._ITags = this._dependencies.resolve<ITags_>('ITags_');
     }
 
-    protected _IFileType: IFileType_ =
-        this._dependencies.resolve<IFileType_>('IFileType_');
-    protected _ITags: ITags_ = this._dependencies.resolve<ITags_>('ITags_');
+    protected _IFileType!: IFileType_;
+    protected _ITags!: ITags_;
 
     protected _type: IFileType | null | undefined;
     protected _subType: FileSubType | null | undefined;

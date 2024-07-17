@@ -1,5 +1,4 @@
 import { App, TFile } from 'obsidian';
-import { ILogger } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
@@ -26,7 +25,6 @@ export class FileModel<
     protected _app!: App;
     protected _metadataCache!: IMetadataCache;
     private _proxyHandler!: IProxyHandler<T>;
-    protected _logger?: ILogger;
 
     private _file: TFile | undefined;
     /**
