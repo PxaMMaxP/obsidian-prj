@@ -1,11 +1,26 @@
 import { IDIContainer, IDIContainer_ } from './interfaces/IDIContainer';
 
 /**
+ * Dependency Entry Interface
+ */
+interface IDependency {
+    /**
+     * The dependency itself
+     */
+    dependency: unknown;
+    /**
+     * If true, the dependency is deprecated => a warning
+     * is logged when the dependency is resolved
+     */
+    deprecated?: boolean;
+}
+
+/**
  * Dependency Injection Container
  */
 const DIContainer_: IDIContainer_ = class DIContainer implements IDIContainer {
     private static _instance: DIContainer;
-    private _dependencies = new Map<string, unknown>();
+    private _dependencies = new Map<string, IDependency>();
 
     /**
      * Private constructor to prevent direct instantiation.
@@ -28,9 +43,18 @@ const DIContainer_: IDIContainer_ = class DIContainer implements IDIContainer {
      * Register a dependency
      * @param identifier The identifier of the dependency
      * @param dependency The dependency to register
+     * @param deprecated If true, the dependency is deprecated => a warning
+     * is logged when the dependency is resolved
      */
-    public register<T>(identifier: string, dependency: T): void {
-        this._dependencies.set(identifier, dependency);
+    public register<T>(
+        identifier: string,
+        dependency: T,
+        deprecated = false,
+    ): void {
+        this._dependencies.set(identifier, {
+            dependency: dependency,
+            deprecated: deprecated,
+        });
     }
 
     /**
@@ -49,7 +73,15 @@ const DIContainer_: IDIContainer_ = class DIContainer implements IDIContainer {
             return undefined;
         }
 
-        return dependency as T;
+        if (dependency.deprecated) {
+            // eslint-disable-next-line no-console
+            console.warn(`Dependency ${identifier} is deprecated`);
+
+            // Remove the deprecation warning; it should only be logged once.
+            dependency.deprecated = false;
+        }
+
+        return dependency.dependency as T;
     }
 };
 
