@@ -42,7 +42,7 @@ export class Logging implements ILogger {
      * @param value The value to set.
      */
     public setLogPrefix(value: string): void {
-        this._logPrefix = value ?? '';
+        this._logPrefix = value ? `${value}-` : '';
     }
 
     /**
@@ -72,12 +72,8 @@ export class Logging implements ILogger {
         }
         Logging._instance = this;
 
-        this._logPrefix = logPrefix ? `${logPrefix}-` : '';
+        this.setLogPrefix(logPrefix);
         this.setLogLevel(logLevel);
-
-        if (this._logLevel === LoggingLevelNumber.none) {
-            console.info('Logging disabled');
-        }
     }
 
     /**
@@ -86,6 +82,10 @@ export class Logging implements ILogger {
      */
     public setLogLevel(logLevel: LoggingLevel | string | undefined) {
         this._setLogLevel(this.parseLoggingLevel(logLevel));
+
+        if (this._logLevel === LoggingLevelNumber.none) {
+            console.info('Logging disabled');
+        }
     }
 
     /**
