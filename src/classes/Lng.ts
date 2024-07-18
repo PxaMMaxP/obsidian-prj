@@ -1,7 +1,5 @@
 /* istanbul ignore file */
 
-import Global from 'src/classes/Global';
-import { Logging } from 'src/classes/Logging';
 import { Translations } from 'src/translations/Translations';
 import ITranslationService from '../libs/TranslationService/interfaces/ITranslationService';
 import { TranslationService } from '../libs/TranslationService/TranslationService';
@@ -17,11 +15,7 @@ export default class Lng {
      */
     private static get instance(): ITranslationService {
         if (!Lng._instance) {
-            Lng._instance = new TranslationService(
-                Translations,
-                Global.getInstance().settings,
-                Logging.getLogger('Lng'),
-            );
+            Lng._instance = new TranslationService(Translations);
         }
 
         return Lng._instance;

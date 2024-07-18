@@ -43,6 +43,9 @@ export class TranslationService implements ITranslationService {
      * @param translations The translations to use.
      */
     constructor(translations: ILanguageTranslations[]) {
+        if (TranslationService.instance) {
+            return TranslationService.instance;
+        }
         TranslationService.instance = this;
 
         this._translations = translations;
