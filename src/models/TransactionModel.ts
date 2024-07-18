@@ -1,6 +1,8 @@
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { IBaseComplexDataType } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { isIBaseComplexDataType } from 'src/libs/BaseComplexDataType/isIBaseComplexDataType';
+import {
+    IBaseComplexDataType,
+    isIBaseComplexDataType,
+} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 
