@@ -1,5 +1,5 @@
 import BaseComplexDataType from '../BaseComplexDataType';
-import { isIBaseComplexDataType } from '../isIBaseComplexDataType';
+import { isIBaseComplexDataType } from '../interfaces/IBaseComplexDataType';
 
 // Concrete class for testing purposes
 class TestComplexDataType extends BaseComplexDataType {
