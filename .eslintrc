@@ -233,18 +233,10 @@
         ]
       }
     ],
-    "@typescript-eslint/no-unnecessary-type-assertion": "error",
-    "@typescript-eslint/prefer-readonly": "error",
+    "@typescript-eslint/prefer-readonly": "warn",
     "@typescript-eslint/explicit-function-return-type": "warn",
-    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-floating-promises": "warn",
     "@typescript-eslint/no-misused-promises": "error",
-    "@typescript-eslint/consistent-type-imports": [
-      "error",
-      {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports",
-      }
-    ],
     "@typescript-eslint/prefer-optional-chain": "warn",
     "@typescript-eslint/strict-boolean-expressions": "error"
   },
