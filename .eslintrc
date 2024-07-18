@@ -1,31 +1,35 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "env": { "node": true },
-    "plugins": [
-      "@typescript-eslint",
-      "deprecation",
-      "prettier",
-      "import",
-      "jsdoc",
-      "override"
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "env": {
+    "node": true
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "deprecation",
+    "prettier",
+    "import",
+    "jsdoc",
+    "override"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsdoc/recommended-typescript"
+  ],
+  "parserOptions": {
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "override/require-override": "error",
+    "override/require-static-override": "error",
+    "prettier/prettier": "warn",
+    "array-callback-return": [
+      "error"
     ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:jsdoc/recommended-typescript"
-    ], 
-    "parserOptions": {
-        "sourceType": "module",
-        "project": "./tsconfig.json"
-    },
-    "rules": {
-      "override/require-override": "error",
-      "override/require-static-override": "error",
-      "prettier/prettier": "warn",
-      "array-callback-return": ["error"],
-      "@typescript-eslint/no-unused-vars": [
+    "@typescript-eslint/no-unused-vars": [
       "error",
       {
         "argsIgnorePattern": "^_",
@@ -34,65 +38,78 @@
         "args": "none"
       }
     ],
-      "no-unused-vars": "off",
-      "@typescript-eslint/ban-ts-comment": "off",
-      "no-prototype-builtins": "off",
-      "@typescript-eslint/no-empty-function": "off",
-      "deprecation/deprecation": "warn",
-      "no-console": "error",
-      "@typescript-eslint/naming-convention": [
-        "warn",
-        {
-          "selector": "classProperty",
-          "modifiers": ["private"],
-          "format": [ ],
-          "custom": {
-            "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
-            "match": true,
-            "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
-          }
-        },
-        {
-          "selector": "classProperty",
-          "modifiers": ["protected"],
-          "format": [ ],
-          "custom": {
-            "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
-            "match": true,
-            "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
-          }
-        },
-        {
-          "selector": "memberLike",
-          "modifiers": ["public"],
-          "format": ["camelCase"],
-          "leadingUnderscore": "forbid"
-        },
-        {
-          "selector": "typeProperty",
-          "modifiers": ["public"],
-          "format": null,
-          "filter": {
-            "regex": ".*-event$",
-            "match": true
-          },
-          "custom": {
-            "regex": "^[a-z]+(-[a-z]+)*-event$",
-            "match": true
-          }
-        },
-        {
-          "selector": "typeProperty",
-          "modifiers": ["public"],
-          "format": ["camelCase"],
-          "filter": {
-            "regex": ".*-event$",
-            "match": false
-          }
+    "no-unused-vars": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "no-prototype-builtins": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "deprecation/deprecation": "warn",
+    "no-console": "error",
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "classProperty",
+        "modifiers": [
+          "private"
+        ],
+        "format": [],
+        "custom": {
+          "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+          "match": true,
+          "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
         }
-                
-      ],      
-      "@typescript-eslint/padding-line-between-statements": [
+      },
+      {
+        "selector": "classProperty",
+        "modifiers": [
+          "protected"
+        ],
+        "format": [],
+        "custom": {
+          "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+          "match": true,
+          "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
+        }
+      },
+      {
+        "selector": "memberLike",
+        "modifiers": [
+          "public"
+        ],
+        "format": [
+          "camelCase"
+        ],
+        "leadingUnderscore": "forbid"
+      },
+      {
+        "selector": "typeProperty",
+        "modifiers": [
+          "public"
+        ],
+        "format": null,
+        "filter": {
+          "regex": ".*-event$",
+          "match": true
+        },
+        "custom": {
+          "regex": "^[a-z]+(-[a-z]+)*-event$",
+          "match": true
+        }
+      },
+      {
+        "selector": "typeProperty",
+        "modifiers": [
+          "public"
+        ],
+        "format": [
+          "camelCase"
+        ],
+        "filter": {
+          "regex": ".*-event$",
+          "match": false
+        }
+      }
+    ],
+    "@typescript-eslint/padding-line-between-statements": [
       "warn",
       {
         "blankLine": "always",
@@ -109,7 +126,9 @@
       },
       {
         "blankLine": "always",
-        "prev": ["function"],
+        "prev": [
+          "function"
+        ],
         "next": "*"
       }
     ],
@@ -117,9 +136,17 @@
       "warn",
       {
         "groups": [
-          ["builtin", "external"],
-          ["internal"],
-          ["parent", "sibling"]
+          [
+            "builtin",
+            "external"
+          ],
+          [
+            "internal"
+          ],
+          [
+            "parent",
+            "sibling"
+          ]
         ],
         "newlines-between": "never",
         "alphabetize": {
@@ -144,10 +171,18 @@
           "ClassDeclaration": true,
           "ArrowFunctionExpression": false,
           "FunctionExpression": false
-        },
+        }
       }
     ],
-    "jsdoc/require-param": ["warn", { "exemptedBy": ["deprecated", "inheritdoc"] }],
+    "jsdoc/require-param": [
+      "warn",
+      {
+        "exemptedBy": [
+          "deprecated",
+          "inheritdoc"
+        ]
+      }
+    ],
     "jsdoc/require-description": [
       "warn",
       {
@@ -158,20 +193,30 @@
           "ClassExpression"
         ],
         "descriptionStyle": "body",
-        "exemptedBy": ["deprecated", "inheritdoc"]
+        "exemptedBy": [
+          "deprecated",
+          "inheritdoc"
+        ]
       }
     ],
     "jsdoc/require-returns": [
       "warn",
       {
         "checkGetters": false,
-        "exemptedBy": ["deprecated", "inheritdoc"]
+        "exemptedBy": [
+          "deprecated",
+          "inheritdoc"
+        ]
       }
     ],
     "jsdoc/check-tag-names": [
       "warn",
       {
-        "definedTags": ["remarks", "jest-environment", "singleton"]
+        "definedTags": [
+          "remarks",
+          "jest-environment",
+          "singleton"
+        ]
       }
     ],
     "jsdoc/check-alignment": "warn",
@@ -187,17 +232,27 @@
           }
         ]
       }
-    ]
-    },
-    "overrides": [
-      {
-        "files": ["*.test.ts"],
-        "rules": {
-          "jsdoc/require-jsdoc": "off",
-          "jsdoc/require-param": "off",
-          "jsdoc/require-description": "off",
-          "jsdoc/require-returns": "off"
-        }
+    ],
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/prefer-readonly": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/prefer-optional-chain": "warn",
+    "@typescript-eslint/strict-boolean-expressions": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.test.ts"
+      ],
+      "rules": {
+        "jsdoc/require-jsdoc": "off",
+        "jsdoc/require-param": "off",
+        "jsdoc/require-description": "off",
+        "jsdoc/require-returns": "off"
       }
-    ]
-  }
+    }
+  ]
+}
