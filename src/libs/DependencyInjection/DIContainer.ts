@@ -1,3 +1,4 @@
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { IDIContainer, IDIContainer_ } from './interfaces/IDIContainer';
 
 /**
@@ -18,7 +19,8 @@ interface IDependency {
 /**
  * Dependency Injection Container
  */
-const DIContainer_: IDIContainer_ = class DIContainer implements IDIContainer {
+@ImplementsStatic<IDIContainer_>()
+export class DIContainer implements IDIContainer {
     private static _instance: DIContainer;
     private _dependencies = new Map<string, IDependency>();
 
@@ -83,6 +85,4 @@ const DIContainer_: IDIContainer_ = class DIContainer implements IDIContainer {
 
         return dependency.dependency as T;
     }
-};
-
-export { DIContainer_ as DIContainer };
+}
