@@ -6,7 +6,8 @@ import { InitDelegate } from '../types/InitDelegate';
  * The instance is created only when it is first needed (Lazy Initialization).
  * @template TargetType The type of the class whose instance is to be registered.
  * @param identifier The identifier used to register the instance in the DI container.
- * @param init An optional initializer function to transform the instance before registration.
+ * @param init An optional initializer function which get the constructor of the class
+ * as input and returns an instance of the class.
  * @returns A function that is applied as a decorator to the class.
  * @example
  * ```ts
