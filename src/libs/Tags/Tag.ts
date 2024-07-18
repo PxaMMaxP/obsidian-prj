@@ -1,14 +1,13 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITag_ } from './interfaces/ITag';
 import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import {
     IBaseComplexDataType,
     IBaseComplexDataType_,
 } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
-import { DIContainer } from '../DependencyInjection/DIContainer';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents a tag.
@@ -47,7 +46,8 @@ export class Tag
     /**
      * The metadata cache.
      */
-    private _metadataCache: IMetadataCache;
+    @Inject('IMetadataCache')
+    private _IMetadataCache: IMetadataCache;
 
     /**
      * Gets the tag prefixed with a hash symbol.
@@ -67,7 +67,7 @@ export class Tag
      */
     public get exists(): boolean {
         if (this._exists === undefined) {
-            const existFile = this._metadataCache.cache.find((file) => {
+            const existFile = this._IMetadataCache.cache.find((file) => {
                 const tags = file.metadata?.frontmatter?.tags;
 
                 if (typeof tags === 'string') {
@@ -88,17 +88,11 @@ export class Tag
     /**
      * Creates a new instance of the Tag class.
      * @param value The value of the tag.
-     * @param dependencies The dependencies of the tag; if not provided, the global dependency registry is used.
      */
-    constructor(value: string, dependencies?: IDIContainer) {
+    constructor(value: string) {
         super();
 
-        dependencies = dependencies ?? DIContainer.getInstance();
-
         this.value = value;
-
-        this._metadataCache =
-            dependencies.resolve<IMetadataCache>('IMetadataCache');
     }
 
     /**
