@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/26</span>
+                <span class='fraction'>0/25</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -178,20 +178,9 @@
 <a name='L113'></a><a href='#L113'>113</a>
 <a name='L114'></a><a href='#L114'>114</a>
 <a name='L115'></a><a href='#L115'>115</a>
-<a name='L116'></a><a href='#L116'>116</a>
-<a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a>
-<a name='L119'></a><a href='#L119'>119</a>
-<a name='L120'></a><a href='#L120'>120</a>
-<a name='L121'></a><a href='#L121'>121</a>
-<a name='L122'></a><a href='#L122'>122</a>
-<a name='L123'></a><a href='#L123'>123</a>
-<a name='L124'></a><a href='#L124'>124</a>
-<a name='L125'></a><a href='#L125'>125</a>
-<a name='L126'></a><a href='#L126'>126</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L116'></a><a href='#L116'>116</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -209,17 +198,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -317,7 +297,6 @@
 <span class="cstat-no" title="statement not covered" >import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';</span>
 <span class="cstat-no" title="statement not covered" >import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';</span>
 import { Status, Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
-import { YamlKeyMap } from 'src/types/YamlKeyMap';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjTaskManagementData } from './interfaces/IPrjTaskManagementData';
 <span class="cstat-no" title="statement not covered" >import { PrjData } from './PrjData';</span>
@@ -326,25 +305,16 @@ import { IPrjTaskManagementData } from './interfaces/IPrjTaskManagementData';
  * Implementation of the PrjTaskManagementModel class.
  */
 @ImplementsStatic&lt;IPrjData_&lt;unknown&gt;&gt;()
-export class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >PrjTaskManagementData</span></span>
+export <span class="cstat-no" title="statement not covered" >class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >PrjTaskManagementData</span></span></span>
     extends PrjData&lt;PrjTaskManagementData&gt;
     implements IPrjTaskManagementData
 {
-    /**
-     * @inheritdoc
-     */
-    protected <span class="fstat-no" title="function not covered" >initializeDependencies(</span>): void {
-<span class="cstat-no" title="statement not covered" >        super.initializeDependencies();</span>
-    }
-&nbsp;
     protected _status: Status | null | undefined;
     protected _priority: Priority | null | undefined;
     protected _energy: Energy | null | undefined;
     protected _due: string | null | undefined;
     protected _history: HistoryEntries | null | undefined;
     protected _aliases: string[] | null | undefined;
-&nbsp;
-    static <span class="cstat-no" title="statement not covered" >yamlKeyMap: YamlKeyMap | undefined = {</span>};
 &nbsp;
     /**
      * @inheritdoc
@@ -445,7 +415,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-17T18:45:07.879Z
+                at 2024-07-18T12:03:04.659Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
