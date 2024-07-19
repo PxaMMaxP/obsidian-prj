@@ -2,10 +2,14 @@ import { TFile, moment } from 'obsidian';
 import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
+import type {
+    IStatusType,
+    IStatusType_,
+} from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tag } from 'src/libs/Tags/Tag';
-import PrjTypes, { Status } from 'src/types/PrjTypes';
 import { IPrjData } from './Data/interfaces/IPrjData';
 import { IPrjTaskManagementData } from './Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from './Data/PrjBaseData';
@@ -24,11 +28,20 @@ export class PrjTaskManagementModel<
     extends FileModel<T>
     implements IPrjModel<T>
 {
+    @Inject('IStatusType_')
+    protected static _IStatusType: IStatusType_;
+    /**
+     * Gets the IStatusType.
+     */
+    protected get _IStatusType(): IStatusType_ {
+        return PrjTaskManagementModel._IStatusType;
+    }
+
     /**
      * The data of the model.
      */
-    public get data(): Partial<T> {
-        return this._data;
+    public get data(): T {
+        return this._data as T;
     }
     /**
      * The data of the model.
@@ -85,7 +98,7 @@ export class PrjTaskManagementModel<
      * - This function will start and finish a transaction if no transaction is currently running.
      */
     public changeStatus(newStatus: unknown): void {
-        const status = PrjTypes.isValidStatus(newStatus);
+        const status = new this._IStatusType(newStatus);
 
         if (!status) return;
 
@@ -120,7 +133,7 @@ export class PrjTaskManagementModel<
      * @remarks - This function will not start or finish a transaction.
      * - If no status is provided and the model has no status, an error will be logged and the function will return.
      */
-    private addHistoryEntry(status?: Status | undefined): void {
+    private addHistoryEntry(status?: IStatusType | undefined): void {
         if (!status) {
             if (this.data.status) status = this.data.status;
             else {
@@ -133,7 +146,7 @@ export class PrjTaskManagementModel<
         if (!this.data.history) this.data.history = [];
 
         this.data.history.push({
-            status: status,
+            status: status.toString(),
             date: moment().format('YYYY-MM-DDTHH:mm'),
         });
     }
@@ -278,19 +291,22 @@ export class PrjTaskManagementModel<
             const aDate = this.getLastHistoryDate(a);
             const bDate = this.getLastHistoryDate(b);
 
-            if (a.data.status === 'Done' && b.data.status === 'Done') {
+            if (
+                a.data.status?.equals('Done') &&
+                b.data.status?.equals('Done')
+            ) {
                 if (aDate && bDate) {
                     return bDate.getTime() - aDate.getTime();
                 }
             }
 
             // If `a` is done, sort it lower
-            if (a.data.status === 'Done') {
+            if (a.data.status?.equals('Done')) {
                 return 1;
             }
 
             // If `b` is done, sort it lower
-            if (b.data.status === 'Done') {
+            if (b.data.status?.equals('Done')) {
                 return -1;
             }
 
@@ -340,8 +356,10 @@ export class PrjTaskManagementModel<
      * - `Someday` = 0
      * - `undefined` = -1
      */
-    private static statusToNumber(status: Status | undefined | null): number {
-        switch (status) {
+    private static statusToNumber(
+        status: IStatusType | undefined | null,
+    ): number {
+        switch (status?.toString()) {
             case 'Active':
                 return 3;
             case 'Waiting':
@@ -372,11 +390,11 @@ export class PrjTaskManagementModel<
             PrjTaskData | PrjTopicData | PrjProjectData
         >,
     ): number {
-        if (!model.data.status || model.data.status === 'Done') {
+        if (!model.data.status || model.data.status.equals('Done')) {
             return -2;
         }
 
-        if (model.data.status === 'Someday') {
+        if (model.data.status.equals('Someday')) {
             return -1;
         }
 
@@ -502,9 +520,9 @@ export class PrjTaskManagementModel<
         if (parentPath) {
             let movePath: string;
 
-            if (model.data.status === 'Done') {
+            if (model.data.status?.equals('Done')) {
                 movePath = Path.join(parentPath, 'Archiv');
-            } else if (PrjTypes.isValidStatus(model.data.status)) {
+            } else if (this._IStatusType.isValid(model.data.status)) {
                 movePath = parentPath;
             } else {
                 return;

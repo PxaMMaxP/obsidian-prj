@@ -8,7 +8,7 @@ import PrjProjectData from 'src/models/Data/PrjProjectData';
 import PrjTaskData from 'src/models/Data/PrjTaskData';
 import PrjTopicData from 'src/models/Data/PrjTopicData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Priority, Status } from 'src/types/PrjTypes';
+import { Priority } from 'src/types/PrjTypes';
 import FilterButton from './InnerComponents/FilterButton';
 import GeneralComponents from './InnerComponents/GeneralComponents';
 import MaxShownModelsInput from './InnerComponents/MaxShownModelsInput';
@@ -20,6 +20,7 @@ import TableBlockRenderComponent, {
 import { FileTypes } from '../FileType/interfaces/IFileType';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
+import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 import Table, { Row, TableHeader } from '../Table';
 import { Tags } from '../Tags/Tags';
 
@@ -349,9 +350,9 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         ProjectComponents.createStatus(
             status,
             this._component,
-            () => model.data.status ?? 'Active',
+            () => model.data.status?.toString() ?? 'Active',
             async (value: string) =>
-                (model.data.status = value as unknown as Status),
+                (model.data.status = value as unknown as StatusTypes),
         );
 
         // Row 6 -- Tags
@@ -434,7 +435,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
 
         if (
             !this._settings.filter.includes('Done') &&
-            model.data.status === 'Done'
+            model.data.status?.equals('Done')
         ) {
             return true;
         }
