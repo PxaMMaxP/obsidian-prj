@@ -2,15 +2,18 @@ import { CachedMetadata, TFile } from 'obsidian';
 import API from 'src/classes/API';
 import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
-import PrjTypes from 'src/types/PrjTypes';
 import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';
 import KanbanParser from './KanbanParser';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 
 /**
  * The KanbanSync class is responsible for synchronizing the Kanban board with a regular Prj file.
  */
 export default class KanbanSync {
+    @Inject('IStatusType_')
+    private _IStatusType: IStatusType_;
     private _logger = Logging.getLogger('KanbanSync');
 
     private _metadataCache = Global.getInstance().metadataCache;
@@ -101,7 +104,7 @@ export default class KanbanSync {
 
         const newHeadingState = API.prjTaskManagementModel.getCorospondingModel(
             this._changedFile,
-        )?.data.status;
+        )?.data.status?.value;
 
         if (!newHeadingState) {
             this._logger.warn(
@@ -129,7 +132,7 @@ export default class KanbanSync {
      */
     private syncFiles(): void {
         // Iterate over all valid statuses
-        PrjTypes.statuses.forEach((status) => {
+        this._IStatusType.types.forEach((status) => {
             const cardItem = this._kanbankBoard?.getCardsPerStatus(status);
 
             if (!cardItem) {

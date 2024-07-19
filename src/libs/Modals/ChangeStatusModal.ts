@@ -7,13 +7,13 @@ import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Status } from 'src/types/PrjTypes';
+import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 
 /**
  * Represents a modal to change the status of a project.
  */
 export default class ChangeStatusModal extends Modal {
-    newStatus: Status;
+    newStatus: StatusTypes;
     model: PrjTaskManagementModel<
         IPrjTaskManagementData & PrjBaseData<unknown>
     >;
@@ -68,10 +68,10 @@ export default class ChangeStatusModal extends Modal {
                 cb.addOption('Later', Lng.gt('StatusLater'));
                 cb.addOption('Someday', Lng.gt('StatusSomeday'));
                 cb.addOption('Done', Lng.gt('StatusDone'));
-                cb.setValue(this.model.data.status ?? 'Active');
+                cb.setValue(this.model.data.status?.toString() ?? 'Active');
 
                 cb.onChange((value) => {
-                    this.newStatus = value as Status;
+                    this.newStatus = value as StatusTypes;
                 });
             });
 

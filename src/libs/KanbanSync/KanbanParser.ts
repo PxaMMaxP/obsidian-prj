@@ -1,13 +1,17 @@
 import { TFile, App } from 'obsidian';
 import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
-import PrjTypes from 'src/types/PrjTypes';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 
 /**
  * The KanbanParser class is responsible for parsing a kanban board from a Kanban Markdown file.
  */
 export default class KanbanParser {
+    @Inject('IStatusType_')
+    private _IStatusType: IStatusType_;
+
     private _logger = Logging.getLogger('KanbanParser');
     private _file: TFile;
     private _app: App = Global.getInstance().app;
@@ -95,7 +99,7 @@ export default class KanbanParser {
             const status =
                 title === 'Archiv'
                     ? 'Archiv'
-                    : PrjTypes.getValidStatusFromLanguage(title);
+                    : this._IStatusType.getValidStatusFromTranslation(title);
 
             if (!status) {
                 this._logger.error(

@@ -7,10 +7,10 @@ import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Status } from 'src/types/PrjTypes';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
 import EditableDataView from '../EditableDataView/EditableDataView';
+import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 import { ITags } from '../Tags/interfaces/ITags';
 import { Tag } from '../Tags/Tag';
 import { Tags } from '../Tags/Tags';
@@ -104,14 +104,14 @@ export default class HeaderBlockRenderComponent
     /**
      * The status of the Prj File.
      */
-    private get status(): Status | undefined {
-        return this.model?.data.status ?? undefined;
+    private get status(): StatusTypes | undefined {
+        return this.model?.data.status?.value ?? undefined;
     }
 
     /**
      * Sets the status of the Prj File.
      */
-    private set status(value: Status | undefined) {
+    private set status(value: StatusTypes | undefined) {
         if (this.model) this.model.changeStatus(value);
     }
 
@@ -371,7 +371,7 @@ export default class HeaderBlockRenderComponent
                     .setTitle(Lng.gt('Status'))
                     .setValue(this.status ?? '')
                     .onSave(async (value) => {
-                        this.status = value as Status;
+                        this.status = value as StatusTypes;
                     })
                     .enableEditability()
                     .setFormator((value: string) => {

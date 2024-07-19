@@ -4,8 +4,9 @@ import Lng from 'src/classes/Lng';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
+import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { Status, UrgencySymbols } from 'src/types/PrjTypes';
+import { UrgencySymbols } from 'src/types/PrjTypes';
 
 /**
  * Represents the project components.
@@ -123,7 +124,7 @@ export default class ProjectComponents {
                 })
                 .enableEditability()
                 .setFormator((value: string) => {
-                    const status = value as Status;
+                    const status = value as StatusTypes;
                     let iconString: string;
 
                     switch (status) {

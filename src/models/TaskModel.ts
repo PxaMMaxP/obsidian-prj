@@ -5,8 +5,8 @@ import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDICo
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tags } from 'src/libs/Tags/Tags';
-import { Status } from 'src/types/PrjTypes';
 import PrjTaskData from './Data/PrjTaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 // @import-me
@@ -65,7 +65,7 @@ export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
      * @deprecated This method is deprecated and will be removed in a future version.
      */
     private getRelatedTasks(
-        status?: (status: Status | undefined) => boolean,
+        status?: (status: StatusTypes | undefined) => boolean,
     ): TaskModel[] {
         const filesWithSameTags = this._metadataCache.cache.filter((file) => {
             const fileTags = new Tags(file.metadata?.frontmatter?.tags);
