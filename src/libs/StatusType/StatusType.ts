@@ -8,11 +8,13 @@ import {
 } from './interfaces/IStatusType';
 import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Register } from '../DependencyInjection/decorators/Register';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Represents a status type.
  */
+@Register('IStatusType_')
 @ImplementsStatic<IStatusType_>()
 export class StatusType extends BaseComplexDataType implements IStatusType {
     @Inject('ITranslationService')
