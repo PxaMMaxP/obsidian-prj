@@ -1,5 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { IDIContainer, IDIContainer_ } from './interfaces/IDIContainer';
+import { IDIContainer } from './interfaces/IDIContainer';
+import { IDIContainer_ } from './interfaces/IDIContainer_';
 
 /**
  * Dependency Entry Interface
@@ -22,7 +23,7 @@ interface IDependency {
 @ImplementsStatic<IDIContainer_>()
 export class DIContainer implements IDIContainer {
     private static _instance: DIContainer;
-    private _dependencies = new Map<string, IDependency>();
+    private readonly _dependencies = new Map<string, IDependency>();
 
     /**
      * Private constructor to prevent direct instantiation.
@@ -75,7 +76,7 @@ export class DIContainer implements IDIContainer {
             return undefined;
         }
 
-        if (dependency.deprecated) {
+        if (dependency.deprecated === true) {
             // eslint-disable-next-line no-console
             console.warn(`Dependency ${identifier} is deprecated`);
 
