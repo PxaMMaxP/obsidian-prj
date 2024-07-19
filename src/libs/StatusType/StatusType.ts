@@ -1,4 +1,5 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { isIStringConvertible } from 'src/interfaces/IStringifiable';
 import {
     IStatusType,
@@ -16,6 +17,13 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
 export class StatusType extends BaseComplexDataType implements IStatusType {
     @Inject('ITranslationService')
     private static _ITranslationService: ITranslationService;
+
+    /**
+     * The logger to use for logging messages.
+     * If not provided, no messages will be logged.
+     */
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('StatusType'), false)
+    private static _logger?: ILogger;
 
     private static readonly _statusTypes: StatusTypes[] = [
         'Active',
@@ -49,6 +57,16 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     }
 
     /**
+     * Initializes a new instance of a StatusType class.
+     * @param value The value of the Status.
+     */
+    constructor(value: unknown) {
+        super();
+
+        this._value = StatusType.validate(value);
+    }
+
+    /**
      * Checks if the object is an {@link StatusTypes|Status Type}.
      * @param value The object to check.
      * @returns Whether the object is an {@link StatusTypes|Status Type}.
@@ -63,17 +81,27 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
      * @returns The valid status type or undefined if the value is not valid.
      */
     public static validate(value: unknown): StatusTypes | undefined {
+        let status: StatusTypes | undefined;
+
         if (
             value === null ||
             value === undefined ||
             typeof value !== 'string'
         ) {
-            return undefined;
+            status = undefined;
         } else if (StatusType._statusTypes.includes(value as StatusTypes)) {
-            return StatusType._statusTypes.includes(value as StatusTypes)
-                ? (value as StatusTypes)
-                : undefined;
+            status = value as StatusTypes;
         }
+
+        if (status === undefined) {
+            this._logger?.warn(
+                `The value is not a valid status type:`,
+                value,
+                `Setting the value to undefined.`,
+            );
+        }
+
+        return status;
     }
 
     /**
