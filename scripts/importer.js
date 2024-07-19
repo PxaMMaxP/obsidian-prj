@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const COMMENT_MARKER = '@Lifecycle';
+const COMMENT_MARKER = ['@Lifecycle', '@Register'];
 
 // Funktion, um alle Dateien im Verzeichnis rekursiv zu durchsuchen
 function getAllFiles(dirPath, arrayOfFiles) {
@@ -24,7 +24,8 @@ function getAllFiles(dirPath, arrayOfFiles) {
 function findFilesWithComment(files) {
     return files.filter((file) => {
         const content = fs.readFileSync(file, 'utf8');
-        return content.includes(COMMENT_MARKER);
+
+        return COMMENT_MARKER.some((marker) => content.includes(marker));
     });
 }
 
