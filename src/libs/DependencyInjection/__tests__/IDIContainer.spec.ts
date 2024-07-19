@@ -1,11 +1,12 @@
-import { IDIContainer_, IDIContainer } from '../interfaces/IDIContainer';
+import { IDIContainer } from '../interfaces/IDIContainer';
+import { IDIContainer_ } from '../interfaces/IDIContainer_';
 
 /**
  * Test the implementation of a DIContainer
  * @param Container The DIContainer implementation to test.
  * Must implement {@link IDIContainer}, {@link IDIContainer_}
  */
-export function test_IDIContainer(Container: IDIContainer_) {
+export function test_IDIContainer(Container: IDIContainer_): void {
     describe('IDIContainer Implementation Tests', () => {
         let container: IDIContainer;
 
@@ -29,7 +30,5 @@ export function test_IDIContainer(Container: IDIContainer_) {
 
             expect(() => container.resolve<unknown>(identifier)).toThrow();
         });
-
-        // Add more tests as necessary
     });
 }
