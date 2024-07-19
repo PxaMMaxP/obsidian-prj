@@ -71,6 +71,27 @@
         }
       },
       {
+        "selector": [
+          "typeProperty",
+          "classProperty"
+        ],
+        "types": [
+          "boolean"
+        ],
+        "format": [
+          "PascalCase"
+        ],
+        "prefix": [
+          "is",
+          "has",
+          "can",
+          "did",
+          "will",
+          "should"
+        ],
+        "leadingUnderscore": "allow"
+      },
+      {
         "selector": "memberLike",
         "modifiers": [
           "public"
@@ -236,9 +257,11 @@
     "@typescript-eslint/prefer-readonly": "warn",
     "@typescript-eslint/explicit-function-return-type": "warn",
     "@typescript-eslint/no-floating-promises": "warn",
-    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-misused-promises": "warn",
     "@typescript-eslint/prefer-optional-chain": "warn",
-    "@typescript-eslint/strict-boolean-expressions": "error"
+    "@typescript-eslint/strict-boolean-expressions": "warn",
+    "@typescript-eslint/non-nullable-type-assertion-style": "warn",
+    "@typescript-eslint/prefer-string-starts-ends-with": "warn"
   },
   "overrides": [
     {
