@@ -1,11 +1,4 @@
 /**
- * Static Dependency Injection Container Interface
- */
-export interface IDIContainer_ {
-    getInstance(): IDIContainer;
-}
-
-/**
  * Dependency Injection Container Interface
  */
 export interface IDIContainer {
