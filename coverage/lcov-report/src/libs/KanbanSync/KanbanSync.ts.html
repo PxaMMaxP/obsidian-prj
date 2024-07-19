@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/59</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/75</span>
             </div>
         
             
@@ -279,17 +279,23 @@
 <a name='L214'></a><a href='#L214'>214</a>
 <a name='L215'></a><a href='#L215'>215</a>
 <a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -499,15 +505,18 @@
 <span class="cstat-no" title="statement not covered" >import API from 'src/classes/API';</span>
 <span class="cstat-no" title="statement not covered" >import Global from 'src/classes/Global';</span>
 <span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
-<span class="cstat-no" title="statement not covered" >import PrjTypes from 'src/types/PrjTypes';</span>
 <span class="cstat-no" title="statement not covered" >import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';</span>
 import { KanbanBoard } from './KanbanModels';
 <span class="cstat-no" title="statement not covered" >import KanbanParser from './KanbanParser';</span>
+<span class="cstat-no" title="statement not covered" >import { Inject } from '../DependencyInjection/decorators/Inject';</span>
+import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 &nbsp;
 /**
  * The KanbanSync class is responsible for synchronizing the Kanban board with a regular Prj file.
  */
 <span class="cstat-no" title="statement not covered" >export default class K</span>anbanSync {
+    @Inject('IStatusType_')
+    private <span class="cstat-no" title="statement not covered" >_IStatusType: IStatusType_;</span>
     private <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanSync');</span>
 &nbsp;
     private <span class="cstat-no" title="statement not covered" >_metadataCache = Global.getInstance().metadataCache;</span>
@@ -598,7 +607,7 @@ import { KanbanBoard } from './KanbanModels';
 &nbsp;
         const newHeadingState = <span class="cstat-no" title="statement not covered" >API.prjTaskManagementModel.getCorospondingModel(</span>
             this._changedFile,
-        )?.data.status;
+        )?.data.status?.value;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!newHeadingState) {</span>
 <span class="cstat-no" title="statement not covered" >            this._logger.warn(</span>
@@ -626,7 +635,7 @@ import { KanbanBoard } from './KanbanModels';
      */
     private <span class="fstat-no" title="function not covered" >syncFiles(</span>): void {
         // Iterate over all valid statuses
-<span class="cstat-no" title="statement not covered" >        PrjTypes.statuses.forEach(<span class="fstat-no" title="function not covered" >(s</span>tatus) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        this._IStatusType.types.forEach(<span class="fstat-no" title="function not covered" >(s</span>tatus) =&gt; {</span>
             const cardItem = <span class="cstat-no" title="statement not covered" >this._kanbankBoard?.getCardsPerStatus(status);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (!cardItem) {</span>
@@ -718,7 +727,7 @@ import { KanbanBoard } from './KanbanModels';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-19T08:19:40.950Z
+                at 2024-07-19T15:16:46.109Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
