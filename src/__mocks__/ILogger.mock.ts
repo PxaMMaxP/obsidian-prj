@@ -1,5 +1,30 @@
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 
+interface ILoggerMock_ {
+    reset: () => void;
+}
+
+interface ILoggerMock {
+    warn: {
+        mockClear: () => void;
+    };
+    info: {
+        mockClear: () => void;
+    };
+    error: {
+        mockClear: () => void;
+    };
+    trace: {
+        mockClear: () => void;
+    };
+    debug: {
+        mockClear: () => void;
+    };
+    setLogLevel: {
+        mockClear: () => void;
+    };
+}
+
 const MockLogger: ILogger = {
     warn: jest.fn(),
     info: jest.fn(),
@@ -9,9 +34,19 @@ const MockLogger: ILogger = {
     setLogLevel: jest.fn(),
 };
 
-export const MockLogger_: ILogger_ = {
+const MockLogger_: ILogger_ & ILoggerMock_ = {
     getLogger: jest.fn(() => MockLogger),
     getInstance: jest.fn(() => MockLogger),
-} as unknown as ILogger_;
+    reset: () => {
+        const logger = MockLogger as unknown as ILoggerMock;
+        logger.warn.mockClear();
+        logger.info.mockClear();
+        logger.error.mockClear();
+        logger.trace.mockClear();
+        logger.debug.mockClear();
+        logger.setLogLevel.mockClear();
+    },
+} as unknown as ILogger_ & ILoggerMock_;
 
+export { MockLogger_ };
 export default MockLogger;
