@@ -1,4 +1,5 @@
-import { Status, Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
+import { IStatusType } from 'src/libs/StatusType/interfaces/IStatusType';
+import { Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
 import { IPrjData } from './IPrjData';
 
 /**
@@ -9,11 +10,11 @@ export interface IPrjTaskManagementData extends IPrjData {
     /**
      * Get the **status** of the task.
      */
-    get status(): Status | null | undefined;
+    get status(): IStatusType | null | undefined;
     /**
      * Set the **status** of the task.
      */
-    set status(value: Status | null | undefined);
+    set status(value: unknown);
 
     /**
      * Get the **priority** of the task.

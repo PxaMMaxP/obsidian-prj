@@ -1,7 +1,12 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { Status, Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import type {
+    IStatusType,
+    IStatusType_,
+} from 'src/libs/StatusType/interfaces/IStatusType';
+import { Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjTaskManagementData } from './interfaces/IPrjTaskManagementData';
 import { PrjData } from './PrjData';
@@ -14,7 +19,10 @@ export class PrjTaskManagementData
     extends PrjData<PrjTaskManagementData>
     implements IPrjTaskManagementData
 {
-    protected _status: Status | null | undefined;
+    @Inject('IStatusType_')
+    protected _IStatusType!: IStatusType_;
+
+    protected _status: IStatusType | null | undefined;
     protected _priority: Priority | null | undefined;
     protected _energy: Energy | null | undefined;
     protected _due: string | null | undefined;
@@ -26,15 +34,15 @@ export class PrjTaskManagementData
      */
     @toStringField
     @fieldConfig()
-    get status(): Status | null | undefined {
+    get status(): IStatusType | null | undefined {
         return this._status;
     }
 
     /**
      * @inheritdoc
      */
-    set status(value: Status | null | undefined) {
-        this._status = value;
+    set status(value: unknown) {
+        this._status = new this._IStatusType(value);
     }
 
     /**
