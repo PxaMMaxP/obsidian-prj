@@ -1,5 +1,7 @@
 /* eslint-disable deprecation/deprecation */
 import Lng from 'src/classes/Lng';
+import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
+import { StatusType } from 'src/libs/StatusType/StatusType';
 import { FileType as FileType_ } from '../libs/FileType/FileType';
 import { FileTypes } from '../libs/FileType/interfaces/IFileType';
 
@@ -29,6 +31,7 @@ export type HistoryEntries = HistoryEntry[];
 
 /**
  * Represents the status of a task.
+ * @deprecated Use {@link StatusTypes} instead.
  */
 export type Status = 'Active' | 'Waiting' | 'Later' | 'Someday' | 'Done';
 
@@ -141,6 +144,7 @@ export default class PrjTypes {
 
     /**
      * An array of valid task statuses.
+     * @deprecated Use {@link StatusType.types} instead.
      */
     public static readonly statuses: Status[] = [
         'Active',
@@ -154,6 +158,7 @@ export default class PrjTypes {
      * Checks if a given value is a valid task status.
      * @param status - The value to check.
      * @returns The valid task status or undefined if the value is not valid.
+     * @deprecated Use {@link StatusType.validate} instead.
      */
     public static isValidStatus(status: unknown): Status | undefined {
         if (
@@ -171,6 +176,7 @@ export default class PrjTypes {
      * Returns a valid status if the given status is a valid translation.
      * @param status The status to check.
      * @returns The valid status or undefined if the status is not valid.
+     * @deprecated Use {@link StatusType.getValidStatusFromTranslation} instead.
      */
     public static getValidStatusFromLanguage(
         status: string,
