@@ -59,7 +59,7 @@ export class DocumentModel
                         ? `${wikilinkData.basename}.md`
                         : '';
 
-                    const file = this._metadataCache.getFileByLink(
+                    const file = this._IMetadataCache.getFileByLink(
                         mdFilename,
                         this.file.path,
                     );
@@ -97,7 +97,7 @@ export class DocumentModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this._app.vault.read(this.file);
+            return this._App.vault.read(this.file);
         } catch (error) {
             this._logger?.error(error);
         }
@@ -110,11 +110,11 @@ export class DocumentModel
     public getCorospondingSymbol(): string {
         if (this.data.type?.toString() === 'Metadata') {
             if (this.data.subType === 'Cluster') {
-                return this._pluginSettings.documentSettings.clusterSymbol;
+                return this._IPrjSettings.documentSettings.clusterSymbol;
             } else if (this.data.hide) {
-                return this._pluginSettings.documentSettings.hideSymbol;
+                return this._IPrjSettings.documentSettings.hideSymbol;
             } else {
-                return this._pluginSettings.documentSettings.symbol;
+                return this._IPrjSettings.documentSettings.symbol;
             }
         }
 
@@ -127,8 +127,8 @@ export class DocumentModel
      * E.g. `Input` if the document is addressed to the user or `Output` if it comes from the user. Otherwise `null`.
      */
     public getInputOutputState(): null | 'Input' | 'Output' {
-        const username = this._pluginSettings.user.name;
-        const shortUsername = this._pluginSettings.user.shortName;
+        const username = this._IPrjSettings.user.name;
+        const shortUsername = this._IPrjSettings.user.shortName;
 
         if (this.data && (this.data.sender || this.data.recipient)) {
             if (
@@ -158,7 +158,7 @@ export class DocumentModel
 
         const fileLinkData = new Wikilink(this.data.file);
 
-        const file = this._metadataCache.getFileByLink(
+        const file = this._IMetadataCache.getFileByLink(
             fileLinkData.filename ?? '',
             this.file.path,
         );
@@ -186,7 +186,7 @@ export class DocumentModel
     ): string | undefined {
         if (!file || !(file instanceof TFile)) return;
 
-        const linktext = this._global.app.metadataCache.fileToLinktext(
+        const linktext = this._App.metadataCache.fileToLinktext(
             file,
             path ? path : this.file.path,
         );

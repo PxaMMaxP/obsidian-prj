@@ -1,6 +1,8 @@
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { ILogger } from 'src/interfaces/ILogger';
 import { IProxyHandler, IProxyHandler_ } from './interfaces/IProxyHandler';
 import { ObjectPath } from './types/ObjectPath';
+import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * A class responsible for
@@ -8,9 +10,9 @@ import { ObjectPath } from './types/ObjectPath';
  * - manage a change object through a delegate function to track changes on the data object.
  * @template T The type of the data object.
  */
-const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
-    implements IProxyHandler<T>
-{
+@Register('IProxyHandler_')
+@ImplementsStatic<IProxyHandler_<object>>()
+export class ProxyHandler<T extends object> implements IProxyHandler<T> {
     /**
      * A map to store proxies of objects to reuse them
      * instead of unnecessarily creating new proxies for the same objects.
@@ -327,6 +329,4 @@ const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
         this._proxyMap.set(obj, proxy);
         this._reverseProxyMap.set(proxy, new WeakRef(obj));
     }
-};
-
-export { ProxyHandler_ as ProxyHandler };
+}

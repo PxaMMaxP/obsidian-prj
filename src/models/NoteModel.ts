@@ -59,7 +59,7 @@ export class NoteModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this._app.vault.read(this.file);
+            return this._App.vault.read(this.file);
         } catch (error) {
             this._logger?.error(error);
         }

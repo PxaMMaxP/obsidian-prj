@@ -71,11 +71,11 @@ export class PrjTaskManagementModel<
     public getCorospondingSymbol(): string {
         switch (this.data.type?.toString()) {
             case 'Topic':
-                return this._pluginSettings.prjSettings.topicSymbol;
+                return this._IPrjSettings.prjSettings.topicSymbol;
             case 'Project':
-                return this._pluginSettings.prjSettings.projectSymbol;
+                return this._IPrjSettings.prjSettings.projectSymbol;
             case 'Task':
-                return this._pluginSettings.prjSettings.taskSymbol;
+                return this._IPrjSettings.prjSettings.taskSymbol;
             default:
                 return 'x-circle';
         }

@@ -1,11 +1,14 @@
 import { App, TFile } from 'obsidian';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import { IProxyHandler } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
-import { ProxyHandler } from 'src/libs/ProxyHandler/ProxyHandler';
-import { IPrjSettings } from 'src/types/PrjSettings';
+import type {
+    IProxyHandler,
+    IProxyHandler_,
+} from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjBaseData from './Data/PrjBaseData';
 import { TransactionModel } from './TransactionModel';
 import Global from '../classes/Global';
@@ -20,11 +23,23 @@ export class FileModel<
     /**
      * @deprecated This property is deprecated and will be removed in the future.
      */
-    protected _global!: Global;
-    protected _pluginSettings!: IPrjSettings;
-    protected _app!: App;
-    protected _metadataCache!: IMetadataCache;
-    private _proxyHandler!: IProxyHandler<T>;
+    @Inject('Global')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    protected _Global!: Global;
+    @Inject('IPrjSettings')
+    protected _IPrjSettings!: IPrjSettings;
+    @Inject('App')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    protected _App!: App;
+    @Inject('IMetadataCache')
+    protected _IMetadataCache!: IMetadataCache;
+    @Inject('IProxyHandler_')
+    private readonly _IProxyHandler!: IProxyHandler_<T>;
+
+    private readonly _proxyHandler: IProxyHandler<T> = new this._IProxyHandler(
+        undefined,
+        this.updateKeyValue,
+    );
 
     private _file: TFile | undefined;
     /**
@@ -97,34 +112,12 @@ export class FileModel<
     ) {
         super(undefined, dependencies);
 
-        // eslint-disable-next-line deprecation/deprecation
-        this.initializeDependencies();
-
         if (file) {
             // Set the file and indirectly the `writeChanges` function.
             this.file = file;
         }
         this._ctor = ctor;
         this.initYamlKeyMap(yamlKeyMap);
-    }
-
-    /**
-     * Initializes the dependencies of the class.
-     * @todo Change to DI-Injection.
-     */
-    private initializeDependencies(): void {
-        // eslint-disable-next-line deprecation/deprecation
-        this._global = Global.getInstance();
-
-        this._app = this._dependencies.resolve<App>('App');
-
-        this._pluginSettings =
-            this._dependencies.resolve<IPrjSettings>('IPrjSettings');
-
-        this._metadataCache =
-            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
-
-        this._proxyHandler = new ProxyHandler(undefined, this.updateKeyValue);
     }
 
     /**
@@ -225,7 +218,7 @@ export class FileModel<
         this._logger?.trace(`Updating with:`, value);
 
         try {
-            await this._app?.fileManager.processFrontMatter(
+            await this._App?.fileManager.processFrontMatter(
                 this._file,
                 (frontmatter) => {
                     this.updateNestedFrontmatterObjects(frontmatter, value);
@@ -259,7 +252,7 @@ export class FileModel<
      */
     private getMetadata(): Record<string, unknown> | null {
         if (!this._file) return null;
-        const cachedMetadata = this._metadataCache?.getEntry(this._file);
+        const cachedMetadata = this._IMetadataCache?.getEntry(this._file);
 
         if (cachedMetadata?.metadata?.frontmatter) {
             // Without the deep clone, the data object in the Obsidian Metadata Cache is changed: Problems with dataview..
