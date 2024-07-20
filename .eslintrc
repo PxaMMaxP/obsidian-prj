@@ -271,7 +271,8 @@
         "allowTypedFunctionExpressions": true,
         "allowHigherOrderFunctions": true
       }
-    ]
+    ],
+    "@typescript-eslint/prefer-string-starts-ends-with": "warn"
   },
   "overrides": [
     {
