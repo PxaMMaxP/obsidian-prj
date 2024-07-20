@@ -261,11 +261,7 @@ export class FileModel<
         if (!this._file) return null;
         const cachedMetadata = this._metadataCache?.getEntry(this._file);
 
-        if (
-            cachedMetadata &&
-            cachedMetadata.metadata &&
-            cachedMetadata.metadata.frontmatter
-        ) {
+        if (cachedMetadata?.metadata?.frontmatter) {
             // Without the deep clone, the data object in the Obsidian Metadata Cache is changed: Problems with dataview..
             const clone = HelperGeneral.deepClone(
                 cachedMetadata.metadata.frontmatter,
@@ -292,7 +288,7 @@ export class FileModel<
         updates: object,
     ): void {
         Object.entries(updates).forEach(([key, value]) => {
-            if (this._yamlKeyMap && this._yamlKeyMap[key]) {
+            if (this._yamlKeyMap?.[key]) {
                 key = this._yamlKeyMap[key];
             }
 

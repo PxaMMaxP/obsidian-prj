@@ -26,7 +26,7 @@ export default class FileManager {
     ): Promise<boolean> {
         const logger = Logging.getLogger('FileManager/renameFile');
 
-        if (!file || !file.parent?.path || !filename) {
+        if (!file?.parent?.path || !filename) {
             filename ?? logger.error('No new filename provided');
             file ?? logger.error('No file provided');
             file.parent?.path ?? logger.error('No parent path provided');
