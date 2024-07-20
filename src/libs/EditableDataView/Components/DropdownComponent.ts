@@ -55,7 +55,7 @@ export default class DropdownComponent extends BaseComponent {
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public enableEditability() {
+    public enableEditability(): this {
         this._isEditable = true;
 
         return this;
@@ -66,7 +66,7 @@ export default class DropdownComponent extends BaseComponent {
      * @param value The value to set.
      * @returns The component itself.
      */
-    public setValue(value: string) {
+    public setValue(value: string): this {
         this._value = value;
 
         return this;
@@ -77,7 +77,7 @@ export default class DropdownComponent extends BaseComponent {
      * @param options The options to set.
      * @returns The component itself.
      */
-    public setOptions(options: { value: string; text: string }[]) {
+    public setOptions(options: { value: string; text: string }[]): this {
         this._options = options;
 
         return this;
@@ -88,7 +88,7 @@ export default class DropdownComponent extends BaseComponent {
      * @param title The title to set.
      * @returns The component itself.
      */
-    public setTitle(title: string) {
+    public setTitle(title: string): this {
         this._title = title;
 
         return this;
@@ -103,7 +103,7 @@ export default class DropdownComponent extends BaseComponent {
      */
     public setFormator(
         formator: (value: string) => { text: string; html?: DocumentFragment },
-    ) {
+    ): this {
         /**
          * Sets the presentation of the component.
          * @param value The value to set.
@@ -129,7 +129,7 @@ export default class DropdownComponent extends BaseComponent {
      * @remarks - The saver is called when the component save button is clicked.
      * - `value` is the value of the selected option. (Not the text!)
      */
-    public onSave(callback: (value: string) => Promise<void>) {
+    public onSave(callback: (value: string) => Promise<void>): this {
         this._onSave = callback;
 
         return this;
@@ -139,7 +139,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Enables the options of the dropdown component.
      */
-    private enableOptions() {
+    private enableOptions(): void {
         const optionFound = this._options.find((o) => o.value === this._value);
 
         if (!optionFound) {
@@ -160,7 +160,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Disables the options of the dropdown component.
      */
-    private disableOptions() {
+    private disableOptions(): void {
         this._select.innerHTML = '';
     }
 
@@ -168,7 +168,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Builds the presentation of the dropdown component.
      */
-    private build() {
+    private build(): void {
         this._presentationSpan = document.createElement('span');
         this._presentationContainer.appendChild(this._presentationSpan);
 
@@ -182,7 +182,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Builds the input of the dropdown component.
      */
-    private buildInput() {
+    private buildInput(): void {
         this._select = document.createElement('select');
         this._dataInputContainer.appendChild(this._select);
         this._select.title = this._title;
@@ -193,7 +193,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Enables the edit mode of the dropdown component.
      */
-    private enableEdit() {
+    private enableEdit(): void {
         this.enableOptions();
         this._select.value = this._value ? this._value : '';
         this._select.focus();
@@ -202,7 +202,7 @@ export default class DropdownComponent extends BaseComponent {
     /**
      * Disables the edit mode of the dropdown component.
      */
-    private disableEdit() {
+    private disableEdit(): void {
         this._onPresentation?.(this._selectedOption.value);
         //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
         this.disableOptions();

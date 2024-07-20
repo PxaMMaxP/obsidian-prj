@@ -522,7 +522,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     /**
      * Called when the search input changes.
      */
-    public onActiveFileFilter() {
+    public onActiveFileFilter(): void {
         this.onFilter();
     }
 }

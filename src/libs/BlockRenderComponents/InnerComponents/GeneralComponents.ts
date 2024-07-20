@@ -24,7 +24,7 @@ export default class GeneralComponents {
         path: string,
         type: FileType | FileTypes | undefined | null,
         corospondingSymbol: string,
-    ) {
+    ): void {
         new EditableDataView(container, component).addLink((link) =>
             link
                 .setValue(path)
@@ -56,7 +56,7 @@ export default class GeneralComponents {
         format: string,
         onRead: () => string,
         onWrite: (value: string) => void,
-    ) {
+    ): void {
         new EditableDataView(date, component).addDate((date) =>
             date
                 .setValue(onRead())
@@ -83,7 +83,7 @@ export default class GeneralComponents {
         tagContainer: DocumentFragment,
         component: Component,
         tags: string[],
-    ) {
+    ): void {
         tags.forEach((tag) => {
             new EditableDataView(tagContainer, component).addLink((link) =>
                 link

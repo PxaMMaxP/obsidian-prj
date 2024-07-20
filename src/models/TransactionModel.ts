@@ -109,7 +109,7 @@ export class TransactionModel<T> {
             update: T,
             previousPromise?: Promise<void>,
         ) => Promise<void>,
-    ) {
+    ): void {
         this._writeChanges = writeChanges;
 
         if (this.isTransactionActive) {

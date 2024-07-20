@@ -240,7 +240,7 @@ export class PrjTaskManagementModel<
         ) => PrjTaskManagementModel<
             IPrjData & IPrjTaskManagementData & PrjBaseData<unknown>
         >,
-    ) {
+    ): void {
         PrjTaskManagementModel._modelFactories.set(type, factory);
     }
 
@@ -453,7 +453,7 @@ export class PrjTaskManagementModel<
      * @param file - The file to synchronize the title and filename.
      * @see {@link PrjTaskManagementModel.getAutomaticFilename()}
      */
-    public static syncTitleToFilename(file: TFile) {
+    public static syncTitleToFilename(file: TFile): void {
         const logger = Logging.getLogger(
             'StaticPrjTaskManagementModel/syncTitleToFilename',
         );
@@ -481,7 +481,7 @@ export class PrjTaskManagementModel<
      * Syncs the status of the model to the path.
      * @param file The file to sync the status for.
      */
-    public static syncStatusToPath(file: TFile) {
+    public static syncStatusToPath(file: TFile): void {
         const model = PrjTaskManagementModel.getCorospondingModel(file);
 
         if (!model) {

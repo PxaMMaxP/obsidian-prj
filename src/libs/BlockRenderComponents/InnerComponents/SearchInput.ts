@@ -95,7 +95,9 @@ export default class SearchInput {
      * - The label text is `Search`-value of the translation.
      * - The label element has the class `filter-text`.
      */
-    private static createSearchLabel(searchLabelContainer: HTMLDivElement) {
+    private static createSearchLabel(
+        searchLabelContainer: HTMLDivElement,
+    ): void {
         const filterLabel = document.createElement('span');
         searchLabelContainer.appendChild(filterLabel);
         filterLabel.classList.add('filter-text');
@@ -109,7 +111,9 @@ export default class SearchInput {
      * @remarks - The sizer is a `HTMLLabelElement`.
      * - The sizer has the class `search-box-sizer`.
      */
-    private static createSearchBoxSizer(searchLabelContainer: HTMLDivElement) {
+    private static createSearchBoxSizer(
+        searchLabelContainer: HTMLDivElement,
+    ): HTMLLabelElement {
         const searchBoxSizer = document.createElement('label');
         searchLabelContainer.appendChild(searchBoxSizer);
         searchBoxSizer.classList.add('search-box-sizer');
@@ -126,7 +130,9 @@ export default class SearchInput {
      * - The input placeholder is `Search`-value of the translation.
      * - The input element has the class `search-box`.
      */
-    private static createSearchBoxInput(searchBoxSizer: HTMLLabelElement) {
+    private static createSearchBoxInput(
+        searchBoxSizer: HTMLLabelElement,
+    ): HTMLInputElement {
         const searchBoxInput = document.createElement('input');
         searchBoxSizer.appendChild(searchBoxInput);
         searchBoxInput.classList.add('search-box');
@@ -145,7 +151,7 @@ export default class SearchInput {
     private static setSearchBoxSizerValue(
         searchBoxSizer: HTMLElement,
         value: string,
-    ) {
+    ): void {
         searchBoxSizer.dataset.value = '_' + value + '_';
     }
 
@@ -157,7 +163,7 @@ export default class SearchInput {
     private static setSearchBoxInputValue(
         searchBoxInput: HTMLInputElement,
         value: string,
-    ) {
+    ): void {
         searchBoxInput.value = value;
     }
 }

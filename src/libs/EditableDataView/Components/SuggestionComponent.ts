@@ -53,7 +53,7 @@ export default class SuggestionComponent {
      * @returns The component itself.
      * @remarks If the suggestions are set, a suggestor is not needed.
      */
-    public setSuggestions(suggestions: Suggestions) {
+    public setSuggestions(suggestions: Suggestions): this {
         this._suggestions = suggestions;
 
         return this;
@@ -65,7 +65,7 @@ export default class SuggestionComponent {
      * @returns The component itself.
      * @remarks If the suggester is set, the suggestions are not needed and will be ignored.
      */
-    public setSuggester(suggester: (value: string) => Suggestions) {
+    public setSuggester(suggester: (value: string) => Suggestions): this {
         this._suggester = suggester;
 
         return this;
@@ -74,7 +74,7 @@ export default class SuggestionComponent {
     /**
      * Initializes the suggestion component.
      */
-    private setSuggestion() {
+    private setSuggestion(): void {
         let suggestion: Suggestion | undefined;
 
         if (!this._isScrollModeActive) {
@@ -144,7 +144,7 @@ export default class SuggestionComponent {
     /**
      * Refreshes the active suggestions.
      */
-    private refreshActiveSuggestions() {
+    private refreshActiveSuggestions(): void {
         this._activeSuggestions = this._suggester
             ? this._suggester(this._inputElement.textContent ?? '')
             : this._suggestions;
@@ -158,7 +158,7 @@ export default class SuggestionComponent {
      * - The suggestor has the css class `suggestions-container`.
      * - The suggestor is loaded and registered to the input element.
      */
-    public enableSuggestior() {
+    public enableSuggestior(): void {
         this._suggestorChild = new CustomizableRenderChild(
             this._suggestionsContainer,
         );
@@ -187,7 +187,7 @@ export default class SuggestionComponent {
      * Handles the input event for the suggestion component.
      * @remarks Disables the scroll mode, refreshes the active suggestions, and sets the suggestion.
      */
-    private onInput() {
+    private onInput(): void {
         // Disable the scroll mode.
         this._isScrollModeActive = false;
 
@@ -205,7 +205,7 @@ export default class SuggestionComponent {
      * - The 'Tab' button is used to adopt the complete suggestion.
      * - The 'Ctrl' + 'a' button is used to select the text in the input element.
      */
-    private onKeydown(event: KeyboardEvent) {
+    private onKeydown(event: KeyboardEvent): void {
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             // If the 'ArrowUp' or 'ArrowDown' button is pressed, the suggestions are scrolled through.
             event.preventDefault();
@@ -252,7 +252,7 @@ export default class SuggestionComponent {
     /**
      * Adopts the complete suggestion in the suggestions container.
      */
-    private adoptSuggestion() {
+    private adoptSuggestion(): void {
         this._inputElement.textContent += this._suggestionsContainer.innerText;
 
         const suggestion = this._activeSuggestions.find((suggestion) =>
@@ -291,14 +291,14 @@ export default class SuggestionComponent {
     /**
      * Returns the length of the text in the input element.
      */
-    private get inputTextLength() {
+    private get inputTextLength(): number {
         return this._inputElement.textContent?.length ?? 0;
     }
 
     /**
      * Returns the current cursor position in the input element.
      */
-    private get cursorPosition() {
+    private get cursorPosition(): number {
         const selection = window.getSelection();
 
         if (selection && selection.rangeCount > 0) {
@@ -315,7 +315,7 @@ export default class SuggestionComponent {
      * @param relativPosition Relative position to set the cursor to.
      * @remarks The position is clamped to the length of the input element and minimum 0.
      */
-    private setInputCursorRelativePosition(relativPosition: number) {
+    private setInputCursorRelativePosition(relativPosition: number): void {
         this.setInputCursorAbsolutePosition(
             this.cursorPosition + relativPosition,
         );
@@ -326,7 +326,7 @@ export default class SuggestionComponent {
      * @param position Position to set the cursor to.
      * @remarks The position is clamped to the length of the input element.
      */
-    private setInputCursorAbsolutePosition(position: CursorPosition) {
+    private setInputCursorAbsolutePosition(position: CursorPosition): void {
         position = this.getCursorPositionNumber(position);
 
         const selection = window.getSelection();
@@ -371,7 +371,7 @@ export default class SuggestionComponent {
     private selectText(
         startPosition: CursorPosition,
         endPosition: CursorPosition,
-    ) {
+    ): void {
         startPosition = this.getCursorPositionNumber(startPosition);
         endPosition = this.getCursorPositionNumber(endPosition);
 
@@ -410,7 +410,7 @@ export default class SuggestionComponent {
      * - The suggestions container has a click event listener that sets the cursor to the end of the input element.
      * - The suggestions container has the css classes `editable-data-view` & `suggestions-container`.
      */
-    private buildSuggestionsContainer() {
+    private buildSuggestionsContainer(): void {
         this._suggestionsContainer = document.createElement('span');
 
         this._suggestionsContainer.classList.add(
@@ -437,7 +437,7 @@ export default class SuggestionComponent {
      * @remarks Run this, if you want to disable the suggestor. (e.g. on disable edit mode)
      * @remarks Removes the suggestions container and unload the suggestor child.
      */
-    public disableSuggestor() {
+    public disableSuggestor(): void {
         this._suggestorChild?.unload();
         this._suggestionsContainer.remove();
     }

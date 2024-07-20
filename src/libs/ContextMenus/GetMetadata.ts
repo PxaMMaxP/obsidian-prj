@@ -93,7 +93,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * @param menu The context menu.
      * @param file The file to add the context menu item to.
      */
-    protected onContextMenu(menu: Menu, file: TAbstractFile) {
+    protected onContextMenu(menu: Menu, file: TAbstractFile): void {
         // Allow only pdf files
         if (!(file instanceof TFile) || !file.path.endsWith('.pdf')) {
             return;
@@ -147,7 +147,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
     /**
      * Opens the metadata file for the active (e.g. pdf) file.
      */
-    public async invoke() {
+    public async invoke(): Promise<void> {
         const workspace = this._app.workspace;
         const activeFile = workspace.getActiveFile();
 

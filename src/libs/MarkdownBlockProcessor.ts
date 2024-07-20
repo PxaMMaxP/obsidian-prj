@@ -43,7 +43,7 @@ export default class MarkdownBlockProcessor {
         source: string,
         el: HTMLElement,
         ctx: MarkdownPostProcessorContext,
-    ) {
+    ): Promise<void> {
         const startTime = Date.now();
         const global = Global.getInstance();
         await global.metadataCache.waitForCacheReady();

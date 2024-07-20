@@ -56,7 +56,7 @@ export default class MaxShownModelsInput {
         /**
          * Debounces the `onChange` callback.
          */
-        const debounceOnChange = () => {
+        const debounceOnChange = (): void => {
             clearTimeout(debounceTimer);
 
             debounceTimer = setTimeout(async () => {
@@ -148,7 +148,7 @@ export default class MaxShownModelsInput {
         maxShownModels: MaxShownModelNumber,
         batchSize: number,
         onMaxShownModelsChange: () => void,
-    ) {
+    ): void {
         component.registerDomEvent(
             maxShownNumber,
             'wheel',
@@ -237,7 +237,7 @@ export default class MaxShownModelsInput {
         batchSize: number,
         maxShownNumber: HTMLSpanElement,
         onMaxShownModelsChange: () => void,
-    ) {
+    ): void {
         if (type === 'minus') {
             if (maxShownModels.maxShownModels >= batchSize) {
                 // Subtracts either the remainder (to arrive at the next multiple of `batchSize`) or `batchSize` itself

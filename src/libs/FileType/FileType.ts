@@ -116,7 +116,7 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * Gets a frontmatter compatible string.
      * @returns The File Type as string.
      */
-    getFrontmatterObject() {
+    getFrontmatterObject(): string {
         return this._value ?? '';
     }
     /**

@@ -41,7 +41,7 @@ export class ContextMenu implements IContextMenu {
     /**
      * Deconstructs the 'ContextMenu' events and commands.
      */
-    public deconstructor() {
+    public deconstructor(): void {
         if (this._hasEventsAndCommandsRegistered) {
             this.deRegisterEventsAndCommands();
         } else {
@@ -53,7 +53,7 @@ export class ContextMenu implements IContextMenu {
      * Registers the events and commands for the class.
      * @remarks This method calls the onConstructon method.
      */
-    private registerEventsAndCommands() {
+    private registerEventsAndCommands(): void {
         try {
             this.onConstruction();
             this._hasEventsAndCommandsRegistered = true;
@@ -70,7 +70,7 @@ export class ContextMenu implements IContextMenu {
      * Deregesters the events and commands for the class.
      * @remarks This method calls the onDeconstructon method.
      */
-    private deRegisterEventsAndCommands() {
+    private deRegisterEventsAndCommands(): void {
         try {
             this.onDeconstruction();
             this._hasEventsAndCommandsRegistered = false;

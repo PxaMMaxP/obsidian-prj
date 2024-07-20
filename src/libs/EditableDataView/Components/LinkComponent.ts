@@ -48,7 +48,7 @@ export default class LinkComponent extends BaseComponent {
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public enableEditability() {
+    public enableEditability(): this {
         this._isEditable = true;
 
         return this;
@@ -59,7 +59,7 @@ export default class LinkComponent extends BaseComponent {
      * @param value The value to set.
      * @returns The component itself.
      */
-    public setValue(value: string) {
+    public setValue(value: string): this {
         this._value = value;
 
         return this;
@@ -70,7 +70,7 @@ export default class LinkComponent extends BaseComponent {
      * @param placeholder The placeholder to set.
      * @returns The component itself.
      */
-    public setPlaceholder(placeholder: string) {
+    public setPlaceholder(placeholder: string): this {
         this._placeholder = placeholder;
 
         return this;
@@ -81,7 +81,7 @@ export default class LinkComponent extends BaseComponent {
      * @param suggestions The suggestions to set.
      * @returns The component itself.
      */
-    public setSuggestions(suggestions: string[]) {
+    public setSuggestions(suggestions: string[]): this {
         this._suggestions = suggestions;
 
         return this;
@@ -92,7 +92,7 @@ export default class LinkComponent extends BaseComponent {
      * @param title The title to set.
      * @returns The component itself.
      */
-    public setTitle(title: string) {
+    public setTitle(title: string): this {
         this._title = title;
 
         return this;
@@ -103,7 +103,7 @@ export default class LinkComponent extends BaseComponent {
      * @param type The type to set. Can be `tag`, `file` or `external`.
      * @returns The component itself.
      */
-    public setLinkType(type: 'tag' | 'file' | 'external') {
+    public setLinkType(type: 'tag' | 'file' | 'external'): this {
         this._linkType = type;
 
         return this;
@@ -115,7 +115,7 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The suggester is called when the user types in the input element.
      */
-    public setSuggester(suggester: (value: string) => string[]) {
+    public setSuggester(suggester: (value: string) => string[]): this {
         this._suggester = suggester;
 
         return this;
@@ -133,7 +133,7 @@ export default class LinkComponent extends BaseComponent {
             text: string;
             html?: DocumentFragment;
         },
-    ) {
+    ): this {
         /**
          * Sets the presentation of the component.
          * @param value The value to present.
@@ -178,7 +178,7 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The saver is called when the component save button is clicked.
      */
-    public onSave(callback: (value: string) => Promise<void>) {
+    public onSave(callback: (value: string) => Promise<void>): this {
         this._onSave = callback;
 
         return this;
@@ -189,7 +189,7 @@ export default class LinkComponent extends BaseComponent {
      * Sets the suggestions list for the input element.
      * @param suggestions The suggestions to set.
      */
-    private setSuggestionsList(suggestions: string[]) {
+    private setSuggestionsList(suggestions: string[]): void {
         if (!this._datalist) return;
         this._datalist.innerHTML = '';
 
@@ -204,7 +204,7 @@ export default class LinkComponent extends BaseComponent {
     /**
      * Builds the presentation mode of the component.
      */
-    private build() {
+    private build(): void {
         this._link = document.createElement('a');
         this._presentationContainer.appendChild(this._link);
 
@@ -234,7 +234,7 @@ export default class LinkComponent extends BaseComponent {
     /**
      * Builds the input mode of the component.
      */
-    private buildInput() {
+    private buildInput(): void {
         this._label = document.createElement('label');
         this._label.title = this._title;
         this._dataInputContainer.appendChild(this._label);
@@ -290,7 +290,7 @@ export default class LinkComponent extends BaseComponent {
     /**
      * Enables the edit mode of the component.
      */
-    private enableEdit() {
+    private enableEdit(): void {
         this._onPresentation?.(this._value);
         this._input.focus();
         this._input.select();
@@ -299,7 +299,7 @@ export default class LinkComponent extends BaseComponent {
     /**
      * Disables the edit mode of the component.
      */
-    private disableEdit() {
+    private disableEdit(): void {
         this._onPresentation?.(this._value);
     }
 

@@ -21,7 +21,7 @@ export default class DocumentComponents {
         documentModel: DocumentModel,
         component: Component,
         summaryRelatedFiles: DocumentFragment,
-    ) {
+    ): void {
         const description = documentModel.data.description ?? '';
 
         new EditableDataView(summaryRelatedFiles, component).addTextarea(
@@ -53,7 +53,7 @@ export default class DocumentComponents {
         documentModel: DocumentModel,
         noneDocSymbol: string,
         dateFormatShort: string,
-    ) {
+    ): void {
         const relatedFiles = documentModel.relatedFiles;
 
         if (!relatedFiles || relatedFiles.length === 0) return;
@@ -236,7 +236,7 @@ export default class DocumentComponents {
         title: string,
         onSaveCallback: (value: string) => Promise<void>,
         models: DocumentModel[] = [],
-    ) {
+    ): EditableDataView {
         return new EditableDataView(name, component).addText((text) =>
             text
                 .setValue(value)
@@ -273,7 +273,7 @@ export default class DocumentComponents {
         component: Component,
         documentModel: DocumentModel,
         editability = true,
-    ) {
+    ): void {
         const metadataCache = Global.getInstance().metadataCache;
         const app = Global.getInstance().app;
 
@@ -336,7 +336,7 @@ export default class DocumentComponents {
         metadataLink: DocumentFragment,
         component: Component,
         documentModel: DocumentModel,
-    ) {
+    ): void {
         const settings = Global.getInstance().settings;
 
         new EditableDataView(metadataLink, component).addLink((link) =>

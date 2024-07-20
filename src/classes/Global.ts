@@ -53,7 +53,7 @@ export default class Global {
     /**
      * Waits for the cache to be initialized.
      */
-    public async awaitCacheInitialization() {
+    public async awaitCacheInitialization(): Promise<void> {
         this._logger?.debug('Waiting for cache initialization');
         await this.metadataCache.waitForCacheReady();
         this._logger?.debug('Cache initialized');
@@ -62,7 +62,7 @@ export default class Global {
     /**
      * Cleans up resources used by the Global instance.
      */
-    public static deconstructor() {
+    public static deconstructor(): void {
         MetadataCache.deconstructor();
     }
 

@@ -466,7 +466,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     /**
      * This method runs the {@link TableBlockRenderComponent.filter} method.
      */
-    public onActiveFileFilter() {
+    public onActiveFileFilter(): void {
         this.onFilter();
     }
 

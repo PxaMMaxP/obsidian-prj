@@ -8,7 +8,7 @@ import { IStatusType_, IStatusType } from '../interfaces/IStatusType';
  * @param StatusType The IStatusType implementation to test.
  * Must implement {@link IStatusType}, {@link IStatusType_}
  */
-export function test_IStatusType(StatusType: IStatusType_) {
+export function test_IStatusType(StatusType: IStatusType_): void {
     describe('IDIContainer Implementation Tests', () => {
         let statusType: IStatusType;
         DIContainer.getInstance().register('ILogger_', MockLogger_);
