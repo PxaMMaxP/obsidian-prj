@@ -272,7 +272,8 @@
         "allowHigherOrderFunctions": true
       }
     ],
-    "@typescript-eslint/prefer-string-starts-ends-with": "warn"
+    "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+    "@typescript-eslint/no-misused-promises": "warn"
   },
   "overrides": [
     {
