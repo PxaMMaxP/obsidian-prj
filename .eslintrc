@@ -276,7 +276,8 @@
   "overrides": [
     {
       "files": [
-        "*.test.ts"
+        "*.test.ts",
+        "*.spec.ts"
       ],
       "rules": {
         "jsdoc/require-jsdoc": "off",
