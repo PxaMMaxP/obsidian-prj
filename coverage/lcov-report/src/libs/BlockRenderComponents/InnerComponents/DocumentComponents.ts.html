@@ -428,9 +428,7 @@
 <a name='L363'></a><a href='#L363'>363</a>
 <a name='L364'></a><a href='#L364'>364</a>
 <a name='L365'></a><a href='#L365'>365</a>
-<a name='L366'></a><a href='#L366'>366</a>
-<a name='L367'></a><a href='#L367'>367</a>
-<a name='L368'></a><a href='#L368'>368</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L366'></a><a href='#L366'>366</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -486,6 +484,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -543,7 +542,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -674,7 +672,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -773,7 +770,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -824,7 +820,7 @@ import { DocumentModel } from 'src/models/DocumentModel';
         const description = <span class="cstat-no" title="statement not covered" >documentModel.data.description ?? '';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        new EditableDataView(summaryRelatedFiles, component).addTextarea(</span>
-<span class="fstat-no" title="function not covered" >            (t</span>extarea) =&gt;
+<span class="fstat-no" title="function not covered" >            (t</span>extarea) =&gt; {
 <span class="cstat-no" title="statement not covered" >                textarea</span>
                     .setValue(description)
                     .setTitle('Summary')
@@ -834,7 +830,8 @@ import { DocumentModel } from 'src/models/DocumentModel';
 <span class="cstat-no" title="statement not covered" >                        documentModel.data.description = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                        return Promise.resolve();</span>
-                    }),
+                    });
+            },
         );
     }
 &nbsp;
@@ -908,17 +905,16 @@ import { DocumentModel } from 'src/models/DocumentModel';
 <span class="cstat-no" title="statement not covered" >            gridContainer.append(dateContainer);</span>
 <span class="cstat-no" title="statement not covered" >            dateContainer.classList.add('date-container');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            new EditableDataView(dateContainer, component).addDate(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >                date</span>
-                    .setValue(relatedFile.data.date ?? 'na')
+<span class="cstat-no" title="statement not covered" >            new EditableDataView(dateContainer, component).addDate(<span class="fstat-no" title="function not covered" >(d</span>ate) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                date.setValue(relatedFile.data.date ?? 'na')</span>
                     .setTitle('Document Date')
                     .setFormator(<span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt;
 <span class="cstat-no" title="statement not covered" >                        HelperGeneral.formatDate(</span>
                             value,
                             HelperGeneral.formatDate(value, dateFormatShort),
                         ),
-                    ),
-            );
+                    );
+            });
 &nbsp;
             const textContainer = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
 <span class="cstat-no" title="statement not covered" >            gridContainer.append(textContainer);</span>
@@ -1036,9 +1032,8 @@ import { DocumentModel } from 'src/models/DocumentModel';
         onSaveCallback: (value: string) =&gt; Promise&lt;void&gt;,
         models: DocumentModel[] = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span>
     ): EditableDataView {
-<span class="cstat-no" title="statement not covered" >        return new EditableDataView(name, component).addText(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            text</span>
-                .setValue(value)
+<span class="cstat-no" title="statement not covered" >        return new EditableDataView(name, component).addText(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            text.setValue(value)</span>
                 .setTitle(title)
                 .enableEditability()
                 .setSuggester(<span class="fstat-no" title="function not covered" >(i</span>nputValue: string) =&gt; {
@@ -1056,8 +1051,8 @@ import { DocumentModel } from 'src/models/DocumentModel';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return suggestions;</span>
                 })
-                .onSave(<span class="fstat-no" title="function not covered" >(n</span>ewValue: string) =&gt; <span class="cstat-no" title="statement not covered" >onSaveCallback(newValue))</span>,
-        );
+                .onSave(<span class="fstat-no" title="function not covered" >(n</span>ewValue: string) =&gt; <span class="cstat-no" title="statement not covered" >onSaveCallback(newValue))</span>;
+        });
     }
 &nbsp;
     /**
@@ -1138,9 +1133,8 @@ import { DocumentModel } from 'src/models/DocumentModel';
     ): void {
         const settings = <span class="cstat-no" title="statement not covered" >Global.getInstance().settings;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(metadataLink, component).addLink(<span class="fstat-no" title="function not covered" >(l</span>ink) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            link</span>
-                .setValue(documentModel.file.path)
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(metadataLink, component).addLink(<span class="fstat-no" title="function not covered" >(l</span>ink) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            link.setValue(documentModel.file.path)</span>
                 .setTitle('Open metadata file')
                 .setLinkType('file')
                 .setFormator(<span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; {
@@ -1160,8 +1154,8 @@ import { DocumentModel } from 'src/models/DocumentModel';
 <span class="cstat-no" title="statement not covered" >                    setIcon(icon as unknown as HTMLDivElement, iconString);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return { href: `${value}`, text: `${value}`, html: icon };</span>
-                }),
-        );
+                });
+        });
     }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -1171,7 +1165,7 @@ import { DocumentModel } from 'src/models/DocumentModel';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:59:26.721Z
+                at 2024-07-20T16:19:26.286Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

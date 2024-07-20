@@ -342,9 +342,7 @@
 <a name='L277'></a><a href='#L277'>277</a>
 <a name='L278'></a><a href='#L278'>278</a>
 <a name='L279'></a><a href='#L279'>279</a>
-<a name='L280'></a><a href='#L280'>280</a>
-<a name='L281'></a><a href='#L281'>281</a>
-<a name='L282'></a><a href='#L282'>282</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L280'></a><a href='#L280'>280</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -428,7 +426,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -571,7 +568,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -707,9 +703,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
         description: string,
         onWrite: (value: string) =&gt; void,
     ): void {
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addTextarea(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            text</span>
-                .setValue(description)
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addTextarea(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            text.setValue(description)</span>
                 .setTitle(Lng.gt('Description'))
                 .setPlaceholder(Lng.gt('Description'))
                 .enableEditability()
@@ -718,8 +713,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
 <span class="cstat-no" title="statement not covered" >                    onWrite(value);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return Promise.resolve();</span>
-                }),
-        );
+                });
+        });
     }
 &nbsp;
     /**
@@ -735,7 +730,7 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
         onRead: () =&gt; string,
         onWrite: (value: string) =&gt; void,
     ): void {
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addDropdown(<span class="fstat-no" title="function not covered" >(d</span>ropdown) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addDropdown(<span class="fstat-no" title="function not covered" >(d</span>ropdown) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            dropdown</span>
                 .setOptions([
                     { value: 'Active', text: Lng.gt('StatusActive') },
@@ -776,8 +771,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
                     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return { text: `${iconString}`, html: undefined };</span>
-                }),
-        );
+                });
+        });
     }
 &nbsp;
     /**
@@ -793,7 +788,7 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
         onRead: () =&gt; string,
         onWrite: (value: string) =&gt; void,
     ): void {
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addDropdown(<span class="fstat-no" title="function not covered" >(d</span>ropdown) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addDropdown(<span class="fstat-no" title="function not covered" >(d</span>ropdown) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            dropdown</span>
                 .setOptions([
                     { value: '3', text: Lng.gt('HighPriority') },
@@ -831,8 +826,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
 <span class="cstat-no" title="statement not covered" >                    setIcon(icon as unknown as HTMLDivElement, iconString);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return { text: `${value}`, html: icon };</span>
-                }),
-        );
+                });
+        });
     }
 &nbsp;
     /**
@@ -850,9 +845,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
         type: FileTypes | undefined | null,
         corospondingSymbol: string,
     ): void {
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addLink(<span class="fstat-no" title="function not covered" >(l</span>ink) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            link</span>
-                .setValue(path)
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(container, component).addLink(<span class="fstat-no" title="function not covered" >(l</span>ink) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            link.setValue(path)</span>
                 .setTitle(Lng.gt(type ?? 'File'))
                 .setLinkType('file')
                 .setFormator(<span class="fstat-no" title="function not covered" >(v</span>alue: string) =&gt; {
@@ -861,8 +855,8 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
 <span class="cstat-no" title="statement not covered" >                    setIcon(icon as unknown as HTMLDivElement, iconString);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return { href: `${value}`, text: `${value}`, html: icon };</span>
-                }),
-        );
+                });
+        });
     }
 &nbsp;
     /**
@@ -913,7 +907,7 @@ import { UrgencySymbols } from 'src/types/PrjTypes';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:59:26.721Z
+                at 2024-07-20T16:19:26.286Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

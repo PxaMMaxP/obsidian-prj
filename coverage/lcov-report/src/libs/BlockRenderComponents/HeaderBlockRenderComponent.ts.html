@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/158</span>
+                <span class='fraction'>0/157</span>
             </div>
         
             
@@ -39,7 +39,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/48</span>
+                <span class='fraction'>0/47</span>
             </div>
         
             
@@ -613,7 +613,8 @@
 <a name='L548'></a><a href='#L548'>548</a>
 <a name='L549'></a><a href='#L549'>549</a>
 <a name='L550'></a><a href='#L550'>550</a>
-<a name='L551'></a><a href='#L551'>551</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -951,7 +952,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1008,6 +1008,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1031,6 +1032,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1494,9 +1496,8 @@ import { TagTree } from '../Tags/types/TagTree';
         const titleDiv = <span class="cstat-no" title="statement not covered" >document.createElement('div');</span>
 <span class="cstat-no" title="statement not covered" >        titleDiv.classList.add('title');</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        new EditableDataView(titleDiv, this._childComponent).addText(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >            text</span>
-                .setValue(this.title ?? '')
+<span class="cstat-no" title="statement not covered" >        new EditableDataView(titleDiv, this._childComponent).addText(<span class="fstat-no" title="function not covered" >(t</span>ext) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            text.setValue(this.title ?? '')</span>
                 .setTitle(Lng.gt('Title'))
                 .setPlaceholder(Lng.gt('Title'))
                 .enableEditability()
@@ -1505,8 +1506,8 @@ import { TagTree } from '../Tags/types/TagTree';
 <span class="cstat-no" title="statement not covered" >                    this.title = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                    return Promise.resolve();</span>
-                }),
-        );
+                });
+        });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this.createDocumentFragment(titleDiv);</span>
     }
@@ -1524,7 +1525,7 @@ import { TagTree } from '../Tags/types/TagTree';
 <span class="cstat-no" title="statement not covered" >        statusLabel.innerText = `${Lng.gt('Status')}: `;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        new EditableDataView(statusDiv, this._childComponent).addDropdown(</span>
-<span class="fstat-no" title="function not covered" >            (d</span>ropdown) =&gt;
+<span class="fstat-no" title="function not covered" >            (d</span>ropdown) =&gt; {
 <span class="cstat-no" title="statement not covered" >                dropdown</span>
                     .setOptions([
                         { value: 'Active', text: Lng.gt('StatusActive') },
@@ -1555,7 +1556,8 @@ import { TagTree } from '../Tags/types/TagTree';
                         const presentationSpan =
 <span class="cstat-no" title="statement not covered" >                            value.querySelector('.text-presentation');</span>
 <span class="cstat-no" title="statement not covered" >                        presentationSpan?.addClass('cm-strong');</span>
-                    }),
+                    });
+            },
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this.createDocumentFragment(statusDiv);</span>
@@ -1570,7 +1572,7 @@ import { TagTree } from '../Tags/types/TagTree';
 <span class="cstat-no" title="statement not covered" >        descriptionDiv.classList.add('description');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        new EditableDataView(descriptionDiv, this._childComponent).addTextarea(</span>
-<span class="fstat-no" title="function not covered" >            (t</span>extarea) =&gt;
+<span class="fstat-no" title="function not covered" >            (t</span>extarea) =&gt; {
 <span class="cstat-no" title="statement not covered" >                textarea</span>
                     .setValue(this.description ?? '')
                     .setTitle(Lng.gt('Description'))
@@ -1581,7 +1583,8 @@ import { TagTree } from '../Tags/types/TagTree';
 <span class="cstat-no" title="statement not covered" >                        this.description = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                        return Promise.resolve();</span>
-                    }),
+                    });
+            },
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this.createDocumentFragment(descriptionDiv);</span>
@@ -1708,7 +1711,7 @@ import { TagTree } from '../Tags/types/TagTree';
 <span class="cstat-no" title="statement not covered" >        this._logger.trace('Active file changed: Debouncing');</span>
 <span class="cstat-no" title="statement not covered" >        clearTimeout(this._activeFileDebounceTimer);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this._activeFileDebounceTimer = setTimeout(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+<span class="cstat-no" title="statement not covered" >        this._activeFileDebounceTimer = setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            this.redraw();</span>
         }, 750);
     }
@@ -1720,7 +1723,7 @@ import { TagTree } from '../Tags/types/TagTree';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:59:26.721Z
+                at 2024-07-20T16:19:26.286Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

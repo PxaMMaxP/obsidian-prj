@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/57</span>
+                <span class='fraction'>0/56</span>
             </div>
         
             
@@ -39,7 +39,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -336,7 +336,9 @@
 <a name='L271'></a><a href='#L271'>271</a>
 <a name='L272'></a><a href='#L272'>272</a>
 <a name='L273'></a><a href='#L273'>273</a>
-<a name='L274'></a><a href='#L274'>274</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -399,11 +401,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -670,20 +674,22 @@
         const debounceOnChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): void =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            clearTimeout(debounceTimer);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            debounceTimer = setTimeout(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
-<span class="cstat-no" title="statement not covered" >                try {</span>
-<span class="cstat-no" title="statement not covered" >                    maxShownModels.maxShownModels =</span>
-                        (await onChange(maxShownModels.maxShownModels)) ??
-                        maxShownModels.maxShownModels;
-                } catch (error) {
-<span class="cstat-no" title="statement not covered" >                    logger.error(</span>
-                        'The `onChange` callback threw an error!',
-                        error,
-                    );
-                } finally {
-<span class="cstat-no" title="statement not covered" >                    number.number.textContent =</span>
-                        maxShownModels.maxShownModels.toString();
-                }
+<span class="cstat-no" title="statement not covered" >            debounceTimer = setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                Promise.resolve(onChange(maxShownModels.maxShownModels))</span>
+                    .then(<span class="fstat-no" title="function not covered" >(n</span>ewMaxShownModels) =&gt; {
+<span class="cstat-no" title="statement not covered" >                        maxShownModels.maxShownModels =</span>
+                            newMaxShownModels ?? maxShownModels.maxShownModels;
+                    })
+                    .catch(<span class="fstat-no" title="function not covered" >(e</span>rror) =&gt; {
+<span class="cstat-no" title="statement not covered" >                        logger.error(</span>
+                            'The `onChange` callback threw an error!',
+                            error,
+                        );
+                    })
+                    .finally(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="cstat-no" title="statement not covered" >                        number.number.textContent =</span>
+                            maxShownModels.maxShownModels.toString();
+                    });
             }, 500);
         };
 &nbsp;
@@ -889,7 +895,7 @@ type MaxShownModelNumber = { maxShownModels: number };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:59:26.721Z
+                at 2024-07-20T16:19:26.286Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
