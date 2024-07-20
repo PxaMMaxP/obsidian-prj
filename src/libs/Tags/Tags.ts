@@ -355,7 +355,7 @@ export class Tags extends BaseComplexDataType implements ITags {
         if (file) {
             const cache = this._IMetadataCache.getEntry(file);
 
-            if (cache && cache.metadata && cache.metadata.frontmatter) {
+            if (cache?.metadata?.frontmatter) {
                 return this.add(cache.metadata.frontmatter.tags);
             } else {
                 this._logger?.warn('No metadata found in the file.');

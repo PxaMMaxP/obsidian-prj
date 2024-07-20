@@ -229,10 +229,7 @@ export default class Table {
             const tableCell = tableRow.insertCell();
             tableCell.classList.add(...this._defaultClasses.cell);
 
-            if (
-                this._headers[index] !== undefined &&
-                this._headers[index].columnClass
-            ) {
+            if (this._headers[index]?.columnClass) {
                 this._headers[index].columnClass?.forEach((classItem) => {
                     tableCell.classList.add(classItem);
                 });

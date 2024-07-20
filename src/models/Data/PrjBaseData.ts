@@ -44,7 +44,7 @@ export default abstract class PrjBaseData<T> {
         for (const config of this.fieldConfig) {
             const key = config.key as keyof T;
 
-            if (data && data[key] !== undefined) {
+            if (data?.[key] !== undefined) {
                 (this as unknown as T)[key] = data[key] as T[keyof T];
             } else if (config.defaultValue !== undefined) {
                 (this as unknown as T)[key] = config.defaultValue;

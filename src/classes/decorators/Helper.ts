@@ -20,7 +20,7 @@ export function copyStaticProperties<SourceType>(
                         prop,
                     );
 
-                    if (descriptor && descriptor.configurable) {
+                    if (descriptor?.configurable) {
                         Object.defineProperty(target, prop, descriptor);
                     }
                 }
