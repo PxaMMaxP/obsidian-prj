@@ -730,7 +730,8 @@
 <a name='L665'></a><a href='#L665'>665</a>
 <a name='L666'></a><a href='#L666'>666</a>
 <a name='L667'></a><a href='#L667'>667</a>
-<a name='L668'></a><a href='#L668'>668</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L668'></a><a href='#L668'>668</a>
+<a name='L669'></a><a href='#L669'>669</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -769,6 +770,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1427,19 +1429,20 @@ import type { IPrjSettings } from 'src/types/PrjSettings';
  */
 @RegisterInstance('IMetadataCache')
 export default class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >MetadataCache<span class="cstat-no" title="statement not covered" > implements IMetadataCache {</span></span></span>
-    private _eventHandler: GenericEvents&lt;IMetadataCacheEvents&gt;;
+    private readonly _eventHandler: GenericEvents&lt;IMetadataCacheEvents&gt;;
     @Inject('App')
-    private <span class="cstat-no" title="statement not covered" >_app!: App;</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_app!: App;</span>
     @Inject('IPrjSettings')
-    private <span class="cstat-no" title="statement not covered" >_settings!: IPrjSettings;</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_settings!: IPrjSettings;</span>
     @Inject('ILogger_', <span class="fstat-no" title="function not covered" >(x</span>: ILogger_) =&gt; <span class="cstat-no" title="statement not covered" >x.getLogger('MetadataCache'),</span> false)
-    private <span class="cstat-no" title="statement not covered" >_logger?: ILogger;</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_logger?: ILogger;</span>
 &nbsp;
-    private <span class="cstat-no" title="statement not covered" >_metadataCachePromise: Promise&lt;void&gt; | undefined = undefined;</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_metadataCachePromise: Promise&lt;void&gt; | undefined =</span>
+        undefined;
     private <span class="cstat-no" title="statement not covered" >_metadataCache: Map&lt;string, FileMetadata&gt; | undefined = undefined;</span>
     private <span class="cstat-no" title="statement not covered" >_metadataCacheArray: FileMetadata[] | undefined = undefined;</span>
-    private <span class="cstat-no" title="statement not covered" >_metadataCacheReady = false;</span>
-    private <span class="cstat-no" title="statement not covered" >_eventsRegistered = false;</span>
+    private <span class="cstat-no" title="statement not covered" >_isMetadataCacheReady = false;</span>
+    private <span class="cstat-no" title="statement not covered" >_hasEventsRegistered = false;</span>
 &nbsp;
     static instance: MetadataCache;
 &nbsp;
@@ -1451,7 +1454,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * - You can use the array permanently, but you should not rely on the order of the entries.
      */
 <span class="fstat-no" title="function not covered" >    public get c</span>ache(): FileMetadata[] {
-<span class="cstat-no" title="statement not covered" >        if (this._metadataCacheReady &amp;&amp; this._metadataCache) {</span>
+<span class="cstat-no" title="statement not covered" >        if (this._isMetadataCacheReady &amp;&amp; this._metadataCache) {</span>
 <span class="cstat-no" title="statement not covered" >            if (this._metadataCacheArray) <span class="cstat-no" title="statement not covered" >return this._metadataCacheArray;</span></span>
             else {
 <span class="cstat-no" title="statement not covered" >                this._metadataCacheArray = Array.from(</span>
@@ -1521,7 +1524,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
 &nbsp;
         const instance = <span class="cstat-no" title="statement not covered" >MetadataCache.instance;</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (instance._eventsRegistered) {</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (instance._hasEventsRegistered) {</span>
 <span class="cstat-no" title="statement not covered" >            instance._app.vault.off('rename', instance.renameEventHandler);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            instance._app.metadataCache.off(</span>
@@ -1534,7 +1537,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
                 instance.deleteEventHandler,
             );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            instance._eventsRegistered = false;</span>
+<span class="cstat-no" title="statement not covered" >            instance._hasEventsRegistered = false;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            logger.debug('Metadata cache events unregistered');</span>
 &nbsp;
@@ -1549,7 +1552,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @returns True if the metadata cache is ready, false otherwise
      */
     public <span class="fstat-no" title="function not covered" >isCacheReady(</span>): boolean {
-<span class="cstat-no" title="statement not covered" >        return this._metadataCacheReady;</span>
+<span class="cstat-no" title="statement not covered" >        return this._isMetadataCacheReady;</span>
     }
 &nbsp;
     /**
@@ -1558,7 +1561,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @description This method returns a promise that resolves when the metadata cache is ready.
      */
     public async <span class="fstat-no" title="function not covered" >waitForCacheReady(</span>): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >        while (!this._metadataCacheReady) {</span>
+<span class="cstat-no" title="statement not covered" >        while (!this._isMetadataCacheReady) {</span>
 <span class="cstat-no" title="statement not covered" >            await new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve) =&gt; <span class="cstat-no" title="statement not covered" >setTimeout(resolve, 5))</span>;</span>
         }
     }
@@ -1786,7 +1789,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        await Promise.all(addEntryPromises);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this._metadataCacheReady = true;</span>
+<span class="cstat-no" title="statement not covered" >        this._isMetadataCacheReady = true;</span>
 &nbsp;
         const endTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
 &nbsp;
@@ -2053,12 +2056,12 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Register event handlers for the metadata cache
      */
     private <span class="fstat-no" title="function not covered" >registerEvents(</span>) {
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._eventsRegistered) {</span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._hasEventsRegistered) {</span>
 <span class="cstat-no" title="statement not covered" >            this._app.vault.on('rename', this.renameEventHandler);</span>
 <span class="cstat-no" title="statement not covered" >            this._app.metadataCache.on('changed', this.changedEventHandler);</span>
 <span class="cstat-no" title="statement not covered" >            this._app.metadataCache.on('deleted', this.deleteEventHandler);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            this._eventsRegistered = true;</span>
+<span class="cstat-no" title="statement not covered" >            this._hasEventsRegistered = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            this._logger?.debug('Metadata cache events registered');</span>
         }
@@ -2071,7 +2074,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-19T15:16:46.109Z
+                at 2024-07-20T15:13:12.669Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

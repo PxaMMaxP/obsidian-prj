@@ -791,22 +791,22 @@
  * Also contains the Lists that are part of the board.
  */
 <span class="cstat-no" title="statement not covered" >export class K</span>anbanBoard {
-    private <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('ParsedKanban');</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('ParsedKanban');</span>
 &nbsp;
     /**
      * Contains all lists that are part of the board.
      */
     public <span class="cstat-no" title="statement not covered" >lists: KanbanList[] = [];</span>
 &nbsp;
-    private <span class="cstat-no" title="statement not covered" >_kanbanChanged = false;</span>
+    private <span class="cstat-no" title="statement not covered" >_hasKanbanChanged = false;</span>
     /**
      * Returns whether the kanban board has changed.
      */
 <span class="fstat-no" title="function not covered" >    public get k</span>anbanChanged(): boolean {
-<span class="cstat-no" title="statement not covered" >        return this._kanbanChanged;</span>
+<span class="cstat-no" title="statement not covered" >        return this._hasKanbanChanged;</span>
     }
 &nbsp;
-    private _contentFrontmatter: string;
+    private readonly _contentFrontmatter: string;
     /**
      * Returns the *raw* frontmatter of the board.
      */
@@ -814,7 +814,7 @@
 <span class="cstat-no" title="statement not covered" >        return this._contentFrontmatter;</span>
     }
 &nbsp;
-    private _contentMarkdown: string;
+    private readonly _contentMarkdown: string;
     /**
      * Returns the *raw* markdown content of the board.
      */
@@ -822,7 +822,7 @@
 <span class="cstat-no" title="statement not covered" >        return this._contentMarkdown;</span>
     }
 &nbsp;
-    private _contentKanbanSettings: string;
+    private readonly _contentKanbanSettings: string;
     /**
      * Returns the *raw* kanban settings of the board.
      */
@@ -955,7 +955,7 @@
 <span class="cstat-no" title="statement not covered" >                    for (const newCard of this.lists) {</span>
 <span class="cstat-no" title="statement not covered" >                        <span class="missing-if-branch" title="if path not taken" >I</span>if (newCard.status === status) {</span>
 <span class="cstat-no" title="statement not covered" >                            newCard.addCard(card);</span>
-<span class="cstat-no" title="statement not covered" >                            this._kanbanChanged = true;</span>
+<span class="cstat-no" title="statement not covered" >                            this._hasKanbanChanged = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                            return;</span>
                         }
@@ -974,7 +974,7 @@
 <span class="cstat-no" title="statement not covered" >        for (const listedCard of this.lists) {</span>
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (listedCard.status === status) {</span>
 <span class="cstat-no" title="statement not covered" >                listedCard.addCard(card);</span>
-<span class="cstat-no" title="statement not covered" >                this._kanbanChanged = true;</span>
+<span class="cstat-no" title="statement not covered" >                this._hasKanbanChanged = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >                return;</span>
             }
@@ -987,7 +987,7 @@
  * Contains the title, the status, and the cards that are part of the list.
  */
 <span class="cstat-no" title="statement not covered" >export class K</span>anbanList {
-    private <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanCard');</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanCard');</span>
 &nbsp;
     /**
      * The type of the list.
@@ -995,14 +995,14 @@
 <span class="fstat-no" title="function not covered" >    public get t</span>ype(): 'list' {
 <span class="cstat-no" title="statement not covered" >        return 'list';</span>
     }
-    private _status: KanbanStatus;
+    private readonly _status: KanbanStatus;
     /**
      * The status of the list.
      */
 <span class="fstat-no" title="function not covered" >    public get s</span>tatus(): KanbanStatus {
 <span class="cstat-no" title="statement not covered" >        return this._status;</span>
     }
-    private _title: string;
+    private readonly _title: string;
     /**
      * The title of the list.
      */
@@ -1011,7 +1011,7 @@
     }
     public items?: KanbanCard[];
 &nbsp;
-    private _rawContent: string;
+    private readonly _rawContent: string;
     /**
      * The raw content of the list.
      */
@@ -1019,12 +1019,12 @@
 <span class="cstat-no" title="statement not covered" >        return this._rawContent;</span>
     }
 &nbsp;
-    private _completed: boolean;
+    private readonly _isCompleted: boolean;
     /**
      * Returns whether the list is completed.
      */
-<span class="fstat-no" title="function not covered" >    public get c</span>ompleted(): boolean {
-<span class="cstat-no" title="statement not covered" >        return this._completed;</span>
+<span class="fstat-no" title="function not covered" >    public get i</span>sCompleted(): boolean {
+<span class="cstat-no" title="statement not covered" >        return this._isCompleted;</span>
     }
 &nbsp;
     /**
@@ -1040,9 +1040,9 @@
 &nbsp;
         // Search for the keyword '**Fertiggestellt**' in the content to determine if the card is completed.
 <span class="cstat-no" title="statement not covered" >        if (content.contains(CompletedString)) {</span>
-<span class="cstat-no" title="statement not covered" >            this._completed = true;</span>
+<span class="cstat-no" title="statement not covered" >            this._isCompleted = true;</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this._completed = false;</span>
+<span class="cstat-no" title="statement not covered" >            this._isCompleted = false;</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._logger.trace(</span>
@@ -1060,16 +1060,16 @@
 <span class="cstat-no" title="statement not covered" >            this.items = [];</span>
         }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        if (this.completed) {</span>
-<span class="cstat-no" title="statement not covered" >            card.checked = true;</span>
+<span class="cstat-no" title="statement not covered" >        if (this.isCompleted) {</span>
+<span class="cstat-no" title="statement not covered" >            card.isChecked = true;</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            card.checked = false;</span>
+<span class="cstat-no" title="statement not covered" >            card.isChecked = false;</span>
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this.items.push(card);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._logger.trace(</span>
-            `Added new Kanban Card with checked '${card.checked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
+            `Added new Kanban Card with checked '${card.isChecked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
         );
     }
 &nbsp;
@@ -1094,7 +1094,7 @@
  * @remarks If the linked file is null, the list item is not linked to a file.
  */
 <span class="cstat-no" title="statement not covered" >export class K</span>anbanCard {
-    private <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanCardItem');</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanCardItem');</span>
 &nbsp;
     /**
      * The type of the card.
@@ -1102,9 +1102,9 @@
 <span class="fstat-no" title="function not covered" >    public get t</span>ype(): 'card' {
 <span class="cstat-no" title="statement not covered" >        return 'card';</span>
     }
-    public checked: boolean;
+    public isChecked: boolean;
 &nbsp;
-    private _linkedFile: TFile | null;
+    private readonly _linkedFile: TFile | null;
     /**
      * The linked file of the card.
      */
@@ -1112,7 +1112,7 @@
 <span class="cstat-no" title="statement not covered" >        return this._linkedFile;</span>
     }
 &nbsp;
-    private _rawContent: string;
+    private readonly _rawContent: string;
     /**
      * The raw content of the card.
      */
@@ -1131,7 +1131,7 @@
         linkedFile: TFile | null,
         content: string,
     ) {
-<span class="cstat-no" title="statement not covered" >        this.checked = checked || false;</span>
+<span class="cstat-no" title="statement not covered" >        this.isChecked = checked || false;</span>
 <span class="cstat-no" title="statement not covered" >        this._linkedFile = linkedFile;</span>
 <span class="cstat-no" title="statement not covered" >        this._rawContent = content;</span>
 &nbsp;
@@ -1147,7 +1147,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-19T15:16:46.109Z
+                at 2024-07-20T15:13:12.669Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
