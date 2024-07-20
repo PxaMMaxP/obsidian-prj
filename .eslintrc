@@ -24,7 +24,7 @@
   },
   "rules": {
     "override/require-override": "error",
-    "override/require-static-override": "error",
+    "override/require-static-override": "off",
     "prettier/prettier": "warn",
     "array-callback-return": [
       "error"
@@ -36,6 +36,15 @@
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_",
         "args": "none"
+      }
+    ],
+    "no-warning-comments": [
+      "warn",
+      {
+        "terms": [
+          "@todo"
+        ],
+        "location": "anywhere"
       }
     ],
     "no-unused-vars": "off",
@@ -53,7 +62,7 @@
         ],
         "format": [],
         "custom": {
-          "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*|_{1,2}[a-z][a-zA-Z0-9]*)$",
           "match": true,
           "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
         }
@@ -65,7 +74,7 @@
         ],
         "format": [],
         "custom": {
-          "regex": "^(_I[A-Z][a-zA-Z0-9]*|_[a-z][a-zA-Z0-9]*)$",
+          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*|_{1,2}[a-z][a-zA-Z0-9]*)$",
           "match": true,
           "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
         }
@@ -254,14 +263,7 @@
         ]
       }
     ],
-    "@typescript-eslint/prefer-readonly": "warn",
-    "@typescript-eslint/explicit-function-return-type": "warn",
-    "@typescript-eslint/no-floating-promises": "warn",
-    "@typescript-eslint/no-misused-promises": "warn",
-    "@typescript-eslint/prefer-optional-chain": "warn",
-    "@typescript-eslint/strict-boolean-expressions": "warn",
-    "@typescript-eslint/non-nullable-type-assertion-style": "warn",
-    "@typescript-eslint/prefer-string-starts-ends-with": "warn"
+    "@typescript-eslint/prefer-readonly": "warn"
   },
   "overrides": [
     {
