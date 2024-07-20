@@ -12,9 +12,9 @@ export default class CustomizableRenderChild
     extends MarkdownRenderChild
     implements ICustomizableRenderChild
 {
-    private _logger: ILogger | undefined;
-    private _onUnload: (() => void) | undefined;
-    private _onLoad: (() => void) | undefined;
+    private readonly _logger: ILogger | undefined;
+    private readonly _onUnload: (() => void) | undefined;
+    private readonly _onLoad: (() => void) | undefined;
 
     /**
      * Constructor of the `CustomizableRenderChild` class.

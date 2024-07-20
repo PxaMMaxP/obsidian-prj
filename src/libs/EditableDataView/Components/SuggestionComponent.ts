@@ -24,17 +24,17 @@ type CursorPosition = number | 'start' | 'end';
  * Represents a suggestion component.
  */
 export default class SuggestionComponent {
-    private _component: Component;
+    private readonly _component: Component;
     private _suggester: ((value: string) => Suggestions) | undefined;
 
     private _suggestionsContainer: HTMLSpanElement;
-    private _inputElement: HTMLElement;
+    private readonly _inputElement: HTMLElement;
 
     private _suggestions: Suggestions;
     private _activeSuggestions: Suggestions;
     private _suggestorChild: CustomizableRenderChild | undefined;
     private _suggestionIndex = 0;
-    private _scrollMode: boolean;
+    private _isScrollModeActive: boolean;
 
     /**
      * Creates a new instance of the suggestion component.
@@ -77,7 +77,7 @@ export default class SuggestionComponent {
     private setSuggestion() {
         let suggestion: Suggestion | undefined;
 
-        if (!this._scrollMode) {
+        if (!this._isScrollModeActive) {
             // If the scroll mode is disabled, the first suggestion is shown.
             // The first suggestion is the suggestion that starts with the text in the input element. (case insensitive)
             suggestion = this._activeSuggestions
@@ -189,7 +189,7 @@ export default class SuggestionComponent {
      */
     private onInput() {
         // Disable the scroll mode.
-        this._scrollMode = false;
+        this._isScrollModeActive = false;
 
         // Refresh the active suggestions and the shown suggestion.
         this.refreshActiveSuggestions();
@@ -210,7 +210,7 @@ export default class SuggestionComponent {
             // If the 'ArrowUp' or 'ArrowDown' button is pressed, the suggestions are scrolled through.
             event.preventDefault();
 
-            this._scrollMode = true;
+            this._isScrollModeActive = true;
 
             if (event.key === 'ArrowUp') {
                 this._suggestionIndex++;

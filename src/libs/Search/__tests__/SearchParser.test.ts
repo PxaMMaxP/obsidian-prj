@@ -50,7 +50,7 @@ describe('SearchParser', () => {
         expect(elements[0]).toBeInstanceOf(SearchTerm);
         expect(elements[1]).toBeInstanceOf(SearchOperator);
         expect(elements[2]).toBeInstanceOf(SearchTerm);
-        expect((elements[0] as SearchTerm).negated).toBe(true);
+        expect((elements[0] as SearchTerm).isNegated).toBe(true);
         expect((elements[0] as SearchTerm).term).toBe('term1');
         expect((elements[1] as SearchOperator).operator).toBe('&');
         expect((elements[2] as SearchTerm).term).toBe('term2');
@@ -83,7 +83,7 @@ describe('SearchParser', () => {
         expect((elements[1] as SearchOperator).operator).toBe('&');
         expect((elements[2] as SearchTerm).term).toBe('term3');
         expect((elements[3] as SearchOperator).operator).toBe('|');
-        expect((elements[4] as SearchTerm).negated).toBe(true);
+        expect((elements[4] as SearchTerm).isNegated).toBe(true);
         expect((elements[4] as SearchTerm).term).toBe('term4');
     });
 
@@ -130,7 +130,7 @@ describe('SearchParser', () => {
         expect(elements[2]).toBeInstanceOf(SearchTerm);
         expect((elements[0] as SearchTerm).term).toBe('term1');
         expect((elements[1] as SearchOperator).operator).toBe('&');
-        expect((elements[2] as SearchTerm).negated).toBe(true);
+        expect((elements[2] as SearchTerm).isNegated).toBe(true);
         expect((elements[2] as SearchTerm).term).toBe('term2');
     });
 
@@ -144,7 +144,7 @@ describe('SearchParser', () => {
         expect(elements[2]).toBeInstanceOf(SearchTerm);
         expect((elements[0] as SearchTerm).term).toBe('term1');
         expect((elements[1] as SearchOperator).operator).toBe('&');
-        expect((elements[1] as SearchOperator).negated).toBe(true);
+        expect((elements[1] as SearchOperator).isNegated).toBe(true);
         expect((elements[2] as SearchTerm).term).toBe('term2');
     });
 

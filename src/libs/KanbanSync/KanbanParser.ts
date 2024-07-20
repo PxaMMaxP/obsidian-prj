@@ -10,13 +10,13 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
  */
 export default class KanbanParser {
     @Inject('IStatusType_')
-    private _IStatusType: IStatusType_;
+    private readonly _IStatusType: IStatusType_;
 
-    private _logger = Logging.getLogger('KanbanParser');
-    private _file: TFile;
-    private _app: App = Global.getInstance().app;
+    private readonly _logger = Logging.getLogger('KanbanParser');
+    private readonly _file: TFile;
+    private readonly _app: App = Global.getInstance().app;
 
-    private _fileLoaded = false;
+    private _isFileLoaded = false;
     private _contentFrontmatter: string;
     private _contentMarkdown: string;
     private _contentKanbanSettings: string;
@@ -50,7 +50,7 @@ export default class KanbanParser {
             this._logger.trace(
                 `Separated frontmatter, markdown content and kanban settings for file ${this._file.path}`,
             );
-            this._fileLoaded = true;
+            this._isFileLoaded = true;
 
             return true;
         } else {
@@ -67,7 +67,7 @@ export default class KanbanParser {
      * @returns The parsed kanban board or undefined if the file could not be loaded.
      */
     public async parse(): Promise<KanbanBoard | undefined> {
-        if (!this._fileLoaded) {
+        if (!this._isFileLoaded) {
             const loaded = await this.loadFile();
 
             if (!loaded) {

@@ -8,11 +8,11 @@ import { ArchivedString, CompletedString } from './KanbanTypes';
  * Represents a markdown generator for a kanban board.
  */
 export default class KanbanMarkdownGenerator {
-    private _logger = Logging.getLogger('KanbanMarkdownGenerator');
-    private _global = Global.getInstance();
-    private _kanbanBoard: KanbanBoard;
-    private _file: TFile;
-    private _path: string;
+    private readonly _logger = Logging.getLogger('KanbanMarkdownGenerator');
+    private readonly _global = Global.getInstance();
+    private readonly _kanbanBoard: KanbanBoard;
+    private readonly _file: TFile;
+    private readonly _path: string;
 
     /**
      * Creates a new instance of the markdown generator.
@@ -91,7 +91,7 @@ export default class KanbanMarkdownGenerator {
 
         const heading = `## ${list.title} \n\n`;
 
-        const completed = list.completed ? CompletedString + '\n' : '';
+        const completed = list.isCompleted ? CompletedString + '\n' : '';
 
         let cards: string[] = [];
 
@@ -109,10 +109,10 @@ export default class KanbanMarkdownGenerator {
                 }
 
                 this._logger.trace(
-                    `Generating card: - [${item.checked ? 'x' : ' '}] ${link}`,
+                    `Generating card: - [${item.isChecked ? 'x' : ' '}] ${link}`,
                 );
 
-                return `- [${item.checked ? 'x' : ' '}] ${link}`;
+                return `- [${item.isChecked ? 'x' : ' '}] ${link}`;
             });
         }
 

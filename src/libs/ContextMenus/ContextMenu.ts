@@ -13,7 +13,7 @@ export class ContextMenu implements IContextMenu {
     protected _logger: ILogger | undefined;
     protected _app: App;
     protected _plugin: Prj;
-    protected _eventsAndCommandsRegistered = false;
+    protected _hasEventsAndCommandsRegistered = false;
     protected _bindContextMenu = this.onContextMenu.bind(this);
 
     /**
@@ -42,7 +42,7 @@ export class ContextMenu implements IContextMenu {
      * Deconstructs the 'ContextMenu' events and commands.
      */
     public deconstructor() {
-        if (this._eventsAndCommandsRegistered) {
+        if (this._hasEventsAndCommandsRegistered) {
             this.deRegisterEventsAndCommands();
         } else {
             this._logger?.trace(`No events to deconstruct`);
@@ -56,7 +56,7 @@ export class ContextMenu implements IContextMenu {
     private registerEventsAndCommands() {
         try {
             this.onConstruction();
-            this._eventsAndCommandsRegistered = true;
+            this._hasEventsAndCommandsRegistered = true;
             this._logger?.trace(`Constructed '${this.constructor.name}'`);
         } catch (error) {
             this._logger?.error(
@@ -73,7 +73,7 @@ export class ContextMenu implements IContextMenu {
     private deRegisterEventsAndCommands() {
         try {
             this.onDeconstruction();
-            this._eventsAndCommandsRegistered = false;
+            this._hasEventsAndCommandsRegistered = false;
         } catch (error) {
             this._logger?.error(`Error deconstructing events`, error);
 

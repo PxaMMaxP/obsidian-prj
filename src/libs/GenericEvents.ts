@@ -59,7 +59,7 @@ type RegisteredEvent<T extends ICallback, K extends keyof T['events']> = {
  * ```
  */
 export default class GenericEvents<T extends ICallback> {
-    private _logger: ILogger | undefined;
+    private readonly _logger: ILogger | undefined;
     private _events: Array<RegisteredEvent<T, keyof T['events']>> = [];
 
     /**

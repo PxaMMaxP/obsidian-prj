@@ -67,7 +67,7 @@ export class LifecycleManager implements ILifecycleManager {
         this._isUnloadPerformed = true;
     }
 
-    private _callbacks: {
+    private readonly _callbacks: {
         [key in ILifecycleState]?: {
             [key in ILifecycleTime]?: Array<ILifecycleCallback>;
         };

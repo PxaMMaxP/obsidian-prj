@@ -29,16 +29,16 @@ import { TagTree } from '../Tags/types/TagTree';
 export default class HeaderBlockRenderComponent
     implements RedrawableBlockRenderComponent
 {
-    private _app = Global.getInstance().app;
-    private _global = Global.getInstance();
-    private _logger = Logging.getLogger('HeaderBlockRenderComponent');
-    private _metadataCache = this._global.metadataCache;
+    private readonly _app = Global.getInstance().app;
+    private readonly _global = Global.getInstance();
+    private readonly _logger = Logging.getLogger('HeaderBlockRenderComponent');
+    private readonly _metadataCache = this._global.metadataCache;
     private _model:
         | PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
         | undefined;
 
-    private _processorSettings: IProcessorSettings;
-    private _childComponent: CustomizableRenderChild;
+    private readonly _processorSettings: IProcessorSettings;
+    private readonly _childComponent: CustomizableRenderChild;
     private _activeFileDebounceTimer: NodeJS.Timeout;
 
     private _headerContainer: HTMLElement | undefined;

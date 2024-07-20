@@ -47,7 +47,7 @@ export class Tag
      * The metadata cache.
      */
     @Inject('IMetadataCache')
-    private _IMetadataCache: IMetadataCache;
+    private readonly _IMetadataCache: IMetadataCache;
 
     /**
      * Gets the tag prefixed with a hash symbol.
@@ -59,14 +59,14 @@ export class Tag
     /**
      * Whether the tag exists in the cache.
      */
-    private _exists: boolean | undefined = undefined;
+    private _isExisting: boolean | undefined = undefined;
 
     /**
      * Gets whether the tag exists in the cache.
      * @remarks Lazy loading is used to check if the tag exists in the cache.
      */
-    public get exists(): boolean {
-        if (this._exists === undefined) {
+    public get isExisting(): boolean {
+        if (this._isExisting === undefined) {
             const existFile = this._IMetadataCache.cache.find((file) => {
                 const tags = file.metadata?.frontmatter?.tags;
 
@@ -79,10 +79,10 @@ export class Tag
                 return false;
             });
 
-            this._exists = existFile ? true : false;
+            this._isExisting = existFile ? true : false;
         }
 
-        return this._exists;
+        return this._isExisting;
     }
 
     /**

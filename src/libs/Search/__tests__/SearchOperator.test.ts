@@ -31,7 +31,7 @@ describe('SearchOperator', () => {
     });
 
     test('should handle negated value correctly', () => {
-        searchOperator.negated = true;
-        expect(searchOperator.negated).toBe(true);
+        searchOperator.isNegated = true;
+        expect(searchOperator.isNegated).toBe(true);
     });
 });

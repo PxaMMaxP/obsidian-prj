@@ -23,10 +23,10 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class GetMetadata extends ContextMenu implements IContextMenu {
     protected _bindContextMenu = this.onContextMenu.bind(this);
-    private _translationService: ITranslationService;
-    private _metadataCache: IMetadataCache;
-    private _helperObsidian: IHelperObsidian_;
-    protected _eventsRegistered = false;
+    private readonly _translationService: ITranslationService;
+    private readonly _metadataCache: IMetadataCache;
+    private readonly _helperObsidian: IHelperObsidian_;
+    protected _hasEventsRegistered = false;
 
     /**
      * Initializes a instance of the GetMetadata class.

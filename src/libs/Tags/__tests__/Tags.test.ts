@@ -36,7 +36,7 @@ describe('Tags', () => {
                 | undefined {
                 throw new Error('Method not implemented.');
             }
-            exists: boolean;
+            isExisting: boolean;
 
             toString() {
                 return this.value;

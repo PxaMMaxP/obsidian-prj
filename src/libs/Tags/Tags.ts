@@ -24,26 +24,26 @@ export class Tags extends BaseComplexDataType implements ITags {
     /**
      * The dependencies of the tags.
      */
-    private _dependencies: IDIContainer;
+    private readonly _dependencies: IDIContainer;
 
     /**
      * The dependency injection token for the `ITag` interface.
      */
     @Inject('ITag_')
-    private _ITag: ITag_;
+    private readonly _ITag: ITag_;
 
     /**
      * The metadata cache.
      */
     @Inject('IMetadataCache')
-    private _IMetadataCache: IMetadataCache;
+    private readonly _IMetadataCache: IMetadataCache;
 
     /**
      * The logger to use for logging messages.
      * If not provided, no messages will be logged.
      */
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('Tags'), false)
-    private _logger?: ILogger;
+    private readonly _logger?: ILogger;
 
     /**
      * The tags array.

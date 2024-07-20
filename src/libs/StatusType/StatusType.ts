@@ -18,14 +18,14 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
 @ImplementsStatic<IStatusType_>()
 export class StatusType extends BaseComplexDataType implements IStatusType {
     @Inject('ITranslationService')
-    private static _ITranslationService: ITranslationService;
+    private static readonly _ITranslationService: ITranslationService;
 
     /**
      * The logger to use for logging messages.
      * If not provided, no messages will be logged.
      */
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('StatusType'), false)
-    private static _logger?: ILogger;
+    private static readonly _logger?: ILogger;
 
     private static readonly _statusTypes: StatusTypes[] = [
         'Active',

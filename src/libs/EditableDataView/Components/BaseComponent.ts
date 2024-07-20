@@ -24,9 +24,9 @@ export default abstract class BaseComponent {
      * If `true`, the component will be created to allow editing.
      * @remarks Create a configuration option for this property in the child class.
      */
-    protected abstract _editabilityEnabled: boolean;
+    protected abstract _isEditable: boolean;
     //#region HTML Elements
-    private _shippingContainer: HTMLDivElement;
+    private readonly _shippingContainer: HTMLDivElement;
     /**
      * The container that holds the input elements.
      * @remarks Has the CSS classes `editable-data-view` & `data-input-container`.
@@ -97,7 +97,7 @@ export default abstract class BaseComponent {
      * @tutorial Run this methode in the `finalize`-methode of the child class before creating your elements.
      */
     protected createBaseStructure(
-        editabilityEnabled: boolean = this._editabilityEnabled,
+        editabilityEnabled: boolean = this._isEditable,
     ): void {
         this._presentationContainer = document.createElement('div');
 

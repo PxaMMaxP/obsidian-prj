@@ -19,27 +19,28 @@ const ProxyHandler_: IProxyHandler_ = class ProxyHandler<T extends object>
      * weak references to objects ensure that they can be garbage collected
      * when they are no longer needed or referenced elsewhere.
      */
-    private _proxyMap: WeakMap<object, unknown> = new WeakMap();
+    private readonly _proxyMap: WeakMap<object, unknown> = new WeakMap();
 
     /**
      * A map to store reverse mappings of proxies to their original objects.
      * This is used to find the original target object from a proxy.
      */
-    private _reverseProxyMap: WeakMap<object, WeakRef<object>> = new WeakMap();
+    private readonly _reverseProxyMap: WeakMap<object, WeakRef<object>> =
+        new WeakMap();
 
     /**
      * A logger instance for logging purposes.
      * @remarks - The logger is optional and can be undefined.
      * @see {@link ILogger}
      */
-    private _logger: ILogger | undefined;
+    private readonly _logger: ILogger | undefined;
 
     /**
      * A delegate function for updating key-value pairs.
      * @remarks - If the proxy is used to update key-value pairs on the original object,
      * this delegate function is used to update the key-value pairs on a different `change tracking` object.
      */
-    private _updateKeyValue: (key: string, value: unknown) => void;
+    private readonly _updateKeyValue: (key: string, value: unknown) => void;
 
     /**
      * Updates a key/value pair indirectly via the `_updateKeyValue` delegate and encapsulates it for error handling.

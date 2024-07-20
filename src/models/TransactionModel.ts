@@ -42,7 +42,7 @@ export class TransactionModel<T> {
     protected get writeChangesPromise(): Promise<void> | undefined {
         return this._writeChangesPromise;
     }
-    private _transactionActive = false;
+    private _isTransactionActive = false;
     protected _changes: Partial<T> = {};
     /**
      * A function that writes the changes to the file.
@@ -58,7 +58,7 @@ export class TransactionModel<T> {
      * Returns whether a transaction is active.
      */
     public get isTransactionActive(): boolean {
-        return this._transactionActive;
+        return this._isTransactionActive;
     }
 
     /**
@@ -183,7 +183,7 @@ export class TransactionModel<T> {
 
             return;
         }
-        this._transactionActive = true;
+        this._isTransactionActive = true;
     }
 
     /**
@@ -200,9 +200,9 @@ export class TransactionModel<T> {
         }
         const writeChanges = this.callWriteChanges();
 
-        this._transactionActive = writeChanges.writeTriggered
+        this._isTransactionActive = writeChanges.writeTriggered
             ? false
-            : this._transactionActive;
+            : this._isTransactionActive;
     }
 
     /**
@@ -221,7 +221,7 @@ export class TransactionModel<T> {
             return;
         }
         this._changes = {};
-        this._transactionActive = false;
+        this._isTransactionActive = false;
     }
 
     /**

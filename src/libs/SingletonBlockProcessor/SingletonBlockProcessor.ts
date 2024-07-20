@@ -35,13 +35,13 @@ type ViewState = 'source' | 'preview';
  * ```
  */
 export default class SingletonBlockProcessor {
-    private _logger: ILogger | undefined;
-    private _uid: string;
-    private _el: HTMLElement;
-    private _ctx: MarkdownPostProcessorContext;
+    private readonly _logger: ILogger | undefined;
+    private readonly _uid: string;
+    private readonly _el: HTMLElement;
+    private readonly _ctx: MarkdownPostProcessorContext;
     private _singletonContainer: HTMLElement | undefined;
     private _observer: MutationObserver | undefined;
-    private _onUnload: () => void;
+    private readonly _onUnload: () => void;
     private _observerChild: CustomizableRenderChild | undefined;
 
     /**

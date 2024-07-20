@@ -31,7 +31,7 @@ describe('SearchTerm', () => {
     });
 
     test('should handle negated value correctly', () => {
-        searchTerm.negated = true;
-        expect(searchTerm.negated).toBe(true);
+        searchTerm.isNegated = true;
+        expect(searchTerm.isNegated).toBe(true);
     });
 });

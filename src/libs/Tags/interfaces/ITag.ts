@@ -19,7 +19,7 @@ export interface ITag extends IBaseComplexDataType {
      * Gets whether the tag exists in the cache.
      * @returns Whether the tag exists in the cache.
      */
-    readonly exists: boolean;
+    readonly isExisting: boolean;
 
     /**
      * Gets the tag.

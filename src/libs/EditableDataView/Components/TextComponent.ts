@@ -9,7 +9,7 @@ import SuggestionComponent, { Suggestions } from './SuggestionComponent';
  */
 export default class TextComponent extends BaseComponent {
     //#region base properties
-    protected _editabilityEnabled = false;
+    protected _isEditable = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -30,7 +30,7 @@ export default class TextComponent extends BaseComponent {
     //#endregion
     //#region HTML Elements
     private _presentationSpan: HTMLElement;
-    private _suggestionsContainer: HTMLDivElement;
+    private readonly _suggestionsContainer: HTMLDivElement;
     //#endregion
     private _suggestionComponent: SuggestionComponent | undefined;
 
@@ -60,7 +60,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this._editabilityEnabled = true;
+        this._isEditable = true;
 
         return this;
     }

@@ -94,7 +94,7 @@ describe('Tag', () => {
     // Test `exists` property
     test('should return true if tag exists in metadata cache', () => {
         const tag = new Tag('exampleTag');
-        expect(tag.exists).toBe(true);
+        expect(tag.isExisting).toBe(true);
     });
 
     test('should return false if tag does not exist in metadata cache', () => {
@@ -108,13 +108,13 @@ describe('Tag', () => {
         );
 
         const tag = new Tag('exampleTag');
-        expect(tag.exists).toBe(false);
+        expect(tag.isExisting).toBe(false);
     });
 
     test('should cache the existence check result', () => {
         const tag = new Tag('exampleTag');
         // Initial call should set the _exists value
-        expect(tag.exists).toBe(true);
+        expect(tag.isExisting).toBe(true);
 
         // Manually set the _exists property to undefined to simulate a cache reset
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -123,7 +123,7 @@ describe('Tag', () => {
         // Modify the cache to check if the cached value is used
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (metadataCacheMock as any).cache = [];
-        expect(tag.exists).toBe(false);
+        expect(tag.isExisting).toBe(false);
     });
 
     // Test `tagWithHash` property
