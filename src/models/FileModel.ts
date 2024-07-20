@@ -68,7 +68,7 @@ export class FileModel<
      * - It is set in the constructor of this class.
      * @see {@link FileModel.constructor}
      */
-    private _ctor: new (data?: Partial<T>) => T;
+    private readonly _ctor: new (data?: Partial<T>) => T;
     /**
      * The proxy of the data object.
      * @see {@link FileModel._data}

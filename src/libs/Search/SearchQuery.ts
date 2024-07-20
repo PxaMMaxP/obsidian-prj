@@ -7,7 +7,7 @@ import SearchTerm from './SearchTerm';
  * This class is used to store and manage a collection of search elements.
  */
 export default class SearchQuery {
-    private _elements: SearchElement[] = [];
+    private readonly _elements: SearchElement[] = [];
 
     /**
      * Adds a search element to the query.
@@ -44,7 +44,7 @@ export default class SearchQuery {
                 const term = element as SearchTerm;
                 const termMatch = text.includes(term.term.toLowerCase());
 
-                return term.negated ? !termMatch : termMatch;
+                return term.isNegated ? !termMatch : termMatch;
             });
 
         // Second: test the operators
@@ -58,7 +58,7 @@ export default class SearchQuery {
                 const operator = element as SearchOperator;
                 const nextTermResult = termResults[termIndex++];
 
-                if (operator.negated) {
+                if (operator.isNegated) {
                     if (operator.operator === '&') {
                         result = result && !nextTermResult;
                     } else if (operator.operator === '|') {

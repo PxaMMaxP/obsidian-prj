@@ -127,7 +127,7 @@ export default class SearchParser {
                 // remove the negation operator
                 searchElements.splice(i, 1);
                 // add the negation to the next element
-                nextElement.negated = true;
+                nextElement.isNegated = true;
             }
         }
     }

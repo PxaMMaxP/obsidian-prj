@@ -28,19 +28,20 @@ export class FileMetadata {
  */
 @RegisterInstance('IMetadataCache')
 export default class MetadataCache implements IMetadataCache {
-    private _eventHandler: GenericEvents<IMetadataCacheEvents>;
+    private readonly _eventHandler: GenericEvents<IMetadataCacheEvents>;
     @Inject('App')
-    private _app!: App;
+    private readonly _app!: App;
     @Inject('IPrjSettings')
-    private _settings!: IPrjSettings;
+    private readonly _settings!: IPrjSettings;
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('MetadataCache'), false)
-    private _logger?: ILogger;
+    private readonly _logger?: ILogger;
 
-    private _metadataCachePromise: Promise<void> | undefined = undefined;
+    private readonly _metadataCachePromise: Promise<void> | undefined =
+        undefined;
     private _metadataCache: Map<string, FileMetadata> | undefined = undefined;
     private _metadataCacheArray: FileMetadata[] | undefined = undefined;
-    private _metadataCacheReady = false;
-    private _eventsRegistered = false;
+    private _isMetadataCacheReady = false;
+    private _hasEventsRegistered = false;
 
     static instance: MetadataCache;
 
@@ -52,7 +53,7 @@ export default class MetadataCache implements IMetadataCache {
      * - You can use the array permanently, but you should not rely on the order of the entries.
      */
     public get cache(): FileMetadata[] {
-        if (this._metadataCacheReady && this._metadataCache) {
+        if (this._isMetadataCacheReady && this._metadataCache) {
             if (this._metadataCacheArray) return this._metadataCacheArray;
             else {
                 this._metadataCacheArray = Array.from(
@@ -122,7 +123,7 @@ export default class MetadataCache implements IMetadataCache {
 
         const instance = MetadataCache.instance;
 
-        if (instance._eventsRegistered) {
+        if (instance._hasEventsRegistered) {
             instance._app.vault.off('rename', instance.renameEventHandler);
 
             instance._app.metadataCache.off(
@@ -135,7 +136,7 @@ export default class MetadataCache implements IMetadataCache {
                 instance.deleteEventHandler,
             );
 
-            instance._eventsRegistered = false;
+            instance._hasEventsRegistered = false;
 
             logger.debug('Metadata cache events unregistered');
 
@@ -150,7 +151,7 @@ export default class MetadataCache implements IMetadataCache {
      * @returns True if the metadata cache is ready, false otherwise
      */
     public isCacheReady(): boolean {
-        return this._metadataCacheReady;
+        return this._isMetadataCacheReady;
     }
 
     /**
@@ -159,7 +160,7 @@ export default class MetadataCache implements IMetadataCache {
      * @description This method returns a promise that resolves when the metadata cache is ready.
      */
     public async waitForCacheReady(): Promise<void> {
-        while (!this._metadataCacheReady) {
+        while (!this._isMetadataCacheReady) {
             await new Promise((resolve) => setTimeout(resolve, 5));
         }
     }
@@ -387,7 +388,7 @@ export default class MetadataCache implements IMetadataCache {
 
         await Promise.all(addEntryPromises);
 
-        this._metadataCacheReady = true;
+        this._isMetadataCacheReady = true;
 
         const endTime = Date.now();
 
@@ -654,12 +655,12 @@ export default class MetadataCache implements IMetadataCache {
      * Register event handlers for the metadata cache
      */
     private registerEvents() {
-        if (!this._eventsRegistered) {
+        if (!this._hasEventsRegistered) {
             this._app.vault.on('rename', this.renameEventHandler);
             this._app.metadataCache.on('changed', this.changedEventHandler);
             this._app.metadataCache.on('deleted', this.deleteEventHandler);
 
-            this._eventsRegistered = true;
+            this._hasEventsRegistered = true;
 
             this._logger?.debug('Metadata cache events registered');
         }

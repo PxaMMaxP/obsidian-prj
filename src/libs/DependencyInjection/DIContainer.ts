@@ -22,7 +22,7 @@ interface IDependency {
 @ImplementsStatic<IDIContainer_>()
 export class DIContainer implements IDIContainer {
     private static _instance: DIContainer;
-    private _dependencies = new Map<string, IDependency>();
+    private readonly _dependencies = new Map<string, IDependency>();
 
     /**
      * Private constructor to prevent direct instantiation.

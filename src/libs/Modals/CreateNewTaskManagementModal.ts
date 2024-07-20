@@ -162,7 +162,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                         `${baseTag}/${tag}` + (acronym ? `/${acronym}` : '');
                 }
 
-                while (acronym && new Tag(mainTag.fullTag).exists) {
+                while (acronym && new Tag(mainTag.fullTag).isExisting) {
                     if (!mainTag.postfix) {
                         mainTag.postfix = 0;
                     }

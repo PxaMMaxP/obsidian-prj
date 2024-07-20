@@ -17,14 +17,14 @@ import { RegisterInstance } from '../DependencyInjection/decorators/RegisterInst
 export class TranslationService implements ITranslationService {
     static instance: TranslationService | undefined;
     @Inject('IPrjSettings', (x: IPrjSettings) => x.language)
-    private _language!: IPrjSettings['language'];
+    private readonly _language!: IPrjSettings['language'];
     @Inject(
         'ILogger_',
         (x: ILogger_) => x.getLogger('TranslationService'),
         false,
     )
-    private _logger?: ILogger;
-    private _translations: ILanguageTranslations[];
+    private readonly _logger?: ILogger;
+    private readonly _translations: ILanguageTranslations[];
 
     /**
      * Gets the singleton instance of the translation service.

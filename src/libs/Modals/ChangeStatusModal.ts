@@ -17,7 +17,7 @@ export default class ChangeStatusModal extends Modal {
     model: PrjTaskManagementModel<
         IPrjTaskManagementData & PrjBaseData<unknown>
     >;
-    private _metadataCache = Global.getInstance().metadataCache;
+    private readonly _metadataCache = Global.getInstance().metadataCache;
 
     /**
      * Creates a new instance of the modal.

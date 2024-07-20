@@ -6,7 +6,7 @@ import BaseComponent from './BaseComponent';
  */
 export default class LinkComponent extends BaseComponent {
     //#region base properties
-    protected _editabilityEnabled = false;
+    protected _isEditable = false;
     onEnableEditCallback: () => void;
     onDisableEditCallback: () => void;
     onSaveCallback: () => Promise<void>;
@@ -49,7 +49,7 @@ export default class LinkComponent extends BaseComponent {
      * @returns The component itself.
      */
     public enableEditability() {
-        this._editabilityEnabled = true;
+        this._isEditable = true;
 
         return this;
     }

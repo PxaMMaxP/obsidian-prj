@@ -24,7 +24,7 @@ export interface IHelperGeneral_ {
 @ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IHelperGeneral_>()
 export class HelperGeneral {
-    private static _md5 = require('crypto-js/md5');
+    private static readonly _md5 = require('crypto-js/md5');
 
     /**
      * Create a Singleton instance of the HelperObsidian class.

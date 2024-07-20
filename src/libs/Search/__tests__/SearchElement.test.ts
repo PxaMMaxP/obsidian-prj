@@ -26,7 +26,7 @@ describe('SearchElement', () => {
 
     test('should initialize with correct values', () => {
         expect(searchElement.value).toBe('testValue');
-        expect(searchElement.negated).toBe(true);
+        expect(searchElement.isNegated).toBe(true);
     });
 
     test('should set value correctly', () => {
@@ -35,8 +35,8 @@ describe('SearchElement', () => {
     });
 
     test('should set negated correctly', () => {
-        searchElement.negated = false;
-        expect(searchElement.negated).toBe(false);
+        searchElement.isNegated = false;
+        expect(searchElement.isNegated).toBe(false);
     });
 
     test('isOperator should return correct value', () => {
@@ -47,7 +47,7 @@ describe('SearchElement', () => {
         const defaultNegatedElement = new ConcreteSearchElement(
             'defaultTestValue',
         );
-        expect(defaultNegatedElement.negated).toBe(false);
+        expect(defaultNegatedElement.isNegated).toBe(false);
     });
 
     test('should initialize with negated value as true', () => {
@@ -55,6 +55,6 @@ describe('SearchElement', () => {
             'negatedTestValue',
             true,
         );
-        expect(negatedElement.negated).toBe(true);
+        expect(negatedElement.isNegated).toBe(true);
     });
 });

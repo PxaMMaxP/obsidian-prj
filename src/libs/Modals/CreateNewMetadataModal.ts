@@ -19,7 +19,7 @@ import { HelperObsidian } from '../Helper/Obsidian';
  * Modal to create a new metadata file
  */
 export default class CreateNewMetadataModal extends BaseModalForm {
-    private _metadataCache = Global.getInstance().metadataCache;
+    private readonly _metadataCache = Global.getInstance().metadataCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.

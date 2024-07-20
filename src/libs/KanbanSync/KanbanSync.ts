@@ -13,20 +13,20 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
  */
 export default class KanbanSync {
     @Inject('IStatusType_')
-    private _IStatusType: IStatusType_;
-    private _logger = Logging.getLogger('KanbanSync');
+    private readonly _IStatusType: IStatusType_;
+    private readonly _logger = Logging.getLogger('KanbanSync');
 
-    private _metadataCache = Global.getInstance().metadataCache;
-    private _kanbanFile: TFile;
-    private _kanbanMetadata: CachedMetadata | undefined;
+    private readonly _metadataCache = Global.getInstance().metadataCache;
+    private readonly _kanbanFile: TFile;
+    private readonly _kanbanMetadata: CachedMetadata | undefined;
     /**
      * The sync mode of the KanbanSync.
      * - 'in': The sync mode is 'in' if the sync is triggered by a change in a Prj file.
      * - 'out': The sync mode is 'out' if the sync is triggered by a change in the Kanban file.
      */
-    private _syncMode: 'in' | 'out' = 'out';
+    private readonly _syncMode: 'in' | 'out' = 'out';
     private _kanbankBoard: KanbanBoard | undefined;
-    private _changedFile: TFile | undefined;
+    private readonly _changedFile: TFile | undefined;
 
     /**
      * Creates an instance of the KanbanSync class.

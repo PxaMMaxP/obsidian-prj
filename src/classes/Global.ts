@@ -37,7 +37,7 @@ export default class Global {
             ),
         false,
     )
-    private _logger?: ILogger;
+    private readonly _logger?: ILogger;
 
     /**
      * Creates a singleton instance of the Global class.

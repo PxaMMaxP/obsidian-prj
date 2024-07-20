@@ -8,22 +8,22 @@ import { CompletedString, KanbanStatus } from './KanbanTypes';
  * Also contains the Lists that are part of the board.
  */
 export class KanbanBoard {
-    private _logger = Logging.getLogger('ParsedKanban');
+    private readonly _logger = Logging.getLogger('ParsedKanban');
 
     /**
      * Contains all lists that are part of the board.
      */
     public lists: KanbanList[] = [];
 
-    private _kanbanChanged = false;
+    private _hasKanbanChanged = false;
     /**
      * Returns whether the kanban board has changed.
      */
     public get kanbanChanged(): boolean {
-        return this._kanbanChanged;
+        return this._hasKanbanChanged;
     }
 
-    private _contentFrontmatter: string;
+    private readonly _contentFrontmatter: string;
     /**
      * Returns the *raw* frontmatter of the board.
      */
@@ -31,7 +31,7 @@ export class KanbanBoard {
         return this._contentFrontmatter;
     }
 
-    private _contentMarkdown: string;
+    private readonly _contentMarkdown: string;
     /**
      * Returns the *raw* markdown content of the board.
      */
@@ -39,7 +39,7 @@ export class KanbanBoard {
         return this._contentMarkdown;
     }
 
-    private _contentKanbanSettings: string;
+    private readonly _contentKanbanSettings: string;
     /**
      * Returns the *raw* kanban settings of the board.
      */
@@ -172,7 +172,7 @@ export class KanbanBoard {
                     for (const newCard of this.lists) {
                         if (newCard.status === status) {
                             newCard.addCard(card);
-                            this._kanbanChanged = true;
+                            this._hasKanbanChanged = true;
 
                             return;
                         }
@@ -191,7 +191,7 @@ export class KanbanBoard {
         for (const listedCard of this.lists) {
             if (listedCard.status === status) {
                 listedCard.addCard(card);
-                this._kanbanChanged = true;
+                this._hasKanbanChanged = true;
 
                 return;
             }
@@ -204,7 +204,7 @@ export class KanbanBoard {
  * Contains the title, the status, and the cards that are part of the list.
  */
 export class KanbanList {
-    private _logger = Logging.getLogger('KanbanCard');
+    private readonly _logger = Logging.getLogger('KanbanCard');
 
     /**
      * The type of the list.
@@ -212,14 +212,14 @@ export class KanbanList {
     public get type(): 'list' {
         return 'list';
     }
-    private _status: KanbanStatus;
+    private readonly _status: KanbanStatus;
     /**
      * The status of the list.
      */
     public get status(): KanbanStatus {
         return this._status;
     }
-    private _title: string;
+    private readonly _title: string;
     /**
      * The title of the list.
      */
@@ -228,7 +228,7 @@ export class KanbanList {
     }
     public items?: KanbanCard[];
 
-    private _rawContent: string;
+    private readonly _rawContent: string;
     /**
      * The raw content of the list.
      */
@@ -236,12 +236,12 @@ export class KanbanList {
         return this._rawContent;
     }
 
-    private _completed: boolean;
+    private readonly _isCompleted: boolean;
     /**
      * Returns whether the list is completed.
      */
-    public get completed(): boolean {
-        return this._completed;
+    public get isCompleted(): boolean {
+        return this._isCompleted;
     }
 
     /**
@@ -257,9 +257,9 @@ export class KanbanList {
 
         // Search for the keyword '**Fertiggestellt**' in the content to determine if the card is completed.
         if (content.contains(CompletedString)) {
-            this._completed = true;
+            this._isCompleted = true;
         } else {
-            this._completed = false;
+            this._isCompleted = false;
         }
 
         this._logger.trace(
@@ -277,16 +277,16 @@ export class KanbanList {
             this.items = [];
         }
 
-        if (this.completed) {
-            card.checked = true;
+        if (this.isCompleted) {
+            card.isChecked = true;
         } else {
-            card.checked = false;
+            card.isChecked = false;
         }
 
         this.items.push(card);
 
         this._logger.trace(
-            `Added new Kanban Card with checked '${card.checked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
+            `Added new Kanban Card with checked '${card.isChecked}', linkedFile '${card.linkedFile}', and rawContent '${card.rawContent}'`,
         );
     }
 
@@ -311,7 +311,7 @@ export class KanbanList {
  * @remarks If the linked file is null, the list item is not linked to a file.
  */
 export class KanbanCard {
-    private _logger = Logging.getLogger('KanbanCardItem');
+    private readonly _logger = Logging.getLogger('KanbanCardItem');
 
     /**
      * The type of the card.
@@ -319,9 +319,9 @@ export class KanbanCard {
     public get type(): 'card' {
         return 'card';
     }
-    public checked: boolean;
+    public isChecked: boolean;
 
-    private _linkedFile: TFile | null;
+    private readonly _linkedFile: TFile | null;
     /**
      * The linked file of the card.
      */
@@ -329,7 +329,7 @@ export class KanbanCard {
         return this._linkedFile;
     }
 
-    private _rawContent: string;
+    private readonly _rawContent: string;
     /**
      * The raw content of the card.
      */
@@ -348,7 +348,7 @@ export class KanbanCard {
         linkedFile: TFile | null,
         content: string,
     ) {
-        this.checked = checked || false;
+        this.isChecked = checked || false;
         this._linkedFile = linkedFile;
         this._rawContent = content;
 

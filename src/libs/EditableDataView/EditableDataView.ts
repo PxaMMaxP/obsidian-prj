@@ -9,9 +9,9 @@ import TextComponent from './Components/TextComponent';
  * Represents an editable data view that allows adding various components.
  */
 export default class EditableDataView {
-    private _container: HTMLElement | DocumentFragment;
-    private _component: Component;
-    private _attributesList: Record<string, string> = {};
+    private readonly _container: HTMLElement | DocumentFragment;
+    private readonly _component: Component;
+    private readonly _attributesList: Record<string, string> = {};
 
     /**
      * Creates a new instance of EditableDataView.

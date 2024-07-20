@@ -11,8 +11,8 @@ export default class Table {
     public get data(): StructedTable {
         return this._table;
     }
-    private _logger: ILogger | undefined;
-    private _table: StructedTable;
+    private readonly _logger: ILogger | undefined;
+    private readonly _table: StructedTable;
     /**
      * A list of row placeholders
      * @remarks - The row placeholders are used to keep the order of the rows when hiding and showing rows.
@@ -20,12 +20,12 @@ export default class Table {
      */
     private _rowPlaceholders: RowPlaceholder[] = [];
     private _headers: TableHeader[];
-    private _tableId: string;
-    private _tableClassList: string[] | undefined;
+    private readonly _tableId: string;
+    private readonly _tableClassList: string[] | undefined;
     private _visibleRows = 0;
     private _hiddenRows = 0;
     //   Default classes  //
-    private _defaultClasses = {
+    private readonly _defaultClasses = {
         table: ['prj-table'],
         header: ['prj-table-header'],
         headerRow: ['prj-table-header-row'],
@@ -40,7 +40,7 @@ export default class Table {
         oddRow: 'odd-row',
     };
     // Default IDs
-    private _defaultIds = {
+    private readonly _defaultIds = {
         placeholder: 'placeholder-row',
     };
     // // //// // //// // //

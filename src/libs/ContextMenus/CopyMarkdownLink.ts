@@ -18,7 +18,7 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
     protected _bindContextMenu = this.onContextMenu.bind(this);
-    private _translationService: ITranslationService;
+    private readonly _translationService: ITranslationService;
 
     /**
      * Creates an instance of CopyMarkdownLink.

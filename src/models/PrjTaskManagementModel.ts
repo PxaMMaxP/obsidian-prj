@@ -219,7 +219,7 @@ export class PrjTaskManagementModel<
     /**
      * The model factories for the PrjTaskManagementModel class.
      */
-    private static _modelFactories = new Map<
+    private static readonly _modelFactories = new Map<
         string,
         (
             file: TFile,

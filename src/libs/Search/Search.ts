@@ -6,7 +6,7 @@ import SearchQuery from './SearchQuery';
  * Represents a search operation.
  */
 const search_: ISearch_ = class Search {
-    private _searchQueryText: string;
+    private readonly _searchQueryText: string;
     private _searchQuery: SearchQuery | undefined;
 
     /**
