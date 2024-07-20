@@ -118,7 +118,7 @@ describe('Tag', () => {
 
         // Manually set the _exists property to undefined to simulate a cache reset
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (tag as any)._exists = undefined;
+        (tag as any)._isExisting = undefined;
 
         // Modify the cache to check if the cached value is used
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
