@@ -59,20 +59,22 @@ export default class MaxShownModelsInput {
         const debounceOnChange = (): void => {
             clearTimeout(debounceTimer);
 
-            debounceTimer = setTimeout(async () => {
-                try {
-                    maxShownModels.maxShownModels =
-                        (await onChange(maxShownModels.maxShownModels)) ??
-                        maxShownModels.maxShownModels;
-                } catch (error) {
-                    logger.error(
-                        'The `onChange` callback threw an error!',
-                        error,
-                    );
-                } finally {
-                    number.number.textContent =
-                        maxShownModels.maxShownModels.toString();
-                }
+            debounceTimer = setTimeout(() => {
+                Promise.resolve(onChange(maxShownModels.maxShownModels))
+                    .then((newMaxShownModels) => {
+                        maxShownModels.maxShownModels =
+                            newMaxShownModels ?? maxShownModels.maxShownModels;
+                    })
+                    .catch((error) => {
+                        logger.error(
+                            'The `onChange` callback threw an error!',
+                            error,
+                        );
+                    })
+                    .finally(() => {
+                        number.number.textContent =
+                            maxShownModels.maxShownModels.toString();
+                    });
             }, 500);
         };
 

@@ -80,9 +80,8 @@ export default class ProjectComponents {
         description: string,
         onWrite: (value: string) => void,
     ): void {
-        new EditableDataView(container, component).addTextarea((text) =>
-            text
-                .setValue(description)
+        new EditableDataView(container, component).addTextarea((text) => {
+            text.setValue(description)
                 .setTitle(Lng.gt('Description'))
                 .setPlaceholder(Lng.gt('Description'))
                 .enableEditability()
@@ -91,8 +90,8 @@ export default class ProjectComponents {
                     onWrite(value);
 
                     return Promise.resolve();
-                }),
-        );
+                });
+        });
     }
 
     /**
@@ -108,7 +107,7 @@ export default class ProjectComponents {
         onRead: () => string,
         onWrite: (value: string) => void,
     ): void {
-        new EditableDataView(container, component).addDropdown((dropdown) =>
+        new EditableDataView(container, component).addDropdown((dropdown) => {
             dropdown
                 .setOptions([
                     { value: 'Active', text: Lng.gt('StatusActive') },
@@ -149,8 +148,8 @@ export default class ProjectComponents {
                     }
 
                     return { text: `${iconString}`, html: undefined };
-                }),
-        );
+                });
+        });
     }
 
     /**
@@ -166,7 +165,7 @@ export default class ProjectComponents {
         onRead: () => string,
         onWrite: (value: string) => void,
     ): void {
-        new EditableDataView(container, component).addDropdown((dropdown) =>
+        new EditableDataView(container, component).addDropdown((dropdown) => {
             dropdown
                 .setOptions([
                     { value: '3', text: Lng.gt('HighPriority') },
@@ -204,8 +203,8 @@ export default class ProjectComponents {
                     setIcon(icon as unknown as HTMLDivElement, iconString);
 
                     return { text: `${value}`, html: icon };
-                }),
-        );
+                });
+        });
     }
 
     /**
@@ -223,9 +222,8 @@ export default class ProjectComponents {
         type: FileTypes | undefined | null,
         corospondingSymbol: string,
     ): void {
-        new EditableDataView(container, component).addLink((link) =>
-            link
-                .setValue(path)
+        new EditableDataView(container, component).addLink((link) => {
+            link.setValue(path)
                 .setTitle(Lng.gt(type ?? 'File'))
                 .setLinkType('file')
                 .setFormator((value: string) => {
@@ -234,8 +232,8 @@ export default class ProjectComponents {
                     setIcon(icon as unknown as HTMLDivElement, iconString);
 
                     return { href: `${value}`, text: `${value}`, html: icon };
-                }),
-        );
+                });
+        });
     }
 
     /**

@@ -25,9 +25,8 @@ export default class GeneralComponents {
         type: FileType | FileTypes | undefined | null,
         corospondingSymbol: string,
     ): void {
-        new EditableDataView(container, component).addLink((link) =>
-            link
-                .setValue(path)
+        new EditableDataView(container, component).addLink((link) => {
+            link.setValue(path)
                 .setTitle(Lng.gt(type?.valueOf() ?? 'File'))
                 .setLinkType('file')
                 .setFormator((value: string) => {
@@ -36,8 +35,8 @@ export default class GeneralComponents {
                     setIcon(icon as unknown as HTMLDivElement, iconString);
 
                     return { href: `${value}`, text: `${value}`, html: icon };
-                }),
-        );
+                });
+        });
     }
 
     /**
@@ -57,9 +56,8 @@ export default class GeneralComponents {
         onRead: () => string,
         onWrite: (value: string) => void,
     ): void {
-        new EditableDataView(date, component).addDate((date) =>
-            date
-                .setValue(onRead())
+        new EditableDataView(date, component).addDate((date) => {
+            date.setValue(onRead())
                 .setTitle(title)
                 .enableEditability()
                 .setFormator((value: string) =>
@@ -69,8 +67,8 @@ export default class GeneralComponents {
                     onWrite(value);
 
                     return Promise.resolve();
-                }),
-        );
+                });
+        });
     }
 
     /**
@@ -85,9 +83,8 @@ export default class GeneralComponents {
         tags: string[],
     ): void {
         tags.forEach((tag) => {
-            new EditableDataView(tagContainer, component).addLink((link) =>
-                link
-                    .setValue(tag)
+            new EditableDataView(tagContainer, component).addLink((link) => {
+                link.setValue(tag)
                     .setTitle('Tag')
                     .setLinkType('tag')
                     .setFormator((value: string) => {
@@ -106,8 +103,8 @@ export default class GeneralComponents {
                         }
 
                         return { href: `#${value}`, text: `#${valueReduced}` };
-                    }),
-            );
+                    });
+            });
         });
     }
 }

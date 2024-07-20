@@ -25,7 +25,7 @@ export default class DocumentComponents {
         const description = documentModel.data.description ?? '';
 
         new EditableDataView(summaryRelatedFiles, component).addTextarea(
-            (textarea) =>
+            (textarea) => {
                 textarea
                     .setValue(description)
                     .setTitle('Summary')
@@ -35,7 +35,8 @@ export default class DocumentComponents {
                         documentModel.data.description = value;
 
                         return Promise.resolve();
-                    }),
+                    });
+            },
         );
     }
 
@@ -109,17 +110,16 @@ export default class DocumentComponents {
             gridContainer.append(dateContainer);
             dateContainer.classList.add('date-container');
 
-            new EditableDataView(dateContainer, component).addDate((date) =>
-                date
-                    .setValue(relatedFile.data.date ?? 'na')
+            new EditableDataView(dateContainer, component).addDate((date) => {
+                date.setValue(relatedFile.data.date ?? 'na')
                     .setTitle('Document Date')
                     .setFormator((value: string) =>
                         HelperGeneral.formatDate(
                             value,
                             HelperGeneral.formatDate(value, dateFormatShort),
                         ),
-                    ),
-            );
+                    );
+            });
 
             const textContainer = document.createElement('span');
             gridContainer.append(textContainer);
@@ -237,9 +237,8 @@ export default class DocumentComponents {
         onSaveCallback: (value: string) => Promise<void>,
         models: DocumentModel[] = [],
     ): EditableDataView {
-        return new EditableDataView(name, component).addText((text) =>
-            text
-                .setValue(value)
+        return new EditableDataView(name, component).addText((text) => {
+            text.setValue(value)
                 .setTitle(title)
                 .enableEditability()
                 .setSuggester((inputValue: string) => {
@@ -257,8 +256,8 @@ export default class DocumentComponents {
 
                     return suggestions;
                 })
-                .onSave((newValue: string) => onSaveCallback(newValue)),
-        );
+                .onSave((newValue: string) => onSaveCallback(newValue));
+        });
     }
 
     /**
@@ -339,9 +338,8 @@ export default class DocumentComponents {
     ): void {
         const settings = Global.getInstance().settings;
 
-        new EditableDataView(metadataLink, component).addLink((link) =>
-            link
-                .setValue(documentModel.file.path)
+        new EditableDataView(metadataLink, component).addLink((link) => {
+            link.setValue(documentModel.file.path)
                 .setTitle('Open metadata file')
                 .setLinkType('file')
                 .setFormator((value: string) => {
@@ -361,7 +359,7 @@ export default class DocumentComponents {
                     setIcon(icon as unknown as HTMLDivElement, iconString);
 
                     return { href: `${value}`, text: `${value}`, html: icon };
-                }),
-        );
+                });
+        });
     }
 }
