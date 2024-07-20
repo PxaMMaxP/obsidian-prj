@@ -228,16 +228,15 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             Lng.gt('DocumentDate'),
             this._global.settings.dateFormat,
             () => noteModel.data.date ?? 'na',
-            async (value: string) => (noteModel.data.date = value),
+            (value: string) => (noteModel.data.date = value),
         );
 
         // Row 1 -- File Link & Title
         const fileLink = document.createDocumentFragment();
         rowData.push(fileLink);
 
-        new EditableDataView(fileLink, this._component).addLink((link) =>
-            link
-                .setValue(noteModel.data.title ?? 'na')
+        new EditableDataView(fileLink, this._component).addLink((link) => {
+            link.setValue(noteModel.data.title ?? 'na')
                 .setTitle('Note')
                 .setLinkType('file')
                 .setFormator((value: string) => {
@@ -252,8 +251,8 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
                     noteModel.data.title = value;
 
                     return Promise.resolve();
-                }),
-        );
+                });
+        });
 
         // Row 2 -- Description
         const description = document.createDocumentFragment();
@@ -263,7 +262,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             description,
             this._component,
             noteModel.data.description ?? '',
-            async (value: string) => (noteModel.data.description = value),
+            (value: string) => (noteModel.data.description = value),
         );
 
         // Row 3 -- Tags

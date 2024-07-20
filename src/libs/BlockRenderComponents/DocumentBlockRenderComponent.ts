@@ -204,8 +204,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
     private async onFilterDebounce(): Promise<void> {
         clearTimeout(this._filterButtonDebounceTimer);
 
-        this._filterButtonDebounceTimer = setTimeout(async () => {
-            await this.onFilter();
+        this._filterButtonDebounceTimer = setTimeout(() => {
+            this.onFilter();
         }, 750);
     }
 
@@ -306,7 +306,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             Lng.gt('DocumentDate'),
             this._global.settings.dateFormat,
             () => documentModel.data.date ?? 'na',
-            async (value: string) => (documentModel.data.date = value),
+            (value: string) => (documentModel.data.date = value),
         );
 
         // Row 2 -- File Link
@@ -355,8 +355,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             Lng.gt('DeliveryDate'),
             this._global.settings.dateFormat,
             () => documentModel.data.dateOfDelivery ?? 'na',
-            async (value: string) =>
-                (documentModel.data.dateOfDelivery = value),
+            (value: string) => (documentModel.data.dateOfDelivery = value),
         );
 
         // Row 6 -- Tags

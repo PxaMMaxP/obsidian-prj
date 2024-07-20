@@ -253,7 +253,7 @@ export default abstract class TableBlockRenderComponent<
         this._logger?.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
-        this._activeFileDebounceTimer = setTimeout(async () => {
+        this._activeFileDebounceTimer = setTimeout(() => {
             this.onActiveFileFilter();
         }, 750);
     }

@@ -329,9 +329,8 @@ export default class HeaderBlockRenderComponent
         const titleDiv = document.createElement('div');
         titleDiv.classList.add('title');
 
-        new EditableDataView(titleDiv, this._childComponent).addText((text) =>
-            text
-                .setValue(this.title ?? '')
+        new EditableDataView(titleDiv, this._childComponent).addText((text) => {
+            text.setValue(this.title ?? '')
                 .setTitle(Lng.gt('Title'))
                 .setPlaceholder(Lng.gt('Title'))
                 .enableEditability()
@@ -340,8 +339,8 @@ export default class HeaderBlockRenderComponent
                     this.title = value;
 
                     return Promise.resolve();
-                }),
-        );
+                });
+        });
 
         return this.createDocumentFragment(titleDiv);
     }
@@ -359,7 +358,7 @@ export default class HeaderBlockRenderComponent
         statusLabel.innerText = `${Lng.gt('Status')}: `;
 
         new EditableDataView(statusDiv, this._childComponent).addDropdown(
-            (dropdown) =>
+            (dropdown) => {
                 dropdown
                     .setOptions([
                         { value: 'Active', text: Lng.gt('StatusActive') },
@@ -390,7 +389,8 @@ export default class HeaderBlockRenderComponent
                         const presentationSpan =
                             value.querySelector('.text-presentation');
                         presentationSpan?.addClass('cm-strong');
-                    }),
+                    });
+            },
         );
 
         return this.createDocumentFragment(statusDiv);
@@ -405,7 +405,7 @@ export default class HeaderBlockRenderComponent
         descriptionDiv.classList.add('description');
 
         new EditableDataView(descriptionDiv, this._childComponent).addTextarea(
-            (textarea) =>
+            (textarea) => {
                 textarea
                     .setValue(this.description ?? '')
                     .setTitle(Lng.gt('Description'))
@@ -416,7 +416,8 @@ export default class HeaderBlockRenderComponent
                         this.description = value;
 
                         return Promise.resolve();
-                    }),
+                    });
+            },
         );
 
         return this.createDocumentFragment(descriptionDiv);
@@ -543,7 +544,7 @@ export default class HeaderBlockRenderComponent
         this._logger.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
-        this._activeFileDebounceTimer = setTimeout(async () => {
+        this._activeFileDebounceTimer = setTimeout(() => {
             this.redraw();
         }, 750);
     }

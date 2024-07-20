@@ -305,7 +305,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             this._component,
             model.file.path,
             () => model.data.title ?? '',
-            async (value: string) => (model.data.title = value),
+            (value: string) => (model.data.title = value),
         );
 
         const lineBreak = document.createElement('br');
@@ -326,7 +326,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             priority,
             this._component,
             () => model.data.priority?.toString() ?? '0',
-            async (value: string) =>
+            (value: string) =>
                 (model.data.priority = value as unknown as Priority),
         );
 
@@ -340,7 +340,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             Lng.gt('Due date'),
             this._global.settings.dateFormat,
             () => model.data.due ?? 'na',
-            async (value: string) => (model.data.due = value),
+            (value: string) => (model.data.due = value),
         );
 
         // Row 5 -- Status
@@ -351,7 +351,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             status,
             this._component,
             () => model.data.status?.toString() ?? 'Active',
-            async (value: string) =>
+            (value: string) =>
                 (model.data.status = value as unknown as StatusTypes),
         );
 
@@ -399,8 +399,8 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
     private async onFilterDebounce(): Promise<void> {
         clearTimeout(this._filterButtonDebounceTimer);
 
-        this._filterButtonDebounceTimer = setTimeout(async () => {
-            await this.onFilter();
+        this._filterButtonDebounceTimer = setTimeout(() => {
+            this.onFilter();
         }, 750);
     }
 
