@@ -67,7 +67,7 @@ export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
     private getRelatedTasks(
         status?: (status: StatusTypes | undefined) => boolean,
     ): TaskModel[] {
-        const filesWithSameTags = this._metadataCache.cache.filter((file) => {
+        const filesWithSameTags = this._IMetadataCache.cache.filter((file) => {
             const fileTags = new Tags(file.metadata?.frontmatter?.tags);
             const thisTags = this.data.tags;
 
@@ -118,7 +118,7 @@ export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
 
         const date = HelperGeneral.formatDate(
             history.date,
-            this._pluginSettings.dateFormat,
+            this._IPrjSettings.dateFormat,
         );
 
         const newFileName = Path.sanitizeFilename(

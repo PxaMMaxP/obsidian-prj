@@ -2,6 +2,7 @@ import { App } from 'obsidian';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import Prj from 'src/main';
 import type { IPrjSettings } from 'src/types/PrjSettings';
@@ -9,7 +10,9 @@ import MetadataCache from '../libs/MetadataCache';
 
 /**
  * Represents the global instance for the plugin.
+ * @todo Mark as deprecated.
  */
+@Register('Global', true)
 export default class Global {
     static instance: Global;
 
