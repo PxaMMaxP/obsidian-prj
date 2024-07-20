@@ -11,7 +11,6 @@ import type {
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjBaseData from './Data/PrjBaseData';
 import { TransactionModel } from './TransactionModel';
-import Global from '../classes/Global';
 import { YamlKeyMap } from '../types/YamlKeyMap';
 
 /**
@@ -20,12 +19,6 @@ import { YamlKeyMap } from '../types/YamlKeyMap';
 export class FileModel<
     T extends PrjBaseData<unknown>,
 > extends TransactionModel<T> {
-    /**
-     * @deprecated This property is deprecated and will be removed in the future.
-     */
-    @Inject('Global')
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    protected _Global!: Global;
     @Inject('IPrjSettings')
     protected _IPrjSettings!: IPrjSettings;
     @Inject('App')
