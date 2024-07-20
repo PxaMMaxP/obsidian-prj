@@ -1006,7 +1006,7 @@ type CursorPosition = number | 'start' | 'end';
      * @returns The component itself.
      * @remarks If the suggestions are set, a suggestor is not needed.
      */
-    public <span class="fstat-no" title="function not covered" >setSuggestions(</span>suggestions: Suggestions) {
+    public <span class="fstat-no" title="function not covered" >setSuggestions(</span>suggestions: Suggestions): this {
 <span class="cstat-no" title="statement not covered" >        this._suggestions = suggestions;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -1018,7 +1018,7 @@ type CursorPosition = number | 'start' | 'end';
      * @returns The component itself.
      * @remarks If the suggester is set, the suggestions are not needed and will be ignored.
      */
-    public <span class="fstat-no" title="function not covered" >setSuggester(</span>suggester: (value: string) =&gt; Suggestions) {
+    public <span class="fstat-no" title="function not covered" >setSuggester(</span>suggester: (value: string) =&gt; Suggestions): this {
 <span class="cstat-no" title="statement not covered" >        this._suggester = suggester;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -1027,7 +1027,7 @@ type CursorPosition = number | 'start' | 'end';
     /**
      * Initializes the suggestion component.
      */
-    private <span class="fstat-no" title="function not covered" >setSuggestion(</span>) {
+    private <span class="fstat-no" title="function not covered" >setSuggestion(</span>): void {
         let suggestion: Suggestion | undefined;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (!this._isScrollModeActive) {</span>
@@ -1097,7 +1097,7 @@ type CursorPosition = number | 'start' | 'end';
     /**
      * Refreshes the active suggestions.
      */
-    private <span class="fstat-no" title="function not covered" >refreshActiveSuggestions(</span>) {
+    private <span class="fstat-no" title="function not covered" >refreshActiveSuggestions(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._activeSuggestions = this._suggester</span>
             ? this._suggester(this._inputElement.textContent ?? '')
             : this._suggestions;
@@ -1111,7 +1111,7 @@ type CursorPosition = number | 'start' | 'end';
      * - The suggestor has the css class `suggestions-container`.
      * - The suggestor is loaded and registered to the input element.
      */
-    public <span class="fstat-no" title="function not covered" >enableSuggestior(</span>) {
+    public <span class="fstat-no" title="function not covered" >enableSuggestior(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._suggestorChild = new CustomizableRenderChild(</span>
             this._suggestionsContainer,
         );
@@ -1140,7 +1140,7 @@ type CursorPosition = number | 'start' | 'end';
      * Handles the input event for the suggestion component.
      * @remarks Disables the scroll mode, refreshes the active suggestions, and sets the suggestion.
      */
-    private <span class="fstat-no" title="function not covered" >onInput(</span>) {
+    private <span class="fstat-no" title="function not covered" >onInput(</span>): void {
         // Disable the scroll mode.
 <span class="cstat-no" title="statement not covered" >        this._isScrollModeActive = false;</span>
 &nbsp;
@@ -1158,7 +1158,7 @@ type CursorPosition = number | 'start' | 'end';
      * - The 'Tab' button is used to adopt the complete suggestion.
      * - The 'Ctrl' + 'a' button is used to select the text in the input element.
      */
-    private <span class="fstat-no" title="function not covered" >onKeydown(</span>event: KeyboardEvent) {
+    private <span class="fstat-no" title="function not covered" >onKeydown(</span>event: KeyboardEvent): void {
 <span class="cstat-no" title="statement not covered" >        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {</span>
             // If the 'ArrowUp' or 'ArrowDown' button is pressed, the suggestions are scrolled through.
 <span class="cstat-no" title="statement not covered" >            event.preventDefault();</span>
@@ -1205,7 +1205,7 @@ type CursorPosition = number | 'start' | 'end';
     /**
      * Adopts the complete suggestion in the suggestions container.
      */
-    private <span class="fstat-no" title="function not covered" >adoptSuggestion(</span>) {
+    private <span class="fstat-no" title="function not covered" >adoptSuggestion(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._inputElement.textContent += this._suggestionsContainer.innerText;</span>
 &nbsp;
         const suggestion = <span class="cstat-no" title="statement not covered" >this._activeSuggestions.find(<span class="fstat-no" title="function not covered" >(s</span>uggestion) =&gt;</span>
@@ -1244,14 +1244,14 @@ type CursorPosition = number | 'start' | 'end';
     /**
      * Returns the length of the text in the input element.
      */
-<span class="fstat-no" title="function not covered" >    private get i</span>nputTextLength() {
+<span class="fstat-no" title="function not covered" >    private get i</span>nputTextLength(): number {
 <span class="cstat-no" title="statement not covered" >        return this._inputElement.textContent?.length ?? 0;</span>
     }
 &nbsp;
     /**
      * Returns the current cursor position in the input element.
      */
-<span class="fstat-no" title="function not covered" >    private get c</span>ursorPosition() {
+<span class="fstat-no" title="function not covered" >    private get c</span>ursorPosition(): number {
         const selection = <span class="cstat-no" title="statement not covered" >window.getSelection();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (selection &amp;&amp; selection.rangeCount &gt; 0) {</span>
@@ -1268,7 +1268,7 @@ type CursorPosition = number | 'start' | 'end';
      * @param relativPosition Relative position to set the cursor to.
      * @remarks The position is clamped to the length of the input element and minimum 0.
      */
-    private <span class="fstat-no" title="function not covered" >setInputCursorRelativePosition(</span>relativPosition: number) {
+    private <span class="fstat-no" title="function not covered" >setInputCursorRelativePosition(</span>relativPosition: number): void {
 <span class="cstat-no" title="statement not covered" >        this.setInputCursorAbsolutePosition(</span>
             this.cursorPosition + relativPosition,
         );
@@ -1279,7 +1279,7 @@ type CursorPosition = number | 'start' | 'end';
      * @param position Position to set the cursor to.
      * @remarks The position is clamped to the length of the input element.
      */
-    private <span class="fstat-no" title="function not covered" >setInputCursorAbsolutePosition(</span>position: CursorPosition) {
+    private <span class="fstat-no" title="function not covered" >setInputCursorAbsolutePosition(</span>position: CursorPosition): void {
 <span class="cstat-no" title="statement not covered" >        position = this.getCursorPositionNumber(position);</span>
 &nbsp;
         const selection = <span class="cstat-no" title="statement not covered" >window.getSelection();</span>
@@ -1324,7 +1324,7 @@ type CursorPosition = number | 'start' | 'end';
     private <span class="fstat-no" title="function not covered" >selectText(</span>
         startPosition: CursorPosition,
         endPosition: CursorPosition,
-    ) {
+    ): void {
 <span class="cstat-no" title="statement not covered" >        startPosition = this.getCursorPositionNumber(startPosition);</span>
 <span class="cstat-no" title="statement not covered" >        endPosition = this.getCursorPositionNumber(endPosition);</span>
 &nbsp;
@@ -1363,7 +1363,7 @@ type CursorPosition = number | 'start' | 'end';
      * - The suggestions container has a click event listener that sets the cursor to the end of the input element.
      * - The suggestions container has the css classes `editable-data-view` &amp; `suggestions-container`.
      */
-    private <span class="fstat-no" title="function not covered" >buildSuggestionsContainer(</span>) {
+    private <span class="fstat-no" title="function not covered" >buildSuggestionsContainer(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._suggestionsContainer = document.createElement('span');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._suggestionsContainer.classList.add(</span>
@@ -1390,7 +1390,7 @@ type CursorPosition = number | 'start' | 'end';
      * @remarks Run this, if you want to disable the suggestor. (e.g. on disable edit mode)
      * @remarks Removes the suggestions container and unload the suggestor child.
      */
-    public <span class="fstat-no" title="function not covered" >disableSuggestor(</span>) {
+    public <span class="fstat-no" title="function not covered" >disableSuggestor(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._suggestorChild?.unload();</span>
 <span class="cstat-no" title="statement not covered" >        this._suggestionsContainer.remove();</span>
     }
@@ -1402,7 +1402,7 @@ type CursorPosition = number | 'start' | 'end';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

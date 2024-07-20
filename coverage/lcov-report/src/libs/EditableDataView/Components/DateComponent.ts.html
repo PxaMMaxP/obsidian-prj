@@ -413,7 +413,7 @@
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >enableEditability(</span>): DateComponent {
+    public <span class="fstat-no" title="function not covered" >enableEditability(</span>): this {
 <span class="cstat-no" title="statement not covered" >        this._isEditable = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -424,7 +424,7 @@
      * @param value The value to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string): DateComponent {
+    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string): this {
 <span class="cstat-no" title="statement not covered" >        this._value = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -435,7 +435,7 @@
      * @param title The title to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string): DateComponent {
+    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string): this {
 <span class="cstat-no" title="statement not covered" >        this._title = title;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -447,7 +447,7 @@
      * @returns The component itself.
      * @remarks The formator is called when the component changes in `not-edit` mode.
      */
-    public <span class="fstat-no" title="function not covered" >setFormator(</span>formator: (value: string) =&gt; string): DateComponent {
+    public <span class="fstat-no" title="function not covered" >setFormator(</span>formator: (value: string) =&gt; string): this {
 <span class="cstat-no" title="statement not covered" >        this._onPresentation = formator;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -459,7 +459,7 @@
      * @returns The component itself.
      * @remarks The saver is called when the component save button is clicked.
      */
-    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;) {
+    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;): this {
 <span class="cstat-no" title="statement not covered" >        this._onSave = callback;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -470,7 +470,7 @@
     /**
      * Builds the presentation span for the component.
      */
-    private <span class="fstat-no" title="function not covered" >build(</span>) {
+    private <span class="fstat-no" title="function not covered" >build(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._presentationSpan = document.createElement('span');</span>
 <span class="cstat-no" title="statement not covered" >        this._presentationContainer.appendChild(this._presentationSpan);</span>
 &nbsp;
@@ -486,7 +486,7 @@
     /**
      * Builds the input element for the component.
      */
-    private <span class="fstat-no" title="function not covered" >buildInput(</span>) {
+    private <span class="fstat-no" title="function not covered" >buildInput(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._input = document.createElement('input');</span>
 <span class="cstat-no" title="statement not covered" >        this._dataInputContainer.appendChild(this._input);</span>
 <span class="cstat-no" title="statement not covered" >        this._input.type = 'date';</span>
@@ -498,7 +498,7 @@
     /**
      * Enables the edit mode for the component.
      */
-    private <span class="fstat-no" title="function not covered" >enableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >enableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._input.value = this._value ? this._value : '';</span>
 <span class="cstat-no" title="statement not covered" >        this._input.focus();</span>
 <span class="cstat-no" title="statement not covered" >        this._input.select();</span>
@@ -507,7 +507,7 @@
     /**
      * Disables the edit mode for the component.
      */
-    private <span class="fstat-no" title="function not covered" >disableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >disableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._presentationSpan.textContent = this._onPresentation</span>
             ? this._onPresentation(this._value)
             : this._value;
@@ -529,7 +529,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

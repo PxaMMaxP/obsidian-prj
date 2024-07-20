@@ -240,7 +240,13 @@
 <a name='L175'></a><a href='#L175'>175</a>
 <a name='L176'></a><a href='#L176'>176</a>
 <a name='L177'></a><a href='#L177'>177</a>
-<a name='L178'></a><a href='#L178'>178</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -338,25 +344,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -514,7 +526,9 @@
      * - The label text is `Search`-value of the translation.
      * - The label element has the class `filter-text`.
      */
-    private <span class="fstat-no" title="function not covered" >static </span>createSearchLabel(searchLabelContainer: HTMLDivElement) {
+    private <span class="fstat-no" title="function not covered" >static </span>createSearchLabel(
+        searchLabelContainer: HTMLDivElement,
+    ): void {
         const filterLabel = <span class="cstat-no" title="statement not covered" >document.createElement('span');</span>
 <span class="cstat-no" title="statement not covered" >        searchLabelContainer.appendChild(filterLabel);</span>
 <span class="cstat-no" title="statement not covered" >        filterLabel.classList.add('filter-text');</span>
@@ -528,7 +542,9 @@
      * @remarks - The sizer is a `HTMLLabelElement`.
      * - The sizer has the class `search-box-sizer`.
      */
-    private <span class="fstat-no" title="function not covered" >static </span>createSearchBoxSizer(searchLabelContainer: HTMLDivElement) {
+    private <span class="fstat-no" title="function not covered" >static </span>createSearchBoxSizer(
+        searchLabelContainer: HTMLDivElement,
+    ): HTMLLabelElement {
         const searchBoxSizer = <span class="cstat-no" title="statement not covered" >document.createElement('label');</span>
 <span class="cstat-no" title="statement not covered" >        searchLabelContainer.appendChild(searchBoxSizer);</span>
 <span class="cstat-no" title="statement not covered" >        searchBoxSizer.classList.add('search-box-sizer');</span>
@@ -545,7 +561,9 @@
      * - The input placeholder is `Search`-value of the translation.
      * - The input element has the class `search-box`.
      */
-    private <span class="fstat-no" title="function not covered" >static </span>createSearchBoxInput(searchBoxSizer: HTMLLabelElement) {
+    private <span class="fstat-no" title="function not covered" >static </span>createSearchBoxInput(
+        searchBoxSizer: HTMLLabelElement,
+    ): HTMLInputElement {
         const searchBoxInput = <span class="cstat-no" title="statement not covered" >document.createElement('input');</span>
 <span class="cstat-no" title="statement not covered" >        searchBoxSizer.appendChild(searchBoxInput);</span>
 <span class="cstat-no" title="statement not covered" >        searchBoxInput.classList.add('search-box');</span>
@@ -564,7 +582,7 @@
     private <span class="fstat-no" title="function not covered" >static </span>setSearchBoxSizerValue(
         searchBoxSizer: HTMLElement,
         value: string,
-    ) {
+    ): void {
 <span class="cstat-no" title="statement not covered" >        searchBoxSizer.dataset.value = '_' + value + '_';</span>
     }
 &nbsp;
@@ -576,7 +594,7 @@
     private <span class="fstat-no" title="function not covered" >static </span>setSearchBoxInputValue(
         searchBoxInput: HTMLInputElement,
         value: string,
-    ) {
+    ): void {
 <span class="cstat-no" title="statement not covered" >        searchBoxInput.value = value;</span>
     }
 }
@@ -601,7 +619,7 @@ type SearchCallback = (
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

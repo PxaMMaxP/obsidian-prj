@@ -558,7 +558,7 @@
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >enableEditability(</span>) {
+    public <span class="fstat-no" title="function not covered" >enableEditability(</span>): this {
 <span class="cstat-no" title="statement not covered" >        this._isEditable = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -569,7 +569,7 @@
      * @param value The value to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string) {
+    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string): this {
 <span class="cstat-no" title="statement not covered" >        this._value = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -580,7 +580,7 @@
      * @param options The options to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setOptions(</span>options: { value: string; text: string }[]) {
+    public <span class="fstat-no" title="function not covered" >setOptions(</span>options: { value: string; text: string }[]): this {
 <span class="cstat-no" title="statement not covered" >        this._options = options;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -591,7 +591,7 @@
      * @param title The title to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string) {
+    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string): this {
 <span class="cstat-no" title="statement not covered" >        this._title = title;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -606,7 +606,7 @@
      */
     public <span class="fstat-no" title="function not covered" >setFormator(</span>
         formator: (value: string) =&gt; { text: string; html?: DocumentFragment },
-    ) {
+    ): this {
         /**
          * Sets the presentation of the component.
          * @param value The value to set.
@@ -632,7 +632,7 @@
      * @remarks - The saver is called when the component save button is clicked.
      * - `value` is the value of the selected option. (Not the text!)
      */
-    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;) {
+    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;): this {
 <span class="cstat-no" title="statement not covered" >        this._onSave = callback;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -642,7 +642,7 @@
     /**
      * Enables the options of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >enableOptions(</span>) {
+    private <span class="fstat-no" title="function not covered" >enableOptions(</span>): void {
         const optionFound = <span class="cstat-no" title="statement not covered" >this._options.find(<span class="fstat-no" title="function not covered" >(o</span>) =&gt; <span class="cstat-no" title="statement not covered" >o.value === this._value)</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!optionFound) {</span>
@@ -663,7 +663,7 @@
     /**
      * Disables the options of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >disableOptions(</span>) {
+    private <span class="fstat-no" title="function not covered" >disableOptions(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._select.innerHTML = '';</span>
     }
 &nbsp;
@@ -671,7 +671,7 @@
     /**
      * Builds the presentation of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >build(</span>) {
+    private <span class="fstat-no" title="function not covered" >build(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._presentationSpan = document.createElement('span');</span>
 <span class="cstat-no" title="statement not covered" >        this._presentationContainer.appendChild(this._presentationSpan);</span>
 &nbsp;
@@ -685,7 +685,7 @@
     /**
      * Builds the input of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >buildInput(</span>) {
+    private <span class="fstat-no" title="function not covered" >buildInput(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._select = document.createElement('select');</span>
 <span class="cstat-no" title="statement not covered" >        this._dataInputContainer.appendChild(this._select);</span>
 <span class="cstat-no" title="statement not covered" >        this._select.title = this._title;</span>
@@ -696,7 +696,7 @@
     /**
      * Enables the edit mode of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >enableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >enableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this.enableOptions();</span>
 <span class="cstat-no" title="statement not covered" >        this._select.value = this._value ? this._value : '';</span>
 <span class="cstat-no" title="statement not covered" >        this._select.focus();</span>
@@ -705,7 +705,7 @@
     /**
      * Disables the edit mode of the dropdown component.
      */
-    private <span class="fstat-no" title="function not covered" >disableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >disableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._onPresentation?.(this._selectedOption.value);</span>
         //this.presentationSpan.textContent = this._onPresentation ? this._onPresentation(this._selectedOption.value) : this._selectedOption.text;
 <span class="cstat-no" title="statement not covered" >        this.disableOptions();</span>
@@ -727,7 +727,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

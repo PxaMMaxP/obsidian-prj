@@ -731,7 +731,13 @@
 <a name='L666'></a><a href='#L666'>666</a>
 <a name='L667'></a><a href='#L667'>667</a>
 <a name='L668'></a><a href='#L668'>668</a>
-<a name='L669'></a><a href='#L669'>669</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L669'></a><a href='#L669'>669</a>
+<a name='L670'></a><a href='#L670'>670</a>
+<a name='L671'></a><a href='#L671'>671</a>
+<a name='L672'></a><a href='#L672'>672</a>
+<a name='L673'></a><a href='#L673'>673</a>
+<a name='L674'></a><a href='#L674'>674</a>
+<a name='L675'></a><a href='#L675'>675</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1075,6 +1081,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1273,6 +1282,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1474,7 +1486,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Get the singleton instance of the MetadataCache class
      * @returns The MetadataCache instance
      */
-<span class="fstat-no" title="function not covered" >    static </span>getInstance() {
+<span class="fstat-no" title="function not covered" >    static </span>getInstance(): IMetadataCache {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!MetadataCache.instance) {</span>
 <span class="cstat-no" title="statement not covered" >            MetadataCache.instance = new MetadataCache();</span>
         }
@@ -1513,7 +1525,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Deconstructor for the MetadataCache class
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
-<span class="fstat-no" title="function not covered" >    static </span>deconstructor() {
+<span class="fstat-no" title="function not covered" >    static </span>deconstructor(): void {
         const logger = <span class="cstat-no" title="statement not covered" >Logging.getLogger('MetadataCache');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!MetadataCache.instance) {</span>
@@ -1672,7 +1684,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
         newMetadata: CachedMetadata,
         oldMetadata: CachedMetadata,
         file: TFile,
-    ) {
+    ): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        this._logger?.trace(</span>
             `Metadata changed for file ${file.path} and is processed.`,
         );
@@ -1742,7 +1754,10 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @param oldPath The old path of the file.
      * @param newFile The new file object representing the renamed file.
      */
-    private async <span class="fstat-no" title="function not covered" >onRenamedFile(</span>oldPath: string, newFile: TFile) {
+    private async <span class="fstat-no" title="function not covered" >onRenamedFile(</span>
+        oldPath: string,
+        newFile: TFile,
+    ): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        this._logger?.trace(</span>
             `File renamed from ${oldPath} to ${newFile.path} and is processed.`,
         );
@@ -1765,7 +1780,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Invalidate the metadata cache
      * @remarks Set the metadata cache array to undefined.
      */
-    private <span class="fstat-no" title="function not covered" >invalidateMetadataCacheArray(</span>) {
+    private <span class="fstat-no" title="function not covered" >invalidateMetadataCacheArray(</span>): void {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this._metadataCacheArray) {</span>
 <span class="cstat-no" title="statement not covered" >            if (this._metadataCache) {</span>
 <span class="cstat-no" title="statement not covered" >                this._metadataCacheArray = undefined;</span>
@@ -1913,7 +1928,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Add a file to the metadata cache
      * @param file The file to add to the metadata cache
      */
-    private async <span class="fstat-no" title="function not covered" >addEntry(</span>file: TFile) {
+    private async <span class="fstat-no" title="function not covered" >addEntry(</span>file: TFile): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        if (this._metadataCache) {</span>
             const metadata = <span class="cstat-no" title="statement not covered" >this._app.metadataCache.getFileCache(file);</span>
 &nbsp;
@@ -1932,7 +1947,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Delete a file from the metadata cache
      * @param file The file to delete from the metadata cache
      */
-    private <span class="fstat-no" title="function not covered" >deleteEntry(</span>file: TFile) {
+    private <span class="fstat-no" title="function not covered" >deleteEntry(</span>file: TFile): void {
 <span class="cstat-no" title="statement not covered" >        if (this._metadataCache) {</span>
 <span class="cstat-no" title="statement not covered" >            this._metadataCache.delete(file.path);</span>
 <span class="cstat-no" title="statement not covered" >            this.invalidateMetadataCacheArray();</span>
@@ -1950,7 +1965,10 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @param file The file to update in the metadata cache
      * @param cache The new cached metadata
      */
-    private async <span class="fstat-no" title="function not covered" >updateEntry(</span>file: TFile, cache: CachedMetadata) {
+    private async <span class="fstat-no" title="function not covered" >updateEntry(</span>
+        file: TFile,
+        cache: CachedMetadata,
+    ): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        if (this._metadataCache) {</span>
             const entry = <span class="cstat-no" title="statement not covered" >this._metadataCache.get(file.path);</span>
 &nbsp;
@@ -1980,7 +1998,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @param newFile The new file object
      * @param oldPath The old path of the file
      */
-    private async <span class="fstat-no" title="function not covered" >renameEntry(</span>newFile: TFile, oldPath: string) {
+    private async <span class="fstat-no" title="function not covered" >renameEntry(</span>newFile: TFile, oldPath: string): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        if (this._metadataCache) {</span>
 <span class="cstat-no" title="statement not covered" >            this._metadataCache.delete(oldPath);</span>
 <span class="cstat-no" title="statement not covered" >            this.addEntry(newFile);</span>
@@ -2000,7 +2018,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @param file New file object
      * @param oldPath Old path of the file
      */
-    private <span class="fstat-no" title="function not covered" >renameEventHandler(</span>file: TFile, oldPath: string) {
+    private <span class="fstat-no" title="function not covered" >renameEventHandler(</span>file: TFile, oldPath: string): void {
 <span class="cstat-no" title="statement not covered" >        this._logger?.debug(`File ${oldPath} renamed to ${file.path}`);</span>
 <span class="cstat-no" title="statement not covered" >        this.renameEntry(file, oldPath);</span>
     }
@@ -2009,7 +2027,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Event handler for the delete event
      * @param file Deleted file object
      */
-    private <span class="fstat-no" title="function not covered" >deleteEventHandler(</span>file: TFile) {
+    private <span class="fstat-no" title="function not covered" >deleteEventHandler(</span>file: TFile): void {
 <span class="cstat-no" title="statement not covered" >        this._logger?.debug(`File ${file.path} deleted`);</span>
 <span class="cstat-no" title="statement not covered" >        this.deleteEntry(file);</span>
     }
@@ -2024,7 +2042,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
         file: TFile,
         data: string,
         cache: CachedMetadata,
-    ) {
+    ): void {
 <span class="cstat-no" title="statement not covered" >        this._logger?.trace(</span>
             `File ${file.path} changed. Data-content:`,
             { data },
@@ -2047,7 +2065,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Redraw the markdown view
      * @deprecated This method is deprecated and will be removed in a future version.
      */
-    private <span class="fstat-no" title="function not covered" >redrawMarkdownView(</span>) {
+    private <span class="fstat-no" title="function not covered" >redrawMarkdownView(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._logger?.debug(`Redrawing markdown view`);</span>
 <span class="cstat-no" title="statement not covered" >        this._app.workspace.updateOptions();</span>
     }
@@ -2055,7 +2073,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
     /**
      * Register event handlers for the metadata cache
      */
-    private <span class="fstat-no" title="function not covered" >registerEvents(</span>) {
+    private <span class="fstat-no" title="function not covered" >registerEvents(</span>): void {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._hasEventsRegistered) {</span>
 <span class="cstat-no" title="statement not covered" >            this._app.vault.on('rename', this.renameEventHandler);</span>
 <span class="cstat-no" title="statement not covered" >            this._app.metadataCache.on('changed', this.changedEventHandler);</span>
@@ -2074,7 +2092,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

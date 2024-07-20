@@ -741,7 +741,7 @@
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >enableEditability(</span>) {
+    public <span class="fstat-no" title="function not covered" >enableEditability(</span>): this {
 <span class="cstat-no" title="statement not covered" >        this._isEditable = true;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -752,7 +752,7 @@
      * @param value The value to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string) {
+    public <span class="fstat-no" title="function not covered" >setValue(</span>value: string): this {
 <span class="cstat-no" title="statement not covered" >        this._value = value;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -763,7 +763,7 @@
      * @param placeholder The placeholder to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setPlaceholder(</span>placeholder: string) {
+    public <span class="fstat-no" title="function not covered" >setPlaceholder(</span>placeholder: string): this {
 <span class="cstat-no" title="statement not covered" >        this._placeholder = placeholder;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -774,7 +774,7 @@
      * @param suggestions The suggestions to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setSuggestions(</span>suggestions: string[]) {
+    public <span class="fstat-no" title="function not covered" >setSuggestions(</span>suggestions: string[]): this {
 <span class="cstat-no" title="statement not covered" >        this._suggestions = suggestions;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -785,7 +785,7 @@
      * @param title The title to set.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string) {
+    public <span class="fstat-no" title="function not covered" >setTitle(</span>title: string): this {
 <span class="cstat-no" title="statement not covered" >        this._title = title;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -796,7 +796,7 @@
      * @param type The type to set. Can be `tag`, `file` or `external`.
      * @returns The component itself.
      */
-    public <span class="fstat-no" title="function not covered" >setLinkType(</span>type: 'tag' | 'file' | 'external') {
+    public <span class="fstat-no" title="function not covered" >setLinkType(</span>type: 'tag' | 'file' | 'external'): this {
 <span class="cstat-no" title="statement not covered" >        this._linkType = type;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -808,7 +808,7 @@
      * @returns The component itself.
      * @remarks The suggester is called when the user types in the input element.
      */
-    public <span class="fstat-no" title="function not covered" >setSuggester(</span>suggester: (value: string) =&gt; string[]) {
+    public <span class="fstat-no" title="function not covered" >setSuggester(</span>suggester: (value: string) =&gt; string[]): this {
 <span class="cstat-no" title="statement not covered" >        this._suggester = suggester;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -826,7 +826,7 @@
             text: string;
             html?: DocumentFragment;
         },
-    ) {
+    ): this {
         /**
          * Sets the presentation of the component.
          * @param value The value to present.
@@ -871,7 +871,7 @@
      * @returns The component itself.
      * @remarks The saver is called when the component save button is clicked.
      */
-    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;) {
+    public <span class="fstat-no" title="function not covered" >onSave(</span>callback: (value: string) =&gt; Promise&lt;void&gt;): this {
 <span class="cstat-no" title="statement not covered" >        this._onSave = callback;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        return this;</span>
@@ -882,7 +882,7 @@
      * Sets the suggestions list for the input element.
      * @param suggestions The suggestions to set.
      */
-    private <span class="fstat-no" title="function not covered" >setSuggestionsList(</span>suggestions: string[]) {
+    private <span class="fstat-no" title="function not covered" >setSuggestionsList(</span>suggestions: string[]): void {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._datalist) <span class="cstat-no" title="statement not covered" >return;</span></span>
 <span class="cstat-no" title="statement not covered" >        this._datalist.innerHTML = '';</span>
 &nbsp;
@@ -897,7 +897,7 @@
     /**
      * Builds the presentation mode of the component.
      */
-    private <span class="fstat-no" title="function not covered" >build(</span>) {
+    private <span class="fstat-no" title="function not covered" >build(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._link = document.createElement('a');</span>
 <span class="cstat-no" title="statement not covered" >        this._presentationContainer.appendChild(this._link);</span>
 &nbsp;
@@ -927,7 +927,7 @@
     /**
      * Builds the input mode of the component.
      */
-    private <span class="fstat-no" title="function not covered" >buildInput(</span>) {
+    private <span class="fstat-no" title="function not covered" >buildInput(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._label = document.createElement('label');</span>
 <span class="cstat-no" title="statement not covered" >        this._label.title = this._title;</span>
 <span class="cstat-no" title="statement not covered" >        this._dataInputContainer.appendChild(this._label);</span>
@@ -983,7 +983,7 @@
     /**
      * Enables the edit mode of the component.
      */
-    private <span class="fstat-no" title="function not covered" >enableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >enableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._onPresentation?.(this._value);</span>
 <span class="cstat-no" title="statement not covered" >        this._input.focus();</span>
 <span class="cstat-no" title="statement not covered" >        this._input.select();</span>
@@ -992,7 +992,7 @@
     /**
      * Disables the edit mode of the component.
      */
-    private <span class="fstat-no" title="function not covered" >disableEdit(</span>) {
+    private <span class="fstat-no" title="function not covered" >disableEdit(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._onPresentation?.(this._value);</span>
     }
 &nbsp;
@@ -1012,7 +1012,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T15:13:12.669Z
+                at 2024-07-20T15:47:39.108Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
