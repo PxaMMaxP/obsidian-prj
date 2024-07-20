@@ -26,7 +26,7 @@ export default class ProjectComponents {
         path: string,
         onRead: () => string,
         onWrite: (value: string) => void,
-    ) {
+    ): void {
         new EditableDataView(container, component).addLink((link) => {
             link.setValue(onRead())
                 .setTitle(Lng.gt('Title'))
@@ -79,7 +79,7 @@ export default class ProjectComponents {
         component: Component,
         description: string,
         onWrite: (value: string) => void,
-    ) {
+    ): void {
         new EditableDataView(container, component).addTextarea((text) =>
             text
                 .setValue(description)
@@ -107,7 +107,7 @@ export default class ProjectComponents {
         component: Component,
         onRead: () => string,
         onWrite: (value: string) => void,
-    ) {
+    ): void {
         new EditableDataView(container, component).addDropdown((dropdown) =>
             dropdown
                 .setOptions([
@@ -165,7 +165,7 @@ export default class ProjectComponents {
         component: Component,
         onRead: () => string,
         onWrite: (value: string) => void,
-    ) {
+    ): void {
         new EditableDataView(container, component).addDropdown((dropdown) =>
             dropdown
                 .setOptions([
@@ -222,7 +222,7 @@ export default class ProjectComponents {
         path: string,
         type: FileTypes | undefined | null,
         corospondingSymbol: string,
-    ) {
+    ): void {
         new EditableDataView(container, component).addLink((link) =>
             link
                 .setValue(path)
@@ -248,7 +248,7 @@ export default class ProjectComponents {
     public static createTraficLight(
         container: DocumentFragment,
         urgency: number,
-    ) {
+    ): void {
         const traficLightSpan = document.createElement('span');
         container.appendChild(traficLightSpan);
         let iconString: UrgencySymbols;

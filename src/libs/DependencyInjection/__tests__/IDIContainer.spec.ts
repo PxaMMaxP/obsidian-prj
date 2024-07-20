@@ -5,7 +5,7 @@ import { IDIContainer_, IDIContainer } from '../interfaces/IDIContainer';
  * @param Container The DIContainer implementation to test.
  * Must implement {@link IDIContainer}, {@link IDIContainer_}
  */
-export function test_IDIContainer(Container: IDIContainer_) {
+export function test_IDIContainer(Container: IDIContainer_): void {
     describe('IDIContainer Implementation Tests', () => {
         let container: IDIContainer;
 

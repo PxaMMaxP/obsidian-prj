@@ -42,7 +42,7 @@ export default class DateComponent extends BaseComponent {
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public enableEditability(): DateComponent {
+    public enableEditability(): this {
         this._isEditable = true;
 
         return this;
@@ -53,7 +53,7 @@ export default class DateComponent extends BaseComponent {
      * @param value The value to set.
      * @returns The component itself.
      */
-    public setValue(value: string): DateComponent {
+    public setValue(value: string): this {
         this._value = value;
 
         return this;
@@ -64,7 +64,7 @@ export default class DateComponent extends BaseComponent {
      * @param title The title to set.
      * @returns The component itself.
      */
-    public setTitle(title: string): DateComponent {
+    public setTitle(title: string): this {
         this._title = title;
 
         return this;
@@ -76,7 +76,7 @@ export default class DateComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component changes in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => string): DateComponent {
+    public setFormator(formator: (value: string) => string): this {
         this._onPresentation = formator;
 
         return this;
@@ -88,7 +88,7 @@ export default class DateComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The saver is called when the component save button is clicked.
      */
-    public onSave(callback: (value: string) => Promise<void>) {
+    public onSave(callback: (value: string) => Promise<void>): this {
         this._onSave = callback;
 
         return this;
@@ -99,7 +99,7 @@ export default class DateComponent extends BaseComponent {
     /**
      * Builds the presentation span for the component.
      */
-    private build() {
+    private build(): void {
         this._presentationSpan = document.createElement('span');
         this._presentationContainer.appendChild(this._presentationSpan);
 
@@ -115,7 +115,7 @@ export default class DateComponent extends BaseComponent {
     /**
      * Builds the input element for the component.
      */
-    private buildInput() {
+    private buildInput(): void {
         this._input = document.createElement('input');
         this._dataInputContainer.appendChild(this._input);
         this._input.type = 'date';
@@ -127,7 +127,7 @@ export default class DateComponent extends BaseComponent {
     /**
      * Enables the edit mode for the component.
      */
-    private enableEdit() {
+    private enableEdit(): void {
         this._input.value = this._value ? this._value : '';
         this._input.focus();
         this._input.select();
@@ -136,7 +136,7 @@ export default class DateComponent extends BaseComponent {
     /**
      * Disables the edit mode for the component.
      */
-    private disableEdit() {
+    private disableEdit(): void {
         this._presentationSpan.textContent = this._onPresentation
             ? this._onPresentation(this._value)
             : this._value;

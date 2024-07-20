@@ -29,7 +29,7 @@ export default class ChangeStatusModal extends Modal {
     /**
      * Opens the modal.
      */
-    override open() {
+    override open(): void {
         const workspace = this.app.workspace;
         const activeFile = workspace.getActiveFile();
 
@@ -56,7 +56,7 @@ export default class ChangeStatusModal extends Modal {
     /**
      * Initializes the modal.
      */
-    onOpen() {
+    onOpen(): void {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: Lng.gt('Change Status') });
 
@@ -89,7 +89,7 @@ export default class ChangeStatusModal extends Modal {
     /**
      * Closes the modal.
      */
-    onClose() {
+    onClose(): void {
         const { contentEl } = this;
         contentEl.empty();
     }

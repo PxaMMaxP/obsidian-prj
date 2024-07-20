@@ -256,7 +256,7 @@ export default class Table {
      * - If no visible row exists, the row is set to even.
      * @remarks It does not search for the last visible line in the HTML table itself, but in an internal array.
      */
-    private setRowOddOrEven(tableRow: HTMLTableRowElement) {
+    private setRowOddOrEven(tableRow: HTMLTableRowElement): void {
         let lastVisibleRow;
 
         for (let i = this._table.rows.length - 1; i >= 0; i--) {

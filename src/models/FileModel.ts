@@ -110,8 +110,9 @@ export class FileModel<
 
     /**
      * Initializes the dependencies of the class.
+     * @todo Change to DI-Injection.
      */
-    private initializeDependencies() {
+    private initializeDependencies(): void {
         // eslint-disable-next-line deprecation/deprecation
         this._global = Global.getInstance();
 
@@ -214,7 +215,7 @@ export class FileModel<
     private async setFrontmatter(
         value: Record<string, unknown>,
         previousPromise?: Promise<void>,
-    ) {
+    ): Promise<void> {
         if (!this._file) return Promise.resolve();
 
         if (previousPromise) {
@@ -246,7 +247,7 @@ export class FileModel<
      * Updates the `yamlKeyMap` with the given value.
      * @param yamlKeyMap The new `yamlKeyMap` to set.
      */
-    private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined) {
+    private initYamlKeyMap(yamlKeyMap: YamlKeyMap | undefined): void {
         if (yamlKeyMap) {
             this._yamlKeyMap = yamlKeyMap;
         }
@@ -289,7 +290,7 @@ export class FileModel<
     private updateNestedFrontmatterObjects(
         frontmatter: Record<string, unknown>,
         updates: object,
-    ) {
+    ): void {
         Object.entries(updates).forEach(([key, value]) => {
             if (this._yamlKeyMap && this._yamlKeyMap[key]) {
                 key = this._yamlKeyMap[key];

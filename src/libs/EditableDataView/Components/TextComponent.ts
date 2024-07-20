@@ -37,7 +37,7 @@ export default class TextComponent extends BaseComponent {
     /**
      * Returns `true` if the suggester is set. (Suggestions are enabled.)
      */
-    private get isSuggesterSet() {
+    private get isSuggesterSet(): boolean {
         return this._suggester !== undefined;
     }
 
@@ -59,7 +59,7 @@ export default class TextComponent extends BaseComponent {
      * Enables the editability of the component.
      * @returns The component itself.
      */
-    public enableEditability() {
+    public enableEditability(): this {
         this._isEditable = true;
 
         return this;
@@ -70,7 +70,7 @@ export default class TextComponent extends BaseComponent {
      * @param value The value to set.
      * @returns The component itself.
      */
-    public setValue(value: string) {
+    public setValue(value: string): this {
         this._value = value;
 
         return this;
@@ -81,7 +81,7 @@ export default class TextComponent extends BaseComponent {
      * @param placeholder The placeholder to set.
      * @returns The component itself.
      */
-    public setPlaceholder(placeholder: string) {
+    public setPlaceholder(placeholder: string): this {
         this._placeholder = placeholder;
 
         return this;
@@ -92,7 +92,7 @@ export default class TextComponent extends BaseComponent {
      * @param suggestions The suggestions to set.
      * @returns The component itself.
      */
-    public setSuggestions(suggestions: Suggestions) {
+    public setSuggestions(suggestions: Suggestions): this {
         this._suggestions = suggestions;
 
         return this;
@@ -103,7 +103,7 @@ export default class TextComponent extends BaseComponent {
      * @param title The title to set.
      * @returns The component itself.
      */
-    public setTitle(title: string) {
+    public setTitle(title: string): this {
         this._title = title;
 
         return this;
@@ -115,7 +115,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The suggester is called when the user types in the input element.
      */
-    public setSuggester(suggester: (value: string) => Suggestions) {
+    public setSuggester(suggester: (value: string) => Suggestions): this {
         this._suggester = suggester;
 
         return this;
@@ -127,7 +127,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The formator is called when the component changes in `not-edit` mode.
      */
-    public setFormator(formator: (value: string) => Promise<string>) {
+    public setFormator(formator: (value: string) => Promise<string>): this {
         /**
          * Sets the presentation handler for the component.
          * @param value The value to present.
@@ -146,7 +146,7 @@ export default class TextComponent extends BaseComponent {
      * @remarks The formator is called when the component changes in `not-edit` mode.
      * - The custom formator is ignored if this method is called!
      */
-    public setRenderMarkdown(path = '') {
+    public setRenderMarkdown(path = ''): this {
         /**
          * Sets the markdown presentation handler for the component.
          * @param value The value to present.
@@ -180,7 +180,7 @@ export default class TextComponent extends BaseComponent {
      * @returns The component itself.
      * @remarks The saver is called when the component save button is clicked.
      */
-    public onSave(callback: (value: string) => Promise<void>) {
+    public onSave(callback: (value: string) => Promise<void>): this {
         this._onSave = callback;
 
         return this;
@@ -191,7 +191,7 @@ export default class TextComponent extends BaseComponent {
     /**
      * Builds the presentation of the component.
      */
-    private build() {
+    private build(): void {
         this._presentationSpan = document.createElement('span');
         this._presentationContainer.appendChild(this._presentationSpan);
 
@@ -230,7 +230,7 @@ export default class TextComponent extends BaseComponent {
     /**
      * Builds the input element for editing the component.
      */
-    private buildInput() {
+    private buildInput(): void {
         this._component.registerDomEvent(
             this._presentationSpan,
             'keydown',
@@ -247,7 +247,7 @@ export default class TextComponent extends BaseComponent {
     /**
      * Enables the edit mode for the component.
      */
-    private enableEdit() {
+    private enableEdit(): void {
         this._presentationContainer.classList.remove('hidden');
         this._presentationSpan.contentEditable = 'true';
         this._presentationSpan.focus();
@@ -258,7 +258,7 @@ export default class TextComponent extends BaseComponent {
     /**
      * Disables the edit mode for the component.
      */
-    private disableEdit() {
+    private disableEdit(): void {
         if (this._onMarkdownPresentation) {
             this._presentationSpan.textContent = null;
             this._onMarkdownPresentation(this._value);

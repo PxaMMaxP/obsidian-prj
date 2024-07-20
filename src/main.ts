@@ -29,7 +29,7 @@ export default class Prj extends Plugin {
     /**
      * Will be called when the plugin is loaded
      */
-    async onload() {
+    async onload(): Promise<void> {
         // eslint-disable-next-line no-console
         console.log("Loading plugin 'PRJ'");
 
@@ -149,7 +149,7 @@ export default class Prj extends Plugin {
     /**
      * Will be called when the plugin is unloaded
      */
-    onunload() {
+    onunload(): void {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
         new LifecycleManager().onUnload();
@@ -160,7 +160,7 @@ export default class Prj extends Plugin {
     /**
      * Load the settings
      */
-    async loadSettings() {
+    async loadSettings(): Promise<void> {
         this.settings = Object.assign(
             {},
             DEFAULT_SETTINGS,
@@ -173,7 +173,7 @@ export default class Prj extends Plugin {
     /**
      * Save the settings
      */
-    async saveSettings() {
+    async saveSettings(): Promise<void> {
         await this.saveData(this.settings);
     }
 }

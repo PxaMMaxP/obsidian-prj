@@ -73,7 +73,7 @@ export default class MetadataCache implements IMetadataCache {
      * Get the singleton instance of the MetadataCache class
      * @returns The MetadataCache instance
      */
-    static getInstance() {
+    static getInstance(): IMetadataCache {
         if (!MetadataCache.instance) {
             MetadataCache.instance = new MetadataCache();
         }
@@ -112,7 +112,7 @@ export default class MetadataCache implements IMetadataCache {
      * Deconstructor for the MetadataCache class
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
-    static deconstructor() {
+    static deconstructor(): void {
         const logger = Logging.getLogger('MetadataCache');
 
         if (!MetadataCache.instance) {
@@ -271,7 +271,7 @@ export default class MetadataCache implements IMetadataCache {
         newMetadata: CachedMetadata,
         oldMetadata: CachedMetadata,
         file: TFile,
-    ) {
+    ): Promise<void> {
         this._logger?.trace(
             `Metadata changed for file ${file.path} and is processed.`,
         );
@@ -341,7 +341,10 @@ export default class MetadataCache implements IMetadataCache {
      * @param oldPath The old path of the file.
      * @param newFile The new file object representing the renamed file.
      */
-    private async onRenamedFile(oldPath: string, newFile: TFile) {
+    private async onRenamedFile(
+        oldPath: string,
+        newFile: TFile,
+    ): Promise<void> {
         this._logger?.trace(
             `File renamed from ${oldPath} to ${newFile.path} and is processed.`,
         );
@@ -364,7 +367,7 @@ export default class MetadataCache implements IMetadataCache {
      * Invalidate the metadata cache
      * @remarks Set the metadata cache array to undefined.
      */
-    private invalidateMetadataCacheArray() {
+    private invalidateMetadataCacheArray(): void {
         if (this._metadataCacheArray) {
             if (this._metadataCache) {
                 this._metadataCacheArray = undefined;
@@ -512,7 +515,7 @@ export default class MetadataCache implements IMetadataCache {
      * Add a file to the metadata cache
      * @param file The file to add to the metadata cache
      */
-    private async addEntry(file: TFile) {
+    private async addEntry(file: TFile): Promise<void> {
         if (this._metadataCache) {
             const metadata = this._app.metadataCache.getFileCache(file);
 
@@ -531,7 +534,7 @@ export default class MetadataCache implements IMetadataCache {
      * Delete a file from the metadata cache
      * @param file The file to delete from the metadata cache
      */
-    private deleteEntry(file: TFile) {
+    private deleteEntry(file: TFile): void {
         if (this._metadataCache) {
             this._metadataCache.delete(file.path);
             this.invalidateMetadataCacheArray();
@@ -549,7 +552,10 @@ export default class MetadataCache implements IMetadataCache {
      * @param file The file to update in the metadata cache
      * @param cache The new cached metadata
      */
-    private async updateEntry(file: TFile, cache: CachedMetadata) {
+    private async updateEntry(
+        file: TFile,
+        cache: CachedMetadata,
+    ): Promise<void> {
         if (this._metadataCache) {
             const entry = this._metadataCache.get(file.path);
 
@@ -579,7 +585,7 @@ export default class MetadataCache implements IMetadataCache {
      * @param newFile The new file object
      * @param oldPath The old path of the file
      */
-    private async renameEntry(newFile: TFile, oldPath: string) {
+    private async renameEntry(newFile: TFile, oldPath: string): Promise<void> {
         if (this._metadataCache) {
             this._metadataCache.delete(oldPath);
             this.addEntry(newFile);
@@ -599,7 +605,7 @@ export default class MetadataCache implements IMetadataCache {
      * @param file New file object
      * @param oldPath Old path of the file
      */
-    private renameEventHandler(file: TFile, oldPath: string) {
+    private renameEventHandler(file: TFile, oldPath: string): void {
         this._logger?.debug(`File ${oldPath} renamed to ${file.path}`);
         this.renameEntry(file, oldPath);
     }
@@ -608,7 +614,7 @@ export default class MetadataCache implements IMetadataCache {
      * Event handler for the delete event
      * @param file Deleted file object
      */
-    private deleteEventHandler(file: TFile) {
+    private deleteEventHandler(file: TFile): void {
         this._logger?.debug(`File ${file.path} deleted`);
         this.deleteEntry(file);
     }
@@ -623,7 +629,7 @@ export default class MetadataCache implements IMetadataCache {
         file: TFile,
         data: string,
         cache: CachedMetadata,
-    ) {
+    ): void {
         this._logger?.trace(
             `File ${file.path} changed. Data-content:`,
             { data },
@@ -646,7 +652,7 @@ export default class MetadataCache implements IMetadataCache {
      * Redraw the markdown view
      * @deprecated This method is deprecated and will be removed in a future version.
      */
-    private redrawMarkdownView() {
+    private redrawMarkdownView(): void {
         this._logger?.debug(`Redrawing markdown view`);
         this._app.workspace.updateOptions();
     }
@@ -654,7 +660,7 @@ export default class MetadataCache implements IMetadataCache {
     /**
      * Register event handlers for the metadata cache
      */
-    private registerEvents() {
+    private registerEvents(): void {
         if (!this._hasEventsRegistered) {
             this._app.vault.on('rename', this.renameEventHandler);
             this._app.metadataCache.on('changed', this.changedEventHandler);

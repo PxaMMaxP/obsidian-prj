@@ -41,8 +41,8 @@ export function Inject<T, U>(
 
         // Function to evaluate the dependency lazily
         // to avoid circular dependencies, not found dependencies, etc.
-        const evaluate = () => {
-            return diContainer.resolve<unknown>(identifier, necessary);
+        const evaluate = (): T | undefined => {
+            return diContainer.resolve<T>(identifier, necessary);
         };
 
         // Define the property

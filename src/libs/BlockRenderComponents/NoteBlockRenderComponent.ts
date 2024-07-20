@@ -338,7 +338,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
     /**
      * Executes the filter logic when the active file filter is triggered.
      */
-    public onActiveFileFilter() {
+    public onActiveFileFilter(): void {
         this.onFilter();
     }
 

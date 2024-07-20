@@ -129,7 +129,7 @@ export default abstract class TableBlockRenderComponent<
      * @remarks - Removes the `disable` class from the header.
      * - The header is not grayed out anymore.
      */
-    protected normalizeHeader() {
+    protected normalizeHeader(): void {
         this._headerContainer.removeClass('disable');
     }
 
@@ -138,7 +138,7 @@ export default abstract class TableBlockRenderComponent<
      * @remarks - Adds the `disable` class to the header.
      * - The header is grayed out.
      */
-    protected grayOutHeader() {
+    protected grayOutHeader(): void {
         this._headerContainer.addClass('disable');
     }
 
@@ -223,7 +223,10 @@ export default abstract class TableBlockRenderComponent<
              * @param tags2 The second array to compare.
              * @returns True if the tags are different, false otherwise.
              */
-            const areTagsDifferent = (tags1: string[], tags2: string[]) => {
+            const areTagsDifferent = (
+                tags1: string[],
+                tags2: string[],
+            ): boolean => {
                 if (tags1.length !== tags2.length) return true;
 
                 const sortedTags1 = [...tags1].sort();
@@ -359,7 +362,7 @@ export default abstract class TableBlockRenderComponent<
      * searched by the `search` setting
      * and the number of documents is limited by the `maxDocuments` if no search is applied.
      */
-    protected async onFilter() {
+    protected async onFilter(): Promise<void> {
         this.grayOutHeader();
         const batchSize = this._settings.batchSize;
         const sleepBetweenBatches = this._settings.sleepBetweenBatches;

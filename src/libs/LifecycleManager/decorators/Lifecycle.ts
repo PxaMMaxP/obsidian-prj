@@ -87,7 +87,7 @@ export function Lifecycle<
      * @param args The arguments for the constructor.
      * @returns The instance with registered lifecycle methods.
      */
-    const wrappedConstructor = function (...args: unknown[]) {
+    const wrappedConstructor = function (...args: unknown[]): ILifecycleObject {
         return construct(original, args);
     };
 

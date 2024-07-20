@@ -80,7 +80,7 @@ export class Logging implements ILogger {
      * Sets the log level and assigns the appropriate logging methods.
      * @param logLevel The log level to set.
      */
-    public setLogLevel(logLevel: LoggingLevel | string | undefined) {
+    public setLogLevel(logLevel: LoggingLevel | string | undefined): void {
         this._setLogLevel(this.parseLoggingLevel(logLevel));
 
         if (this._logLevel === LoggingLevelNumber.none) {
@@ -92,7 +92,7 @@ export class Logging implements ILogger {
      * Sets the log level and assigns the appropriate logging methods.
      * @param logLevel The log level to set.
      */
-    private _setLogLevel(logLevel: LoggingLevelNumber) {
+    private _setLogLevel(logLevel: LoggingLevelNumber): void {
         this._logLevel = logLevel;
 
         this.trace = this._none;

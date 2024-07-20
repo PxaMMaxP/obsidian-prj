@@ -22,14 +22,14 @@ export class MarkdownRenderChild {
     /**
      * This function is called when the child is loaded.
      */
-    onload() {
+    onload(): void {
         // This method will be overwritten in the actual implementation
     }
 
     /**
      * This function is called when the child is unloaded.
      */
-    onunload() {
+    onunload(): void {
         // This method will be overwritten in the actual implementation
     }
 }
