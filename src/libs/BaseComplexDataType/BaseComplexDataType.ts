@@ -1,3 +1,5 @@
+import { IInstanceOf } from 'src/interfaces/DataType/IInstanceOf';
+import { IPrimitive } from 'src/interfaces/DataType/IPrimitive';
 import { IBaseComplexDataTypeSymbol } from './interfaces/IBaseComplexDataType';
 import { TransactionModel } from '../../models/TransactionModel';
 
@@ -7,6 +9,8 @@ import { TransactionModel } from '../../models/TransactionModel';
  * - to get the frontmatter object.
  * @see {@link TransactionModel.updateKeyValue}
  * for an example of how the {@link BaseComplexDataType.getFrontmatterObject} methode is used.
+ * @deprecated This class is deprecated and will be removed in the next major version.
+ * Use the {@link IPrimitive} and {@link IInstanceOf} interfaces instead.
  */
 export default abstract class BaseComplexDataType {
     /**
