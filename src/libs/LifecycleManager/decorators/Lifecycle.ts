@@ -28,16 +28,6 @@ function registerLifecycleMethod(
 }
 
 /**
- * Lifecycle decorator: Registers static and instance lifecycle methods.
- * @returns The decorated constructor with lifecycle management.
- */
-export function Lifecycle<
-    TargetType extends {
-        new (...args: unknown[]): ILifecycleObject;
-    } & ILifecycleObject,
->(): TargetType;
-
-/**
  * Lifecycle decorator.
  * @param type The type of lifecycle to register: 'Static', 'Instance', or 'All'.
  * @returns The decorated constructor with lifecycle management.
@@ -46,25 +36,14 @@ export function Lifecycle<
     TargetType extends {
         new (...args: unknown[]): ILifecycleObject;
     } & ILifecycleObject,
->(type?: 'Static' | 'Instance' | 'All'): TargetType;
-
-/**
- * Lifecycle decorator.
- * @param type The type of lifecycle to register: 'Static', 'Instance', or 'All'.
- * @returns The decorated constructor with lifecycle management.
- */
-export function Lifecycle<
-    TargetType extends {
-        new (...args: unknown[]): ILifecycleObject;
-    } & ILifecycleObject,
->(type?: 'Static' | 'Instance' | 'All') {
+>(type?: 'Static' | 'Instance' | 'All'): (constructor: TargetType) => void {
     /**
      * Lifecycle decorator.
      * @param constructor The constructor to decorate with lifecycle methods.
      * @param args The arguments for the constructor.
      * @returns The decorated constructor with lifecycle management.
      */
-    return function Lifecycle(
+    return function lifecycle(
         constructor: TargetType,
         ...args: unknown[]
     ): TargetType {
