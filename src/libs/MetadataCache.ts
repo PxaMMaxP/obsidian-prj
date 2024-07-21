@@ -1,7 +1,6 @@
 // Note: MetadataCache class
 
 import { App, CachedMetadata, TFile } from 'obsidian';
-import { Logging } from 'src/classes/Logging';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
@@ -90,6 +89,7 @@ export default class MetadataCache implements IMetadataCache {
             return MetadataCache.instance;
         } else {
             MetadataCache.instance = this;
+            this.deconstructor = this.deconstructor.bind(this);
 
             this.changedEventHandler = this.changedEventHandler.bind(this);
             this.renameEventHandler = this.renameEventHandler.bind(this);
@@ -113,45 +113,21 @@ export default class MetadataCache implements IMetadataCache {
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
     public deconstructor(): void {
-        this.deconstructor();
-    }
+        if (this._hasEventsRegistered) {
+            this._IApp.vault.off('rename', this.renameEventHandler);
 
-    /**
-     * Deconstructor for the MetadataCache class
-     * @description This method is used to unregister the event handlers for the metadata cache.
-     */
-    static deconstructor(): void {
-        const logger = Logging.getLogger('MetadataCache');
+            this._IApp.metadataCache.off('changed', this.changedEventHandler);
 
-        if (!MetadataCache.instance) {
-            logger.error('Metadata cache instance not loaded');
+            this._IApp.metadataCache.off('deleted', this.deleteEventHandler);
+
+            this._hasEventsRegistered = false;
+
+            this._logger?.debug('Metadata cache events unregistered');
 
             return;
         }
 
-        const instance = MetadataCache.instance;
-
-        if (instance._hasEventsRegistered) {
-            instance._IApp.vault.off('rename', instance.renameEventHandler);
-
-            instance._IApp.metadataCache.off(
-                'changed',
-                instance.changedEventHandler,
-            );
-
-            instance._IApp.metadataCache.off(
-                'deleted',
-                instance.deleteEventHandler,
-            );
-
-            instance._hasEventsRegistered = false;
-
-            logger.debug('Metadata cache events unregistered');
-
-            return;
-        }
-
-        logger.debug('Metadata cache events not registered');
+        this._logger?.debug('Metadata cache events not registered');
     }
 
     /**
