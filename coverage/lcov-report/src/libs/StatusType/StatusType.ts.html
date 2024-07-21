@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.87% </span>
+                <span class="strong">95.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>46/47</span>
+                <span class='fraction'>43/45</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">93.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>15/15</span>
+                <span class='fraction'>14/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.82% </span>
+                <span class="strong">95.45% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>45/46</span>
+                <span class='fraction'>42/44</span>
             </div>
         
             
@@ -255,16 +255,14 @@
 <a name='L190'></a><a href='#L190'>190</a>
 <a name='L191'></a><a href='#L191'>191</a>
 <a name='L192'></a><a href='#L192'>192</a>
-<a name='L193'></a><a href='#L193'>193</a>
-<a name='L194'></a><a href='#L194'>194</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L193'></a><a href='#L193'>193</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -320,8 +318,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -421,13 +417,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -439,25 +428,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { isIStringConvertible } from 'src/interfaces/DataType/IStringifiable';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
-import { isIStringConvertible } from 'src/interfaces/IStringifiable';
 import {
     IStatusType,
     IStatusType_,
     StatusTypes,
 } from './interfaces/IStatusType';
-import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
@@ -467,7 +464,7 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
  */
 @Register('IStatusType_')
 @ImplementsStatic&lt;IStatusType_&gt;()
-export class StatusType extends BaseComplexDataType implements IStatusType {
+export class StatusType implements IStatusType {
     @Inject('ITranslationService')
     private static readonly _ITranslationService: ITranslationService;
 &nbsp;
@@ -514,8 +511,6 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
      * @param value The value of the Status.
      */
     constructor(value: unknown) {
-        super();
-&nbsp;
         this._value = StatusType.validate(value);
     }
 &nbsp;
@@ -613,13 +608,6 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     /**
      * @inheritdoc
      */
-    getFrontmatterObject(): unknown {
-        return this.toString();
-    }
-&nbsp;
-    /**
-     * @inheritdoc
-     */
     equals(other: unknown): boolean {
         if (isIStringConvertible(other)) {
             return this._value === other.toString();
@@ -631,7 +619,7 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     /**
      * @inheritdoc
      */
-    valueOf(): string {
+    primitiveOf(): string {
         return this._value ?? <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
     }
 &nbsp;
@@ -641,6 +629,15 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     toString(): string {
         return this._value ?? '';
     }
+&nbsp;
+    /**
+     * Checks if the object is an instance of the type.
+     * @param obj The object to check.
+     * @returns Whether the object is an instance of the type.
+     */
+<span class="fstat-no" title="function not covered" >    [S</span>ymbol.hasInstance](obj: unknown): boolean {
+<span class="cstat-no" title="statement not covered" >        return obj instanceof StatusType;</span>
+    }
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -649,7 +646,7 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-21T14:14:03.950Z
+                at 2024-07-21T18:49:49.219Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
