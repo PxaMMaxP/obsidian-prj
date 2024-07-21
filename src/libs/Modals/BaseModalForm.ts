@@ -1,6 +1,5 @@
 import { App, TFile } from 'obsidian';
-import Global from 'src/classes/Global';
-import { Logging } from 'src/classes/Logging';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Tags } from 'src/libs/Tags/Tags';
 import {
     FormConfiguration,
@@ -8,16 +7,20 @@ import {
     IModalForm,
     IResultData,
 } from 'src/types/ModalFormType';
+import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Represents a base class for modal forms.
  */
 export default abstract class BaseModalForm {
-    protected _app: App = Global.getInstance().app;
-    protected _settings = Global.getInstance().settings;
-    protected _global = Global.getInstance();
-    protected _logger = Logging.getLogger('BaseModalForm');
+    @Inject('IApp')
+    protected _IApp!: App;
+    @Inject('IPrjSettings')
+    protected _IPrjSettings!: IPrjSettings;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('BaseModalForm'))
+    protected _logger?: ILogger;
     protected _modalFormApi: IModalForm | null | undefined = null;
 
     /**
@@ -25,7 +28,7 @@ export default abstract class BaseModalForm {
      */
     constructor() {
         if (this._modalFormApi === undefined) {
-            this._logger.error('ModalForms API not found');
+            this._logger?.error('ModalForms API not found');
         } else {
             this._modalFormApi = this.setApi();
         }
@@ -38,7 +41,7 @@ export default abstract class BaseModalForm {
      */
     protected isApiAvailable(): boolean {
         if (this._modalFormApi === undefined)
-            this._logger.error('ModalForms API not found');
+            this._logger?.error('ModalForms API not found');
 
         if (this._modalFormApi === null) {
             this._modalFormApi = this.setApi();
@@ -55,7 +58,7 @@ export default abstract class BaseModalForm {
      */
     protected getApi(): IModalForm {
         if (this._modalFormApi === undefined || this._modalFormApi === null) {
-            this._logger.error('ModalForms API not found');
+            this._logger?.error('ModalForms API not found');
             throw new Error('ModalForms API not found');
         } else {
             return this._modalFormApi;
@@ -68,15 +71,15 @@ export default abstract class BaseModalForm {
      */
     private setApi(): IModalForm | undefined {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const modalFormApi = (this._app as any).plugins.plugins.modalforms
+        const modalFormApi = (this._IApp as any).plugins.plugins.modalforms
             .api as IModalForm;
 
         if (!modalFormApi) {
-            this._logger.error('ModalForms API not found');
+            this._logger?.error('ModalForms API not found');
 
             return undefined;
         } else {
-            this._logger.trace('ModalForms API found');
+            this._logger?.trace('ModalForms API found');
 
             return modalFormApi;
         }

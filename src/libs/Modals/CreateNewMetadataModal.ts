@@ -1,8 +1,9 @@
 import { TFile } from 'obsidian';
 import API from 'src/classes/API';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { ILogger_ } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { IPrj } from 'src/interfaces/IPrj';
 import { IPrjDocument } from 'src/models/Data/interfaces/IPrjDocument';
 import { DocumentModel } from 'src/models/DocumentModel';
 import {
@@ -13,13 +14,16 @@ import {
 } from 'src/types/ModalFormType';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
  * Modal to create a new metadata file
  */
 export default class CreateNewMetadataModal extends BaseModalForm {
-    private readonly _metadataCache = Global.getInstance().metadataCache;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache: IMetadataCache;
 
     /**
      * Creates an instance of CreateNewMetadataModal.
@@ -33,11 +37,14 @@ export default class CreateNewMetadataModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('CreateNewMetadataModal');
+        const plugin = Resolve<IPrj>('IPrj');
+
+        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+            'CreateNewMetadataModal',
+        );
         logger.trace("Registering 'CreateNewMetadataModal' commands");
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'create-new-metadata-file',
             name: `${Lng.gt('Create new metadata')}`,
             /**
@@ -65,7 +72,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
         preset?: Partial<IPrjDocument>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this._logger.trace("Opening 'CreateNewMetadataModal' form");
+        this._logger?.trace("Opening 'CreateNewMetadataModal' form");
 
         const convertedPreset: IResultData =
             this.convertPresetToIResultData(preset);
@@ -86,7 +93,7 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             values: convertedPreset,
         });
 
-        this._logger.trace(
+        this._logger?.trace(
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -117,12 +124,12 @@ export default class CreateNewMetadataModal extends BaseModalForm {
 
         const folder = existingFile?.parent?.path
             ? existingFile.parent?.path
-            : this._settings.documentSettings.defaultFolder;
+            : this._IPrjSettings.documentSettings.defaultFolder;
 
         (result.data.subType as FileSubType | undefined) =
             PrjTypes.isValidFileSubType(result.data.subType);
 
-        const linkedFile = this._metadataCache.getFileByLink(
+        const linkedFile = this._IMetadataCache.getFileByLink(
             result.data.file as string,
             '',
         );
@@ -138,15 +145,15 @@ export default class CreateNewMetadataModal extends BaseModalForm {
             let template = '';
 
             // If a template is set, use it
-            const templateFile = this._app.vault.getAbstractFileByPath(
-                this._settings.documentSettings.template,
+            const templateFile = this._IApp.vault.getAbstractFileByPath(
+                this._IPrjSettings.documentSettings.template,
             );
 
             if (templateFile && templateFile instanceof TFile) {
                 try {
-                    template = await this._app.vault.read(templateFile);
+                    template = await this._IApp.vault.read(templateFile);
                 } catch (error) {
-                    this._logger.error(
+                    this._logger?.error(
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );

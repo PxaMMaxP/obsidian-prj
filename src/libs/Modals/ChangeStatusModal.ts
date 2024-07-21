@@ -1,12 +1,16 @@
 import { Modal, Setting } from 'obsidian';
 import API from 'src/classes/API';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { IApp } from 'src/interfaces/IApp';
+import { ILogger_ } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { IPrj } from 'src/interfaces/IPrj';
 import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 
 /**
@@ -17,13 +21,14 @@ export default class ChangeStatusModal extends Modal {
     model: PrjTaskManagementModel<
         IPrjTaskManagementData & PrjBaseData<unknown>
     >;
-    private readonly _metadataCache = Global.getInstance().metadataCache;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache: IMetadataCache;
 
     /**
      * Creates a new instance of the modal.
      */
     constructor() {
-        super(Global.getInstance().app);
+        super(Resolve<IApp>('IApp'));
     }
 
     /**
@@ -36,7 +41,7 @@ export default class ChangeStatusModal extends Modal {
         if (!activeFile) {
             return;
         }
-        const activeFileMetadata = this._metadataCache.getEntry(activeFile);
+        const activeFileMetadata = this._IMetadataCache.getEntry(activeFile);
         const type = activeFileMetadata?.metadata.frontmatter?.type;
 
         if (!FileType.isValidOf(type, ['Topic', 'Project', 'Task'])) {
@@ -99,11 +104,14 @@ export default class ChangeStatusModal extends Modal {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('ChangeStatusModal');
+        const plugin = Resolve<IPrj>('IPrj');
+
+        const logger =
+            Resolve<ILogger_>('ILogger_').getLogger('ChangeStatusModal');
+
         logger.trace("Registering 'CreateNewMetadataModal' commands");
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'change-prj-status',
             name: Lng.gt('Change Status'),
             /**

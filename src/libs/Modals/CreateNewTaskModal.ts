@@ -1,8 +1,9 @@
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import Prj from 'src/main';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
@@ -47,9 +48,10 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
         };
 
         const taskSubTypes =
-            this._global.plugin.settings.prjSettings.subTaskTemplates?.map(
-                (value) => ({ value: value.template, label: value.label }),
-            );
+            this._IPrjSettings.prjSettings.subTaskTemplates?.map((value) => ({
+                value: value.template,
+                label: value.label,
+            }));
 
         if (taskSubTypes && subType.input.type === 'select') {
             subType.input.options.push({ value: '', label: Lng.gt('None') });
@@ -64,16 +66,20 @@ export default class CreateNewTaskModal extends CreateNewTaskManagementModal {
         return form;
     }
 
+    @Inject('IPrj')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    protected static _IPrj: Prj;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('CreateNewTaskModal'))
+    protected static _ILogger: ILogger;
+
     /**
      * Registers the command to open the modal
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('CreateNewTaskModal');
-        logger.trace("Registering 'CreateNewTaskModal' commands");
+        this._ILogger.trace("Registering 'CreateNewTaskModal' commands");
 
-        global.plugin.addCommand({
+        this._IPrj.addCommand({
             id: 'create-new-task-file',
             name: `${Lng.gt('New task')}`,
             /**

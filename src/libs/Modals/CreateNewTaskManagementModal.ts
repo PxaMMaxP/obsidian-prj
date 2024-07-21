@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import { IPrj } from 'src/interfaces/IPrj';
 import PrjProjectData from 'src/models/Data/PrjProjectData';
 import PrjTaskData from 'src/models/Data/PrjTaskData';
 import PrjTopicData from 'src/models/Data/PrjTopicData';
@@ -10,6 +10,7 @@ import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
 import BaseModalForm from './BaseModalForm';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 import { ITags } from '../Tags/interfaces/ITags';
 import { Tag } from '../Tags/Tag';
@@ -32,7 +33,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
      */
     public async openForm(): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this._logger.trace("Opening 'CreateNewTaskManagementModal' form");
+        this._logger?.trace("Opening 'CreateNewTaskManagementModal' form");
 
         const tags: string[] = this.getTagsFromActiveFile();
 
@@ -42,7 +43,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             values: { tags: tags },
         });
 
-        this._logger.trace(
+        this._logger?.trace(
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -66,14 +67,14 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         result.data.title ??
             (() => {
-                this._logger.error('No title provided');
+                this._logger?.error('No title provided');
 
                 return;
             })();
 
         result.data.tags ??
             (() => {
-                this._logger.error('No tags provided');
+                this._logger?.error('No tags provided');
 
                 return;
             })();
@@ -92,9 +93,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                     PrjTopicData,
                 );
 
-                templateFilePath =
-                    this._global.settings.prjSettings.topicTemplate;
-                modelFolderPath = this._global.settings.prjSettings.topicFolder;
+                templateFilePath = this._IPrjSettings.prjSettings.topicTemplate;
+                modelFolderPath = this._IPrjSettings.prjSettings.topicFolder;
                 break;
             case 'Project':
                 model = new PrjTaskManagementModel<PrjProjectData>(
@@ -103,10 +103,9 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 );
 
                 templateFilePath =
-                    this._global.settings.prjSettings.projectTemplate;
+                    this._IPrjSettings.prjSettings.projectTemplate;
 
-                modelFolderPath =
-                    this._global.settings.prjSettings.projectFolder;
+                modelFolderPath = this._IPrjSettings.prjSettings.projectFolder;
 
                 if (result.data.subtype && result.data.subtype !== '') {
                     subTemplatePath = result.data.subtype as string;
@@ -119,9 +118,8 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                     PrjTaskData,
                 );
 
-                templateFilePath =
-                    this._global.settings.prjSettings.taskTemplate;
-                modelFolderPath = this._global.settings.prjSettings.taskFolder;
+                templateFilePath = this._IPrjSettings.prjSettings.taskTemplate;
+                modelFolderPath = this._IPrjSettings.prjSettings.taskFolder;
 
                 if (result.data.subtype && result.data.subtype !== '') {
                     subTemplatePath = result.data.subtype as string;
@@ -129,7 +127,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 delete result.data.subtype;
                 break;
             default:
-                this._logger.error('No valid type provided');
+                this._logger?.error('No valid type provided');
 
                 return;
         }
@@ -148,7 +146,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                 return this.tag + (this.postfix ? this.postfix : '');
             },
         };
-        const baseTag = this._settings.baseTag;
+        const baseTag = this._IPrjSettings.baseTag;
 
         result.data.tags = (result.data.tags as string[]).map((tag, index) => {
             if (index === 0) {
@@ -168,7 +166,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
                     }
                     mainTag.postfix++;
 
-                    this._logger.warn(
+                    this._logger?.warn(
                         `Tag '${mainTag.fullTag}' already exists`,
                     );
                 }
@@ -184,7 +182,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             result.data.tags.splice(1, 0, mainTag.base);
 
         if (!mainTag.tag) {
-            this._logger.error('No main tag provided');
+            this._logger?.error('No main tag provided');
 
             return;
         }
@@ -225,7 +223,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
         /**
          * Check if file already exists and add postfix if needed.
          */
-        modelFile.file = this._app.vault.getAbstractFileByPath(
+        modelFile.file = this._IApp.vault.getAbstractFileByPath(
             modelFile.fullPath,
         ) as TFile;
 
@@ -233,12 +231,12 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             modelFile.postfix = 0;
 
             while (modelFile.file) {
-                this._logger.warn(
+                this._logger?.warn(
                     `File '${modelFile.fullPath}' already exists`,
                 );
                 modelFile.postfix++;
 
-                modelFile.file = this._app.vault.getAbstractFileByPath(
+                modelFile.file = this._IApp.vault.getAbstractFileByPath(
                     modelFile.fullPath,
                 ) as TFile;
             }
@@ -251,13 +249,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
 
         if (subTemplatePath) {
             const subTemplateFile =
-                this._app.vault.getAbstractFileByPath(subTemplatePath);
+                this._IApp.vault.getAbstractFileByPath(subTemplatePath);
 
             if (subTemplateFile && subTemplateFile instanceof TFile) {
                 try {
-                    template = await this._app.vault.read(subTemplateFile);
+                    template = await this._IApp.vault.read(subTemplateFile);
                 } catch (error) {
-                    this._logger.error(
+                    this._logger?.error(
                         `Error reading sub template file '${subTemplateFile.path}'`,
                         error,
                     );
@@ -265,13 +263,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
             }
         } else if (templateFilePath) {
             const templateFile =
-                this._app.vault.getAbstractFileByPath(templateFilePath);
+                this._IApp.vault.getAbstractFileByPath(templateFilePath);
 
             if (templateFile && templateFile instanceof TFile) {
                 try {
-                    template = await this._app.vault.read(templateFile);
+                    template = await this._IApp.vault.read(templateFile);
                 } catch (error) {
-                    this._logger.error(
+                    this._logger?.error(
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );
@@ -450,13 +448,13 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
+        const plugin = Resolve<IPrj>('IPrj');
 
         Logging.getLogger('CreateNewTaskManagementModal').trace(
             "Registering 'CreateTaskManagementModal' commands",
         );
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'create-new-task-management-file',
             name: `${Lng.gt('New Topic/Project')}`,
             /**
