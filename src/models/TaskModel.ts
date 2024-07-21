@@ -4,7 +4,7 @@ import { Path } from 'src/classes/Path';
 import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
 import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tags } from 'src/libs/Tags/Tags';
 import PrjTaskData from './Data/PrjTaskData';

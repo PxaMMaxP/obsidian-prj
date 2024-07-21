@@ -2,7 +2,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { IWikilink, IWikilink_, IWikilinkMatch } from './IWikilink';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 
 /**
  * Represents a Wikilink and its parsed components.
