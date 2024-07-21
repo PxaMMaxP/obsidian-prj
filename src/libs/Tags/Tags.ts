@@ -168,7 +168,7 @@ export class Tags extends BaseComplexDataType implements ITags {
         if (added) {
             this.invalidateSpecificTags();
         } else {
-            this._logger?.warn('No tags added.');
+            this._logger?.trace('No tags added.');
         }
 
         return added;

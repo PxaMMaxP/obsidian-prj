@@ -191,7 +191,7 @@ describe('Tags', () => {
     test('should log a warning when adding undefined tags', () => {
         const tagsArray = new Tags([]);
         tagsArray.add(undefined);
-        expect(MockLogger.warn).toHaveBeenCalledWith('No tags added.');
+        expect(MockLogger.trace).toHaveBeenCalledWith('No tags added.');
     });
 
     test('should remove an existing tag', () => {
