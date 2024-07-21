@@ -1,7 +1,6 @@
 import { TFile } from 'obsidian';
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { IBaseComplexDataTypeSymbol } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { ITag, ITag_ } from '../interfaces/ITag';
 import { Tags } from '../Tags';
@@ -34,7 +33,6 @@ describe('Tags', () => {
             [Symbol.hasInstance](obj: unknown): boolean {
                 return obj instanceof MockTag;
             }
-            [IBaseComplexDataTypeSymbol] = true;
             isExisting: boolean;
 
             toString() {
