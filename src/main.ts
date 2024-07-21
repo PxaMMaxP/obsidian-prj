@@ -33,8 +33,10 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log("Loading plugin 'PRJ'");
 
-        DIContainer.getInstance().register('Prj', this);
-        DIContainer.getInstance().register('App', this.app);
+        DIContainer.getInstance().register('Prj', this, true);
+        DIContainer.getInstance().register('IPrj', this);
+        DIContainer.getInstance().register('App', this.app, true);
+        DIContainer.getInstance().register('IApp', this.app);
 
         await this.loadSettings();
 
