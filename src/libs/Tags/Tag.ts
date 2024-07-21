@@ -1,11 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITag_ } from './interfaces/ITag';
-import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
-import {
-    IBaseComplexDataType,
-    IBaseComplexDataType_,
-} from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
 
@@ -16,12 +11,8 @@ import { Register } from '../DependencyInjection/decorators/Register';
  * Class for the markdown block processor.
  */
 @ImplementsStatic<ITag_>()
-@ImplementsStatic<IBaseComplexDataType_>()
 @Register('ITag_')
-export class Tag
-    extends BaseComplexDataType
-    implements ITag, IBaseComplexDataType
-{
+export class Tag implements ITag {
     /**
      * The tag.
      */
@@ -32,8 +23,12 @@ export class Tag
      * @param value The value of the tag.
      * @remarks If the tag is prefixed with a hash symbol, the symbol is removed.
      */
-    private set value(value: string) {
-        this._tag = value?.startsWith('#') ? value.slice(1) : value || '';
+    private set value(value: unknown) {
+        if (typeof value !== 'string') {
+            value = '';
+        } else {
+            this._tag = value?.startsWith('#') ? value.slice(1) : value || '';
+        }
     }
 
     /**
@@ -89,10 +84,12 @@ export class Tag
      * Creates a new instance of the Tag class.
      * @param value The value of the tag.
      */
-    constructor(value: string) {
-        super();
-
-        this.value = value;
+    constructor(value: unknown) {
+        if (typeof value === 'string') {
+            this.value = value;
+        } else {
+            this.value = '';
+        }
     }
 
     /**
@@ -155,28 +152,14 @@ export class Tag
     }
 
     /**
-     * Overrides the valueOf method to return the primitive string value.
-     * @returns The primitive string value of the tag.
-     */
-    public valueOf(): string {
-        return this.value;
-    }
-
-    /**
-     * Overrides the toString method to return the string representation of the tag.
-     * @returns The string representation of the tag.
-     */
-    public toString(): string {
-        return this.value;
-    }
-
-    /**
      * Checks if another tag is equal to this one based on the tag string.
      * @param other The other tag to compare.
      * @returns Whether the tags are equal.
      */
     public equals(other: ITag): boolean {
-        return this.value === other.toString();
+        const t = other.toString();
+
+        return this.value === t;
     }
 
     /**
@@ -222,15 +205,27 @@ export class Tag
     }
 
     /**
-     * Returns a frontmatter compatible object.
-     * @returns The Tag as a string.
+     * Overrides the toString method to return the string representation of the tag.
+     * @returns The string representation of the tag.
      */
-    public getFrontmatterObject():
-        | Record<string, unknown>
-        | Array<unknown>
-        | string
-        | null
-        | undefined {
-        return this._tag.toString();
+    toString(): string {
+        return this.value;
+    }
+
+    /**
+     * Overrides the valueOf method to return the primitive string value.
+     * @returns The primitive string value of the tag.
+     */
+    primitiveOf(): string {
+        return this.value;
+    }
+
+    /**
+     * Checks if the object is an instance of the type.
+     * @param obj The object to check.
+     * @returns Whether the object is an instance of the type.
+     */
+    [Symbol.hasInstance](obj: unknown): boolean {
+        return obj instanceof Tag;
     }
 }

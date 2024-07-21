@@ -172,9 +172,9 @@ export function test_IStatusType(StatusType: IStatusType_): void {
         test('should return the status as string', () => {
             statusType.value = 'Active';
 
-            expect(statusType.getFrontmatterObject()).toBe('Active');
+            expect(statusType.primitiveOf()).toBe('Active');
             expect(statusType.toString()).toBe('Active');
-            expect(statusType.valueOf()).toBe('Active');
+            expect(statusType.primitiveOf()).toBe('Active');
         });
 
         test('should return the valid status from a translation', () => {

@@ -28,7 +28,7 @@ export default class GeneralComponents {
     ): void {
         new EditableDataView(container, component).addLink((link) => {
             link.setValue(path)
-                .setTitle(Lng.gt(type?.valueOf() ?? 'File'))
+                .setTitle(Lng.gt(type?.toString() ?? 'File'))
                 .setLinkType('file')
                 .setFormator((value: string) => {
                     const icon = document.createDocumentFragment();

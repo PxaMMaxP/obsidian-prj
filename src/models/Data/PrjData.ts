@@ -6,7 +6,6 @@ import type {
     IFileType,
     IFileType_,
 } from 'src/libs/FileType/interfaces/IFileType';
-import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
 import { IPrjData, IPrjData_ } from './interfaces/IPrjData';
@@ -70,8 +69,8 @@ export class PrjData<T> extends PrjBaseData<T> implements IPrjData {
     /**
      * @inheritdoc
      */
-    set tags(value: ITags | ITag | string | string[] | null | undefined) {
-        if (this._ITags.isInstanceOf(value)) {
+    set tags(value: unknown) {
+        if (value instanceof this._ITags) {
             this._tags = value;
         } else {
             this._tags = new this._ITags(value);

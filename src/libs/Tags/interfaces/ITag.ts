@@ -1,30 +1,35 @@
-import {
-    IBaseComplexDataType_,
-    IBaseComplexDataType,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { IDataType_ } from 'src/interfaces/DataType/IDataType';
+import { IEquatable } from 'src/interfaces/DataType/IEquatable';
+import { IInstanceOf } from 'src/interfaces/DataType/IInstanceOf';
+import { IPrimitive } from 'src/interfaces/DataType/IPrimitive';
+import { IStringConvertible } from 'src/interfaces/DataType/IStringifiable';
+import { IValue } from 'src/interfaces/DataType/IValue';
 
 /**
  * Represents a tag constructor.
  */
-export interface ITag_ extends IBaseComplexDataType_ {
-    new (value: string, dependencies?: IDIContainer): ITag;
+export interface ITag_ extends IDataType_<ITag> {
+    /**
+     * Initializes a new instance of a ITag class.
+     * @param tag The value of the Tag.
+     */
+    new (tag: unknown): ITag;
 }
 
 /**
  * Represents a tag.
  */
-export interface ITag extends IBaseComplexDataType {
+export interface ITag
+    extends IEquatable,
+        IStringConvertible,
+        IPrimitive,
+        IInstanceOf,
+        IValue<string> {
     /**
      * Gets whether the tag exists in the cache.
      * @returns Whether the tag exists in the cache.
      */
     readonly isExisting: boolean;
-
-    /**
-     * Gets the tag.
-     */
-    get value(): string;
 
     /**
      * Gets the tag with a hash symbol.
@@ -71,25 +76,6 @@ export interface ITag extends IBaseComplexDataType {
      * @returns An Obsidian tag link element as an anchor element.
      */
     getObsidianLink(tagLabel?: string): HTMLAnchorElement;
-
-    /**
-     * Overrides the valueOf method to return the primitive string value.
-     * @returns The primitive string value of the tag.
-     */
-    valueOf(): string;
-
-    /**
-     * Overrides the toString method to return the string representation of the tag.
-     * @returns The string representation of the tag.
-     */
-    toString(): string;
-
-    /**
-     * Checks if another tag is equal to this one based on the tag string.
-     * @param other The other tag to compare.
-     * @returns Whether the tags are equal.
-     */
-    equals(other: ITag): boolean;
 
     /**
      * Returns whether the tag starts with the specified search string.

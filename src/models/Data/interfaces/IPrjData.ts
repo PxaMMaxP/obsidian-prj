@@ -1,6 +1,5 @@
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
-import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
 
@@ -45,7 +44,7 @@ export interface IPrjData {
     /**
      * Set the **tags** of the file.
      */
-    set tags(value: ITags | ITag | string[] | string | null | undefined);
+    set tags(value: unknown);
 
     /**
      * Get the **title** of the file.

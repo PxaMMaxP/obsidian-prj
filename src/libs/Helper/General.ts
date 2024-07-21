@@ -25,7 +25,6 @@ export class HelperGeneral {
 
     /**
      * Create a Singleton instance of the HelperObsidian class.
-     * @param dependencies The dependencies for the class.
      */
     public constructor() {
         throw new Error('This class is not meant to be instantiated');

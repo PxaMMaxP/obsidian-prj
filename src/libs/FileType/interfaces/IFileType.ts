@@ -1,8 +1,8 @@
-import {
-    IBaseComplexDataType,
-    IBaseComplexDataType_,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
+import { IDataType_ } from 'src/interfaces/DataType/IDataType';
+import { IInstanceOf } from 'src/interfaces/DataType/IInstanceOf';
+import { IPrimitive } from 'src/interfaces/DataType/IPrimitive';
+import { IStringConvertible } from 'src/interfaces/DataType/IStringifiable';
+import { IValue } from 'src/interfaces/DataType/IValue';
 
 /**
  * Represents the types used in the plugin.
@@ -12,7 +12,7 @@ export type FileTypes = 'Topic' | 'Project' | 'Task' | 'Metadata' | 'Note';
 /**
  * Represents the static implementation of the FileType class.
  */
-export interface IFileType_ extends IBaseComplexDataType_, ILifecycleObject {
+export interface IFileType_ extends IDataType_<IFileType> {
     /**
      * Initializes a new instance of the FileType class.
      * @param value The value of the file type.
@@ -46,7 +46,11 @@ export interface IFileType_ extends IBaseComplexDataType_, ILifecycleObject {
 /**
  * Represents the FileType class.
  */
-export interface IFileType extends IBaseComplexDataType {
+export interface IFileType
+    extends IStringConvertible,
+        IPrimitive,
+        IInstanceOf,
+        IValue<FileTypes> {
     /**
      * Gets the file type.
      */
@@ -55,16 +59,6 @@ export interface IFileType extends IBaseComplexDataType {
      * Sets the file type.
      */
     set value(value: unknown);
-    /**
-     * Gets the File Type as a string.
-     * @returns The File Type as string.
-     */
-    valueOf(): string;
-    /**
-     * Gets the File Type as a string.
-     * @returns The File Type as string.
-     */
-    toString(): string;
     /**
      * Checks if the File Type is equal to another File Type.
      * @param other The other File Type to compare.

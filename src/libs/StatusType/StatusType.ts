@@ -1,12 +1,11 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { isIStringConvertible } from 'src/interfaces/DataType/IStringifiable';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
-import { isIStringConvertible } from 'src/interfaces/IStringifiable';
 import {
     IStatusType,
     IStatusType_,
     StatusTypes,
 } from './interfaces/IStatusType';
-import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
@@ -16,7 +15,7 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
  */
 @Register('IStatusType_')
 @ImplementsStatic<IStatusType_>()
-export class StatusType extends BaseComplexDataType implements IStatusType {
+export class StatusType implements IStatusType {
     @Inject('ITranslationService')
     private static readonly _ITranslationService: ITranslationService;
 
@@ -63,8 +62,6 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
      * @param value The value of the Status.
      */
     constructor(value: unknown) {
-        super();
-
         this._value = StatusType.validate(value);
     }
 
@@ -160,13 +157,6 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     /**
      * @inheritdoc
      */
-    getFrontmatterObject(): unknown {
-        return this.toString();
-    }
-
-    /**
-     * @inheritdoc
-     */
     equals(other: unknown): boolean {
         if (isIStringConvertible(other)) {
             return this._value === other.toString();
@@ -178,7 +168,7 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     /**
      * @inheritdoc
      */
-    valueOf(): string {
+    primitiveOf(): string {
         return this._value ?? '';
     }
 
@@ -187,5 +177,14 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
      */
     toString(): string {
         return this._value ?? '';
+    }
+
+    /**
+     * Checks if the object is an instance of the type.
+     * @param obj The object to check.
+     * @returns Whether the object is an instance of the type.
+     */
+    [Symbol.hasInstance](obj: unknown): boolean {
+        return obj instanceof StatusType;
     }
 }

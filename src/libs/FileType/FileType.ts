@@ -1,16 +1,13 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataType';
-import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
 import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents the types used in the app for files.
  */
-@ImplementsStatic<IBaseComplexDataType_>()
 @ImplementsStatic<IFileType_>()
 @Register('IFileType_')
-export class FileType extends BaseComplexDataType implements IFileType {
+export class FileType implements IFileType {
     /**
      * An array of valid file types.
      */
@@ -97,9 +94,9 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * @param value The value of the file type.
      */
     constructor(value: unknown) {
-        super();
         this.value = value;
     }
+
     /**
      * Gets a frontmatter compatible string.
      * @returns The File Type as string.
@@ -111,7 +108,7 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * Gets the File Type as a string.
      * @returns The File Type as string.
      */
-    valueOf(): string {
+    primitiveOf(): string {
         return this._value ?? '';
     }
     /**
@@ -127,6 +124,15 @@ export class FileType extends BaseComplexDataType implements IFileType {
      * @returns Whether the File Type is equal to the other File Type.
      */
     equals(other: IFileType | FileTypes): boolean {
-        return this._value === other.valueOf();
+        return this._value === other.toString();
+    }
+
+    /**
+     * Checks if the object is an instance of the type.
+     * @param obj The object to check.
+     * @returns Whether the object is an instance of the type.
+     */
+    [Symbol.hasInstance](obj: unknown): boolean {
+        return obj instanceof FileType;
     }
 }

@@ -3,8 +3,8 @@
  */
 export interface IPrimitive {
     /**
-     * Converts the object to a primitive like value.
-     * The return value is frontmatter compatible.
+     * Converts the object to a primitive like value
+     * which is frontmatter compatible.
      * @returns The primitive
      */
     primitiveOf(): string | string[];

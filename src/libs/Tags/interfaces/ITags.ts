@@ -1,28 +1,28 @@
 import { TFile } from 'obsidian';
-import {
-    IBaseComplexDataType_,
-    IBaseComplexDataType,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { IDataType_ } from 'src/interfaces/DataType/IDataType';
+import { IInstanceOf } from 'src/interfaces/DataType/IInstanceOf';
+import { IPrimitive } from 'src/interfaces/DataType/IPrimitive';
+import { IStringConvertible } from 'src/interfaces/DataType/IStringifiable';
+import { IValue } from 'src/interfaces/DataType/IValue';
 import { ITag } from './ITag';
 import { TagTree } from '../types/TagTree';
 
 /**
  * Represents a tags constructor.
  */
-export interface ITags_ extends IBaseComplexDataType_ {
-    new (
-        tags: ITags | ITag | string | string[] | undefined | null,
-        dependencies?: IDIContainer,
-    ): ITags;
+export interface ITags_ extends IDataType_<ITags> {
+    /**
+     * Initializes a new instance of a ITags class.
+     * @param tags The tags to initialize the class with.
+     */
+    new (tags: unknown): ITags;
 }
 
-export interface ITags extends IBaseComplexDataType {
-    /**
-     * Gets the tags.
-     */
-    get values(): ITag[];
-
+export interface ITags
+    extends IStringConvertible,
+        IPrimitive,
+        IInstanceOf,
+        IValue<ITag[]> {
     /**
      * The specific tags.
      * - The specific tags are the tags without any redundant tags:
@@ -59,12 +59,6 @@ export interface ITags extends IBaseComplexDataType {
      * @returns All tags as an array of strings.
      */
     toStringArray(): string[];
-
-    /**
-     * Returns all tags as a string.
-     * @returns All tags as a string separated by a comma.
-     */
-    toString(): string;
 
     /**
      * Returns the number of tags.

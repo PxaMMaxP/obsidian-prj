@@ -1,10 +1,10 @@
-import { IComparable } from 'src/interfaces/IComparable';
-import { IEquatable } from 'src/interfaces/IEquatable';
-import { IStringConvertible } from 'src/interfaces/IStringifiable';
-import {
-    IBaseComplexDataType,
-    IBaseComplexDataType_,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
+import { IComparable } from 'src/interfaces/DataType/IComparable';
+import { IDataType_ } from 'src/interfaces/DataType/IDataType';
+import { IEquatable } from 'src/interfaces/DataType/IEquatable';
+import { IInstanceOf } from 'src/interfaces/DataType/IInstanceOf';
+import { IPrimitive } from 'src/interfaces/DataType/IPrimitive';
+import { IStringConvertible } from 'src/interfaces/DataType/IStringifiable';
+import { IValue } from 'src/interfaces/DataType/IValue';
 
 /**
  * Represents the status of a task.
@@ -14,12 +14,12 @@ export type StatusTypes = 'Active' | 'Waiting' | 'Later' | 'Someday' | 'Done';
 /**
  * Represents the static implementation of the {@link IStatusType} interface.
  */
-export interface IStatusType_ extends IBaseComplexDataType_ {
+export interface IStatusType_ extends IDataType_<IStatusType> {
     /**
      * Initializes a new instance of a IStatusType class.
-     * @param value The value of the Status.
+     * @param status The value of the Status.
      */
-    new (value: unknown): IStatusType;
+    new (status: unknown): IStatusType;
     /**
      * Gets the array of valid Status types.
      */
@@ -49,16 +49,20 @@ export interface IStatusType_ extends IBaseComplexDataType_ {
  * Represents the status of a task.
  */
 export interface IStatusType
-    extends IBaseComplexDataType,
-        IComparable<IStatusType>,
+    extends IComparable<IStatusType>,
         IEquatable,
-        IStringConvertible {
+        IStringConvertible,
+        IPrimitive,
+        IInstanceOf,
+        IValue<StatusTypes> {
     /**
      * Gets the Status.
+     * @inheritdoc
      */
     get value(): StatusTypes | undefined;
     /**
      * Sets the Status.
+     * @inheritdoc
      */
     set value(value: unknown);
 

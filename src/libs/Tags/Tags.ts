@@ -5,11 +5,8 @@ import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import type { ITag, ITag_ } from './interfaces/ITag';
 import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
-import BaseComplexDataType from '../BaseComplexDataType/BaseComplexDataType';
-import { IBaseComplexDataType_ } from '../BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 
 /**
  * Represents an array of tags.
@@ -18,14 +15,8 @@ import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContaine
  * - The class also takes care of any conversions so that an array of tags is always made available.
  */
 @ImplementsStatic<ITags_>()
-@ImplementsStatic<IBaseComplexDataType_>()
 @Register('ITags_')
-export class Tags extends BaseComplexDataType implements ITags {
-    /**
-     * The dependencies of the tags.
-     */
-    private readonly _dependencies: IDIContainer;
-
+export class Tags implements ITags {
     /**
      * The dependency injection token for the `ITag` interface.
      */
@@ -53,8 +44,15 @@ export class Tags extends BaseComplexDataType implements ITags {
     /**
      * Gets the tags.
      */
-    get values(): ITag[] {
+    get value(): ITag[] {
         return this._tags;
+    }
+
+    /**
+     * Sets the tags.
+     */
+    set value(value: unknown) {
+        this._tags = this.normalizeToTags(value);
     }
 
     /**
@@ -100,9 +98,7 @@ export class Tags extends BaseComplexDataType implements ITags {
      * Creates a new instance of the TagsArray class.
      * @param tags The tags to use for the creation. Can be a string, an array of strings, or undefined.
      */
-    constructor(tags: ITags | ITag | string | string[] | undefined | null) {
-        super();
-
+    constructor(tags: unknown) {
         this.add(tags);
     }
 
@@ -111,8 +107,8 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @param tagValue The tag value.
      * @returns The created tag.
      */
-    private createTag(tagValue: string): ITag {
-        return new this._ITag(tagValue, this._dependencies);
+    private createTag(tagValue: string | null | undefined): ITag {
+        return new this._ITag(tagValue);
     }
 
     /**
@@ -121,9 +117,7 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @returns Whether the tags were added.
      * @remarks When adding, new `ITag` objects are always created for each tag.
      */
-    public add(
-        tag: ITags | ITag | string | string[] | undefined | null,
-    ): boolean {
+    public add(tag: unknown): boolean {
         return this.push(...this.normalizeToTags(tag));
     }
 
@@ -132,12 +126,10 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @param tag The input tag(s) to normalize.
      * @returns An array of ITag-Objects.
      */
-    private normalizeToTags(
-        tag: ITags | ITag | string | string[] | undefined | null,
-    ): ITag[] {
-        if (this.isInstanceOfTags(tag)) {
+    private normalizeToTags(tag: unknown): ITag[] {
+        if (tag instanceof Tags) {
             return tag.toStringArray().map((t) => this.createTag(t));
-        } else if (this._ITag.isInstanceOf(tag)) {
+        } else if (tag instanceof this._ITag) {
             return [this.createTag(tag.value)];
         } else if (Array.isArray(tag)) {
             return tag.map((t) => this.createTag(t));
@@ -158,7 +150,7 @@ export class Tags extends BaseComplexDataType implements ITags {
 
         tags.forEach((tag) => {
             if (!this.includes(tag)) {
-                this._tags.push(tag as typeof BaseComplexDataType & ITag);
+                this._tags.push(tag);
                 added = true;
             } else {
                 this._logger?.warn(`Tag '${tag.value}' already exists.`);
@@ -204,14 +196,6 @@ export class Tags extends BaseComplexDataType implements ITags {
     }
 
     /**
-     * Returns all tags as a string.
-     * @returns All tags as a string separated by a comma.
-     */
-    public toString(): string {
-        return this._tags.join(', ');
-    }
-
-    /**
      * Returns the number of tags.
      */
     public get length(): number {
@@ -233,8 +217,8 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @returns Whether the tag exists in the tags array.
      */
     public includes(tag: ITag | ITags): boolean {
-        if (this.isInstanceOfTags(tag)) {
-            return tag.values.every((t) => this.includes(t));
+        if (tag instanceof Tags) {
+            return tag.value.every((t) => this.includes(t));
         } else {
             return this._tags.some((existingTag) => existingTag.equals(tag));
         }
@@ -247,7 +231,9 @@ export class Tags extends BaseComplexDataType implements ITags {
      * @returns Whether any tag from the instance's tags array is below any tag in the provided tags array within the given number of levels.
      */
     public areTagsAtHierarchyLevel(tags: ITags, levels = 1): boolean {
-        const _tagsToCheck = tags.values;
+        if (tags.value == null) return false;
+
+        const _tagsToCheck = tags.value;
 
         return this._tags.some((tagToBeChecked) =>
             _tagsToCheck.some((tagToCheck) =>
@@ -266,7 +252,7 @@ export class Tags extends BaseComplexDataType implements ITags {
 
         return _tagsToCheck.some((tagToCheck) =>
             this._tags.some((tagToBeChecked) =>
-                tagToBeChecked.value.includes(tagToCheck),
+                tagToBeChecked.value?.includes(tagToCheck),
             ),
         );
     }
@@ -379,15 +365,26 @@ export class Tags extends BaseComplexDataType implements ITags {
     }
 
     /**
-     * Returns a frontmatter compatible object.
-     * @returns All Tags as an array of strings.
+     * Returns all tags as a string.
+     * @returns All tags as a string separated by a comma.
      */
-    public getFrontmatterObject():
-        | Record<string, unknown>
-        | Array<unknown>
-        | string
-        | null
-        | undefined {
-        return this._tags.map((tag) => tag.getFrontmatterObject());
+    toString(): string {
+        return this._tags.join(', ');
+    }
+
+    /**
+     * Returns all tags as an array of strings.
+     * @returns All tags as an array of strings.
+     */
+    primitiveOf(): string[] {
+        return this._tags.map((tag) => tag.toString());
+    }
+    /**
+     * Checks if the object is an instance of the Tags class.
+     * @param obj The object to check.
+     * @returns Whether the object is an instance of the Tags class.
+     */
+    [Symbol.hasInstance](obj: unknown): boolean {
+        return obj instanceof Tags;
     }
 }
