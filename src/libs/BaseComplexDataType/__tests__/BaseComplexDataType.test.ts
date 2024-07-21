@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import BaseComplexDataType from '../BaseComplexDataType';
 import { isIBaseComplexDataType } from '../interfaces/IBaseComplexDataType';
 
