@@ -3,16 +3,20 @@ import * as yaml from 'js-yaml';
 import { MarkdownPostProcessorContext } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Logging } from 'src/classes/Logging';
+import { IApp } from 'src/interfaces/IApp';
+import IMetadataCache from 'src/interfaces/IMetadataCache';
+import { IPrj } from 'src/interfaces/IPrj';
+import { IPrjSettings } from 'src/types/PrjSettings';
 import DocumentBlockRenderComponent from './BlockRenderComponents/DocumentBlockRenderComponent';
 import HeaderBlockRenderComponent from './BlockRenderComponents/HeaderBlockRenderComponent';
 import NoteBlockRenderComponent from './BlockRenderComponents/NoteBlockRenderComponent';
 import ProjectBlockRenderComponent from './BlockRenderComponents/ProjectBlockRenderComponent';
 import CustomizableRenderChild from './CustomizableRenderChild/CustomizableRenderChild';
+import { Resolve } from './DependencyInjection/functions/Resolve';
 import { HelperGeneral } from './Helper/General';
 import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from './LifecycleManager/interfaces/ILifecycleManager';
 import SingletonBlockProcessor from './SingletonBlockProcessor/SingletonBlockProcessor';
-import Global from '../classes/Global';
 import { IProcessorSettings } from '../interfaces/IProcessorSettings';
 
 /**
@@ -25,12 +29,12 @@ export default class MarkdownBlockProcessor {
      * Register the markdown block processor and update the workspace options.
      */
     public static onLoad(): void {
-        Global.getInstance().plugin.registerMarkdownCodeBlockProcessor(
+        Resolve<IPrj>('IPrj').registerMarkdownCodeBlockProcessor(
             'prj',
             MarkdownBlockProcessor.parseSource,
         );
 
-        Global.getInstance().app.workspace.updateOptions();
+        Resolve<IApp>('IApp').workspace.updateOptions();
     }
 
     /**
@@ -45,8 +49,7 @@ export default class MarkdownBlockProcessor {
         ctx: MarkdownPostProcessorContext,
     ): Promise<void> {
         const startTime = Date.now();
-        const global = Global.getInstance();
-        await global.metadataCache.waitForCacheReady();
+        await Resolve<IMetadataCache>('IMetadataCache').waitForCacheReady();
         const logger = Logging.getLogger('BlockProcessor');
         logger.trace(`DocId: ${ctx.docId}`);
 
@@ -92,7 +95,7 @@ export default class MarkdownBlockProcessor {
         const blockContainer = document.createElement('div');
         singletonBlock.append(blockContainer);
         blockContainer.classList.add('prj-block-container');
-        blockContainer.lang = global.settings.language;
+        blockContainer.lang = Resolve<IPrjSettings>('IPrjSettings').language;
 
         if (setting.styles) {
             setting.styles.forEach((style) => {
@@ -111,8 +114,8 @@ export default class MarkdownBlockProcessor {
 
         setting.source = ctx.sourcePath;
 
-        setting.frontmatter = global.metadataCache.cache
-            .filter((file) => file.file.path === ctx.sourcePath)
+        setting.frontmatter = Resolve<IMetadataCache>('IMetadataCache')
+            .cache.filter((file) => file.file.path === ctx.sourcePath)
             .first()?.metadata.frontmatter;
         setting.container = blockContainer;
         setting.ctx = ctx;

@@ -112,6 +112,14 @@ export default class MetadataCache implements IMetadataCache {
      * Deconstructor for the MetadataCache class
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
+    public deconstructor(): void {
+        this.deconstructor();
+    }
+
+    /**
+     * Deconstructor for the MetadataCache class
+     * @description This method is used to unregister the event handlers for the metadata cache.
+     */
     static deconstructor(): void {
         const logger = Logging.getLogger('MetadataCache');
 
