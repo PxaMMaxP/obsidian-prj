@@ -37,14 +37,10 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log("Loading plugin 'PRJ'");
 
-        DIContainer.getInstance().register('Prj', this, true);
         DIContainer.getInstance().register('IPrj', this);
-        DIContainer.getInstance().register('App', this.app, true);
         DIContainer.getInstance().register('IApp', this.app);
 
         await this.loadSettings();
-
-        this.addSettingTab(new SettingTab(this.app, this));
 
         LifecycleManager.register('before', 'init', () => {
             // eslint-disable-next-line no-console
@@ -60,10 +56,10 @@ export default class Prj extends Plugin {
         LifecycleManager.register('after', 'init', () => this.onLayoutReady());
 
         if (this.app.workspace.layoutReady) {
-            new LifecycleManager().onInit();
+            await new LifecycleManager().onInit();
         } else {
-            this.app.workspace.onLayoutReady(() => {
-                new LifecycleManager().onInit();
+            this.app.workspace.onLayoutReady(async () => {
+                await new LifecycleManager().onInit();
             });
         }
     }
@@ -171,6 +167,8 @@ export default class Prj extends Plugin {
         );
 
         DIContainer.getInstance().register('IPrjSettings', this.settings);
+
+        this.addSettingTab(new SettingTab(this.app, this));
     }
 
     /**
