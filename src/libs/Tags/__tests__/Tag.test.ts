@@ -44,7 +44,7 @@ describe('Tag', () => {
 
     test('should return the primitive string value with valueOf', () => {
         const tag = new Tag('exampleTag');
-        expect(tag.valueOf()).toBe('exampleTag');
+        expect(tag.primitiveOf()).toBe('exampleTag');
     });
 
     test('should return the string value in uppercase with toUpperCase', () => {
@@ -184,11 +184,11 @@ describe('Tag', () => {
     // Test `isInstanceOfTag` method
     test('should return true if object is instance of Tag', () => {
         const tag = new Tag('exampleTag');
-        expect(Tag.isInstanceOf(tag)).toBe(true);
+        expect(tag instanceof Tag).toBe(true);
     });
 
     test('should return false if object is not instance of Tag', () => {
-        expect(Tag.isInstanceOf({})).toBe(false);
+        expect({} instanceof Tag).toBe(false);
     });
 
     // Tests for `isTagAtHierarchyLevel` method

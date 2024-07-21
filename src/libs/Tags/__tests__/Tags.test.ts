@@ -1,11 +1,7 @@
 import { TFile } from 'obsidian';
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataType';
-import {
-    IBaseComplexDataType,
-    IBaseComplexDataTypeSymbol,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
+import { IBaseComplexDataTypeSymbol } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { ITag, ITag_ } from '../interfaces/ITag';
 import { Tags } from '../Tags';
@@ -20,22 +16,25 @@ describe('Tags', () => {
         } as unknown as IMetadataCache;
 
         // Manuelle Erstellung der Mock-Klasse
-        class MockTag implements ITag, IBaseComplexDataType {
+        class MockTag implements ITag {
             value: string;
             metadataCache: IMetadataCache;
 
             constructor(value: string) {
                 this.value = value;
             }
-            [IBaseComplexDataTypeSymbol] = true;
-            getFrontmatterObject():
-                | Record<string, unknown>
-                | Array<unknown>
-                | string
-                | null
-                | undefined {
-                throw new Error('Method not implemented.');
+            [Symbol.toStringTag](): string {
+                return this.value;
             }
+            [Symbol.toPrimitive](
+                hint?: 'string' | 'number' | 'default',
+            ): string | string[] {
+                return this.value;
+            }
+            [Symbol.hasInstance](obj: unknown): boolean {
+                return obj instanceof MockTag;
+            }
+            [IBaseComplexDataTypeSymbol] = true;
             isExisting: boolean;
 
             toString() {
@@ -58,7 +57,7 @@ describe('Tags', () => {
                 return obj instanceof MockTag;
             }
 
-            valueOf(): string {
+            primitiveOf(): string {
                 return this.value;
             }
 
@@ -113,7 +112,7 @@ describe('Tags', () => {
             }
         }
 
-        MockTagClass = MockTag as unknown as typeof BaseComplexDataType & ITag_;
+        MockTagClass = MockTag as unknown as ITag_;
 
         DIContainer.getInstance().register('IMetadataCache', mockMetadataCache);
         DIContainer.getInstance().register('ITag_', MockTagClass);
@@ -196,7 +195,7 @@ describe('Tags', () => {
 
     test('should remove an existing tag', () => {
         const tagsArray = new Tags(['tag1']);
-        tagsArray.remove(tagsArray.values[0]);
+        tagsArray.remove(tagsArray.value[0]);
         expect(tagsArray.toStringArray()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });

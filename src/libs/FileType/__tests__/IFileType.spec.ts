@@ -81,14 +81,14 @@ export function testIFileTypeImplementation(FileTypeClass: IFileType_): void {
             it('should return correct string representation', () => {
                 validTypes.forEach((type) => {
                     const fileType = new FileTypeClass(type);
-                    expect(fileType.valueOf()).toBe(type);
+                    expect(fileType.primitiveOf()).toBe(type);
                     expect(fileType.toString()).toBe(type);
                 });
             });
 
             it('should return empty string for undefined value', () => {
                 const fileType = new FileTypeClass(undefined);
-                expect(fileType.valueOf()).toBe('');
+                expect(fileType.primitiveOf()).toBe('');
                 expect(fileType.toString()).toBe('');
             });
         });
@@ -111,9 +111,7 @@ export function testIFileTypeImplementation(FileTypeClass: IFileType_): void {
             it('should return the same value as the valueOf method', () => {
                 const fileType = new FileTypeClass('Topic');
 
-                expect(fileType.getFrontmatterObject()).toBe(
-                    fileType.valueOf(),
-                );
+                expect(fileType.primitiveOf()).toBe(fileType.toString());
             });
         });
 

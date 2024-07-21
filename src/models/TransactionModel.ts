@@ -1,8 +1,5 @@
+import { isIPrimitive } from 'src/interfaces/DataType/IPrimitive';
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import {
-    IBaseComplexDataType,
-    isIBaseComplexDataType,
-} from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 
@@ -237,10 +234,8 @@ export class TransactionModel<T> {
         keys.forEach((k, index) => {
             if (index === keys.length - 1) {
                 // Check if the value is a custom complex data type and get the frontmatter object if it is
-                if (isIBaseComplexDataType(value)) {
-                    current[k] = (
-                        value as IBaseComplexDataType
-                    ).getFrontmatterObject();
+                if (isIPrimitive(value)) {
+                    current[k] = value.primitiveOf();
                 } else {
                     current[k] = value;
                 }
