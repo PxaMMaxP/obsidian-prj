@@ -88,4 +88,10 @@ export default interface IMetadataCache {
             ? TReturn
             : void,
     ): void;
+
+    /**
+     * Deconstructor for the MetadataCache class
+     * @description This method is used to unregister the event handlers for the metadata cache.
+     */
+    deconstructor(): void;
 }

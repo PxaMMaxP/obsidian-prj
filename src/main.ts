@@ -2,8 +2,9 @@ import { Plugin } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
-import Global from './classes/Global';
 import Lng from './classes/Lng';
+import type IMetadataCache from './interfaces/IMetadataCache';
+import { Inject } from './libs/DependencyInjection/decorators/Inject';
 import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { HelperObsidian } from './libs/Helper/Obsidian';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
@@ -26,6 +27,9 @@ export default class Prj extends Plugin {
     public settings: IPrjSettings;
     public api: API = API;
 
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache!: IMetadataCache;
+
     /**
      * Will be called when the plugin is loaded
      */
@@ -47,8 +51,10 @@ export default class Prj extends Plugin {
             console.log('Layout ready');
         });
 
-        LifecycleManager.register('on', 'init', () =>
-            Global.getInstance().awaitCacheInitialization(),
+        LifecycleManager.register(
+            'on',
+            'init',
+            async () => await this._IMetadataCache.waitForCacheReady(),
         );
 
         LifecycleManager.register('after', 'init', () => this.onLayoutReady());
@@ -109,7 +115,7 @@ export default class Prj extends Plugin {
 
         //
         //Register event on `Status` change..
-        Global.getInstance().metadataCache.on(
+        this._IMetadataCache.on(
             'prj-task-management-changed-status-event',
             (file) => {
                 API.prjTaskManagementModel.syncStatusToPath(file);
@@ -117,7 +123,7 @@ export default class Prj extends Plugin {
         );
 
         //Register event on `task-file` change..
-        Global.getInstance().metadataCache.on(
+        this._IMetadataCache.on(
             'prj-task-management-file-changed-event',
             (file) => {
                 API.prjTaskManagementModel.syncTitleToFilename(file);
@@ -125,12 +131,9 @@ export default class Prj extends Plugin {
         );
 
         //Register event on `Document Metadata` change..
-        Global.getInstance().metadataCache.on(
-            'document-changed-metadata-event',
-            (file) => {
-                API.documentModel.syncMetadataToFile(file);
-            },
-        );
+        this._IMetadataCache.on('document-changed-metadata-event', (file) => {
+            API.documentModel.syncMetadataToFile(file);
+        });
 
         //Register event Kanban Check
         KanbanSync.registerEvent();
@@ -156,7 +159,7 @@ export default class Prj extends Plugin {
         console.log("Unloading plugin 'PRJ'");
         new LifecycleManager().onUnload();
 
-        Global.deconstructor();
+        this._IMetadataCache.deconstructor();
     }
 
     /**

@@ -1,11 +1,12 @@
 import { CachedMetadata, TFile } from 'obsidian';
 import API from 'src/classes/API';
-import Global from 'src/classes/Global';
-import { Logging } from 'src/classes/Logging';
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';
 import KanbanParser from './KanbanParser';
 import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 
 /**
@@ -14,9 +15,11 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 export default class KanbanSync {
     @Inject('IStatusType_')
     private readonly _IStatusType: IStatusType_;
-    private readonly _logger = Logging.getLogger('KanbanSync');
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('KanbanSync'))
+    private readonly _logger?: ILogger;
 
-    private readonly _metadataCache = Global.getInstance().metadataCache;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache!: IMetadataCache;
     private readonly _kanbanFile: TFile;
     private readonly _kanbanMetadata: CachedMetadata | undefined;
     /**
@@ -37,8 +40,8 @@ export default class KanbanSync {
         this._kanbanFile = kanbanFile;
 
         this._kanbanMetadata =
-            this._metadataCache.getEntry(kanbanFile)?.metadata;
-        this._logger.trace(`KanbanSync:`, this._kanbanMetadata);
+            this._IMetadataCache.getEntry(kanbanFile)?.metadata;
+        this._logger?.trace(`KanbanSync:`, this._kanbanMetadata);
 
         if (!changedFile) {
             this._syncMode = 'out';
@@ -64,12 +67,12 @@ export default class KanbanSync {
         await this.loadKanbanFile();
 
         if (this._syncMode === 'out') {
-            this._logger.debug(
+            this._logger?.debug(
                 `Syncing files linked to kanban ${this._kanbanFile.path}`,
             );
             this.syncFiles();
         } else {
-            this._logger.debug(
+            this._logger?.debug(
                 `Syncing kanban ${this._kanbanFile.path} with changed file ${this._changedFile?.path}`,
             );
             await this.syncKanban();
@@ -87,7 +90,7 @@ export default class KanbanSync {
         const card = this._kanbankBoard?.getCardItemPerFile(this._changedFile);
 
         if (!card) {
-            this._logger.warn(
+            this._logger?.warn(
                 `Could not find card for file '${this._changedFile.path}'`,
             );
 
@@ -95,7 +98,7 @@ export default class KanbanSync {
         }
 
         if (!this._kanbankBoard) {
-            this._logger.warn(
+            this._logger?.warn(
                 `Could not find kanban board for file '${this._changedFile.path}'`,
             );
 
@@ -107,7 +110,7 @@ export default class KanbanSync {
         )?.data.status?.value;
 
         if (!newHeadingState) {
-            this._logger.warn(
+            this._logger?.warn(
                 `Could not find status for file '${this._changedFile.path}'`,
             );
 
@@ -172,7 +175,7 @@ export default class KanbanSync {
      * Registers the event listeners for KanbanSync.
      */
     public static registerEvent(): void {
-        const metadataCache = Global.getInstance().metadataCache;
+        const metadataCache = Resolve<IMetadataCache>('IMetadataCache');
 
         metadataCache.on('prj-task-management-file-changed-event', (file) => {
             this.checkIfKanbanIsLinkedEvent(file);
@@ -201,7 +204,7 @@ export default class KanbanSync {
      * @returns An array of TFile objects representing the linked Kanban files.
      */
     public static getLinkedKanbanFiles(file: TFile): TFile[] {
-        const metadataCache = Global.getInstance().metadataCache;
+        const metadataCache = Resolve<IMetadataCache>('IMetadataCache');
         const linkedFiles = metadataCache.getBacklinks(file);
 
         const kanbanFiles = linkedFiles.filter((file) => {
