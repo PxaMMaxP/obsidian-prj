@@ -158,8 +158,6 @@ export default class Prj extends Plugin {
         // eslint-disable-next-line no-console
         console.log("Unloading plugin 'PRJ'");
         new LifecycleManager().onUnload();
-
-        this._IMetadataCache.deconstructor();
     }
 
     /**

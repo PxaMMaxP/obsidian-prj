@@ -1,19 +1,15 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataType';
 import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
+import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents the types used in the app for files.
- * @see {@link Lifecycle|@Lifecycle} for more details on lifecycle management.
  */
-@ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IBaseComplexDataType_>()
 @ImplementsStatic<IFileType_>()
-@Lifecycle()
+@Register('IFileType_')
 export class FileType extends BaseComplexDataType implements IFileType {
     /**
      * An array of valid file types.
@@ -31,14 +27,6 @@ export class FileType extends BaseComplexDataType implements IFileType {
      */
     public static get types(): FileTypes[] {
         return FileType._fileTypes;
-    }
-
-    /**
-     * Registers the FileType class in the DIContainer.
-     * @remarks This class has no dependencies. Therefore, it is registered in the beforeInit stage.
-     */
-    public static beforeInit(): void | Promise<void> {
-        DIContainer.getInstance().register('IFileType_', FileType);
     }
 
     private _value: FileTypes | undefined;

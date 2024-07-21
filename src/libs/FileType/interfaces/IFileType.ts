@@ -23,11 +23,6 @@ export interface IFileType_ extends IBaseComplexDataType_, ILifecycleObject {
      */
     get types(): FileTypes[];
     /**
-     * Registers the FileType class in the DIContainer.
-     * @remarks This class has no dependencies. Therefore, it is registered in the beforeInit stage.
-     */
-    beforeInit(): void | Promise<void>;
-    /**
      * Checks if the value is a valid file type.
      * @param value The value to check.
      * @returns Whether the value is a valid file type.
