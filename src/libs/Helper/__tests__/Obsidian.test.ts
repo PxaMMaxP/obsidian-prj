@@ -48,7 +48,7 @@ describe('HelperObsidian', () => {
         loggerMock = withLogger ? MockLogger : undefined;
 
         diContainerMock.resolve = jest.fn((key) => {
-            if (key === 'App') {
+            if (key === 'IApp') {
                 return appMock;
             }
 
