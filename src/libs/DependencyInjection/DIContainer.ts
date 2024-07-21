@@ -29,17 +29,23 @@ export class DIContainer implements IDIContainer {
      */
     private constructor() {}
 
+    //#region IDIContainer_
+
     /**
      * Retrieves the singleton instance of DependencyRegistry.
      * @returns The singleton instance.
      */
-    public static getInstance(): DIContainer {
-        if (!DIContainer._instance) {
-            DIContainer._instance = new DIContainer();
+    public static getInstance(): IDIContainer {
+        if (this._instance == null) {
+            this._instance = new DIContainer();
         }
 
-        return DIContainer._instance;
+        return this._instance;
     }
+
+    //#endregion
+
+    //#region IDIContainer
 
     /**
      * Register a dependency
@@ -85,4 +91,6 @@ export class DIContainer implements IDIContainer {
 
         return dependency.dependency as T;
     }
+
+    //#endregion
 }
