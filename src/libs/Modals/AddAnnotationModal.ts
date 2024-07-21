@@ -1,8 +1,9 @@
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { ILogger_ } from 'src/interfaces/ILogger';
+import { IPrj } from 'src/interfaces/IPrj';
 import { Field, FormConfiguration, IFormResult } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperGeneral } from '../Helper/General';
 import { HelperObsidian } from '../Helper/Obsidian';
 
@@ -22,11 +23,13 @@ export default class AddAnnotationModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('AddAnnotationModal');
+        const plugin = Resolve<IPrj>('IPrj');
+
+        const logger =
+            Resolve<ILogger_>('ILogger_').getLogger('AddAnnotationModal');
         logger.trace("Registering 'AddAnnotationModal' commands");
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'add-annotation-modal',
             name: `${Lng.gt('Add annotation')}`,
             /**
@@ -52,12 +55,12 @@ export default class AddAnnotationModal extends BaseModalForm {
         preset?: Partial<unknown>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this._logger.trace("Opening 'CreateNewMetadataModal' form");
+        this._logger?.trace("Opening 'CreateNewMetadataModal' form");
 
         const form = this.constructForm();
         const result = await this.getApi().openForm(form);
 
-        this._logger.trace(
+        this._logger?.trace(
             `Form closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -104,7 +107,7 @@ export default class AddAnnotationModal extends BaseModalForm {
 `;
 
         if (!activeFile) return;
-        this._global.app.vault.append(activeFile, template);
+        this._IApp.vault.append(activeFile, template);
     }
 
     /**

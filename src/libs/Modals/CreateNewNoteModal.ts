@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
 import API from 'src/classes/API';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { ILogger_ } from 'src/interfaces/ILogger';
+import { IPrj } from 'src/interfaces/IPrj';
 import PrjNoteData from 'src/models/Data/PrjNoteData';
 import { NoteModel } from 'src/models/NoteModel';
 import {
@@ -12,6 +12,7 @@ import {
     IResultData,
 } from 'src/types/ModalFormType';
 import BaseModalForm from './BaseModalForm';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
@@ -30,11 +31,13 @@ export default class CreateNewNoteModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('CreateNewNoteModal');
+        const plugin = Resolve<IPrj>('IPrj');
+
+        const logger =
+            Resolve<ILogger_>('ILogger_').getLogger('CreateNewNoteModal');
         logger.trace("Registering 'CreateNewNoteModal' commands");
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'create-new-note-file',
             name: `${Lng.gt('Create new note')}`,
             /**
@@ -62,7 +65,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
         preset?: Partial<PrjNoteData>,
     ): Promise<IFormResult | undefined> {
         if (!this.isApiAvailable()) return;
-        this._logger.trace("Opening 'CreateNewNoteModal' form");
+        this._logger?.trace("Opening 'CreateNewNoteModal' form");
 
         const convertedPreset: IResultData =
             this.convertPresetToIResultData(preset);
@@ -88,7 +91,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
             values: convertedPreset,
         });
 
-        this._logger.trace(
+        this._logger?.trace(
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -114,7 +117,7 @@ export default class CreateNewNoteModal extends BaseModalForm {
 
         const folder = existingFile?.parent?.path
             ? existingFile.parent?.path
-            : this._settings.noteSettings.defaultFolder;
+            : this._IPrjSettings.noteSettings.defaultFolder;
 
         note.data = result.data as Partial<PrjNoteData>;
 
@@ -123,15 +126,15 @@ export default class CreateNewNoteModal extends BaseModalForm {
             let template = '';
 
             // If a template is set, use it
-            const templateFile = this._app.vault.getAbstractFileByPath(
-                this._settings.noteSettings.template,
+            const templateFile = this._IApp.vault.getAbstractFileByPath(
+                this._IPrjSettings.noteSettings.template,
             );
 
             if (templateFile && templateFile instanceof TFile) {
                 try {
-                    template = await this._app.vault.read(templateFile);
+                    template = await this._IApp.vault.read(templateFile);
                 } catch (error) {
-                    this._logger.error(
+                    this._logger?.error(
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );

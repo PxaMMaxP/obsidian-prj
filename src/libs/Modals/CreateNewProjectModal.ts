@@ -1,8 +1,9 @@
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import { ILogger_ } from 'src/interfaces/ILogger';
+import { IPrj } from 'src/interfaces/IPrj';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
+import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
@@ -49,7 +50,7 @@ export default class CreateNewProjectModal extends CreateNewTaskManagementModal 
         };
 
         const taskSubTypes =
-            this._global.plugin.settings.prjSettings.subProjectTemplates?.map(
+            this._IPrjSettings.prjSettings.subProjectTemplates?.map(
                 (value) => ({ value: value.template, label: value.label }),
             );
 
@@ -71,11 +72,14 @@ export default class CreateNewProjectModal extends CreateNewTaskManagementModal 
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const global = Global.getInstance();
-        const logger = Logging.getLogger('CreateNewProjectModal');
+        const plugin = Resolve<IPrj>('IPrj');
+
+        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+            'CreateNewProjectModal',
+        );
         logger.trace("Registering 'CreateNewProjectModal' commands");
 
-        global.plugin.addCommand({
+        plugin.addCommand({
             id: 'create-new-project-file',
             name: `${Lng.gt('New project')}`,
             /**
