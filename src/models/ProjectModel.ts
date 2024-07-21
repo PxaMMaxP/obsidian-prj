@@ -2,7 +2,7 @@ import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
 import PrjProjectData from './Data/PrjProjectData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 

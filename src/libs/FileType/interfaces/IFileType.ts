@@ -2,7 +2,7 @@ import {
     IBaseComplexDataType,
     IBaseComplexDataType_,
 } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
 
 /**
  * Represents the types used in the plugin.

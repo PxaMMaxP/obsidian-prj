@@ -5,7 +5,7 @@ import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**

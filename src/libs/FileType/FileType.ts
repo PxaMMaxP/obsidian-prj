@@ -3,7 +3,7 @@ import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataTyp
 import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
 
 /**

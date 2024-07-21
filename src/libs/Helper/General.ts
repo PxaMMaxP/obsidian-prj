@@ -4,7 +4,7 @@ import { Singleton } from 'src/classes/decorators/Singleton';
 import { DIContainer } from '../DependencyInjection/DIContainer';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 
 export interface IHelperGeneral_ {
     generateUID(input: string, length: number, sufix: string): string;

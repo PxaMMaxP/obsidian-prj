@@ -10,7 +10,7 @@ import { Inject } from '../DependencyInjection/decorators/Inject';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 import { FileMetadata } from '../MetadataCache';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
