@@ -1,15 +1,18 @@
 import { TFile } from 'obsidian';
-import Global from 'src/classes/Global';
-import { Logging } from 'src/classes/Logging';
+import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { KanbanBoard, KanbanList } from './KanbanModels';
 import { ArchivedString, CompletedString } from './KanbanTypes';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 
 /**
  * Represents a markdown generator for a kanban board.
  */
 export default class KanbanMarkdownGenerator {
-    private readonly _logger = Logging.getLogger('KanbanMarkdownGenerator');
-    private readonly _global = Global.getInstance();
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('KanbanMarkdownGenerator'))
+    private readonly _logger?: ILogger;
+    @Inject('IApp')
+    private readonly _IApp: IApp;
     private readonly _kanbanBoard: KanbanBoard;
     private readonly _file: TFile;
     private readonly _path: string;
@@ -32,15 +35,15 @@ export default class KanbanMarkdownGenerator {
      */
     public async saveFile(content: string, onlyLog = false): Promise<void> {
         if (onlyLog) {
-            this._logger.debug(
+            this._logger?.debug(
                 `Would save file ${this._file.path} with content: \n${content}`,
             );
 
             return;
         } else {
-            this._global.app.vault.modify(this._file, content);
+            this._IApp.vault.modify(this._file, content);
 
-            this._logger.debug(
+            this._logger?.debug(
                 `Saved file ${this._file.path} with content: \n${content}`,
             );
         }
@@ -100,15 +103,14 @@ export default class KanbanMarkdownGenerator {
                 let link = item.rawContent;
 
                 if (item.linkedFile) {
-                    const linktext =
-                        this._global.app.metadataCache.fileToLinktext(
-                            item.linkedFile,
-                            this._path,
-                        );
+                    const linktext = this._IApp.metadataCache.fileToLinktext(
+                        item.linkedFile,
+                        this._path,
+                    );
                     link = `[[${linktext}]]`;
                 }
 
-                this._logger.trace(
+                this._logger?.trace(
                     `Generating card: - [${item.isChecked ? 'x' : ' '}] ${link}`,
                 );
 

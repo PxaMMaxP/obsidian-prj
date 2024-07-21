@@ -1,6 +1,7 @@
 import { Component, MarkdownRenderer, setIcon } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
+import { IApp } from 'src/interfaces/IApp';
+import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
@@ -45,7 +46,7 @@ export default class ProjectComponents {
                         const div = document.createElement('div');
 
                         MarkdownRenderer.render(
-                            Global.getInstance().app,
+                            Resolve<IApp>('IApp'),
                             value ?? '',
                             div,
                             '',

@@ -1,15 +1,17 @@
-import { FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
+import { App, FrontMatterCache, MarkdownRenderer, TFile } from 'obsidian';
 import API from 'src/classes/API';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IProcessorSettings } from 'src/interfaces/IProcessorSettings';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import CustomizableRenderChild from '../CustomizableRenderChild/CustomizableRenderChild';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import EditableDataView from '../EditableDataView/EditableDataView';
+import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 import { ITags } from '../Tags/interfaces/ITags';
 import { Tag } from '../Tags/Tag';
@@ -29,10 +31,19 @@ import { TagTree } from '../Tags/types/TagTree';
 export default class HeaderBlockRenderComponent
     implements RedrawableBlockRenderComponent
 {
-    private readonly _app = Global.getInstance().app;
-    private readonly _global = Global.getInstance();
-    private readonly _logger = Logging.getLogger('HeaderBlockRenderComponent');
-    private readonly _metadataCache = this._global.metadataCache;
+    @Inject('IApp')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private readonly _IApp!: App;
+    @Inject('IHelperObsidian')
+    private readonly _IHelperObsidian!: IHelperObsidian;
+    @Inject(
+        'ILogger_',
+        (x: ILogger_) => x.getLogger('HeaderBlockRenderComponent'),
+        false,
+    )
+    private readonly _logger?: ILogger;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache!: IMetadataCache;
     private _model:
         | PrjTaskManagementModel<IPrjTaskManagementData & PrjBaseData<unknown>>
         | undefined;
@@ -164,7 +175,7 @@ export default class HeaderBlockRenderComponent
      * The file in which the block is located.
      */
     private get file(): TFile | undefined {
-        return this._metadataCache.getEntryByPath(this.path)?.file;
+        return this._IMetadataCache.getEntryByPath(this.path)?.file;
     }
 
     /**
@@ -172,7 +183,7 @@ export default class HeaderBlockRenderComponent
      */
     private get frontmatter(): FrontMatterCache | undefined {
         return (
-            this._metadataCache.getEntryByPath(this.path)?.metadata
+            this._IMetadataCache.getEntryByPath(this.path)?.metadata
                 ?.frontmatter ?? undefined
         );
     }
@@ -214,12 +225,12 @@ export default class HeaderBlockRenderComponent
      * @remarks This function is called when the block is loaded and register the `prj-task-management-file-changed` event.
      */
     private onLoad(): void {
-        this._metadataCache.on(
+        this._IMetadataCache.on(
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
 
-        this._metadataCache.on('file-rename-event', this.onPathChanged);
+        this._IMetadataCache.on('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -227,12 +238,12 @@ export default class HeaderBlockRenderComponent
      * @remarks This function is called when the block is unloaded and unregister the `prj-task-management-file-changed` event.
      */
     private onUnload(): void {
-        this._metadataCache.off(
+        this._IMetadataCache.off(
             'prj-task-management-file-changed-event',
             this.onDocumentChangedMetadata,
         );
 
-        this._metadataCache.off('file-rename-event', this.onPathChanged);
+        this._IMetadataCache.off('file-rename-event', this.onPathChanged);
     }
 
     /**
@@ -246,7 +257,7 @@ export default class HeaderBlockRenderComponent
             this.model = undefined;
             await this.build();
         } catch (error) {
-            this._logger.error(
+            this._logger?.error(
                 `Error while redrawing HeaderBlockRenderComponent: ${error}`,
             );
         }
@@ -297,7 +308,7 @@ export default class HeaderBlockRenderComponent
 
             this.container.append(this.headerContainer);
         } catch (error) {
-            this._logger.error(
+            this._logger?.error(
                 `Error while building HeaderBlockRenderComponent: ${error}`,
             );
         }
@@ -311,7 +322,7 @@ export default class HeaderBlockRenderComponent
         const separatorLineDiv = document.createElement('div');
 
         MarkdownRenderer.render(
-            this._app,
+            this._IApp,
             `---`,
             separatorLineDiv,
             this.path,
@@ -505,9 +516,8 @@ export default class HeaderBlockRenderComponent
                     if (option.value === 'true') {
                         // Register event to update the header when the active file changes
                         this.component.registerEvent(
-                            this._global.app.workspace.on(
-                                'active-leaf-change',
-                                () => this.onActiveFileChange.bind(this)(),
+                            this._IApp.workspace.on('active-leaf-change', () =>
+                                this.onActiveFileChange.bind(this)(),
                             ),
                         );
                     }
@@ -525,10 +535,10 @@ export default class HeaderBlockRenderComponent
      * @private
      */
     private onActiveFileChange(): void {
-        const activeFile = this._global.app.workspace.getActiveFile();
+        const activeFile = this._IHelperObsidian.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
-            this._logger.trace('Active file changed: ', activeFile.path);
+            this._logger?.trace('Active file changed: ', activeFile.path);
 
             if (this.path !== activeFile.path) {
                 this.path = activeFile.path;
@@ -541,7 +551,7 @@ export default class HeaderBlockRenderComponent
      * Debounces the active file change event and triggers a redraw after a delay.
      */
     private onActiveFileDebounce(): void {
-        this._logger.trace('Active file changed: Debouncing');
+        this._logger?.trace('Active file changed: Debouncing');
         clearTimeout(this._activeFileDebounceTimer);
 
         this._activeFileDebounceTimer = setTimeout(() => {

@@ -35,7 +35,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         tags: [],
         reactOnActiveFile: false,
         filter: ['Topic', 'Project', 'Task'],
-        maxDocuments: this._global.settings.defaultMaxShow,
+        maxDocuments: this._IPrjSettings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -121,7 +121,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         this.normalizeHeader();
         const endTime = Date.now();
 
-        this._logger.debug(
+        this._logger?.debug(
             `Redraw (for ${this._models.length} Models) runs for ${endTime - startTime}ms`,
         );
     }
@@ -160,7 +160,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const topicFilterButton = FilterButton.create(
             this._component,
             'Topic',
-            this._globalSettings.prjSettings.topicSymbol,
+            this._IPrjSettings.prjSettings.topicSymbol,
             this._settings.filter.includes('Topic'),
             this.onFilterButton.bind(this),
         );
@@ -169,7 +169,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const projectFilterButton = FilterButton.create(
             this._component,
             'Project',
-            this._globalSettings.prjSettings.projectSymbol,
+            this._IPrjSettings.prjSettings.projectSymbol,
             this._settings.filter.includes('Project'),
             this.onFilterButton.bind(this),
         );
@@ -178,7 +178,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const taskFilterButton = FilterButton.create(
             this._component,
             'Task',
-            this._globalSettings.prjSettings.taskSymbol,
+            this._IPrjSettings.prjSettings.taskSymbol,
             this._settings.filter.includes('Task'),
             this.onFilterButton.bind(this),
         );
@@ -205,7 +205,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         const maxDocuments = MaxShownModelsInput.create(
             this._component,
             this._settings.maxDocuments,
-            this._global.settings.defaultMaxShow,
+            this._IPrjSettings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
         headerFilterButtons.appendChild(maxDocuments);
@@ -338,7 +338,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
             dueDate,
             this._component,
             Lng.gt('Due date'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
             () => model.data.due ?? 'na',
             (value: string) => (model.data.due = value),
         );

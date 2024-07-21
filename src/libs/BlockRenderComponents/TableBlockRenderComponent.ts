@@ -1,15 +1,15 @@
 import { Component, setIcon } from 'obsidian';
-import Global from 'src/classes/Global';
 import Lng from 'src/classes/Lng';
-import { Logging } from 'src/classes/Logging';
-import { ILogger } from 'src/interfaces/ILogger';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { FileType } from 'src/libs/FileType/FileType';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import IPrjModel from 'src/models/interfaces/IPrjModel';
-import { IPrjSettings } from 'src/types/PrjSettings';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import RedrawableBlockRenderComponent from './RedrawableBlockRenderComponent';
 import { IProcessorSettings } from '../../interfaces/IProcessorSettings';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { HelperGeneral } from '../Helper/General';
 import { FileMetadata } from '../MetadataCache';
 import { ISearch } from '../Search/interfaces/ISearch';
@@ -25,10 +25,17 @@ export default abstract class TableBlockRenderComponent<
 > implements RedrawableBlockRenderComponent
 {
     //#region General properties
-    protected _global: Global;
-    protected _globalSettings: IPrjSettings;
-    protected _logger: ILogger;
-    protected _metadataCache: IMetadataCache;
+    @Inject('IPrjSettings')
+    protected _IPrjSettings: IPrjSettings;
+    @Inject('ILogger_', (x: ILogger_) =>
+        x.getLogger('TableBlockRenderComponent'),
+    )
+    protected _logger?: ILogger;
+    @Inject('IMetadataCache')
+    protected _IMetadataCache: IMetadataCache;
+    @Inject('IApp')
+    protected _IApp: IApp;
+
     private _activeFileDebounceTimer: NodeJS.Timeout;
     //#endregion
     //#region Component properties
@@ -52,12 +59,6 @@ export default abstract class TableBlockRenderComponent<
      * @param logger The logger to use. Defaults to the default logger `TableBlockRenderComponent`.
      */
     constructor(settings: IProcessorSettings, logger?: ILogger) {
-        // General properties
-        this._logger = logger ?? Logging.getLogger('TableBlockRenderComponent');
-        this._global = Global.getInstance();
-        this._globalSettings = this._global.settings;
-        this._metadataCache = this._global.metadataCache;
-
         this._processorSettings = settings;
         this._component = settings.component;
         this.onActiveFileDebounce = this.onActiveFileDebounce.bind(this);
@@ -172,9 +173,8 @@ export default abstract class TableBlockRenderComponent<
                     } else if (option.value === 'activeFile') {
                         // Register event to update the tags when the active file changes
                         this._component.registerEvent(
-                            this._global.app.workspace.on(
-                                'active-leaf-change',
-                                () => this.onActiveFileChange.bind(this)(),
+                            this._IApp.workspace.on('active-leaf-change', () =>
+                                this.onActiveFileChange.bind(this)(),
                             ),
                         );
                         this._settings.reactOnActiveFile = true;
@@ -201,13 +201,13 @@ export default abstract class TableBlockRenderComponent<
      * @private
      */
     private onActiveFileChange(): void {
-        const activeFile = this._global.app.workspace.getActiveFile();
+        const activeFile = this._IApp.workspace.getActiveFile();
 
         if (activeFile && !activeFile.path.contains('Ressourcen/Panels/')) {
             this._logger?.trace('Active file changed: ', activeFile.path);
 
             const tags =
-                this._metadataCache.getEntry(activeFile)?.metadata?.frontmatter
+                this._IMetadataCache.getEntry(activeFile)?.metadata?.frontmatter
                     ?.tags;
             let newTags: string[] = [];
 
@@ -284,12 +284,12 @@ export default abstract class TableBlockRenderComponent<
         tags: string[],
         modelFactory: (metadata: FileMetadata) => T | undefined,
     ): Promise<T[]> {
-        const templateFolder = this._global.settings.templateFolder;
+        const templateFolder = this._IPrjSettings.templateFolder;
 
         // Create an instance of the Tags class for the provided tags
         const filterTags = new Tags(tags);
 
-        const allDocumentFiles = this._metadataCache.cache.filter((file) => {
+        const allDocumentFiles = this._IMetadataCache.cache.filter((file) => {
             const typeFilter = FileType.isValidOf(
                 file.metadata.frontmatter?.type,
                 types,

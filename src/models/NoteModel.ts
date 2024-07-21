@@ -2,12 +2,13 @@
 
 import { TFile } from 'obsidian';
 import { Path } from 'src/classes/Path';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjNoteData from './Data/PrjNoteData';
 import { FileModel } from './FileModel';
 import IPrjModel from './interfaces/IPrjModel';
-import Global from '../classes/Global';
 
 /**
  * Represents the model for a note.
@@ -16,6 +17,9 @@ export class NoteModel
     extends FileModel<PrjNoteData>
     implements IPrjModel<PrjNoteData>
 {
+    @Inject('IPrjSettings')
+    protected static _IPrjSettings: IPrjSettings;
+
     /**
      * The data of the note.
      */
@@ -59,7 +63,7 @@ export class NoteModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this._App.vault.read(this.file);
+            return this._IApp.vault.read(this.file);
         } catch (error) {
             this._logger?.error(error);
         }
@@ -98,7 +102,7 @@ export class NoteModel
 
         if (model.data.date) {
             newFileName.push(
-                `${HelperGeneral.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+                `${HelperGeneral.formatDate(model.data.date, this._IPrjSettings.dateFormat)}`,
             );
         }
 

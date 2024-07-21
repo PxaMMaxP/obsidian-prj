@@ -1,52 +1,33 @@
 import { App, TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { DIContainer } from '../DependencyInjection/DIContainer';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
-
-export interface IHelperObsidian_ {
-    openFile(file: TFile): Promise<void>;
-    rebuildActiveView(): void;
-    getActiveFile(): TFile | undefined;
-}
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import {
+    IHelperObsidian_,
+    IHelperObsidian,
+} from './interfaces/IHelperObsidian';
+import { Inject } from '../DependencyInjection/decorators/Inject';
+import { RegisterInstance } from '../DependencyInjection/decorators/RegisterInstance';
 
 /**
  * Represents a class for Obsidian related helper methods.
  * @see {@link Singleton}
- * @see {@link Lifecycle}
  */
-@Lifecycle
-@ImplementsStatic<ILifecycleObject>()
+// eslint-disable-next-line deprecation/deprecation
 @ImplementsStatic<IHelperObsidian_>()
+@RegisterInstance('IHelperObsidian')
 @Singleton
-export class HelperObsidian {
-    protected _dependencies: IDIContainer;
-    protected _app: App;
-    protected _logger: ILogger | undefined;
+export class HelperObsidian implements IHelperObsidian {
+    @Inject('IApp')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    protected _IApp: App;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('HelperObsidian'), false)
+    protected _logger?: ILogger;
 
     /**
      * Create a Singleton instance of the HelperObsidian class.
-     * @param dependencies The dependencies for the class.
      */
-    constructor(dependencies?: IDIContainer) {
-        this._dependencies = dependencies ?? DIContainer.getInstance();
-
-        this._logger = this._dependencies
-            .resolve<ILogger_>('ILogger_', false)
-            ?.getLogger('HelperObsidian');
-
-        this._app = this._dependencies.resolve<App>('App');
-    }
-
-    /**
-     * This method is called when the application is unloaded.
-     */
-    public static beforeLoad(): void {
-        DIContainer.getInstance().register('IHelperObsidian_', HelperObsidian);
-    }
+    constructor() {}
 
     /**
      * Gets the active file in the workspace.
@@ -60,8 +41,8 @@ export class HelperObsidian {
      * Gets the active file in the workspace.
      * @returns The active file in the workspace, or undefined if no file is active.
      */
-    private getActiveFile(): TFile | undefined {
-        const workspace = this._app.workspace;
+    public getActiveFile(): TFile | undefined {
+        const workspace = this._IApp.workspace;
         const activeFile = workspace.getActiveFile();
 
         if (!activeFile) {
@@ -86,9 +67,9 @@ export class HelperObsidian {
      * Opens the specified file in the active leaf.
      * @param file The file to open.
      */
-    private async openFile(file: TFile): Promise<void> {
+    public async openFile(file: TFile): Promise<void> {
         this._logger?.trace(`Opening file: ${file.path}`);
-        const workspace = this._app.workspace;
+        const workspace = this._IApp.workspace;
         const newLeaf = workspace.getLeaf(true);
         await newLeaf.openFile(file);
         const view = newLeaf.getViewState();
@@ -106,8 +87,8 @@ export class HelperObsidian {
     /**
      * Rebuilds the active view.
      */
-    private rebuildActiveView(): void {
-        const workspace = this._app.workspace;
+    public rebuildActiveView(): void {
+        const workspace = this._IApp.workspace;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, deprecation/deprecation
         const activeLeaf = workspace.activeLeaf as any;
 

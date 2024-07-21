@@ -1,17 +1,18 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { FileType } from 'src/libs/FileType/FileType';
 import { DocumentModel } from 'src/models/DocumentModel';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import { IHelperObsidian_ } from '../Helper/Obsidian';
+import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 import { FileMetadata } from '../MetadataCache';
-import ITranslationService from '../TranslationService/interfaces/ITranslationService';
+import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Represents a class for retrieving metadata for a file.
@@ -23,9 +24,12 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class GetMetadata extends ContextMenu implements IContextMenu {
     protected _bindContextMenu = this.onContextMenu.bind(this);
-    private readonly _translationService: ITranslationService;
-    private readonly _metadataCache: IMetadataCache;
-    private readonly _helperObsidian: IHelperObsidian_;
+    @Inject('ITranslationService')
+    private readonly _ITranslationService: ITranslationService;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache: IMetadataCache;
+    @Inject('IHelperObsidian')
+    private readonly _IHelperObsidian: IHelperObsidian;
     protected _hasEventsRegistered = false;
 
     /**
@@ -33,18 +37,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * @param dependencies The dependencies for the context menu.
      */
     constructor(dependencies?: IDIContainer) {
-        super(dependencies);
-
-        this._translationService =
-            this._dependencies.resolve<ITranslationService>(
-                'ITranslationService',
-            );
-
-        this._metadataCache =
-            this._dependencies.resolve<IMetadataCache>('IMetadataCache');
-
-        this._helperObsidian =
-            this._dependencies.resolve<IHelperObsidian_>('IHelperObsidian_');
+        super();
     }
 
     /**
@@ -67,11 +60,11 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Initializes the context menu.
      */
     protected onConstruction(): void {
-        this._app.workspace.on('file-menu', this._bindContextMenu);
+        this._IApp.workspace.on('file-menu', this._bindContextMenu);
 
-        this._plugin.addCommand({
+        this._IPrj.addCommand({
             id: 'get-metadata-file',
-            name: this._translationService.get('Show Metadata File'),
+            name: this._ITranslationService.get('Show Metadata File'),
             /**
              * Callback function for the 'get-metadata-file' command.
              */
@@ -85,7 +78,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Cleans up the context menu.
      */
     protected onDeconstruction(): void {
-        this._app.workspace.off('file-menu', this._bindContextMenu);
+        this._IApp.workspace.off('file-menu', this._bindContextMenu);
     }
 
     /**
@@ -110,11 +103,11 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
 
             menu.addItem((item) => {
                 item.setTitle(
-                    this._translationService.get('Show Metadata File'),
+                    this._ITranslationService.get('Show Metadata File'),
                 )
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(async () => {
-                        await this._helperObsidian.openFile(document.file);
+                        await this._IHelperObsidian.openFile(document.file);
                     });
             });
         }
@@ -128,7 +121,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
     private getCorrespondingMetadataFile(
         file: TFile,
     ): FileMetadata | undefined {
-        return this._metadataCache.cache.find((metadata) => {
+        return this._IMetadataCache.cache.find((metadata) => {
             const type = new FileType(metadata.metadata.frontmatter?.type);
 
             const fileLink = metadata.metadata.frontmatter?.file as
@@ -148,7 +141,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Opens the metadata file for the active (e.g. pdf) file.
      */
     public async invoke(): Promise<void> {
-        const workspace = this._app.workspace;
+        const workspace = this._IApp.workspace;
         const activeFile = workspace.getActiveFile();
 
         if (
@@ -170,6 +163,6 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
             return;
         }
         const document = new DocumentModel(metadataFile.file);
-        await this._helperObsidian.openFile(document.file);
+        await this._IHelperObsidian.openFile(document.file);
     }
 }

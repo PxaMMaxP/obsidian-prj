@@ -27,7 +27,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         tags: [],
         reactOnActiveFile: false,
         filter: ['Documents'],
-        maxDocuments: this._global.settings.defaultMaxShow,
+        maxDocuments: this._IPrjSettings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -108,7 +108,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         this.normalizeHeader();
         const endTime = Date.now();
 
-        this._logger.debug(
+        this._logger?.debug(
             `Redraw Documents (for ${this._models.length} Docs.) runs for ${endTime - startTime}ms`,
         );
     }
@@ -140,7 +140,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const documentFilterButton = FilterButton.create(
             this._component,
             'Documents',
-            this._globalSettings.documentSettings.symbol,
+            this._IPrjSettings.documentSettings.symbol,
             this._settings.filter.includes('Documents'),
             this.onFilterButton.bind(this),
         );
@@ -149,7 +149,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const hideDocumentFilterButton = FilterButton.create(
             this._component,
             'HideDocuments',
-            this._globalSettings.documentSettings.hideSymbol,
+            this._IPrjSettings.documentSettings.hideSymbol,
             this._settings.filter.includes('HideDocuments'),
             this.onFilterButton.bind(this),
         );
@@ -158,7 +158,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const clusterFilterButton = FilterButton.create(
             this._component,
             'Cluster',
-            this._globalSettings.documentSettings.clusterSymbol,
+            this._IPrjSettings.documentSettings.clusterSymbol,
             this._settings.filter.includes('Cluster'),
             this.onFilterButton.bind(this),
         );
@@ -167,7 +167,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         const maxDocuments = MaxShownModelsInput.create(
             this._component,
             this._settings.maxDocuments,
-            this._global.settings.defaultMaxShow,
+            this._IPrjSettings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
         headerFilterButtons.appendChild(maxDocuments);
@@ -304,7 +304,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             date,
             this._component,
             Lng.gt('DocumentDate'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
             () => documentModel.data.date ?? 'na',
             (value: string) => (documentModel.data.date = value),
         );
@@ -341,8 +341,8 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             summaryRelatedFiles,
             this._component,
             documentModel,
-            this._globalSettings.noneSymbol,
-            this._global.settings.dateFormatShort,
+            this._IPrjSettings.noneSymbol,
+            this._IPrjSettings.dateFormatShort,
         );
 
         // Row 5 -- Date of delivery
@@ -353,7 +353,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
             deliveryDate,
             this._component,
             Lng.gt('DeliveryDate'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
             () => documentModel.data.dateOfDelivery ?? 'na',
             (value: string) => (documentModel.data.dateOfDelivery = value),
         );

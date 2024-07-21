@@ -28,7 +28,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         tags: [],
         reactOnActiveFile: false,
         filter: ['Note'],
-        maxDocuments: this._global.settings.defaultMaxShow,
+        maxDocuments: this._IPrjSettings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -96,7 +96,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         this.normalizeHeader();
         const endTime = Date.now();
 
-        this._logger.debug(
+        this._logger?.debug(
             `Redraw Documents (for ${this._models.length} Docs.) runs for ${endTime - startTime}ms`,
         );
     }
@@ -128,7 +128,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         const maxDocuments = MaxShownModelsInput.create(
             this._component,
             this._settings.maxDocuments,
-            this._global.settings.defaultMaxShow,
+            this._IPrjSettings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
         headerFilterButtons.appendChild(maxDocuments);
@@ -226,7 +226,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
             date,
             this._component,
             Lng.gt('DocumentDate'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
             () => noteModel.data.date ?? 'na',
             (value: string) => (noteModel.data.date = value),
         );

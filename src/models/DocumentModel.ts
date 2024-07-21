@@ -2,15 +2,18 @@ import { TFile } from 'obsidian';
 import Lng from 'src/classes/Lng';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import type { IApp } from 'src/interfaces/IApp';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import CreateNewMetadataModal from 'src/libs/Modals/CreateNewMetadataModal';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import { PrjDocumentData } from './Data/PrjDocumentData';
 import { FileModel } from './FileModel';
 import IPrjModel from './interfaces/IPrjModel';
-import Global from '../classes/Global';
 
 /**
  * Represents the model for a document.
@@ -97,7 +100,7 @@ export class DocumentModel
      */
     public async getFileContents(): Promise<string | undefined> {
         try {
-            return this._App.vault.read(this.file);
+            return this._IApp.vault.read(this.file);
         } catch (error) {
             this._logger?.error(error);
         }
@@ -186,7 +189,7 @@ export class DocumentModel
     ): string | undefined {
         if (!file || !(file instanceof TFile)) return;
 
-        const linktext = this._App.metadataCache.fileToLinktext(
+        const linktext = this._IApp.metadataCache.fileToLinktext(
             file,
             path ? path : this.file.path,
         );
@@ -219,13 +222,20 @@ export class DocumentModel
      * Static API for the DocumentModel class.
      */
 
+    @Inject('IMetadataCache')
+    protected static readonly _IMetadataCache: IMetadataCache;
+    @Inject('IPrjSettings')
+    protected static readonly _IPrjSettings: IPrjSettings;
+    @Inject('IApp')
+    protected static readonly _IApp: IApp;
+
     /**
      * Returns all documents
      * @returns List of all documents
      * @deprecated This method is deprecated and will be removed in a future release.
      */
     public static getAllDocuments(): DocumentModel[] {
-        const metadataCache = Global.getInstance().metadataCache.cache;
+        const metadataCache = this._IMetadataCache.cache;
 
         const documents = metadataCache
             .filter((file) => file.metadata?.frontmatter?.type === 'Metadata')
@@ -239,7 +249,7 @@ export class DocumentModel
      * @returns An array of strings representing the sender and recipient names.
      */
     public static getAllSenderRecipients(): string[] {
-        const metadataCache = Global.getInstance().metadataCache.cache;
+        const metadataCache = this._IMetadataCache.cache;
 
         const documents = metadataCache
             .filter((file) => file.metadata?.frontmatter?.type === 'Metadata')
@@ -264,7 +274,7 @@ export class DocumentModel
 
         if (model.data.date) {
             newFileName.push(
-                `${HelperGeneral.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+                `${HelperGeneral.formatDate(model.data.date, this._IPrjSettings.dateFormat)}`,
             );
         }
 
@@ -296,8 +306,8 @@ export class DocumentModel
      * @see {@link CreateNewMetadataModal.constructForm}
      */
     public static getAllPDFsWithoutMetadata(): TFile[] {
-        const metadataCache = Global.getInstance().metadataCache.cache;
-        const fileCache = Global.getInstance().app.vault.getFiles();
+        const metadataCache = this._IMetadataCache.cache;
+        const fileCache = this._IApp.vault.getFiles();
 
         const setOfPDFsWithMetadata = new Set(
             metadataCache
@@ -370,7 +380,7 @@ export class DocumentModel
      */
     public static async syncMetadataToFile(file: TFile): Promise<void> {
         const logger = Logging.getLogger('SyncMetadataToFile');
-        const settings = Global.getInstance().settings;
+        const settings = this._IPrjSettings;
 
         const document = new DocumentModel(file);
 

@@ -3,10 +3,10 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
-import ITranslationService from '../TranslationService/interfaces/ITranslationService';
+import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Represents a context menu for copying markdown links.
@@ -18,19 +18,14 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
     protected _bindContextMenu = this.onContextMenu.bind(this);
+    @Inject('ITranslationService')
     private readonly _translationService: ITranslationService;
 
     /**
      * Creates an instance of CopyMarkdownLink.
-     * @param dependencies The dependencies for the context menu.
      */
-    constructor(dependencies?: IDIContainer) {
-        super(dependencies);
-
-        this._translationService =
-            this._dependencies.resolve<ITranslationService>(
-                'ITranslationService',
-            );
+    constructor() {
+        super();
     }
 
     /**
@@ -53,14 +48,14 @@ export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
      * Initializes the context menu.
      */
     protected onConstruction(): void {
-        this._app.workspace.on('file-menu', this._bindContextMenu);
+        this._IApp.workspace.on('file-menu', this._bindContextMenu);
     }
 
     /**
      * Cleans up the context menu.
      */
     protected onDeconstruction(): void {
-        this._app.workspace.off('file-menu', this._bindContextMenu);
+        this._IApp.workspace.off('file-menu', this._bindContextMenu);
     }
 
     /**
@@ -73,7 +68,7 @@ export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
             return;
         }
 
-        const fileText = this._app.metadataCache.fileToLinktext(
+        const fileText = this._IApp.metadataCache.fileToLinktext(
             file,
             file.path,
         );

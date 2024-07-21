@@ -1,35 +1,27 @@
-import { App, Menu, TAbstractFile } from 'obsidian';
-import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import Prj from 'src/main';
+import { Menu, TAbstractFile } from 'obsidian';
+import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import type { IPrj } from 'src/interfaces/IPrj';
 import { IContextMenu } from './interfaces/IContextMenu';
-import { DIContainer } from '../DependencyInjection/DIContainer';
-import { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 
 /**
  * Represents a class for creating a context menu.
  */
 export class ContextMenu implements IContextMenu {
-    protected _dependencies: IDIContainer;
-    protected _logger: ILogger | undefined;
-    protected _app: App;
-    protected _plugin: Prj;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('ContextMenu'), false)
+    protected _logger?: ILogger;
+    @Inject('IApp')
+    protected _IApp: IApp;
+    @Inject('IPrj')
+    protected _IPrj: IPrj;
     protected _hasEventsAndCommandsRegistered = false;
     protected _bindContextMenu = this.onContextMenu.bind(this);
 
     /**
      * Creates a new instance of the ContextMenu class.
-     * @param dependencies The dependencies for the class.
      */
-    protected constructor(dependencies?: IDIContainer) {
-        this._dependencies = dependencies ?? DIContainer.getInstance();
-
-        this._logger = this._dependencies
-            .resolve<ILogger_>('ILogger_', false)
-            ?.getLogger('ContextMenu');
-
-        this._app = this._dependencies.resolve<App>('App');
-        this._plugin = this._dependencies.resolve<Prj>('Prj');
-    }
+    protected constructor() {}
 
     /**
      * Run this method to signalize that the class is initialized.
