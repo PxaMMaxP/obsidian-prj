@@ -99,19 +99,21 @@ export class PrjTaskManagementModel<
      * - This function will start and finish a transaction if no transaction is currently running.
      */
     public changeStatus(newStatus: unknown): void {
-        const status = new this._IStatusType(newStatus);
+        if (!this._IStatusType.validate(newStatus)) return;
 
-        if (!status) return;
-
-        if (this.data.status !== status) {
+        if (!this.data.status?.equals(newStatus)) {
             let internalTransaction = false;
 
             if (!this.isTransactionActive) {
                 this.startTransaction();
                 internalTransaction = true;
             }
-            this.data.status = status;
-            this.addHistoryEntry(status);
+            this.data.status = newStatus;
+
+            if (this.data.status == null) {
+                return;
+            }
+            this.addHistoryEntry(this.data.status);
 
             if (internalTransaction) this.finishTransaction();
         }
