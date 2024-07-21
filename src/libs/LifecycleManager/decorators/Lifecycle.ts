@@ -1,10 +1,10 @@
 import { copyStaticProperties } from 'src/classes/decorators/Helper';
 import {
     ILifecycleManager_,
-    ILifecycleObject,
     ILifecycleState,
     ILifecycleTime,
 } from '../interfaces/ILifecycleManager';
+import { ILifecycleObject } from '../interfaces/ILifecycleObject';
 import { LifecycleManager } from '../LifecycleManager';
 
 const manager: ILifecycleManager_ = LifecycleManager;
@@ -28,72 +28,135 @@ function registerLifecycleMethod(
 }
 
 /**
- * Lifecycle decorator.
- * @param constructor The constructor to decorate with lifecycle methods.
- * @param args The arguments for the constructor.
+ * Lifecycle decorator: Registers static and instance lifecycle methods.
  * @returns The decorated constructor with lifecycle management.
  */
 export function Lifecycle<
     TargetType extends {
         new (...args: unknown[]): ILifecycleObject;
     } & ILifecycleObject,
->(constructor: TargetType, ...args: unknown[]): TargetType {
-    const original = constructor;
+>(): TargetType;
 
+/**
+ * Lifecycle decorator.
+ * @param type The type of lifecycle to register: 'Static', 'Instance', or 'All'.
+ * @returns The decorated constructor with lifecycle management.
+ */
+export function Lifecycle<
+    TargetType extends {
+        new (...args: unknown[]): ILifecycleObject;
+    } & ILifecycleObject,
+>(type?: 'Static' | 'Instance' | 'All'): TargetType;
+
+/**
+ * Lifecycle decorator.
+ * @param type The type of lifecycle to register: 'Static', 'Instance', or 'All'.
+ * @returns The decorated constructor with lifecycle management.
+ */
+export function Lifecycle<
+    TargetType extends {
+        new (...args: unknown[]): ILifecycleObject;
+    } & ILifecycleObject,
+>(type?: 'Static' | 'Instance' | 'All') {
     /**
-     * Constructs a new instance and registers lifecycle methods.
+     * Lifecycle decorator.
      * @param constructor The constructor to decorate with lifecycle methods.
      * @param args The arguments for the constructor.
-     * @returns The instance with registered lifecycle methods.
+     * @returns The decorated constructor with lifecycle management.
      */
-    function construct(
+    return function Lifecycle(
         constructor: TargetType,
-        args: unknown[],
-    ): ILifecycleObject {
-        const instance = new constructor(...args);
+        ...args: unknown[]
+    ): TargetType {
+        const original = constructor;
 
-        registerLifecycleMethod(instance, 'before', 'init', 'beforeInit');
-        registerLifecycleMethod(instance, 'on', 'init', 'onInit');
-        registerLifecycleMethod(instance, 'after', 'init', 'afterInit');
+        /**
+         * Constructs a new instance and registers lifecycle methods.
+         * @param constructor The constructor to decorate with lifecycle methods.
+         * @param args The arguments for the constructor.
+         * @returns The instance with registered lifecycle methods.
+         */
+        function construct(
+            constructor: TargetType,
+            args: unknown[],
+        ): ILifecycleObject {
+            const instance = new constructor(...args);
 
-        registerLifecycleMethod(instance, 'before', 'load', 'beforeLoad');
-        registerLifecycleMethod(instance, 'on', 'load', 'onLoad');
-        registerLifecycleMethod(instance, 'after', 'load', 'afterLoad');
+            if (type == null || type === 'Instance' || type === 'All') {
+                registerLifecycleMethod(
+                    instance,
+                    'before',
+                    'init',
+                    'beforeInit',
+                );
+                registerLifecycleMethod(instance, 'on', 'init', 'onInit');
+                registerLifecycleMethod(instance, 'after', 'init', 'afterInit');
 
-        registerLifecycleMethod(instance, 'before', 'unload', 'beforeUnload');
-        registerLifecycleMethod(instance, 'on', 'unload', 'onUnload');
-        registerLifecycleMethod(instance, 'after', 'unload', 'afterUnload');
+                registerLifecycleMethod(
+                    instance,
+                    'before',
+                    'load',
+                    'beforeLoad',
+                );
+                registerLifecycleMethod(instance, 'on', 'load', 'onLoad');
+                registerLifecycleMethod(instance, 'after', 'load', 'afterLoad');
 
-        return instance;
-    }
+                registerLifecycleMethod(
+                    instance,
+                    'before',
+                    'unload',
+                    'beforeUnload',
+                );
+                registerLifecycleMethod(instance, 'on', 'unload', 'onUnload');
 
-    /**
-     * Registers static lifecycle methods.
-     */
-    registerLifecycleMethod(original, 'before', 'init', 'beforeInit');
-    registerLifecycleMethod(original, 'on', 'init', 'onInit');
-    registerLifecycleMethod(original, 'after', 'init', 'afterInit');
+                registerLifecycleMethod(
+                    instance,
+                    'after',
+                    'unload',
+                    'afterUnload',
+                );
+            }
 
-    registerLifecycleMethod(original, 'before', 'load', 'beforeLoad');
-    registerLifecycleMethod(original, 'on', 'load', 'onLoad');
-    registerLifecycleMethod(original, 'after', 'load', 'afterLoad');
+            return instance;
+        }
 
-    registerLifecycleMethod(original, 'before', 'unload', 'beforeUnload');
-    registerLifecycleMethod(original, 'on', 'unload', 'onUnload');
-    registerLifecycleMethod(original, 'after', 'unload', 'afterUnload');
+        /**
+         * Registers static lifecycle methods.
+         */
+        if (type == null || type === 'Static' || type === 'All') {
+            registerLifecycleMethod(original, 'before', 'init', 'beforeInit');
+            registerLifecycleMethod(original, 'on', 'init', 'onInit');
+            registerLifecycleMethod(original, 'after', 'init', 'afterInit');
 
-    /**
-     * The wrapped constructor function.
-     * @param args The arguments for the constructor.
-     * @returns The instance with registered lifecycle methods.
-     */
-    const wrappedConstructor = function (...args: unknown[]): ILifecycleObject {
-        return construct(original, args);
+            registerLifecycleMethod(original, 'before', 'load', 'beforeLoad');
+            registerLifecycleMethod(original, 'on', 'load', 'onLoad');
+            registerLifecycleMethod(original, 'after', 'load', 'afterLoad');
+
+            registerLifecycleMethod(
+                original,
+                'before',
+                'unload',
+                'beforeUnload',
+            );
+            registerLifecycleMethod(original, 'on', 'unload', 'onUnload');
+            registerLifecycleMethod(original, 'after', 'unload', 'afterUnload');
+        }
+
+        /**
+         * The wrapped constructor function.
+         * @param args The arguments for the constructor.
+         * @returns The instance with registered lifecycle methods.
+         */
+        const wrappedConstructor = function (
+            ...args: unknown[]
+        ): ILifecycleObject {
+            return construct(original, args);
+        };
+
+        // Transfer prototype
+        wrappedConstructor.prototype = original.prototype;
+
+        // Copy static methods and properties
+        return copyStaticProperties(wrappedConstructor, original);
     };
-
-    // Transfer prototype
-    wrappedConstructor.prototype = original.prototype;
-
-    // Copy static methods and properties
-    return copyStaticProperties(wrappedConstructor, original);
 }
