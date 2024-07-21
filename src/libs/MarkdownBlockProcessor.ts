@@ -23,7 +23,7 @@ import { IProcessorSettings } from '../interfaces/IProcessorSettings';
  * Class for the markdown block processor.
  */
 @ImplementsStatic<ILifecycleObject>()
-@Lifecycle
+@Lifecycle('Static')
 export default class MarkdownBlockProcessor {
     /**
      * Register the markdown block processor and update the workspace options.

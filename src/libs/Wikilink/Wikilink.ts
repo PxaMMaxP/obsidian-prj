@@ -10,7 +10,7 @@ import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObjec
  */
 @ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IWikilink_>()
-@Lifecycle
+@Lifecycle()
 export class Wikilink implements IWikilink {
     /**
      * The date of the wikilink.
