@@ -9,7 +9,7 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 /**
  * Represents a Project.
  */
-@Lifecycle
+@Lifecycle()
 @ImplementsStatic<ILifecycleObject>()
 export class ProjectModel extends PrjTaskManagementModel<PrjProjectData> {
     /**

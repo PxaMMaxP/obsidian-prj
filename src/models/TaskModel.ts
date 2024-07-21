@@ -13,7 +13,7 @@ import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 /**
  * Represents a task.
  */
-@Lifecycle
+@Lifecycle()
 @ImplementsStatic<ILifecycleObject>()
 export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
     /**

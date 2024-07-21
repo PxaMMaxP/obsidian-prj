@@ -3,8 +3,8 @@ import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataTyp
 import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
+import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 
 /**
  * Represents the types used in the app for files.
@@ -13,7 +13,7 @@ import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
 @ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IBaseComplexDataType_>()
 @ImplementsStatic<IFileType_>()
-@Lifecycle
+@Lifecycle()
 export class FileType extends BaseComplexDataType implements IFileType {
     /**
      * An array of valid file types.

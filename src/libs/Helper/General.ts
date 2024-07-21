@@ -20,7 +20,7 @@ export interface IHelperGeneral_ {
  * @see {@link Singleton}
  * @see {@link Lifecycle}
  */
-@Lifecycle
+@Lifecycle()
 @ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IHelperGeneral_>()
 export class HelperGeneral {
