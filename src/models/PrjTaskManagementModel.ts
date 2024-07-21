@@ -1,7 +1,7 @@
 import { TFile, moment } from 'obsidian';
-import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
@@ -10,6 +10,7 @@ import type {
     IStatusType_,
 } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tag } from 'src/libs/Tags/Tag';
+import type { IPrjSettings } from 'src/types/PrjSettings';
 import { IPrjData } from './Data/interfaces/IPrjData';
 import { IPrjTaskManagementData } from './Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from './Data/PrjBaseData';
@@ -211,10 +212,15 @@ export class PrjTaskManagementModel<
         }
     }
 
+    //#region Static API
     /**
      * Static API for the PrjTaskManagementModel class.
      */
-    //#region Static API
+
+    @Inject('IMetadataCache')
+    protected static readonly _IMetadataCache: IMetadataCache;
+    @Inject('IPrjSettings')
+    protected static readonly _IPrjSettings: IPrjSettings;
 
     /**
      * The model factories for the PrjTaskManagementModel class.
@@ -256,7 +262,7 @@ export class PrjTaskManagementModel<
               IPrjData & IPrjTaskManagementData & PrjBaseData<unknown>
           >
         | undefined {
-        const entry = Global.getInstance().metadataCache.getEntry(file);
+        const entry = this._IMetadataCache.getEntry(file);
 
         if (!entry) return undefined;
         const type = entry.metadata.frontmatter?.type;
@@ -492,7 +498,7 @@ export class PrjTaskManagementModel<
         if (!status) {
             return;
         }
-        const settings = Global.getInstance().settings.prjSettings;
+        const settings = this._IPrjSettings.prjSettings;
         let parentPath: string | undefined;
 
         if (model.file.parent?.path) {

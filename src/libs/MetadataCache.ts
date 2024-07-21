@@ -29,8 +29,8 @@ export class FileMetadata {
 @RegisterInstance('IMetadataCache')
 export default class MetadataCache implements IMetadataCache {
     private readonly _eventHandler: GenericEvents<IMetadataCacheEvents>;
-    @Inject('App')
-    private readonly _app!: App;
+    @Inject('IApp')
+    private readonly _IApp!: App;
     @Inject('IPrjSettings')
     private readonly _settings!: IPrjSettings;
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('MetadataCache'), false)
@@ -124,14 +124,14 @@ export default class MetadataCache implements IMetadataCache {
         const instance = MetadataCache.instance;
 
         if (instance._hasEventsRegistered) {
-            instance._app.vault.off('rename', instance.renameEventHandler);
+            instance._IApp.vault.off('rename', instance.renameEventHandler);
 
-            instance._app.metadataCache.off(
+            instance._IApp.metadataCache.off(
                 'changed',
                 instance.changedEventHandler,
             );
 
-            instance._app.metadataCache.off(
+            instance._IApp.metadataCache.off(
                 'deleted',
                 instance.deleteEventHandler,
             );
@@ -385,7 +385,7 @@ export default class MetadataCache implements IMetadataCache {
         const startTime = Date.now();
 
         this._metadataCache = new Map<string, FileMetadata>();
-        const allFiles = this._app.vault.getFiles();
+        const allFiles = this._IApp.vault.getFiles();
 
         const addEntryPromises = allFiles.map((file) => this.addEntry(file));
 
@@ -467,7 +467,7 @@ export default class MetadataCache implements IMetadataCache {
      * @returns The metadata cache entry for the file link.
      */
     public getEntryByLink(link: string, path = ''): FileMetadata | undefined {
-        const file = this._app.metadataCache.getFirstLinkpathDest(link, path);
+        const file = this._IApp.metadataCache.getFirstLinkpathDest(link, path);
 
         if (file) {
             return this.getEntry(file);
@@ -486,7 +486,7 @@ export default class MetadataCache implements IMetadataCache {
      */
     public getFileByLink(link: string, path = ''): TFile | undefined {
         return (
-            this._app.metadataCache.getFirstLinkpathDest(link, path) ??
+            this._IApp.metadataCache.getFirstLinkpathDest(link, path) ??
             undefined
         );
     }
@@ -500,7 +500,7 @@ export default class MetadataCache implements IMetadataCache {
         const filesWithBacklinks: TFile[] = [];
 
         for (const [path, fileCache] of Object.entries(
-            this._app.metadataCache.resolvedLinks,
+            this._IApp.metadataCache.resolvedLinks,
         )) {
             if (fileCache[file.path]) {
                 const file = this.getEntryByPath(path);
@@ -517,7 +517,7 @@ export default class MetadataCache implements IMetadataCache {
      */
     private async addEntry(file: TFile): Promise<void> {
         if (this._metadataCache) {
-            const metadata = this._app.metadataCache.getFileCache(file);
+            const metadata = this._IApp.metadataCache.getFileCache(file);
 
             if (metadata) {
                 this._metadataCache.set(file.path, { file, metadata });
@@ -654,7 +654,7 @@ export default class MetadataCache implements IMetadataCache {
      */
     private redrawMarkdownView(): void {
         this._logger?.debug(`Redrawing markdown view`);
-        this._app.workspace.updateOptions();
+        this._IApp.workspace.updateOptions();
     }
 
     /**
@@ -662,9 +662,9 @@ export default class MetadataCache implements IMetadataCache {
      */
     private registerEvents(): void {
         if (!this._hasEventsRegistered) {
-            this._app.vault.on('rename', this.renameEventHandler);
-            this._app.metadataCache.on('changed', this.changedEventHandler);
-            this._app.metadataCache.on('deleted', this.deleteEventHandler);
+            this._IApp.vault.on('rename', this.renameEventHandler);
+            this._IApp.metadataCache.on('changed', this.changedEventHandler);
+            this._IApp.metadataCache.on('deleted', this.deleteEventHandler);
 
             this._hasEventsRegistered = true;
 

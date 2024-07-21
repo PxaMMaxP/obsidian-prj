@@ -14,7 +14,9 @@ export default class API {
     /**
      * Gets the global instance for the plugin.
      */
+    // eslint-disable-next-line deprecation/deprecation
     public static get global(): Global {
+        // eslint-disable-next-line deprecation/deprecation
         return Global.getInstance();
     }
     public static documentModel = DocumentModel;

@@ -21,9 +21,9 @@ export class FileModel<
 > extends TransactionModel<T> {
     @Inject('IPrjSettings')
     protected _IPrjSettings!: IPrjSettings;
-    @Inject('App')
+    @Inject('IApp')
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    protected _App!: App;
+    protected _IApp!: App;
     @Inject('IMetadataCache')
     protected _IMetadataCache!: IMetadataCache;
     @Inject('IProxyHandler_')
@@ -211,7 +211,7 @@ export class FileModel<
         this._logger?.trace(`Updating with:`, value);
 
         try {
-            await this._App?.fileManager.processFrontMatter(
+            await this._IApp?.fileManager.processFrontMatter(
                 this._file,
                 (frontmatter) => {
                     this.updateNestedFrontmatterObjects(frontmatter, value);

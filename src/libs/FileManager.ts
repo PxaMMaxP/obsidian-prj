@@ -1,8 +1,9 @@
 import { TFile } from 'obsidian';
-import Global from 'src/classes/Global';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
-import { ILogger } from 'src/interfaces/ILogger';
+import { IApp } from 'src/interfaces/IApp';
+import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Resolve } from './DependencyInjection/functions/Resolve';
 
 /**
  * A class that handles file operations.
@@ -117,8 +118,6 @@ export default class FileManager {
         filename: Filename,
         logger?: ILogger,
     ): Promise<boolean> {
-        const app = Global.getInstance().app;
-
         if (path === file.path) {
             logger?.debug(
                 `Moving/renaming file ${file.name} to ${path} is unnecessary`,
@@ -130,7 +129,7 @@ export default class FileManager {
         logger?.trace(`Moving/renaming file ${file.name} to ${path}`);
 
         try {
-            await app.fileManager.renameFile(file, path);
+            await Resolve<IApp>('IApp').fileManager.renameFile(file, path);
         } catch (error) {
             logger?.error(
                 `Moving/renaming file ${file.name} to ${path} failed: `,
@@ -158,8 +157,9 @@ export default class FileManager {
         filename: Filename,
         content?: string,
     ): Promise<TFile | undefined> {
-        const app = Global.getInstance().app;
-        const logger = Logging.getLogger('FileManager/createFile');
+        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+            'FileManager/createFile',
+        );
 
         const newFilename = new Filename(
             filename.basename,
@@ -172,7 +172,10 @@ export default class FileManager {
         );
 
         try {
-            const file = await app.vault.create(filePath, content ?? '');
+            const file = await Resolve<IApp>('IApp').vault.create(
+                filePath,
+                content ?? '',
+            );
 
             logger.debug(`Created file ${file.name} in ${path}`);
 

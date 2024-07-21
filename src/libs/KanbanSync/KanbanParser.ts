@@ -1,6 +1,6 @@
-import { TFile, App } from 'obsidian';
-import Global from 'src/classes/Global';
-import { Logging } from 'src/classes/Logging';
+import { TFile } from 'obsidian';
+import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
@@ -11,11 +11,12 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 export default class KanbanParser {
     @Inject('IStatusType_')
     private readonly _IStatusType: IStatusType_;
+    @Inject('IApp')
+    private readonly _IApp: IApp;
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('KanbanParser'))
+    private readonly _logger?: ILogger;
 
-    private readonly _logger = Logging.getLogger('KanbanParser');
     private readonly _file: TFile;
-    private readonly _app: App = Global.getInstance().app;
-
     private _isFileLoaded = false;
     private _contentFrontmatter: string;
     private _contentMarkdown: string;
@@ -36,7 +37,7 @@ export default class KanbanParser {
      * @returns True if the file was loaded successfully, false otherwise.
      */
     private async loadFile(): Promise<boolean> {
-        const content = await this._app.vault.read(this._file);
+        const content = await this._IApp.vault.read(this._file);
 
         const regex =
             /^---\n+([\s\S]*?)\n+---\n([\s\S]*)\n(%% kanban:settings[\s\S]*%%)$/m;
@@ -47,14 +48,14 @@ export default class KanbanParser {
             this._contentMarkdown = matches[2];
             this._contentKanbanSettings = matches[3];
 
-            this._logger.trace(
+            this._logger?.trace(
                 `Separated frontmatter, markdown content and kanban settings for file ${this._file.path}`,
             );
             this._isFileLoaded = true;
 
             return true;
         } else {
-            this._logger.error(
+            this._logger?.error(
                 `Could not separate frontmatter,markdown content and kanban settings for file ${this._file.path}`,
             );
 
@@ -102,13 +103,13 @@ export default class KanbanParser {
                     : this._IStatusType.getValidStatusFromTranslation(title);
 
             if (!status) {
-                this._logger.error(
+                this._logger?.error(
                     `Skipping heading '${title}' as it is not a valid status or 'Archiv'`,
                 );
                 continue;
             }
 
-            this._logger.trace(
+            this._logger?.trace(
                 `Found heading '${title}' as status '${status}'`,
             );
 
@@ -133,17 +134,17 @@ export default class KanbanParser {
             const itemContent = match[2];
             const linkedFilePath = match[3];
 
-            const linkedFile = this._app.metadataCache.getFirstLinkpathDest(
+            const linkedFile = this._IApp.metadataCache.getFirstLinkpathDest(
                 linkedFilePath,
                 this._file.path,
             );
 
             if (!linkedFile) {
-                this._logger.warn(
+                this._logger?.warn(
                     `No file found for list item '${itemContent}' linked to '${linkedFilePath}`,
                 );
             } else {
-                this._logger.trace(
+                this._logger?.trace(
                     `Found list item '${itemContent}' linked to '${linkedFile.path}'`,
                 );
             }

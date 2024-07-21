@@ -1,5 +1,6 @@
 import { Component, MarkdownRenderer } from 'obsidian';
-import Global from 'src/classes/Global';
+import { IApp } from 'src/interfaces/IApp';
+import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import BaseComponent from './BaseComponent';
 
@@ -119,10 +120,8 @@ export default class TextareaComponent extends BaseComponent {
          */
         this._onMarkdownPresentation = (value: string): Promise<void> => {
             if (HelperGeneral.containsMarkdown(value)) {
-                const app = Global.getInstance().app;
-
                 return MarkdownRenderer.render(
-                    app,
+                    Resolve<IApp>('IApp'),
                     value,
                     this._presentationSpan,
                     path,

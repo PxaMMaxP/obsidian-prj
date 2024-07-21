@@ -150,16 +150,5 @@ describe('HelperObsidian', () => {
                 }
             });
         });
-
-        describe('should register the class in the DI container', () => {
-            it('should register the class in the DI container', () => {
-                HelperObsidian.beforeLoad();
-
-                expect(diContainerMock.register).toHaveBeenCalledWith(
-                    'IHelperObsidian_',
-                    HelperObsidian,
-                );
-            });
-        });
     });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { App } from 'obsidian';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
@@ -10,16 +11,17 @@ import MetadataCache from '../libs/MetadataCache';
 
 /**
  * Represents the global instance for the plugin.
- * @todo Mark as deprecated.
+ * @deprecated This class is deprecated and will be removed in a future version.
+ * Use the dependency injection instead.
  */
 @Register('Global', true)
 export default class Global {
     static instance: Global;
 
-    @Inject('Prj')
+    @Inject('IPrj')
     plugin: Prj;
 
-    @Inject('App')
+    @Inject('IApp')
     app: App;
 
     @Inject('IMetadataCache')
