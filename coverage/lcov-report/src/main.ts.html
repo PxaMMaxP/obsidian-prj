@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/64</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
@@ -243,11 +243,7 @@
 <a name='L178'></a><a href='#L178'>178</a>
 <a name='L179'></a><a href='#L179'>179</a>
 <a name='L180'></a><a href='#L180'>180</a>
-<a name='L181'></a><a href='#L181'>181</a>
-<a name='L182'></a><a href='#L182'>182</a>
-<a name='L183'></a><a href='#L183'>183</a>
-<a name='L184'></a><a href='#L184'>184</a>
-<a name='L185'></a><a href='#L185'>185</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L181'></a><a href='#L181'>181</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -287,10 +283,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -408,18 +400,18 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -470,14 +462,10 @@ import type IMetadataCache from './interfaces/IMetadataCache';
         // eslint-disable-next-line no-console
 <span class="cstat-no" title="statement not covered" >        console.log("Loading plugin 'PRJ'");</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        DIContainer.getInstance().register('Prj', this, true);</span>
 <span class="cstat-no" title="statement not covered" >        DIContainer.getInstance().register('IPrj', this);</span>
-<span class="cstat-no" title="statement not covered" >        DIContainer.getInstance().register('App', this.app, true);</span>
 <span class="cstat-no" title="statement not covered" >        DIContainer.getInstance().register('IApp', this.app);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        await this.loadSettings();</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this.addSettingTab(new SettingTab(this.app, this));</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        LifecycleManager.register('before', 'init', <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
             // eslint-disable-next-line no-console
@@ -493,10 +481,10 @@ import type IMetadataCache from './interfaces/IMetadataCache';
 <span class="cstat-no" title="statement not covered" >        LifecycleManager.register('after', 'init', <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.onLayoutReady())</span>;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (this.app.workspace.layoutReady) {</span>
-<span class="cstat-no" title="statement not covered" >            new LifecycleManager().onInit();</span>
+<span class="cstat-no" title="statement not covered" >            await new LifecycleManager().onInit();</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this.app.workspace.onLayoutReady(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                new LifecycleManager().onInit();</span>
+<span class="cstat-no" title="statement not covered" >            this.app.workspace.onLayoutReady(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+<span class="cstat-no" title="statement not covered" >                await new LifecycleManager().onInit();</span>
             });
         }
     }
@@ -591,8 +579,6 @@ import type IMetadataCache from './interfaces/IMetadataCache';
         // eslint-disable-next-line no-console
 <span class="cstat-no" title="statement not covered" >        console.log("Unloading plugin 'PRJ'");</span>
 <span class="cstat-no" title="statement not covered" >        new LifecycleManager().onUnload();</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this._IMetadataCache.deconstructor();</span>
     }
 &nbsp;
     /**
@@ -606,6 +592,8 @@ import type IMetadataCache from './interfaces/IMetadataCache';
         );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        DIContainer.getInstance().register('IPrjSettings', this.settings);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.addSettingTab(new SettingTab(this.app, this));</span>
     }
 &nbsp;
     /**
@@ -622,7 +610,7 @@ import type IMetadataCache from './interfaces/IMetadataCache';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-21T12:46:10.057Z
+                at 2024-07-21T13:36:46.913Z
             </div>
         <script src="../prettify.js"></script>
         <script>

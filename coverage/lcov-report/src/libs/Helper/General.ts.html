@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.18% </span>
+                <span class="strong">91.93% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>59/64</span>
+                <span class='fraction'>57/62</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">91.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>11/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.1% </span>
+                <span class="strong">92.85% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>54/58</span>
+                <span class='fraction'>52/56</span>
             </div>
         
             
@@ -276,23 +276,10 @@
 <a name='L211'></a><a href='#L211'>211</a>
 <a name='L212'></a><a href='#L212'>212</a>
 <a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a>
-<a name='L224'></a><a href='#L224'>224</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L214'></a><a href='#L214'>214</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -320,13 +307,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -512,10 +492,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { moment } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import { DIContainer } from '../DependencyInjection/DIContainer';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Register } from '../DependencyInjection/decorators/Register';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 &nbsp;
 export interface IHelperGeneral_ {
     generateUID(input: string, length: number, sufix: string): string;
@@ -531,9 +509,8 @@ export interface IHelperGeneral_ {
  * @see {@link Singleton}
  * @see {@link Lifecycle}
  */
-@Lifecycle
-@ImplementsStatic&lt;ILifecycleObject&gt;()
 @ImplementsStatic&lt;IHelperGeneral_&gt;()
+@Register('IHelperGeneral_')
 export class HelperGeneral {
     private static readonly _md5 = require('crypto-js/md5');
 &nbsp;
@@ -541,15 +518,8 @@ export class HelperGeneral {
      * Create a Singleton instance of the HelperObsidian class.
      * @param dependencies The dependencies for the class.
      */
-<span class="fstat-no" title="function not covered" >    public constructor(d</span>ependencies?: IDIContainer) {
+<span class="fstat-no" title="function not covered" >    public constructor() {</span>
 <span class="cstat-no" title="statement not covered" >        throw new Error('This class is not meant to be instantiated');</span>
-    }
-&nbsp;
-    /**
-     * This method is called when the application is unloaded.
-     */
-    public static beforeLoad(): void {
-        DIContainer.getInstance().register('IHelperGeneral_', HelperGeneral);
     }
 &nbsp;
     /**
@@ -739,7 +709,7 @@ export class HelperGeneral {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-21T12:46:10.057Z
+                at 2024-07-21T13:36:46.913Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

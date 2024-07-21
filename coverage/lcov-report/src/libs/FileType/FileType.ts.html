@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96% </span>
+                <span class="strong">95.65% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>24/25</span>
+                <span class='fraction'>22/23</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/12</span>
+                <span class='fraction'>10/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">95.83% </span>
+                <span class="strong">95.45% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/24</span>
+                <span class='fraction'>21/22</span>
             </div>
         
             
@@ -195,27 +195,11 @@
 <a name='L130'></a><a href='#L130'>130</a>
 <a name='L131'></a><a href='#L131'>131</a>
 <a name='L132'></a><a href='#L132'>132</a>
-<a name='L133'></a><a href='#L133'>133</a>
-<a name='L134'></a><a href='#L134'>134</a>
-<a name='L135'></a><a href='#L135'>135</a>
-<a name='L136'></a><a href='#L136'>136</a>
-<a name='L137'></a><a href='#L137'>137</a>
-<a name='L138'></a><a href='#L138'>138</a>
-<a name='L139'></a><a href='#L139'>139</a>
-<a name='L140'></a><a href='#L140'>140</a>
-<a name='L141'></a><a href='#L141'>141</a>
-<a name='L142'></a><a href='#L142'>142</a>
-<a name='L143'></a><a href='#L143'>143</a>
-<a name='L144'></a><a href='#L144'>144</a>
-<a name='L145'></a><a href='#L145'>145</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L133'></a><a href='#L133'>133</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,14 +224,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -354,19 +330,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import BaseComplexDataType from 'src/libs/BaseComplexDataType/BaseComplexDataType';
 import { IBaseComplexDataType_ } from 'src/libs/BaseComplexDataType/interfaces/IBaseComplexDataType';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
+import { Register } from '../DependencyInjection/decorators/Register';
 &nbsp;
 /**
  * Represents the types used in the app for files.
- * @see {@link Lifecycle|@Lifecycle} for more details on lifecycle management.
  */
-@ImplementsStatic&lt;ILifecycleObject&gt;()
 @ImplementsStatic&lt;IBaseComplexDataType_&gt;()
 @ImplementsStatic&lt;IFileType_&gt;()
-@Lifecycle
+@Register('IFileType_')
 export class FileType extends BaseComplexDataType implements IFileType {
     /**
      * An array of valid file types.
@@ -384,14 +356,6 @@ export class FileType extends BaseComplexDataType implements IFileType {
      */
     public <span class="fstat-no" title="function not covered" >static </span>get types(): FileTypes[] {
 <span class="cstat-no" title="statement not covered" >        return FileType._fileTypes;</span>
-    }
-&nbsp;
-    /**
-     * Registers the FileType class in the DIContainer.
-     * @remarks This class has no dependencies. Therefore, it is registered in the beforeInit stage.
-     */
-    public static beforeInit(): void | Promise&lt;void&gt; {
-        DIContainer.getInstance().register('IFileType_', FileType);
     }
 &nbsp;
     private _value: FileTypes | undefined;
@@ -502,7 +466,7 @@ export class FileType extends BaseComplexDataType implements IFileType {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-21T12:46:10.057Z
+                at 2024-07-21T13:36:46.913Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
