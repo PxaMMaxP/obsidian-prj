@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/52</span>
             </div>
         
             
@@ -231,14 +231,7 @@
 <a name='L166'></a><a href='#L166'>166</a>
 <a name='L167'></a><a href='#L167'>167</a>
 <a name='L168'></a><a href='#L168'>168</a>
-<a name='L169'></a><a href='#L169'>169</a>
-<a name='L170'></a><a href='#L170'>170</a>
-<a name='L171'></a><a href='#L171'>171</a>
-<a name='L172'></a><a href='#L172'>172</a>
-<a name='L173'></a><a href='#L173'>173</a>
-<a name='L174'></a><a href='#L174'>174</a>
-<a name='L175'></a><a href='#L175'>175</a>
-<a name='L176'></a><a href='#L176'>176</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L169'></a><a href='#L169'>169</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -246,6 +239,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -264,8 +258,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -274,17 +271,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -416,17 +402,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { Menu, TAbstractFile, TFile } from 'obsidian';</span>
 <span class="cstat-no" title="statement not covered" >import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';</span>
 <span class="cstat-no" title="statement not covered" >import { Singleton } from 'src/classes/decorators/Singleton';</span>
-import IMetadataCache from 'src/interfaces/IMetadataCache';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 <span class="cstat-no" title="statement not covered" >import { FileType } from 'src/libs/FileType/FileType';</span>
 <span class="cstat-no" title="statement not covered" >import { DocumentModel } from 'src/models/DocumentModel';</span>
 <span class="cstat-no" title="statement not covered" >import { ContextMenu } from './ContextMenu';</span>
 import { IContextMenu } from './interfaces/IContextMenu';
+<span class="cstat-no" title="statement not covered" >import { Inject } from '../DependencyInjection/decorators/Inject';</span>
 import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
-import { IHelperObsidian_ } from '../Helper/Obsidian';
+import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 <span class="cstat-no" title="statement not covered" >import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';</span>
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
 import { FileMetadata } from '../MetadataCache';
-import ITranslationService from '../TranslationService/interfaces/ITranslationService';
+import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 &nbsp;
 /**
  * Represents a class for retrieving metadata for a file.
@@ -438,9 +425,12 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >GetMetadata<span class="cstat-no" title="statement not covered" > </span>extends ContextMenu implements IContextMenu {</span></span>
     protected <span class="cstat-no" title="statement not covered" >_bindContextMenu = this.onContextMenu.bind(this);</span>
-    private readonly _translationService: ITranslationService;
-    private readonly _metadataCache: IMetadataCache;
-    private readonly _helperObsidian: IHelperObsidian_;
+    @Inject('ITranslationService')
+    private readonly <span class="cstat-no" title="statement not covered" >_ITranslationService: ITranslationService;</span>
+    @Inject('IMetadataCache')
+    private readonly <span class="cstat-no" title="statement not covered" >_IMetadataCache: IMetadataCache;</span>
+    @Inject('IHelperObsidian')
+    private readonly <span class="cstat-no" title="statement not covered" >_IHelperObsidian: IHelperObsidian;</span>
     protected <span class="cstat-no" title="statement not covered" >_hasEventsRegistered = false;</span>
 &nbsp;
     /**
@@ -448,18 +438,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
      * @param dependencies The dependencies for the context menu.
      */
 <span class="fstat-no" title="function not covered" >    constructor(d</span>ependencies?: IDIContainer) {
-<span class="cstat-no" title="statement not covered" >        super(dependencies);</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this._translationService =</span>
-            this._dependencies.resolve&lt;ITranslationService&gt;(
-                'ITranslationService',
-            );
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this._metadataCache =</span>
-            this._dependencies.resolve&lt;IMetadataCache&gt;('IMetadataCache');
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this._helperObsidian =</span>
-            this._dependencies.resolve&lt;IHelperObsidian_&gt;('IHelperObsidian_');
+<span class="cstat-no" title="statement not covered" >        super();</span>
     }
 &nbsp;
     /**
@@ -482,11 +461,11 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
      * Initializes the context menu.
      */
     protected <span class="fstat-no" title="function not covered" >onConstruction(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this._app.workspace.on('file-menu', this._bindContextMenu);</span>
+<span class="cstat-no" title="statement not covered" >        this._IApp.workspace.on('file-menu', this._bindContextMenu);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this._plugin.addCommand({</span>
+<span class="cstat-no" title="statement not covered" >        this._IPrj.addCommand({</span>
             id: 'get-metadata-file',
-            name: this._translationService.get('Show Metadata File'),
+            name: this._ITranslationService.get('Show Metadata File'),
             /**
              * Callback function for the 'get-metadata-file' command.
              */
@@ -500,7 +479,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
      * Cleans up the context menu.
      */
     protected <span class="fstat-no" title="function not covered" >onDeconstruction(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this._app.workspace.off('file-menu', this._bindContextMenu);</span>
+<span class="cstat-no" title="statement not covered" >        this._IApp.workspace.off('file-menu', this._bindContextMenu);</span>
     }
 &nbsp;
     /**
@@ -525,11 +504,11 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            menu.addItem(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >                item.setTitle(</span>
-                    this._translationService.get('Show Metadata File'),
+                    this._ITranslationService.get('Show Metadata File'),
                 )
                     .setIcon(document.getCorospondingSymbol())
                     .onClick(<span class="fstat-no" title="function not covered" >async () =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >                        await this._helperObsidian.openFile(document.file);</span>
+<span class="cstat-no" title="statement not covered" >                        await this._IHelperObsidian.openFile(document.file);</span>
                     });
             });
         }
@@ -543,7 +522,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
     private <span class="fstat-no" title="function not covered" >getCorrespondingMetadataFile(</span>
         file: TFile,
     ): FileMetadata | undefined {
-<span class="cstat-no" title="statement not covered" >        return this._metadataCache.cache.find(<span class="fstat-no" title="function not covered" >(m</span>etadata) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        return this._IMetadataCache.cache.find(<span class="fstat-no" title="function not covered" >(m</span>etadata) =&gt; {</span>
             const type = <span class="cstat-no" title="statement not covered" >new FileType(metadata.metadata.frontmatter?.type);</span>
 &nbsp;
             const fileLink = <span class="cstat-no" title="statement not covered" >metadata.metadata.frontmatter?.file as</span>
@@ -563,7 +542,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
      * Opens the metadata file for the active (e.g. pdf) file.
      */
     public async <span class="fstat-no" title="function not covered" >invoke(</span>): Promise&lt;void&gt; {
-        const workspace = <span class="cstat-no" title="statement not covered" >this._app.workspace;</span>
+        const workspace = <span class="cstat-no" title="statement not covered" >this._IApp.workspace;</span>
         const activeFile = <span class="cstat-no" title="statement not covered" >workspace.getActiveFile();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
@@ -585,7 +564,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
         const document = <span class="cstat-no" title="statement not covered" >new DocumentModel(metadataFile.file);</span>
-<span class="cstat-no" title="statement not covered" >        await this._helperObsidian.openFile(document.file);</span>
+<span class="cstat-no" title="statement not covered" >        await this._IHelperObsidian.openFile(document.file);</span>
     }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -595,7 +574,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

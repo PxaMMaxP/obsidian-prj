@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/79</span>
             </div>
         
             
@@ -1100,7 +1100,7 @@ import { FileMetadata } from '../MetadataCache';
         tags: [],
         reactOnActiveFile: false,
         filter: ['Documents'],
-        maxDocuments: this._global.settings.defaultMaxShow,
+        maxDocuments: this._IPrjSettings.defaultMaxShow,
         search: undefined,
         searchText: undefined,
         batchSize: 8,
@@ -1181,7 +1181,7 @@ import { FileMetadata } from '../MetadataCache';
 <span class="cstat-no" title="statement not covered" >        this.normalizeHeader();</span>
         const endTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this._logger.debug(</span>
+<span class="cstat-no" title="statement not covered" >        this._logger?.debug(</span>
             `Redraw Documents (for ${this._models.length} Docs.) runs for ${endTime - startTime}ms`,
         );
     }
@@ -1213,7 +1213,7 @@ import { FileMetadata } from '../MetadataCache';
         const documentFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
             this._component,
             'Documents',
-            this._globalSettings.documentSettings.symbol,
+            this._IPrjSettings.documentSettings.symbol,
             this._settings.filter.includes('Documents'),
             this.onFilterButton.bind(this),
         );
@@ -1222,7 +1222,7 @@ import { FileMetadata } from '../MetadataCache';
         const hideDocumentFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
             this._component,
             'HideDocuments',
-            this._globalSettings.documentSettings.hideSymbol,
+            this._IPrjSettings.documentSettings.hideSymbol,
             this._settings.filter.includes('HideDocuments'),
             this.onFilterButton.bind(this),
         );
@@ -1231,7 +1231,7 @@ import { FileMetadata } from '../MetadataCache';
         const clusterFilterButton = <span class="cstat-no" title="statement not covered" >FilterButton.create(</span>
             this._component,
             'Cluster',
-            this._globalSettings.documentSettings.clusterSymbol,
+            this._IPrjSettings.documentSettings.clusterSymbol,
             this._settings.filter.includes('Cluster'),
             this.onFilterButton.bind(this),
         );
@@ -1240,7 +1240,7 @@ import { FileMetadata } from '../MetadataCache';
         const maxDocuments = <span class="cstat-no" title="statement not covered" >MaxShownModelsInput.create(</span>
             this._component,
             this._settings.maxDocuments,
-            this._global.settings.defaultMaxShow,
+            this._IPrjSettings.defaultMaxShow,
             this.onMaxDocumentsChange.bind(this),
         );
 <span class="cstat-no" title="statement not covered" >        headerFilterButtons.appendChild(maxDocuments);</span>
@@ -1377,7 +1377,7 @@ import { FileMetadata } from '../MetadataCache';
             date,
             this._component,
             Lng.gt('DocumentDate'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
 <span class="fstat-no" title="function not covered" >            () =</span>&gt; <span class="cstat-no" title="statement not covered" >documentModel.data.date ?? 'na',</span>
 <span class="fstat-no" title="function not covered" >            (v</span>alue: string) =&gt; (<span class="cstat-no" title="statement not covered" >documentModel.data.date = value)</span>,
         );
@@ -1414,8 +1414,8 @@ import { FileMetadata } from '../MetadataCache';
             summaryRelatedFiles,
             this._component,
             documentModel,
-            this._globalSettings.noneSymbol,
-            this._global.settings.dateFormatShort,
+            this._IPrjSettings.noneSymbol,
+            this._IPrjSettings.dateFormatShort,
         );
 &nbsp;
         // Row 5 -- Date of delivery
@@ -1426,7 +1426,7 @@ import { FileMetadata } from '../MetadataCache';
             deliveryDate,
             this._component,
             Lng.gt('DeliveryDate'),
-            this._global.settings.dateFormat,
+            this._IPrjSettings.dateFormat,
 <span class="fstat-no" title="function not covered" >            () =</span>&gt; <span class="cstat-no" title="statement not covered" >documentModel.data.dateOfDelivery ?? 'na',</span>
 <span class="fstat-no" title="function not covered" >            (v</span>alue: string) =&gt; (<span class="cstat-no" title="statement not covered" >documentModel.data.dateOfDelivery = value)</span>,
         );
@@ -1582,7 +1582,7 @@ type FilteredDocument = 'Documents' | 'HideDocuments' | 'Cluster';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/29</span>
+                <span class='fraction'>0/30</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -161,17 +161,12 @@
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
-<a name='L99'></a><a href='#L99'>99</a>
-<a name='L100'></a><a href='#L100'>100</a>
-<a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a>
-<a name='L103'></a><a href='#L103'>103</a>
-<a name='L104'></a><a href='#L104'>104</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -187,18 +182,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -274,10 +264,10 @@
 <span class="cstat-no" title="statement not covered" >import { Singleton } from 'src/classes/decorators/Singleton';</span>
 <span class="cstat-no" title="statement not covered" >import { ContextMenu } from './ContextMenu';</span>
 import { IContextMenu } from './interfaces/IContextMenu';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+<span class="cstat-no" title="statement not covered" >import { Inject } from '../DependencyInjection/decorators/Inject';</span>
 <span class="cstat-no" title="statement not covered" >import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';</span>
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleManager';
-import ITranslationService from '../TranslationService/interfaces/ITranslationService';
+import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 &nbsp;
 /**
  * Represents a context menu for copying markdown links.
@@ -289,19 +279,14 @@ import ITranslationService from '../TranslationService/interfaces/ITranslationSe
 @Singleton
 export class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >CopyMarkdownLink<span class="cstat-no" title="statement not covered" > </span>extends ContextMenu implements IContextMenu {</span></span>
     protected <span class="cstat-no" title="statement not covered" >_bindContextMenu = this.onContextMenu.bind(this);</span>
-    private readonly _translationService: ITranslationService;
+    @Inject('ITranslationService')
+    private readonly <span class="cstat-no" title="statement not covered" >_translationService: ITranslationService;</span>
 &nbsp;
     /**
      * Creates an instance of CopyMarkdownLink.
-     * @param dependencies The dependencies for the context menu.
      */
-<span class="fstat-no" title="function not covered" >    constructor(d</span>ependencies?: IDIContainer) {
-<span class="cstat-no" title="statement not covered" >        super(dependencies);</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >        this._translationService =</span>
-            this._dependencies.resolve&lt;ITranslationService&gt;(
-                'ITranslationService',
-            );
+<span class="fstat-no" title="function not covered" >    constructor() {</span>
+<span class="cstat-no" title="statement not covered" >        super();</span>
     }
 &nbsp;
     /**
@@ -324,14 +309,14 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
      * Initializes the context menu.
      */
     protected <span class="fstat-no" title="function not covered" >onConstruction(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this._app.workspace.on('file-menu', this._bindContextMenu);</span>
+<span class="cstat-no" title="statement not covered" >        this._IApp.workspace.on('file-menu', this._bindContextMenu);</span>
     }
 &nbsp;
     /**
      * Cleans up the context menu.
      */
     protected <span class="fstat-no" title="function not covered" >onDeconstruction(</span>): void {
-<span class="cstat-no" title="statement not covered" >        this._app.workspace.off('file-menu', this._bindContextMenu);</span>
+<span class="cstat-no" title="statement not covered" >        this._IApp.workspace.off('file-menu', this._bindContextMenu);</span>
     }
 &nbsp;
     /**
@@ -344,7 +329,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
 &nbsp;
-        const fileText = <span class="cstat-no" title="statement not covered" >this._app.metadataCache.fileToLinktext(</span>
+        const fileText = <span class="cstat-no" title="statement not covered" >this._IApp.metadataCache.fileToLinktext(</span>
             file,
             file.path,
         );
@@ -379,7 +364,7 @@ export class <span class="cstat-no" title="statement not covered" ><span class="
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -32,14 +32,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/59</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -282,23 +282,29 @@
 <a name='L217'></a><a href='#L217'>217</a>
 <a name='L218'></a><a href='#L218'>218</a>
 <a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -503,12 +509,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CachedMetadata, TFile } from 'obsidian';
 <span class="cstat-no" title="statement not covered" >import API from 'src/classes/API';</span>
-<span class="cstat-no" title="statement not covered" >import Global from 'src/classes/Global';</span>
-<span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 <span class="cstat-no" title="statement not covered" >import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';</span>
 import { KanbanBoard } from './KanbanModels';
 <span class="cstat-no" title="statement not covered" >import KanbanParser from './KanbanParser';</span>
 <span class="cstat-no" title="statement not covered" >import { Inject } from '../DependencyInjection/decorators/Inject';</span>
+<span class="cstat-no" title="statement not covered" >import { Resolve } from '../DependencyInjection/functions/Resolve';</span>
 import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 &nbsp;
 /**
@@ -517,9 +524,11 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 <span class="cstat-no" title="statement not covered" >export default class K</span>anbanSync {
     @Inject('IStatusType_')
     private readonly <span class="cstat-no" title="statement not covered" >_IStatusType: IStatusType_;</span>
-    private readonly <span class="cstat-no" title="statement not covered" >_logger = Logging.getLogger('KanbanSync');</span>
+    @Inject('ILogger_', <span class="fstat-no" title="function not covered" >(x</span>: ILogger_) =&gt; <span class="cstat-no" title="statement not covered" >x.getLogger('KanbanSync'))</span>
+    private readonly <span class="cstat-no" title="statement not covered" >_logger?: ILogger;</span>
 &nbsp;
-    private readonly <span class="cstat-no" title="statement not covered" >_metadataCache = Global.getInstance().metadataCache;</span>
+    @Inject('IMetadataCache')
+    private readonly <span class="cstat-no" title="statement not covered" >_IMetadataCache!: IMetadataCache;</span>
     private readonly _kanbanFile: TFile;
     private readonly _kanbanMetadata: CachedMetadata | undefined;
     /**
@@ -540,8 +549,8 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 <span class="cstat-no" title="statement not covered" >        this._kanbanFile = kanbanFile;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._kanbanMetadata =</span>
-            this._metadataCache.getEntry(kanbanFile)?.metadata;
-<span class="cstat-no" title="statement not covered" >        this._logger.trace(`KanbanSync:`, this._kanbanMetadata);</span>
+            this._IMetadataCache.getEntry(kanbanFile)?.metadata;
+<span class="cstat-no" title="statement not covered" >        this._logger?.trace(`KanbanSync:`, this._kanbanMetadata);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (!changedFile) {</span>
 <span class="cstat-no" title="statement not covered" >            this._syncMode = 'out';</span>
@@ -567,12 +576,12 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 <span class="cstat-no" title="statement not covered" >        await this.loadKanbanFile();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (this._syncMode === 'out') {</span>
-<span class="cstat-no" title="statement not covered" >            this._logger.debug(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.debug(</span>
                 `Syncing files linked to kanban ${this._kanbanFile.path}`,
             );
 <span class="cstat-no" title="statement not covered" >            this.syncFiles();</span>
         } else {
-<span class="cstat-no" title="statement not covered" >            this._logger.debug(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.debug(</span>
                 `Syncing kanban ${this._kanbanFile.path} with changed file ${this._changedFile?.path}`,
             );
 <span class="cstat-no" title="statement not covered" >            await this.syncKanban();</span>
@@ -590,7 +599,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
         const card = <span class="cstat-no" title="statement not covered" >this._kanbankBoard?.getCardItemPerFile(this._changedFile);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!card) {</span>
-<span class="cstat-no" title="statement not covered" >            this._logger.warn(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.warn(</span>
                 `Could not find card for file '${this._changedFile.path}'`,
             );
 &nbsp;
@@ -598,7 +607,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
         }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._kanbankBoard) {</span>
-<span class="cstat-no" title="statement not covered" >            this._logger.warn(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.warn(</span>
                 `Could not find kanban board for file '${this._changedFile.path}'`,
             );
 &nbsp;
@@ -610,7 +619,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
         )?.data.status?.value;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!newHeadingState) {</span>
-<span class="cstat-no" title="statement not covered" >            this._logger.warn(</span>
+<span class="cstat-no" title="statement not covered" >            this._logger?.warn(</span>
                 `Could not find status for file '${this._changedFile.path}'`,
             );
 &nbsp;
@@ -675,7 +684,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
      * Registers the event listeners for KanbanSync.
      */
     public <span class="fstat-no" title="function not covered" >static </span>registerEvent(): void {
-        const metadataCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().metadataCache;</span>
+        const metadataCache = <span class="cstat-no" title="statement not covered" >Resolve&lt;IMetadataCache&gt;('IMetadataCache');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        metadataCache.on('prj-task-management-file-changed-event', <span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            this.checkIfKanbanIsLinkedEvent(file);</span>
@@ -704,7 +713,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
      * @returns An array of TFile objects representing the linked Kanban files.
      */
     public <span class="fstat-no" title="function not covered" >static </span>getLinkedKanbanFiles(file: TFile): TFile[] {
-        const metadataCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().metadataCache;</span>
+        const metadataCache = <span class="cstat-no" title="statement not covered" >Resolve&lt;IMetadataCache&gt;('IMetadataCache');</span>
         const linkedFiles = <span class="cstat-no" title="statement not covered" >metadataCache.getBacklinks(file);</span>
 &nbsp;
         const kanbanFiles = <span class="cstat-no" title="statement not covered" >linkedFiles.filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; {</span>
@@ -727,7 +736,7 @@ import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

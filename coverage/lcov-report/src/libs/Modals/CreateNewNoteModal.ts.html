@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/61</span>
             </div>
         
             
@@ -278,27 +278,12 @@
 <a name='L213'></a><a href='#L213'>213</a>
 <a name='L214'></a><a href='#L214'>214</a>
 <a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -309,8 +294,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -495,9 +501,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { TFile } from 'obsidian';</span>
 <span class="cstat-no" title="statement not covered" >import API from 'src/classes/API';</span>
-<span class="cstat-no" title="statement not covered" >import Global from 'src/classes/Global';</span>
 <span class="cstat-no" title="statement not covered" >import Lng from 'src/classes/Lng';</span>
-<span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
+import { ILogger_ } from 'src/interfaces/ILogger';
+import { IPrj } from 'src/interfaces/IPrj';
 import PrjNoteData from 'src/models/Data/PrjNoteData';
 <span class="cstat-no" title="statement not covered" >import { NoteModel } from 'src/models/NoteModel';</span>
 import {
@@ -507,6 +513,7 @@ import {
     IResultData,
 } from 'src/types/ModalFormType';
 <span class="cstat-no" title="statement not covered" >import BaseModalForm from './BaseModalForm';</span>
+<span class="cstat-no" title="statement not covered" >import { Resolve } from '../DependencyInjection/functions/Resolve';</span>
 <span class="cstat-no" title="statement not covered" >import { HelperObsidian } from '../Helper/Obsidian';</span>
 &nbsp;
 /**
@@ -525,11 +532,13 @@ import {
      * @remarks No cleanup needed
      */
     public <span class="fstat-no" title="function not covered" >static </span>registerCommand(): void {
-        const global = <span class="cstat-no" title="statement not covered" >Global.getInstance();</span>
-        const logger = <span class="cstat-no" title="statement not covered" >Logging.getLogger('CreateNewNoteModal');</span>
+        const plugin = <span class="cstat-no" title="statement not covered" >Resolve&lt;IPrj&gt;('IPrj');</span>
+&nbsp;
+        const logger =
+<span class="cstat-no" title="statement not covered" >            Resolve&lt;ILogger_&gt;('ILogger_').getLogger('CreateNewNoteModal');</span>
 <span class="cstat-no" title="statement not covered" >        logger.trace("Registering 'CreateNewNoteModal' commands");</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        global.plugin.addCommand({</span>
+<span class="cstat-no" title="statement not covered" >        plugin.addCommand({</span>
             id: 'create-new-note-file',
             name: `${Lng.gt('Create new note')}`,
             /**
@@ -557,7 +566,7 @@ import {
         preset?: Partial&lt;PrjNoteData&gt;,
     ): Promise&lt;IFormResult | undefined&gt; {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.isApiAvailable()) <span class="cstat-no" title="statement not covered" >return;</span></span>
-<span class="cstat-no" title="statement not covered" >        this._logger.trace("Opening 'CreateNewNoteModal' form");</span>
+<span class="cstat-no" title="statement not covered" >        this._logger?.trace("Opening 'CreateNewNoteModal' form");</span>
 &nbsp;
         const convertedPreset: IResultData =
 <span class="cstat-no" title="statement not covered" >            this.convertPresetToIResultData(preset);</span>
@@ -583,7 +592,7 @@ import {
             values: convertedPreset,
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        this._logger.trace(</span>
+<span class="cstat-no" title="statement not covered" >        this._logger?.trace(</span>
             `From closes with status '${result.status}' and data:`,
             result.data,
         );
@@ -609,7 +618,7 @@ import {
 &nbsp;
         const folder = <span class="cstat-no" title="statement not covered" >existingFile?.parent?.path</span>
             ? existingFile.parent?.path
-            : this._settings.noteSettings.defaultFolder;
+            : this._IPrjSettings.noteSettings.defaultFolder;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        note.data = result.data as Partial&lt;PrjNoteData&gt;;</span>
 &nbsp;
@@ -618,15 +627,15 @@ import {
             let template = <span class="cstat-no" title="statement not covered" >'';</span>
 &nbsp;
             // If a template is set, use it
-            const templateFile = <span class="cstat-no" title="statement not covered" >this._app.vault.getAbstractFileByPath(</span>
-                this._settings.noteSettings.template,
+            const templateFile = <span class="cstat-no" title="statement not covered" >this._IApp.vault.getAbstractFileByPath(</span>
+                this._IPrjSettings.noteSettings.template,
             );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (templateFile &amp;&amp; templateFile instanceof TFile) {</span>
 <span class="cstat-no" title="statement not covered" >                try {</span>
-<span class="cstat-no" title="statement not covered" >                    template = await this._app.vault.read(templateFile);</span>
+<span class="cstat-no" title="statement not covered" >                    template = await this._IApp.vault.read(templateFile);</span>
                 } catch (error) {
-<span class="cstat-no" title="statement not covered" >                    this._logger.error(</span>
+<span class="cstat-no" title="statement not covered" >                    this._logger?.error(</span>
                         `Error reading template file '${templateFile.path}'`,
                         error,
                     );
@@ -715,7 +724,7 @@ import {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

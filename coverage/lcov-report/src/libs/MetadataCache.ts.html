@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/175</span>
+                <span class='fraction'>0/176</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/170</span>
+                <span class='fraction'>0/171</span>
             </div>
         
             
@@ -737,7 +737,15 @@
 <a name='L672'></a><a href='#L672'>672</a>
 <a name='L673'></a><a href='#L673'>673</a>
 <a name='L674'></a><a href='#L674'>674</a>
-<a name='L675'></a><a href='#L675'>675</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L675'></a><a href='#L675'>675</a>
+<a name='L676'></a><a href='#L676'>676</a>
+<a name='L677'></a><a href='#L677'>677</a>
+<a name='L678'></a><a href='#L678'>678</a>
+<a name='L679'></a><a href='#L679'>679</a>
+<a name='L680'></a><a href='#L680'>680</a>
+<a name='L681'></a><a href='#L681'>681</a>
+<a name='L682'></a><a href='#L682'>682</a>
+<a name='L683'></a><a href='#L683'>683</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -845,6 +853,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1442,8 +1458,8 @@ import type { IPrjSettings } from 'src/types/PrjSettings';
 @RegisterInstance('IMetadataCache')
 export default class <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >MetadataCache<span class="cstat-no" title="statement not covered" > implements IMetadataCache {</span></span></span>
     private readonly _eventHandler: GenericEvents&lt;IMetadataCacheEvents&gt;;
-    @Inject('App')
-    private readonly <span class="cstat-no" title="statement not covered" >_app!: App;</span>
+    @Inject('IApp')
+    private readonly <span class="cstat-no" title="statement not covered" >_IApp!: App;</span>
     @Inject('IPrjSettings')
     private readonly <span class="cstat-no" title="statement not covered" >_settings!: IPrjSettings;</span>
     @Inject('ILogger_', <span class="fstat-no" title="function not covered" >(x</span>: ILogger_) =&gt; <span class="cstat-no" title="statement not covered" >x.getLogger('MetadataCache'),</span> false)
@@ -1525,6 +1541,14 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * Deconstructor for the MetadataCache class
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
+    public <span class="fstat-no" title="function not covered" >deconstructor(</span>): void {
+<span class="cstat-no" title="statement not covered" >        this.deconstructor();</span>
+    }
+&nbsp;
+    /**
+     * Deconstructor for the MetadataCache class
+     * @description This method is used to unregister the event handlers for the metadata cache.
+     */
 <span class="fstat-no" title="function not covered" >    static </span>deconstructor(): void {
         const logger = <span class="cstat-no" title="statement not covered" >Logging.getLogger('MetadataCache');</span>
 &nbsp;
@@ -1537,14 +1561,14 @@ export default class <span class="cstat-no" title="statement not covered" ><span
         const instance = <span class="cstat-no" title="statement not covered" >MetadataCache.instance;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (instance._hasEventsRegistered) {</span>
-<span class="cstat-no" title="statement not covered" >            instance._app.vault.off('rename', instance.renameEventHandler);</span>
+<span class="cstat-no" title="statement not covered" >            instance._IApp.vault.off('rename', instance.renameEventHandler);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            instance._app.metadataCache.off(</span>
+<span class="cstat-no" title="statement not covered" >            instance._IApp.metadataCache.off(</span>
                 'changed',
                 instance.changedEventHandler,
             );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            instance._app.metadataCache.off(</span>
+<span class="cstat-no" title="statement not covered" >            instance._IApp.metadataCache.off(</span>
                 'deleted',
                 instance.deleteEventHandler,
             );
@@ -1798,7 +1822,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
         const startTime = <span class="cstat-no" title="statement not covered" >Date.now();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        this._metadataCache = new Map&lt;string, FileMetadata&gt;();</span>
-        const allFiles = <span class="cstat-no" title="statement not covered" >this._app.vault.getFiles();</span>
+        const allFiles = <span class="cstat-no" title="statement not covered" >this._IApp.vault.getFiles();</span>
 &nbsp;
         const addEntryPromises = <span class="cstat-no" title="statement not covered" >allFiles.map(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; <span class="cstat-no" title="statement not covered" >this.addEntry(file))</span>;</span>
 &nbsp;
@@ -1880,7 +1904,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      * @returns The metadata cache entry for the file link.
      */
     public <span class="fstat-no" title="function not covered" >getEntryByLink(</span>link: string, path = <span class="branch-0 cbranch-no" title="branch not covered" >'')</span>: FileMetadata | undefined {
-        const file = <span class="cstat-no" title="statement not covered" >this._app.metadataCache.getFirstLinkpathDest(link, path);</span>
+        const file = <span class="cstat-no" title="statement not covered" >this._IApp.metadataCache.getFirstLinkpathDest(link, path);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        if (file) {</span>
 <span class="cstat-no" title="statement not covered" >            return this.getEntry(file);</span>
@@ -1899,7 +1923,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      */
     public <span class="fstat-no" title="function not covered" >getFileByLink(</span>link: string, path = <span class="branch-0 cbranch-no" title="branch not covered" >'')</span>: TFile | undefined {
 <span class="cstat-no" title="statement not covered" >        return (</span>
-            this._app.metadataCache.getFirstLinkpathDest(link, path) ??
+            this._IApp.metadataCache.getFirstLinkpathDest(link, path) ??
             undefined
         );
     }
@@ -1913,7 +1937,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
         const filesWithBacklinks: TFile[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        for (const [path, fileCache] of Object.entries(</span>
-            this._app.metadataCache.resolvedLinks,
+            this._IApp.metadataCache.resolvedLinks,
         )) {
 <span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (fileCache[file.path]) {</span>
                 const file = <span class="cstat-no" title="statement not covered" >this.getEntryByPath(path);</span>
@@ -1930,7 +1954,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      */
     private async <span class="fstat-no" title="function not covered" >addEntry(</span>file: TFile): Promise&lt;void&gt; {
 <span class="cstat-no" title="statement not covered" >        if (this._metadataCache) {</span>
-            const metadata = <span class="cstat-no" title="statement not covered" >this._app.metadataCache.getFileCache(file);</span>
+            const metadata = <span class="cstat-no" title="statement not covered" >this._IApp.metadataCache.getFileCache(file);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            if (metadata) {</span>
 <span class="cstat-no" title="statement not covered" >                this._metadataCache.set(file.path, { file, metadata });</span>
@@ -2067,7 +2091,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      */
     private <span class="fstat-no" title="function not covered" >redrawMarkdownView(</span>): void {
 <span class="cstat-no" title="statement not covered" >        this._logger?.debug(`Redrawing markdown view`);</span>
-<span class="cstat-no" title="statement not covered" >        this._app.workspace.updateOptions();</span>
+<span class="cstat-no" title="statement not covered" >        this._IApp.workspace.updateOptions();</span>
     }
 &nbsp;
     /**
@@ -2075,9 +2099,9 @@ export default class <span class="cstat-no" title="statement not covered" ><span
      */
     private <span class="fstat-no" title="function not covered" >registerEvents(</span>): void {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!this._hasEventsRegistered) {</span>
-<span class="cstat-no" title="statement not covered" >            this._app.vault.on('rename', this.renameEventHandler);</span>
-<span class="cstat-no" title="statement not covered" >            this._app.metadataCache.on('changed', this.changedEventHandler);</span>
-<span class="cstat-no" title="statement not covered" >            this._app.metadataCache.on('deleted', this.deleteEventHandler);</span>
+<span class="cstat-no" title="statement not covered" >            this._IApp.vault.on('rename', this.renameEventHandler);</span>
+<span class="cstat-no" title="statement not covered" >            this._IApp.metadataCache.on('changed', this.changedEventHandler);</span>
+<span class="cstat-no" title="statement not covered" >            this._IApp.metadataCache.on('deleted', this.deleteEventHandler);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >            this._hasEventsRegistered = true;</span>
 &nbsp;
@@ -2092,7 +2116,7 @@ export default class <span class="cstat-no" title="statement not covered" ><span
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

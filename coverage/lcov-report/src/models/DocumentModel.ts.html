@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/165</span>
+                <span class='fraction'>0/168</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/162</span>
+                <span class='fraction'>0/165</span>
             </div>
         
             
@@ -550,23 +550,36 @@
 <a name='L485'></a><a href='#L485'>485</a>
 <a name='L486'></a><a href='#L486'>486</a>
 <a name='L487'></a><a href='#L487'>487</a>
-<a name='L488'></a><a href='#L488'>488</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L488'></a><a href='#L488'>488</a>
+<a name='L489'></a><a href='#L489'>489</a>
+<a name='L490'></a><a href='#L490'>490</a>
+<a name='L491'></a><a href='#L491'>491</a>
+<a name='L492'></a><a href='#L492'>492</a>
+<a name='L493'></a><a href='#L493'>493</a>
+<a name='L494'></a><a href='#L494'>494</a>
+<a name='L495'></a><a href='#L495'>495</a>
+<a name='L496'></a><a href='#L496'>496</a>
+<a name='L497'></a><a href='#L497'>497</a>
+<a name='L498'></a><a href='#L498'>498</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -764,12 +777,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1041,15 +1061,18 @@
 <span class="cstat-no" title="statement not covered" >import Lng from 'src/classes/Lng';</span>
 <span class="cstat-no" title="statement not covered" >import { Logging } from 'src/classes/Logging';</span>
 <span class="cstat-no" title="statement not covered" >import { Path } from 'src/classes/Path';</span>
+import type { IApp } from 'src/interfaces/IApp';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
+<span class="cstat-no" title="statement not covered" >import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';</span>
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 <span class="cstat-no" title="statement not covered" >import FileManager, { Filename } from 'src/libs/FileManager';</span>
 <span class="cstat-no" title="statement not covered" >import { HelperGeneral } from 'src/libs/Helper/General';</span>
 import CreateNewMetadataModal from 'src/libs/Modals/CreateNewMetadataModal';
 <span class="cstat-no" title="statement not covered" >import { Wikilink } from 'src/libs/Wikilink/Wikilink';</span>
+import type { IPrjSettings } from 'src/types/PrjSettings';
 <span class="cstat-no" title="statement not covered" >import { PrjDocumentData } from './Data/PrjDocumentData';</span>
 <span class="cstat-no" title="statement not covered" >import { FileModel } from './FileModel';</span>
 import IPrjModel from './interfaces/IPrjModel';
-<span class="cstat-no" title="statement not covered" >import Global from '../classes/Global';</span>
 &nbsp;
 /**
  * Represents the model for a document.
@@ -1136,7 +1159,7 @@ import IPrjModel from './interfaces/IPrjModel';
      */
     public async <span class="fstat-no" title="function not covered" >getFileContents(</span>): Promise&lt;string | undefined&gt; {
 <span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            return this._App.vault.read(this.file);</span>
+<span class="cstat-no" title="statement not covered" >            return this._IApp.vault.read(this.file);</span>
         } catch (error) {
 <span class="cstat-no" title="statement not covered" >            this._logger?.error(error);</span>
         }
@@ -1225,7 +1248,7 @@ import IPrjModel from './interfaces/IPrjModel';
     ): string | undefined {
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!file || !(file instanceof TFile)) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-        const linktext = <span class="cstat-no" title="statement not covered" >this._App.metadataCache.fileToLinktext(</span>
+        const linktext = <span class="cstat-no" title="statement not covered" >this._IApp.metadataCache.fileToLinktext(</span>
             file,
             path ? path : this.file.path,
         );
@@ -1258,13 +1281,20 @@ import IPrjModel from './interfaces/IPrjModel';
      * Static API for the DocumentModel class.
      */
 &nbsp;
+    @Inject('IMetadataCache')
+    protected static readonly <span class="cstat-no" title="statement not covered" >_IMetadataCache: IMetadataCache;</span>
+    @Inject('IPrjSettings')
+    protected static readonly <span class="cstat-no" title="statement not covered" >_IPrjSettings: IPrjSettings;</span>
+    @Inject('IApp')
+    protected static readonly <span class="cstat-no" title="statement not covered" >_IApp: IApp;</span>
+&nbsp;
     /**
      * Returns all documents
      * @returns List of all documents
      * @deprecated This method is deprecated and will be removed in a future release.
      */
     public <span class="fstat-no" title="function not covered" >static </span>getAllDocuments(): DocumentModel[] {
-        const metadataCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().metadataCache.cache;</span>
+        const metadataCache = <span class="cstat-no" title="statement not covered" >this._IMetadataCache.cache;</span>
 &nbsp;
         const documents = <span class="cstat-no" title="statement not covered" >metadataCache</span>
             .filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; <span class="cstat-no" title="statement not covered" >file.metadata?.frontmatter?.type === 'Metadata')</span>
@@ -1278,7 +1308,7 @@ import IPrjModel from './interfaces/IPrjModel';
      * @returns An array of strings representing the sender and recipient names.
      */
     public <span class="fstat-no" title="function not covered" >static </span>getAllSenderRecipients(): string[] {
-        const metadataCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().metadataCache.cache;</span>
+        const metadataCache = <span class="cstat-no" title="statement not covered" >this._IMetadataCache.cache;</span>
 &nbsp;
         const documents = <span class="cstat-no" title="statement not covered" >metadataCache</span>
             .filter(<span class="fstat-no" title="function not covered" >(f</span>ile) =&gt; <span class="cstat-no" title="statement not covered" >file.metadata?.frontmatter?.type === 'Metadata')</span>
@@ -1303,7 +1333,7 @@ import IPrjModel from './interfaces/IPrjModel';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (model.data.date) {</span>
 <span class="cstat-no" title="statement not covered" >            newFileName.push(</span>
-                `${HelperGeneral.formatDate(model.data.date, Global.getInstance().settings.dateFormat)}`,
+                `${HelperGeneral.formatDate(model.data.date, this._IPrjSettings.dateFormat)}`,
             );
         }
 &nbsp;
@@ -1335,8 +1365,8 @@ import IPrjModel from './interfaces/IPrjModel';
      * @see {@link CreateNewMetadataModal.constructForm}
      */
     public <span class="fstat-no" title="function not covered" >static </span>getAllPDFsWithoutMetadata(): TFile[] {
-        const metadataCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().metadataCache.cache;</span>
-        const fileCache = <span class="cstat-no" title="statement not covered" >Global.getInstance().app.vault.getFiles();</span>
+        const metadataCache = <span class="cstat-no" title="statement not covered" >this._IMetadataCache.cache;</span>
+        const fileCache = <span class="cstat-no" title="statement not covered" >this._IApp.vault.getFiles();</span>
 &nbsp;
         const setOfPDFsWithMetadata = <span class="cstat-no" title="statement not covered" >new Set(</span>
             metadataCache
@@ -1409,7 +1439,7 @@ import IPrjModel from './interfaces/IPrjModel';
      */
     public <span class="fstat-no" title="function not covered" >static </span>async syncMetadataToFile(file: TFile): Promise&lt;void&gt; {
         const logger = <span class="cstat-no" title="statement not covered" >Logging.getLogger('SyncMetadataToFile');</span>
-        const settings = <span class="cstat-no" title="statement not covered" >Global.getInstance().settings;</span>
+        const settings = <span class="cstat-no" title="statement not covered" >this._IPrjSettings;</span>
 &nbsp;
         const document = <span class="cstat-no" title="statement not covered" >new DocumentModel(file);</span>
 &nbsp;
@@ -1531,7 +1561,7 @@ import IPrjModel from './interfaces/IPrjModel';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="./https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-07-20T16:46:34.037Z
+                at 2024-07-21T12:46:10.057Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
