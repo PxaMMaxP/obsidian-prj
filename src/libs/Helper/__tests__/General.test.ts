@@ -1,4 +1,3 @@
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { HelperGeneral } from '../General';
 
 describe('HelperGeneral', () => {
@@ -135,20 +134,6 @@ describe('HelperGeneral', () => {
             const format = 'YYYY-MM-DD';
             const formattedDate = HelperGeneral.formatDate(date, format);
             expect(formattedDate).toBe(date);
-        });
-    });
-
-    describe('should register the class in the DI container', () => {
-        it('should register the class in the DI container', () => {
-            const diContainerMock = DIContainer.getInstance();
-            diContainerMock.register = jest.fn();
-
-            HelperGeneral.beforeLoad();
-
-            expect(diContainerMock.register).toHaveBeenCalledWith(
-                'IHelperGeneral_',
-                HelperGeneral,
-            );
         });
     });
 });

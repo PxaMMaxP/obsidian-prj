@@ -1,6 +1,4 @@
 /* istanbul ignore file */
-
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { IFileType_, FileTypes } from '../interfaces/IFileType';
 
 /**
@@ -143,20 +141,6 @@ export function testIFileTypeImplementation(FileTypeClass: IFileType_): void {
                     });
                 });
             });
-        });
-    });
-
-    describe('should register the class in the DI container', () => {
-        it('should register the class in the DI container', () => {
-            const diContainerMock = DIContainer.getInstance();
-            diContainerMock.register = jest.fn();
-
-            FileTypeClass.beforeInit();
-
-            expect(diContainerMock.register).toHaveBeenCalledWith(
-                'IFileType_',
-                FileTypeClass,
-            );
         });
     });
 }

@@ -1,10 +1,8 @@
 import { moment } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import { DIContainer } from '../DependencyInjection/DIContainer';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
+import { Register } from '../DependencyInjection/decorators/Register';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
-import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 
 export interface IHelperGeneral_ {
     generateUID(input: string, length: number, sufix: string): string;
@@ -20,9 +18,8 @@ export interface IHelperGeneral_ {
  * @see {@link Singleton}
  * @see {@link Lifecycle}
  */
-@Lifecycle()
-@ImplementsStatic<ILifecycleObject>()
 @ImplementsStatic<IHelperGeneral_>()
+@Register('IHelperGeneral_')
 export class HelperGeneral {
     private static readonly _md5 = require('crypto-js/md5');
 
@@ -30,15 +27,8 @@ export class HelperGeneral {
      * Create a Singleton instance of the HelperObsidian class.
      * @param dependencies The dependencies for the class.
      */
-    public constructor(dependencies?: IDIContainer) {
+    public constructor() {
         throw new Error('This class is not meant to be instantiated');
-    }
-
-    /**
-     * This method is called when the application is unloaded.
-     */
-    public static beforeLoad(): void {
-        DIContainer.getInstance().register('IHelperGeneral_', HelperGeneral);
     }
 
     /**

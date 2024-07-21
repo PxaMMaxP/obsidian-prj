@@ -19,7 +19,7 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
  * @see {@link Singleton}
  * @see {@link Lifecycle}
  */
-@Lifecycle()
+@Lifecycle('Static')
 @ImplementsStatic<ILifecycleObject>()
 @Singleton
 export class GetMetadata extends ContextMenu implements IContextMenu {

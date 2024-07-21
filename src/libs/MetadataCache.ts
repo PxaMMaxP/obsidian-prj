@@ -9,6 +9,7 @@ import type { IPrjSettings } from 'src/types/PrjSettings';
 import { Inject } from './DependencyInjection/decorators/Inject';
 import { RegisterInstance } from './DependencyInjection/decorators/RegisterInstance';
 import GenericEvents, { IEvent } from './GenericEvents';
+import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 
 /**
  * FileMetadata interface
@@ -26,6 +27,7 @@ export class FileMetadata {
  * @description This class is used to cache metadata for all files in the vault. It is used to speed up processing of dataview queries.
  */
 @RegisterInstance('IMetadataCache')
+@Lifecycle('Instance')
 export default class MetadataCache implements IMetadataCache {
     private readonly _eventHandler: GenericEvents<IMetadataCacheEvents>;
     @Inject('IApp')
@@ -89,7 +91,7 @@ export default class MetadataCache implements IMetadataCache {
             return MetadataCache.instance;
         } else {
             MetadataCache.instance = this;
-            this.deconstructor = this.deconstructor.bind(this);
+            this.onUnload = this.onUnload.bind(this);
 
             this.changedEventHandler = this.changedEventHandler.bind(this);
             this.renameEventHandler = this.renameEventHandler.bind(this);
@@ -112,7 +114,7 @@ export default class MetadataCache implements IMetadataCache {
      * Deconstructor for the MetadataCache class
      * @description This method is used to unregister the event handlers for the metadata cache.
      */
-    public deconstructor(): void {
+    public onUnload(): void {
         if (this._hasEventsRegistered) {
             this._IApp.vault.off('rename', this.renameEventHandler);
 

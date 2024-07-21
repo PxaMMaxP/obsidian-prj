@@ -13,7 +13,7 @@ import type ITranslationService from '../TranslationService/interfaces/ITranslat
  * @see {@link Singleton}
  * @see {@link Lifecycle}
  */
-@Lifecycle()
+@Lifecycle('Static')
 @ImplementsStatic<ILifecycleObject>()
 @Singleton
 export class CopyMarkdownLink extends ContextMenu implements IContextMenu {
