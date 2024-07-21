@@ -85,7 +85,9 @@ export class StatusType extends BaseComplexDataType implements IStatusType {
     public static validate(value: unknown): StatusTypes | undefined {
         let status: StatusTypes | undefined;
 
-        if (
+        if (value instanceof StatusType) {
+            status = value.value;
+        } else if (
             value === null ||
             value === undefined ||
             typeof value !== 'string'
