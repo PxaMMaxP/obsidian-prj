@@ -104,7 +104,7 @@ export default abstract class BaseModalForm {
         const activeFileTags = new Tags(undefined);
         activeFileTags.loadTagsFromFile(activeFile);
 
-        const tags: string[] = activeFileTags.toStringArray();
+        const tags: string[] = activeFileTags.primitiveOf();
 
         return tags;
     }
