@@ -272,7 +272,7 @@ export default class NoteBlockRenderComponent extends TableBlockRenderComponent<
         GeneralComponents.createCellTags(
             tags,
             this._component,
-            noteModel.data.tags?.toStringArray() ?? [],
+            noteModel.data.tags?.primitiveOf() ?? [],
         );
 
         const row = {

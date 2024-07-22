@@ -362,7 +362,7 @@ export default class ProjectBlockRenderComponent extends TableBlockRenderCompone
         GeneralComponents.createCellTags(
             tags,
             this._component,
-            model.data.tags?.toStringArray() ?? [],
+            model.data.tags?.primitiveOf() ?? [],
         );
 
         const hide = this.getHideState(model, this._settings.maxDocuments);

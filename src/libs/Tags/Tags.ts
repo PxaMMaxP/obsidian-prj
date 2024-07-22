@@ -128,7 +128,7 @@ export class Tags implements ITags {
      */
     private normalizeToTags(tag: unknown): ITag[] {
         if (tag instanceof Tags) {
-            return tag.toStringArray().map((t) => this.createTag(t));
+            return tag.primitiveOf().map((t) => this.createTag(t));
         } else if (tag instanceof this._ITag) {
             return [this.createTag(tag.value)];
         } else if (Array.isArray(tag)) {
@@ -188,14 +188,6 @@ export class Tags implements ITags {
     }
 
     /**
-     * Returns all tags.
-     * @returns All tags as an array of strings.
-     */
-    public toStringArray(): string[] {
-        return this._tags.map((tag) => tag.toString());
-    }
-
-    /**
      * Returns the number of tags.
      */
     public get length(): number {
@@ -248,7 +240,7 @@ export class Tags implements ITags {
      * @returns Whether any tag from `tags` is a **substring** of any tag in the instance's tags array
      */
     public contains(tags: ITags): boolean {
-        const _tagsToCheck = tags.toStringArray();
+        const _tagsToCheck = tags.primitiveOf();
 
         return _tagsToCheck.some((tagToCheck) =>
             this._tags.some((tagToBeChecked) =>

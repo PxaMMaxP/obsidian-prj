@@ -424,7 +424,7 @@ export class DocumentModel
         let tagFolder: string | undefined = undefined;
         let specialTagFolder: string | undefined = undefined;
 
-        const tagArray = document.data.tags?.toStringArray() ?? [];
+        const tagArray = document.data.tags?.primitiveOf() ?? [];
 
         // Tag Folder
         // `document.data.tags` is an Array, search for the first tag that matches a custom tag folder
