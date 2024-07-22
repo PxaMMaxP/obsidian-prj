@@ -55,12 +55,6 @@ export interface ITags
     remove(tag: ITag): boolean;
 
     /**
-     * Returns all tags.
-     * @returns All tags as an array of strings.
-     */
-    toStringArray(): string[];
-
-    /**
      * Returns the number of tags.
      */
     get length(): number;
@@ -132,4 +126,9 @@ export interface ITags
      * @returns Whether the tags were loaded.
      */
     loadTagsFromFile(file: TFile | undefined): boolean;
+
+    /**
+     * @inheritdoc
+     */
+    primitiveOf(): string[];
 }

@@ -365,7 +365,7 @@ export default class DocumentBlockRenderComponent extends TableBlockRenderCompon
         GeneralComponents.createCellTags(
             tags,
             this._component,
-            documentModel.data.tags?.toStringArray() ?? [],
+            documentModel.data.tags?.primitiveOf() ?? [],
         );
 
         const hide = this.getHideState(documentModel, undefined);

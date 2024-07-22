@@ -122,7 +122,7 @@ describe('Tags', () => {
         DIContainer.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(undefined);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
@@ -130,7 +130,7 @@ describe('Tags', () => {
         DIContainer.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags('tag1');
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
     });
 
@@ -138,13 +138,13 @@ describe('Tags', () => {
         DIContainer.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should initialize with undefined tags', () => {
         const tagsArray = new Tags(undefined);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
@@ -152,14 +152,14 @@ describe('Tags', () => {
     test('should add a single tag that does not exist', () => {
         const tagsArray = new Tags([]);
         tagsArray.add('tag1');
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
     });
 
     test('should not add a single tag that already exists', () => {
         const tagsArray = new Tags(['tag1']);
         tagsArray.add('tag1');
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
 
         expect(MockLogger.warn).toHaveBeenCalledWith(
@@ -170,14 +170,14 @@ describe('Tags', () => {
     test('should add multiple tags', () => {
         const tagsArray = new Tags([]);
         tagsArray.add(['tag1', 'tag2']);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should not add existing tags when adding multiple tags', () => {
         const tagsArray = new Tags(['tag1']);
         tagsArray.add(['tag1', 'tag2']);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
 
         expect(MockLogger.warn).toHaveBeenCalledWith(
@@ -194,7 +194,7 @@ describe('Tags', () => {
     test('should remove an existing tag', () => {
         const tagsArray = new Tags(['tag1']);
         tagsArray.remove(tagsArray.value[0]);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
         expect(tagsArray.length).toBe(0);
     });
 
@@ -203,7 +203,7 @@ describe('Tags', () => {
 
         const nonExistingTag = new MockTagClass('tag2');
         tagsArray.remove(nonExistingTag);
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
         expect(MockLogger.warn).toHaveBeenCalledWith("Tag 'tag2' not found.");
     });
@@ -212,7 +212,7 @@ describe('Tags', () => {
         DIContainer.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
     });
 
     test('should return all tags as a comma-separated string', () => {
@@ -244,7 +244,7 @@ describe('Tags', () => {
     // Additional Tests
     test('should not add duplicate tags when initialized with an array containing duplicates', () => {
         const tagsArray = new Tags(['tag1', 'tag1', 'tag2']);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
@@ -253,7 +253,7 @@ describe('Tags', () => {
 
         const tagToRemove = new MockTagClass('tag1');
         tagsArray.remove(tagToRemove);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
         expect(tagsArray.length).toBe(0);
         expect(MockLogger.warn).toHaveBeenCalledWith("Tag 'tag1' not found.");
     });
@@ -263,7 +263,7 @@ describe('Tags', () => {
 
         const tagsArray = new Tags(['tag1']);
         tagsArray.add('tag1');
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
         // Since no logger is provided, there should be no logs
     });
@@ -275,7 +275,7 @@ describe('Tags', () => {
 
         const nonExistingTag = new MockTagClass('tag2');
         tagsArray.remove(nonExistingTag);
-        expect(tagsArray.toStringArray()).toEqual(['tag1']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1']);
         expect(tagsArray.length).toBe(1);
         // Since no logger is provided, there should be no logs
     });
@@ -322,7 +322,7 @@ describe('Tags', () => {
         const tagsArray = new Tags([]);
         const result = tagsArray.loadTagsFromFile(mockFile);
         expect(result).toBe(true);
-        expect(tagsArray.toStringArray()).toEqual(['tag1', 'tag2']);
+        expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
     });
 
     test('should log warning if no metadata in file', () => {
@@ -332,7 +332,7 @@ describe('Tags', () => {
         const tagsArray = new Tags([]);
         const result = tagsArray.loadTagsFromFile(mockFile);
         expect(result).toBe(false);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
 
         expect(MockLogger.warn).toHaveBeenCalledWith(
             'No metadata found in the file.',
@@ -343,7 +343,7 @@ describe('Tags', () => {
         const tagsArray = new Tags([]);
         const result = tagsArray.loadTagsFromFile(undefined);
         expect(result).toBe(false);
-        expect(tagsArray.toStringArray()).toEqual([]);
+        expect(tagsArray.primitiveOf()).toEqual([]);
         expect(MockLogger.warn).toHaveBeenCalledWith('No file provided.');
     });
 
