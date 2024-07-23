@@ -8,6 +8,7 @@ import {
     ILifecycleState,
     ILifecycleTime,
 } from './interfaces/ILifecycleManager';
+import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Lifecycle manager class.
@@ -18,6 +19,7 @@ import {
  * - Call the `onInit`, `onLoad`, and `onUnload` methods when the application is initialized, loaded, or unloaded.
  * - The `LifecycleManager` class is a singleton: you get the same instance every time you call the constructor.
  */
+@Register('ILifecycleManager_')
 @ImplementsStatic<ILifecycleManager_>()
 @Singleton
 export class LifecycleManager implements ILifecycleManager {
@@ -116,6 +118,24 @@ export class LifecycleManager implements ILifecycleManager {
     }
 
     /**
+     * Unregisters a callback to be executed on a specific lifecycle time and state.
+     * @param time  The lifecycle time (before, on, after).
+     * @param state  The lifecycle state (init, load, unload).
+     * @param callback  The callback function to be executed.
+     */
+    private registerOff(
+        time: ILifecycleTime,
+        state: ILifecycleState,
+        callback: ILifecycleCallback,
+    ): void {
+        const index = this._callbacks[state]?.[time]?.indexOf(callback);
+
+        if (index !== undefined && index !== -1) {
+            this._callbacks[state]?.[time]?.splice(index, 1);
+        }
+    }
+
+    /**
      * Registers a callback to be executed on a specific lifecycle time and state.
      * @param time - The lifecycle time (before, on, after).
      * @param state - The lifecycle state (init, load, unload).
@@ -127,6 +147,20 @@ export class LifecycleManager implements ILifecycleManager {
         callback: ILifecycleCallback,
     ): Promise<void> {
         await new LifecycleManager().registerOn(time, state, callback);
+    }
+
+    /**
+     * Unregisters a callback to be executed on a specific lifecycle time and state.
+     * @param time - The lifecycle time (before, on, after).
+     * @param state - The lifecycle state (init, load, unload).
+     * @param callback - The callback function to be executed.
+     */
+    public static unregister(
+        time: ILifecycleTime,
+        state: ILifecycleState,
+        callback: ILifecycleCallback,
+    ): void {
+        new LifecycleManager().registerOff(time, state, callback);
     }
 
     /**
