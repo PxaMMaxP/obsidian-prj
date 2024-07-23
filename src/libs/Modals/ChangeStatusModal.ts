@@ -1,6 +1,7 @@
 import { Setting } from 'obsidian';
 import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
+import type { IApp } from 'src/interfaces/IApp';
 import { ILogger_ } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IPrj } from 'src/interfaces/IPrj';
@@ -8,7 +9,10 @@ import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { CustomModal } from './CustomModal/CustomModal';
+import type {
+    ICustomModal,
+    ICustomModal_,
+} from './CustomModal/interfaces/ICustomModal';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
@@ -16,54 +20,68 @@ import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 /**
  * Represents a modal to change the status of a project.
  */
-export default class ChangeStatusModal extends CustomModal {
-    newStatus: StatusTypes;
-    model: PrjTaskManagementModel<
+export default class ChangeStatusModal {
+    @Inject('IApp')
+    protected readonly _IApp!: IApp;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache!: IMetadataCache;
+    @Inject('ICustomModal_')
+    private readonly _ICustomModal_!: ICustomModal_;
+
+    private readonly _customModal: ICustomModal = new this._ICustomModal_();
+
+    private _selectedStatus: StatusTypes;
+    private _activeModel: PrjTaskManagementModel<
         IPrjTaskManagementData & PrjBaseData<unknown>
     >;
-    @Inject('IMetadataCache')
-    private readonly _IMetadataCache: IMetadataCache;
 
     /**
-     * Creates a new instance of the modal.
+     * Creates and opens a Change Status modal.
      */
     constructor() {
-        super(false, true);
+        this._customModal
+            .setBackgroundDimmed(true)
+            .setDraggableEnabled(false)
+            .setShouldOpen(this.shouldOpen.bind(this))
+            .setOnOpen(this._onOpen.bind(this))
+            .open();
     }
 
     /**
-     * Opens the modal.
+     * Checks if the active file is a project file
+     * @returns True if the active file is a project file
      */
-    override open(): void {
+    private shouldOpen(): boolean {
         const workspace = this._IApp.workspace;
         const activeFile = workspace.getActiveFile();
 
         if (!activeFile) {
-            return;
+            return false;
         }
         const activeFileMetadata = this._IMetadataCache.getEntry(activeFile);
         const type = activeFileMetadata?.metadata.frontmatter?.type;
 
         if (!FileType.isValidOf(type, ['Topic', 'Project', 'Task'])) {
-            return;
+            return false;
         }
 
         const model =
             API.prjTaskManagementModel.getCorospondingModel(activeFile);
 
         if (!model) {
-            return;
+            return false;
         }
-        this.model = model;
-        super.open();
+        this._activeModel = model;
+
+        return true;
     }
 
     /**
-     * Initializes the modal.
+     * Build the content of the change status modal
      */
-    onOpen(): void {
-        const contentEl = this._content;
-        this.setTitle(Lng.gt('Change Status'));
+    private _onOpen(): void {
+        const contentEl = this._customModal.content;
+        this._customModal.setTitle(Lng.gt('Change Status'));
 
         new Setting(contentEl)
             .setName(Lng.gt('New Status'))
@@ -73,10 +91,13 @@ export default class ChangeStatusModal extends CustomModal {
                 cb.addOption('Later', Lng.gt('StatusLater'));
                 cb.addOption('Someday', Lng.gt('StatusSomeday'));
                 cb.addOption('Done', Lng.gt('StatusDone'));
-                cb.setValue(this.model.data.status?.toString() ?? 'Active');
+
+                cb.setValue(
+                    this._activeModel.data.status?.toString() ?? 'Active',
+                );
 
                 cb.onChange((value) => {
-                    this.newStatus = value as StatusTypes;
+                    this._selectedStatus = value as StatusTypes;
                 });
             });
 
@@ -85,39 +106,31 @@ export default class ChangeStatusModal extends CustomModal {
                 .setButtonText(Lng.gt('Change Status'))
                 .setCta()
                 .onClick(() => {
-                    this.model.changeStatus(this.newStatus);
-                    this.close();
+                    this._activeModel.changeStatus(this._selectedStatus);
+                    this._customModal.close();
                 }),
         );
     }
 
     /**
-     * Closes the modal.
-     */
-    onClose(): void {
-        // Nothing to do
-    }
-
-    /**
      * Registers the command to open the modal
-     * @remarks No cleanup needed
      */
     public static registerCommand(): void {
         const plugin = Resolve<IPrj>('IPrj');
 
-        const logger =
-            Resolve<ILogger_>('ILogger_').getLogger('ChangeStatusModal');
+        const logger = Resolve<ILogger_>('ILogger_', false)?.getLogger(
+            'ChangeStatusModal',
+        );
 
-        logger.trace("Registering 'CreateNewMetadataModal' commands");
-
-        plugin.addCommand({
-            id: 'change-prj-status',
-            name: Lng.gt('Change Status'),
-            /**
-             * Opens the modal to change the status of a project.
-             * @returns Nothing
-             */
-            callback: () => new ChangeStatusModal().open(),
-        });
+        try {
+            plugin.addCommand({
+                id: 'change-prj-status',
+                name: Lng.gt('Change Status'),
+                callback: () => new ChangeStatusModal(),
+            });
+            logger?.trace("Registered 'Change Status' command successfully");
+        } catch (error) {
+            logger?.error("Failed to register 'Change Status' command", error);
+        }
     }
 }
