@@ -1,9 +1,15 @@
 import { Component } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import {
+    IDraggableElement,
+    IDraggableElement_,
+} from './interfaces/IDraggableElement';
 
 /**
- * Draggable modal class.
+ * Draggable element class.
  */
-export class DraggableModal {
+@ImplementsStatic<IDraggableElement_>()
+export class DraggableElement implements IDraggableElement {
     private readonly _component: Component;
     private readonly _draggableElement: HTMLElement;
     private readonly _dragHandle: HTMLElement;
@@ -14,8 +20,10 @@ export class DraggableModal {
     private _initialX = 0;
     private _initialY = 0;
 
+    private _animationFrameId: number | null = null;
+
     /**
-     * Creates a new instance of the `DraggableModal` class.
+     * Creates a new instance of the draggable element.
      * @param draggableElement The element that should be draggable.
      * @param dragHandle The element that should be used as the drag handle.
      * @param component The component that the draggable element belongs to.
@@ -31,7 +39,7 @@ export class DraggableModal {
     }
 
     /**
-     * Enables dragging for the draggable element.
+     * @inheritdoc
      */
     public enableDragging(): void {
         this._dragHandle.style.cursor = 'grab';
@@ -53,6 +61,14 @@ export class DraggableModal {
             'mouseup',
             this.onMouseUp.bind(this),
         );
+    }
+
+    /**
+     * Update the position of the draggable element.
+     */
+    private updatePosition(): void {
+        this._draggableElement.style.transform = `translate(${this._currentX}px, ${this._currentY}px)`;
+        this._animationFrameId = null;
     }
 
     /**
@@ -78,7 +94,11 @@ export class DraggableModal {
             this._currentX = event.clientX - this._initialX;
             this._currentY = event.clientY - this._initialY;
 
-            this._draggableElement.style.transform = `translate(${this._currentX}px, ${this._currentY}px)`;
+            if (this._animationFrameId === null) {
+                this._animationFrameId = requestAnimationFrame(
+                    this.updatePosition.bind(this),
+                );
+            }
         }
     }
 
@@ -89,6 +109,11 @@ export class DraggableModal {
         if (this._isDragging) {
             this._isDragging = false;
             this._dragHandle.style.cursor = 'grab'; // Change cursor back to default
+
+            if (this._animationFrameId !== null) {
+                cancelAnimationFrame(this._animationFrameId);
+                this._animationFrameId = null;
+            }
         }
     }
 }

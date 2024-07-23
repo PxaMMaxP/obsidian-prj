@@ -2,8 +2,8 @@ import { Component } from 'obsidian';
 import type { IApp } from 'src/interfaces/IApp';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import { DraggableModal } from './DraggableModal';
 import { ICustomModal } from './interfaces/ICustomModal';
+import type { IDraggableElement_ } from './interfaces/IDraggableElement';
 
 /**
  * Represents a custom modal, which can be dragged around
@@ -14,6 +14,8 @@ export abstract class CustomModal implements ICustomModal {
     protected readonly _IApp!: IApp;
     @Inject('ILifecycleManager_')
     private readonly _ILifecycleManager!: ILifecycleManager_;
+    @Inject('IDraggableElement_')
+    private readonly _IDraggableElement_!: IDraggableElement_;
 
     private readonly _beforeUnload: () => void = this.close.bind(this);
     protected _IComponent = new Component();
@@ -98,7 +100,7 @@ export abstract class CustomModal implements ICustomModal {
 
         this._body.appendChild(fragment);
 
-        new DraggableModal(
+        new this._IDraggableElement_(
             this._modal,
             this._title,
             this._IComponent,
@@ -120,6 +122,7 @@ export abstract class CustomModal implements ICustomModal {
      * @param title The title to set.
      */
     public setTitle(title: string): void {
+        // The title must never be empty so that it can still serve as a drag handler.
         this._title.innerText = title.trim().length > 0 ? title : '\u00A0';
     }
 
