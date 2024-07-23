@@ -62,7 +62,7 @@
         ],
         "format": [],
         "custom": {
-          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*|_{1,2}[a-z][a-zA-Z0-9]*)$",
+          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*_?|_{1,2}[a-z][a-zA-Z0-9]*)$",
           "match": true,
           "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
         }
@@ -74,7 +74,7 @@
         ],
         "format": [],
         "custom": {
-          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*|_{1,2}[a-z][a-zA-Z0-9]*)$",
+          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*_?|_{1,2}[a-z][a-zA-Z0-9]*)$",
           "match": true,
           "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
         }
