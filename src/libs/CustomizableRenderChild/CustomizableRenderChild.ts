@@ -1,6 +1,7 @@
 import { MarkdownRenderChild } from 'obsidian';
-import { ILogger } from 'src/interfaces/ILogger';
+import type { ILogger } from 'src/interfaces/ILogger';
 import { ICustomizableRenderChild } from './ICustomizableRenderChild';
+import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Customizable Render Child class.
@@ -8,6 +9,7 @@ import { ICustomizableRenderChild } from './ICustomizableRenderChild';
  * It allows you to customize the `onLoad` and `onUnload` functions.
  * @remarks Use this as a child when you want to customize the `onLoad` and `onUnload` functions.
  */
+@Register('CustomizableRenderChild')
 export default class CustomizableRenderChild
     extends MarkdownRenderChild
     implements ICustomizableRenderChild
