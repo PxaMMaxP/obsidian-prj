@@ -28,8 +28,7 @@ export default class ChangeStatusModal extends CustomModal {
      * Creates a new instance of the modal.
      */
     constructor() {
-        //super(Resolve<IApp>('IApp'));
-        super();
+        super(false, true);
     }
 
     /**
@@ -96,8 +95,7 @@ export default class ChangeStatusModal extends CustomModal {
      * Closes the modal.
      */
     onClose(): void {
-        // const { contentEl } = this;
-        // contentEl.empty();
+        // Nothing to do
     }
 
     /**
