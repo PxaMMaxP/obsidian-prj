@@ -152,6 +152,8 @@ export abstract class CustomModal implements ICustomModal {
 
     /**
      * Opens the modal.
+     * @remarks If you override this method,
+     * you must call the base method at the end of your method!
      */
     public open(): void {
         // Register the before unload event
@@ -173,6 +175,8 @@ export abstract class CustomModal implements ICustomModal {
 
     /**
      * Closes the modal.
+     * @remarks If you override this method,
+     * you must call the base method at the end of your method!
      */
     public close(): void {
         // Unregister the before unload event
