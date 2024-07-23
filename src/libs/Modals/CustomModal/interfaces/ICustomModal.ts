@@ -1,5 +1,27 @@
+import { Component } from 'obsidian';
+
 /**
- * Represents a custom modal.
+ * Static interface for the custom modal.
+ * @see {@link ICustomModal}
+ */
+export interface ICustomModal_ {
+    /**
+     * Creates a new Modal.
+     * @param isDraggable Whether the modal should be draggable.
+     * @param willDimBackground Whether the background should be dimmed.
+     * @param component The component that the modal belongs to.
+     * @see {@link ICustomModal}
+     */
+    new (
+        isDraggable: boolean,
+        willDimBackground: boolean,
+        component?: Component,
+    ): ICustomModal;
+}
+
+/**
+ * Interface for the custom modal.
+ * @see {@link ICustomModal_}
  */
 export interface ICustomModal {
     /**
