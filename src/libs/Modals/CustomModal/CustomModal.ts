@@ -1,8 +1,19 @@
 import { Component } from 'obsidian';
+import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import { ICustomModal } from './interfaces/ICustomModal';
+import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
+import {
+    ICloseCallback,
+    ICustomModal,
+    ICustomModal_,
+    IOpenCallback,
+    IShouldOpenCallback,
+} from './interfaces/ICustomModal';
 import type {
     IDraggableElement,
     IDraggableElement_,
@@ -12,7 +23,11 @@ import type {
  * Represents a custom modal, which can be dragged around
  * and don't dim the background.
  */
-export abstract class CustomModal implements ICustomModal {
+@Register('ICustomModal_')
+@ImplementsStatic<ICustomModal_>()
+export class CustomModal implements ICustomModal {
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('CustomModal'), false)
+    protected readonly _logger?: ILogger;
     @Inject('IApp')
     protected readonly _IApp!: IApp;
     @Inject('ILifecycleManager_')
@@ -21,11 +36,28 @@ export abstract class CustomModal implements ICustomModal {
     private readonly _IDraggableElement_!: IDraggableElement_;
 
     private readonly _beforeUnload: () => void = this.close.bind(this);
-    protected _IComponent: Component;
+    @Inject('Component_', (x: ForceConstructor<Component>) => new x())
+    protected _component: Component;
     private _draggableElement?: IDraggableElement;
 
-    private readonly _isDraggable: boolean;
-    private readonly _willDimBackground: boolean;
+    /**
+     * Called before the modal is opened.
+     * @returns True if the modal can be opened, otherwise false.
+     */
+    protected _shouldOpen?: IShouldOpenCallback;
+
+    /**
+     * Called when the modal is opened.
+     */
+    protected _onOpen?: IOpenCallback;
+
+    /**
+     * Called when the modal is closed.
+     */
+    protected _onClose?: ICloseCallback;
+
+    private _isDraggable = false;
+    private _willDimBackground = true;
 
     private readonly _body: HTMLElement = document.body;
     private __container?: HTMLElement;
@@ -62,7 +94,7 @@ export abstract class CustomModal implements ICustomModal {
 
             // Add event listener to close the modal
             // if the background is clicked
-            this._IComponent.registerDomEvent(
+            this._component.registerDomEvent(
                 this.__bg,
                 'click',
                 this.close.bind(this),
@@ -87,7 +119,7 @@ export abstract class CustomModal implements ICustomModal {
         }
 
         // Add event listener to close the modal
-        this._IComponent.registerDomEvent(
+        this._component.registerDomEvent(
             this.__closeButton,
             'click',
             this.close.bind(this),
@@ -123,9 +155,9 @@ export abstract class CustomModal implements ICustomModal {
     }
 
     /**
-     * The content of the modal.
+     * @inheritdoc
      */
-    protected get _content(): HTMLElement {
+    public get content(): HTMLElement {
         if (this.__content == null) {
             this.__content = document.createElement('div');
             this.__content.classList.add('modal-content');
@@ -136,26 +168,31 @@ export abstract class CustomModal implements ICustomModal {
 
     /**
      * Creates a new Modal.
-     * @param isDraggable Whether the modal should be draggable.
-     * @param willDimBackground Whether the background should be dimmed.
      * @param component The component that the modal belongs to.
      */
-    constructor(
-        isDraggable: boolean,
-        willDimBackground: boolean,
-        component: Component = new Component(),
-    ) {
-        this._isDraggable = isDraggable;
-        this._willDimBackground = willDimBackground;
-        this._IComponent = component;
+    constructor(component?: Component) {
+        if (component != null) {
+            this._component = component;
+        }
     }
 
     /**
-     * Opens the modal.
-     * @remarks If you override this method,
-     * you must call the base method at the end of your method!
+     * @inheritdoc
      */
     public open(): void {
+        if (this._onOpen == null) {
+            this._logger?.error('The onOpen callback must be set.');
+            throw new MissingCallbackError('onOpen');
+        }
+
+        try {
+            // Check if the modal can be opened
+            if (this._shouldOpen?.() === false) return;
+        } catch (error) {
+            this._logger?.error('Error in shouldOpen callback', error);
+            throw new CallbackError('shouldOpen', error);
+        }
+
         // Register the before unload event
         // to close the modal when the plugin is unloaded.
         this._ILifecycleManager.register(
@@ -164,19 +201,23 @@ export abstract class CustomModal implements ICustomModal {
             this._beforeUnload,
         );
 
-        this._IComponent.load();
+        this._component.load();
         this.buildModal();
 
         if (this._isDraggable && this._draggableElement != null) {
             this._draggableElement.enableDragging();
         }
-        this.onOpen();
+
+        try {
+            this._onOpen();
+        } catch (error) {
+            this._logger?.error('Error in onOpen callback', error);
+            throw new CallbackError('onOpen', error);
+        }
     }
 
     /**
-     * Closes the modal.
-     * @remarks If you override this method,
-     * you must call the base method at the end of your method!
+     * @inheritdoc
      */
     public close(): void {
         // Unregister the before unload event
@@ -186,9 +227,14 @@ export abstract class CustomModal implements ICustomModal {
             this._beforeUnload,
         );
 
-        this.onClose();
+        try {
+            this._onClose?.();
+        } catch (error) {
+            this._logger?.error('Error in onClose callback', error);
+            throw new CallbackError('onClose', error);
+        }
         this._container.remove();
-        this._IComponent.unload();
+        this._component.unload();
     }
 
     /**
@@ -202,7 +248,7 @@ export abstract class CustomModal implements ICustomModal {
 
         this._modal.appendChild(this._closeButton);
         this._modal.appendChild(this._title);
-        this._modal.appendChild(this._content);
+        this._modal.appendChild(this.content);
         this._container.appendChild(this._modal);
 
         this._body.appendChild(fragment);
@@ -211,36 +257,72 @@ export abstract class CustomModal implements ICustomModal {
             this._draggableElement = new this._IDraggableElement_(
                 this._modal,
                 this._title,
-                this._IComponent,
+                this._component,
             );
         }
     }
 
     /**
-     * Called when the modal is opened.
+     * @inheritdoc
      */
-    protected abstract onOpen(): void;
+    public setShouldOpen(shouldOpen: IShouldOpenCallback): this {
+        this._shouldOpen = shouldOpen;
 
-    /**
-     * Called when the modal is closed.
-     */
-    protected abstract onClose(): void;
-
-    /**
-     * Sets the title of the modal.
-     * @param title The title to set.
-     */
-    public setTitle(title: string): void {
-        // The title must never be empty so that it can still serve as a drag handler.
-        this._title.innerText = title.trim().length > 0 ? title : '\u00A0';
+        return this;
     }
 
     /**
-     * Sets the content of the modal.
-     * @param content The content to set.
+     * @inheritdoc
      */
-    public setContent(content: DocumentFragment): void {
-        this._content.empty();
-        this._content.appendChild(content);
+    public setOnOpen(onOpen: IOpenCallback): this {
+        this._onOpen = onOpen;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setOnClose(onClose: ICloseCallback): this {
+        this._onClose = onClose;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setTitle(title: string): this {
+        // The title must never be empty so that it can still serve as a drag handler.
+        this._title.innerText = title.trim().length > 0 ? title : '\u00A0';
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setContent(content: DocumentFragment): this {
+        this.content.appendChild(content);
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setDraggableEnabled(isDraggable: boolean): this {
+        this._isDraggable = isDraggable;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setBackgroundDimmed(willDimBackground: boolean): this {
+        this._willDimBackground = willDimBackground;
+
+        return this;
     }
 }
