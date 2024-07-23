@@ -447,10 +447,10 @@ export default class HeaderBlockRenderComponent
             const fullPath = path ? `${path}/${tag}` : tag;
             const li = document.createElement('li');
 
-            const tagObject = new Tag(tag);
+            const tagObject = new Tag(fullPath);
 
             const tagLink = tagObject.getObsidianLink(
-                path ? tagObject.toString() : tagObject.tagWithHash,
+                path ? tagObject.getElements().last() : tagObject.tagWithHash,
             );
 
             li.appendChild(tagLink);
