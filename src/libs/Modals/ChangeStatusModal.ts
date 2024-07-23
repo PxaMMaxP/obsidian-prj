@@ -8,7 +8,7 @@ import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
-import { CustomModal } from './Modal/CustomModal';
+import { CustomModal } from './CustomModal/CustomModal';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
