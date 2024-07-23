@@ -1,6 +1,7 @@
 import { Component } from 'obsidian';
 import type { IApp } from 'src/interfaces/IApp';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
 import { DraggableModal } from './DraggableModal';
 import { ICustomModal } from './interfaces/ICustomModal';
 
@@ -9,22 +10,35 @@ import { ICustomModal } from './interfaces/ICustomModal';
  * and don't dim the background.
  */
 export abstract class CustomModal implements ICustomModal {
-    private readonly _body: HTMLElement = document.body;
-
     @Inject('IApp')
-    protected _IApp: IApp;
+    protected readonly _IApp!: IApp;
+    @Inject('ILifecycleManager_')
+    private readonly _ILifecycleManager!: ILifecycleManager_;
 
+    private readonly _beforeUnload: () => void = this.close.bind(this);
     protected _IComponent = new Component();
 
+    private readonly _body: HTMLElement = document.body;
     private _container: HTMLElement;
     private _title: HTMLElement;
     private _modal: HTMLElement;
+    /**
+     * The content of the modal.
+     */
     protected _content: HTMLElement;
 
     /**
      * Opens the modal.
      */
     public open(): void {
+        // Register the before unload event
+        // to close the modal when the plugin is unloaded.
+        this._ILifecycleManager.register(
+            'before',
+            'unload',
+            this._beforeUnload,
+        );
+
         this._IComponent.load();
         this.buildModal();
         this.onOpen();
@@ -34,6 +48,13 @@ export abstract class CustomModal implements ICustomModal {
      * Closes the modal.
      */
     public close(): void {
+        // Unregister the before unload event
+        this._ILifecycleManager.unregister(
+            'before',
+            'unload',
+            this._beforeUnload,
+        );
+
         this.onClose();
         this._container.remove();
         this._IComponent.unload();
