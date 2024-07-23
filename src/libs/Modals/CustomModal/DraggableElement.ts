@@ -1,5 +1,6 @@
 import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import {
     IDraggableElement,
     IDraggableElement_,
@@ -8,6 +9,7 @@ import {
 /**
  * Draggable element class.
  */
+@Register('IDraggableElement_')
 @ImplementsStatic<IDraggableElement_>()
 export class DraggableElement implements IDraggableElement {
     private readonly _component: Component;
