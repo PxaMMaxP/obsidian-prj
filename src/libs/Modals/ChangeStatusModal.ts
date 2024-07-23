@@ -1,7 +1,6 @@
-import { Modal, Setting } from 'obsidian';
+import { Setting } from 'obsidian';
 import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
-import { IApp } from 'src/interfaces/IApp';
 import { ILogger_ } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IPrj } from 'src/interfaces/IPrj';
@@ -9,6 +8,7 @@ import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { CustomModal } from './Modal/CustomModal';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
@@ -16,7 +16,7 @@ import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 /**
  * Represents a modal to change the status of a project.
  */
-export default class ChangeStatusModal extends Modal {
+export default class ChangeStatusModal extends CustomModal {
     newStatus: StatusTypes;
     model: PrjTaskManagementModel<
         IPrjTaskManagementData & PrjBaseData<unknown>
@@ -28,14 +28,15 @@ export default class ChangeStatusModal extends Modal {
      * Creates a new instance of the modal.
      */
     constructor() {
-        super(Resolve<IApp>('IApp'));
+        //super(Resolve<IApp>('IApp'));
+        super();
     }
 
     /**
      * Opens the modal.
      */
     override open(): void {
-        const workspace = this.app.workspace;
+        const workspace = this._IApp.workspace;
         const activeFile = workspace.getActiveFile();
 
         if (!activeFile) {
@@ -62,8 +63,8 @@ export default class ChangeStatusModal extends Modal {
      * Initializes the modal.
      */
     onOpen(): void {
-        const { contentEl } = this;
-        contentEl.createEl('h2', { text: Lng.gt('Change Status') });
+        const contentEl = this._content;
+        this.setTitle(Lng.gt('Change Status'));
 
         new Setting(contentEl)
             .setName(Lng.gt('New Status'))
@@ -85,8 +86,8 @@ export default class ChangeStatusModal extends Modal {
                 .setButtonText(Lng.gt('Change Status'))
                 .setCta()
                 .onClick(() => {
-                    this.close();
                     this.model.changeStatus(this.newStatus);
+                    this.close();
                 }),
         );
     }
@@ -95,8 +96,8 @@ export default class ChangeStatusModal extends Modal {
      * Closes the modal.
      */
     onClose(): void {
-        const { contentEl } = this;
-        contentEl.empty();
+        // const { contentEl } = this;
+        // contentEl.empty();
     }
 
     /**
