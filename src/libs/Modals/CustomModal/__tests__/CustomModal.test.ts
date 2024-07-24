@@ -30,7 +30,7 @@ diContainer.register('ILogger_', MockLogger_);
 diContainer.register('IApp', mockIApp);
 diContainer.register('ILifecycleManager_', mockILifecycleManager);
 diContainer.register('IDraggableElement_', mockIDraggableElement);
-diContainer.register('Component_', MockComponent);
+diContainer.register('Obsidian.Component_', MockComponent);
 
 describe('CustomModal', () => {
     let customModal: CustomModal;
