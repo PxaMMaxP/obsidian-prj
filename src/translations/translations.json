@@ -2,6 +2,8 @@
     {
         "lang": "en",
         "translations": {
+            "Save": "Save",
+            "Cancel": "Cancel",
             "Copy MD Link": "Copy Markdown Link",
             "Acronym": "Acronym",
             "Acronym description": "Acronym of the document.",
@@ -86,6 +88,8 @@
     {
         "lang": "de",
         "translations": {
+            "Save": "Speichern",
+            "Cancel": "Abbrechen",
             "Copy MD Link": "Markdown Link kopieren",
             "Acronym": "Akronym",
             "Acronym description": "Akronym des Dokuments.",
