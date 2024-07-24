@@ -1,4 +1,4 @@
-import { Component, Plugin } from 'obsidian';
+import { Component, Plugin, Setting } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';
@@ -40,6 +40,7 @@ export default class Prj extends Plugin {
         DIContainer.getInstance().register('IPrj', this);
         DIContainer.getInstance().register('IApp', this.app);
         DIContainer.getInstance().register('Obsidian.Component_', Component);
+        DIContainer.getInstance().register('Obsidian.Setting_', Setting);
 
         await this.loadSettings();
 
