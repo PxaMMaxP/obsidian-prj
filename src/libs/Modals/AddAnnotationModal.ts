@@ -1,5 +1,4 @@
 import { Setting, TFile } from 'obsidian';
-import Lng from 'src/classes/Lng';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
@@ -10,9 +9,11 @@ import type {
 } from './CustomModal/interfaces/ICustomModal';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
+import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import { FileType } from '../FileType/FileType';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
+import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**
  * Modal to create a new annotation
@@ -34,6 +35,11 @@ export default class AddAnnotationModal {
     private readonly _IHelperObsidian!: IHelperObsidian;
     @Inject('ICustomModal_')
     private readonly _ICustomModal_!: ICustomModal_;
+    @Inject('ITranslationService')
+    private readonly _ITranslationService!: ITranslationService;
+    @Inject('Obsidian.Setting_')
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private readonly _Setting_!: ForceConstructor<Setting>;
 
     private readonly _customModal: ICustomModal = new this._ICustomModal_();
 
@@ -134,73 +140,76 @@ export default class AddAnnotationModal {
      */
     private onOpen(): void {
         this._customModal.content.addClass('custom-form');
-        this._customModal.setTitle(Lng.gt('Add annotation'));
 
-        new Setting(this._customModal.content)
-            .setName(Lng.gt('Prefix'))
-            .setDesc(Lng.gt('Prefix description'))
+        this._customModal.setTitle(
+            this._ITranslationService.get('Add annotation'),
+        );
+
+        new this._Setting_(this._customModal.content)
+            .setName(this._ITranslationService.get('Prefix'))
+            .setDesc(this._ITranslationService.get('Prefix description'))
             .setClass('custom-form-textarea')
             .setClass('smalerHeight')
             .addTextArea((text) => {
-                text.setPlaceholder(Lng.gt('Prefix'))
+                text.setPlaceholder(this._ITranslationService.get('Prefix'))
                     .setValue('')
                     .onChange((value) => {
                         this._annotation.prefix = value;
                     });
             });
 
-        new Setting(this._customModal.content)
-            .setName(Lng.gt('Citation'))
-            .setDesc(Lng.gt('Citation description'))
+        new this._Setting_(this._customModal.content)
+            .setName(this._ITranslationService.get('Citation'))
+            .setDesc(this._ITranslationService.get('Citation description'))
             .setClass('custom-form-textarea')
             .addTextArea((text) => {
-                text.setPlaceholder(Lng.gt('Citation'))
+                text.setPlaceholder(this._ITranslationService.get('Citation'))
                     .setValue('')
                     .onChange((value) => {
                         this._annotation.citation = value;
                     });
             });
 
-        new Setting(this._customModal.content)
-            .setName(Lng.gt('Postfix'))
-            .setDesc(Lng.gt('Postfix description'))
+        new this._Setting_(this._customModal.content)
+            .setName(this._ITranslationService.get('Postfix'))
+            .setDesc(this._ITranslationService.get('Postfix description'))
             .setClass('custom-form-textarea')
             .setClass('smalerHeight')
             .addTextArea((text) => {
-                text.setPlaceholder(Lng.gt('Postfix'))
+                text.setPlaceholder(this._ITranslationService.get('Postfix'))
                     .setValue('')
                     .onChange((value) => {
                         this._annotation.postfix = value;
                     });
             });
 
-        new Setting(this._customModal.content)
-            .setName(Lng.gt('Place'))
-            .setDesc(Lng.gt('Place description'))
+        new this._Setting_(this._customModal.content)
+            .setName(this._ITranslationService.get('Place'))
+            .setDesc(this._ITranslationService.get('Place description'))
             .addText((text) => {
-                text.setPlaceholder(Lng.gt('Place'))
+                text.setPlaceholder(this._ITranslationService.get('Place'))
                     .setValue('')
                     .onChange((value) => {
                         this._annotation.place = value;
                     });
             });
 
-        new Setting(this._customModal.content)
-            .setName(Lng.gt('Comment'))
-            .setDesc(Lng.gt('Comment description'))
+        new this._Setting_(this._customModal.content)
+            .setName(this._ITranslationService.get('Comment'))
+            .setDesc(this._ITranslationService.get('Comment description'))
             .setClass('custom-form-textarea')
             .addTextArea((text) => {
-                text.setPlaceholder(Lng.gt('Comment'))
+                text.setPlaceholder(this._ITranslationService.get('Comment'))
                     .setValue('')
                     .onChange((value) => {
                         this._annotation.comment = value;
                     });
             });
 
-        new Setting(this._customModal.content)
+        new this._Setting_(this._customModal.content)
             .addButton((btn) =>
                 btn
-                    .setButtonText(Lng.gt('Save'))
+                    .setButtonText(this._ITranslationService.get('Save'))
                     .setCta()
                     .onClick(() => {
                         this.save();
@@ -209,7 +218,7 @@ export default class AddAnnotationModal {
             )
             .addButton((btn) =>
                 btn
-                    .setButtonText(Lng.gt('Cancel'))
+                    .setButtonText(this._ITranslationService.get('Cancel'))
                     .setCta()
                     .onClick(() => {
                         this._customModal.close();
@@ -223,13 +232,17 @@ export default class AddAnnotationModal {
     public static registerCommand(): void {
         const plugin = Resolve<IPrj>('IPrj');
 
+        const iTranslationService = Resolve<ITranslationService>(
+            'ITranslationService',
+        );
+
         const logger =
             Resolve<ILogger_>('ILogger_').getLogger('AddAnnotationModal');
 
         try {
             plugin.addCommand({
                 id: 'add-annotation-modal',
-                name: `${Lng.gt('Add annotation')}`,
+                name: `${iTranslationService.get('Add annotation')}`,
                 /**
                  * Callback function for the command
                  */
