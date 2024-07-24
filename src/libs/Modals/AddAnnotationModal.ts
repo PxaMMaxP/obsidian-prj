@@ -1,187 +1,240 @@
+import { Setting, TFile } from 'obsidian';
 import Lng from 'src/classes/Lng';
-import { ILogger_ } from 'src/interfaces/ILogger';
+import type { IApp } from 'src/interfaces/IApp';
+import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IPrj } from 'src/interfaces/IPrj';
-import { Field, FormConfiguration, IFormResult } from 'src/types/ModalFormType';
-import BaseModalForm from './BaseModalForm';
+import type {
+    ICustomModal_,
+    ICustomModal,
+} from './CustomModal/interfaces/ICustomModal';
+import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
-import { HelperGeneral } from '../Helper/General';
-import { HelperObsidian } from '../Helper/Obsidian';
+import { FileType } from '../FileType/FileType';
+import type { IHelperGeneral_ } from '../Helper/General';
 
 /**
- * Modal to create a new metadata file
+ * Modal to create a new annotation
  */
-export default class AddAnnotationModal extends BaseModalForm {
+export default class AddAnnotationModal {
+    @Inject(
+        'ILogger_',
+        (x: ILogger_) => x.getLogger('AddAnnotationModal'),
+        false,
+    )
+    protected readonly _logger?: ILogger;
+    @Inject('IApp')
+    protected readonly _IApp!: IApp;
+    @Inject('IMetadataCache')
+    private readonly _IMetadataCache!: IMetadataCache;
+    @Inject('IHelperGeneral_')
+    private readonly _IHelperGeneral!: IHelperGeneral_;
+    @Inject('ICustomModal_')
+    private readonly _ICustomModal_!: ICustomModal_;
+
+    private readonly _customModal: ICustomModal = new this._ICustomModal_();
+
+    private _activeFile?: TFile;
+    protected _annotation: {
+        prefix: string;
+        citation: string;
+        postfix: string;
+        place: string;
+        comment: string;
+        readonly toString: () => string;
+    } = {
+        prefix: '',
+        citation: '',
+        postfix: '',
+        place: '',
+        comment: '',
+        toString: () => {
+            const text = this._annotation;
+
+            return `${text.prefix} ${text.citation} ${text.postfix} ${text.place} ${text.comment}`;
+        },
+    };
+
     /**
-     * Creates an instance of AddAnnotationModal.
+     * Creates and opens a Add Annotation modal.
      */
     constructor() {
-        super();
+        this._customModal
+            .setBackgroundDimmed(false)
+            .setDraggableEnabled(true)
+            .setShouldOpen(this.shouldOpen.bind(this))
+            .setOnOpen(this.onOpen.bind(this))
+            .open();
+    }
+
+    /**
+     * Checks if the active file is a metadata file
+     * @returns True if the active file is a metadata file
+     */
+    private shouldOpen(): boolean {
+        const workspace = this._IApp.workspace;
+        const activeFile = workspace.getActiveFile();
+
+        if (!activeFile) {
+            return false;
+        }
+        const activeFileMetadata = this._IMetadataCache.getEntry(activeFile);
+        const type = activeFileMetadata?.metadata.frontmatter?.type;
+
+        if (!FileType.isValidOf(type, ['Metadata'])) {
+            return false;
+        }
+
+        this._activeFile = activeFile;
+
+        return true;
+    }
+
+    /**
+     * Saves the annotation to the active file
+     */
+    private save(): void {
+        const id = this._IHelperGeneral.generateUID(
+            this._annotation.toString(),
+            11,
+        );
+
+        const template = `
+>_${this._annotation.prefix ?? ' '}_
+>==${this._annotation.citation ?? ' '}== 
+>_${this._annotation.postfix ?? ' '}_
+>
+>Link: [[#^${id}|Zeige Zitat]]
+><!-- [[${this._activeFile?.basename}#^${id}|ZitierterText]] -->
+>Kommentar: 
+>**${this._annotation.comment ?? ' '}**
+>
+>Stelle:
+>${this._annotation.place ? `##${this._annotation.place}` : ''}
+^${id}
+`;
+
+        if (!this._activeFile) return;
+        this._IApp.vault.append(this._activeFile, template);
+    }
+
+    /**
+     * Builds the content of the modal
+     */
+    private onOpen(): void {
+        this._customModal.content.addClass('custom-form');
+        this._customModal.setTitle(Lng.gt('Add annotation'));
+
+        new Setting(this._customModal.content)
+            .setName(Lng.gt('Prefix'))
+            .setDesc(Lng.gt('Prefix description'))
+            .setClass('custom-form-textarea')
+            .setClass('smalerHeight')
+            .addTextArea((text) => {
+                text.setPlaceholder(Lng.gt('Prefix'))
+                    .setValue('')
+                    .onChange((value) => {
+                        this._annotation.prefix = value;
+                    });
+            });
+
+        new Setting(this._customModal.content)
+            .setName(Lng.gt('Citation'))
+            .setDesc(Lng.gt('Citation description'))
+            .setClass('custom-form-textarea')
+            .addTextArea((text) => {
+                text.setPlaceholder(Lng.gt('Citation'))
+                    .setValue('')
+                    .onChange((value) => {
+                        this._annotation.citation = value;
+                    });
+            });
+
+        new Setting(this._customModal.content)
+            .setName(Lng.gt('Postfix'))
+            .setDesc(Lng.gt('Postfix description'))
+            .setClass('custom-form-textarea')
+            .setClass('smalerHeight')
+            .addTextArea((text) => {
+                text.setPlaceholder(Lng.gt('Postfix'))
+                    .setValue('')
+                    .onChange((value) => {
+                        this._annotation.postfix = value;
+                    });
+            });
+
+        new Setting(this._customModal.content)
+            .setName(Lng.gt('Place'))
+            .setDesc(Lng.gt('Place description'))
+            .addText((text) => {
+                text.setPlaceholder(Lng.gt('Place'))
+                    .setValue('')
+                    .onChange((value) => {
+                        this._annotation.place = value;
+                    });
+            });
+
+        new Setting(this._customModal.content)
+            .setName(Lng.gt('Comment'))
+            .setDesc(Lng.gt('Comment description'))
+            .setClass('custom-form-textarea')
+            .addTextArea((text) => {
+                text.setPlaceholder(Lng.gt('Comment'))
+                    .setValue('')
+                    .onChange((value) => {
+                        this._annotation.comment = value;
+                    });
+            });
+
+        new Setting(this._customModal.content)
+            .addButton((btn) =>
+                btn
+                    .setButtonText(Lng.gt('Save'))
+                    .setCta()
+                    .onClick(() => {
+                        this.save();
+                        this._customModal.close();
+                    }),
+            )
+            .addButton((btn) =>
+                btn
+                    .setButtonText(Lng.gt('Cancel'))
+                    .setCta()
+                    .onClick(() => {
+                        this._customModal.close();
+                    }),
+            );
     }
 
     /**
      * Registers the command to open the modal
-     * @remarks No cleanup needed
      */
     public static registerCommand(): void {
         const plugin = Resolve<IPrj>('IPrj');
 
         const logger =
             Resolve<ILogger_>('ILogger_').getLogger('AddAnnotationModal');
-        logger.trace("Registering 'AddAnnotationModal' commands");
 
-        plugin.addCommand({
-            id: 'add-annotation-modal',
-            name: `${Lng.gt('Add annotation')}`,
-            /**
-             * Callback function for the command
-             */
-            callback: async () => {
-                const modal = new AddAnnotationModal();
-                const result = await modal.openForm();
+        try {
+            plugin.addCommand({
+                id: 'add-annotation-modal',
+                name: `${Lng.gt('Add annotation')}`,
+                /**
+                 * Callback function for the command
+                 */
+                callback: async () => {
+                    new AddAnnotationModal();
+                },
+            });
 
-                if (result) {
-                    await modal.evaluateForm(result);
-                }
-            },
-        });
-    }
-
-    /**
-     * Opens the modal form
-     * @param preset - Optional preset data for the form
-     * @returns Result of the form
-     */
-    public async openForm(
-        preset?: Partial<unknown>,
-    ): Promise<IFormResult | undefined> {
-        if (!this.isApiAvailable()) return;
-        this._logger?.trace("Opening 'CreateNewMetadataModal' form");
-
-        const form = this.constructForm();
-        const result = await this.getApi().openForm(form);
-
-        this._logger?.trace(
-            `Form closes with status '${result.status}' and data:`,
-            result.data,
-        );
-
-        return result;
-    }
-
-    /**
-     * Evaluates the form result and performs necessary actions
-     * @param result - Result of the form
-     * @returns A string representing the evaluated form result
-     */
-    public async evaluateForm(
-        result: IFormResult,
-    ): Promise<string | undefined> {
-        if (!this.isApiAvailable()) return;
-
-        if (result.status !== 'ok' || !result.data) return;
-
-        let uidBase = '';
-
-        for (const [key, value] of Object.entries(result.data)) {
-            if (value !== '') {
-                uidBase += result.data[key] as string;
-            }
+            logger?.trace(
+                "Registered 'Add Annotation Modal' command successfully",
+            );
+        } catch (error) {
+            logger?.error(
+                "Failed to register 'Add Annotation Modal' command",
+                error,
+            );
         }
-
-        const id = HelperGeneral.generateUID(uidBase, 11);
-        const activeFile = HelperObsidian.getActiveFile();
-
-        const template = `
->_${result.data.prefix ?? ' '}_
->==${result.data.citation ?? ' '}== 
->_${result.data.postfix ?? ' '}_
->
->Link: [[#^${id}|Zeige Zitat]]
-><!-- [[${activeFile?.basename}#^${id}|ZitierterText]] -->
->Kommentar: 
->**${result.data.comment ?? ' '}**
->
->Stelle:
->${result.data.place ? `##${result.data.place}` : ''}
-^${id}
-`;
-
-        if (!activeFile) return;
-        this._IApp.vault.append(activeFile, template);
-    }
-
-    /**
-     * Constructs the form configuration
-     * @returns The form configuration
-     */
-    protected constructForm(): FormConfiguration {
-        const form: FormConfiguration = {
-            title: `${Lng.gt('Add annotation')}`,
-            name: 'new metadata file',
-            customClassname: 'annotation-form',
-            fields: [],
-        };
-
-        // Prefix
-        const prefix: Field = {
-            name: 'prefix',
-            label: Lng.gt('Prefix'),
-            description: Lng.gt('Prefix description'),
-            isRequired: false,
-            input: {
-                type: 'textarea',
-            },
-        };
-        form.fields.push(prefix);
-
-        // Citation
-        const citation: Field = {
-            name: 'citation',
-            label: Lng.gt('Citation'),
-            description: Lng.gt('Citation description'),
-            isRequired: false,
-            input: {
-                type: 'textarea',
-            },
-        };
-        form.fields.push(citation);
-
-        // Postfix
-        const postfix: Field = {
-            name: 'postfix',
-            label: Lng.gt('Postfix'),
-            description: Lng.gt('Postfix description'),
-            isRequired: false,
-            input: {
-                type: 'textarea',
-            },
-        };
-        form.fields.push(postfix);
-
-        // Place
-        const place: Field = {
-            name: 'place',
-            label: Lng.gt('Place'),
-            description: Lng.gt('Place description'),
-            isRequired: false,
-            input: {
-                type: 'text',
-            },
-        };
-        form.fields.push(place);
-
-        // Comment
-        const comment: Field = {
-            name: 'comment',
-            label: Lng.gt('Comment'),
-            description: Lng.gt('Comment description'),
-            isRequired: false,
-            input: {
-                type: 'textarea',
-            },
-        };
-        form.fields.push(comment);
-
-        return form;
     }
 }
