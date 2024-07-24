@@ -38,4 +38,10 @@ export interface IHelperObsidian {
      * @returns The active file in the workspace, or undefined if no file is active.
      */
     getActiveFile(): TFile | undefined;
+    /**
+     * Shows a notice
+     * @param message The message to show
+     * @param timeout The timeout of the notice
+     */
+    showNotice(message: string, timeout: number): void;
 }
