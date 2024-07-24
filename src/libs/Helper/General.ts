@@ -5,7 +5,7 @@ import { Register } from '../DependencyInjection/decorators/Register';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 
 export interface IHelperGeneral_ {
-    generateUID(input: string, length: number, sufix: string): string;
+    generateUID(input: string, length: number, sufix?: string): string;
     generateAcronym(text: string, length: number, prefix: string): string;
     sleep(ms: number): Promise<void>;
     deepClone<T>(obj: T): T;
