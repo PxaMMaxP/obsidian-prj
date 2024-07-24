@@ -1,4 +1,4 @@
-import { Component, Notice, Plugin } from 'obsidian';
+import { Component, Plugin } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
 import API from './classes/API';

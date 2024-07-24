@@ -1,4 +1,4 @@
-import { App, TFile } from 'obsidian';
+import { App, Notice, TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
@@ -99,5 +99,14 @@ export class HelperObsidian implements IHelperObsidian {
                 this._logger?.error('Error rebuilding active view', error);
             }
         }
+    }
+
+    /**
+     * Shows a notice
+     * @param message The message to show
+     * @param timeout The timeout of the notice
+     */
+    public showNotice(message: string, timeout: number): void {
+        new Notice(message, timeout);
     }
 }
