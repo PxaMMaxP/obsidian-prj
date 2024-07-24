@@ -12,6 +12,7 @@ import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { FileType } from '../FileType/FileType';
 import type { IHelperGeneral_ } from '../Helper/General';
+import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 
 /**
  * Modal to create a new annotation
@@ -29,6 +30,8 @@ export default class AddAnnotationModal {
     private readonly _IMetadataCache!: IMetadataCache;
     @Inject('IHelperGeneral_')
     private readonly _IHelperGeneral!: IHelperGeneral_;
+    @Inject('IHelperObsidian')
+    private readonly _IHelperObsidian!: IHelperObsidian;
     @Inject('ICustomModal_')
     private readonly _ICustomModal_!: ICustomModal_;
 
@@ -72,16 +75,22 @@ export default class AddAnnotationModal {
      * @returns True if the active file is a metadata file
      */
     private shouldOpen(): boolean {
-        const workspace = this._IApp.workspace;
-        const activeFile = workspace.getActiveFile();
+        const activeFile = this._IHelperObsidian.getActiveFile();
 
         if (!activeFile) {
+            this._IHelperObsidian.showNotice('No active file found', 2500);
+
             return false;
         }
         const activeFileMetadata = this._IMetadataCache.getEntry(activeFile);
         const type = activeFileMetadata?.metadata.frontmatter?.type;
 
         if (!FileType.isValidOf(type, ['Metadata'])) {
+            this._IHelperObsidian.showNotice(
+                'The active file is not a metadata file',
+                2500,
+            );
+
             return false;
         }
 
@@ -99,7 +108,19 @@ export default class AddAnnotationModal {
             11,
         );
 
-        const template = `
+        const template = this.generateAnnotationTemplate(id);
+
+        if (!this._activeFile) return;
+        this._IApp.vault.append(this._activeFile, template);
+    }
+
+    /**
+     * Generates the annotation template
+     * @param id The unique id of the annotation
+     * @returns The annotation template
+     */
+    private generateAnnotationTemplate(id: string): string {
+        return `
 >_${this._annotation.prefix ?? ' '}_
 >==${this._annotation.citation ?? ' '}== 
 >_${this._annotation.postfix ?? ' '}_
@@ -113,9 +134,6 @@ export default class AddAnnotationModal {
 >${this._annotation.place ? `##${this._annotation.place}` : ''}
 ^${id}
 `;
-
-        if (!this._activeFile) return;
-        this._IApp.vault.append(this._activeFile, template);
     }
 
     /**
