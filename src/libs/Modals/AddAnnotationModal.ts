@@ -38,14 +38,7 @@ export default class AddAnnotationModal {
     private readonly _customModal: ICustomModal = new this._ICustomModal_();
 
     private _activeFile?: TFile;
-    protected _annotation: {
-        prefix: string;
-        citation: string;
-        postfix: string;
-        place: string;
-        comment: string;
-        readonly toString: () => string;
-    } = {
+    protected _annotation: Annotation = {
         prefix: '',
         citation: '',
         postfix: '',
@@ -255,4 +248,20 @@ export default class AddAnnotationModal {
             );
         }
     }
+}
+
+/**
+ * The annotation object
+ */
+interface Annotation {
+    prefix: string;
+    citation: string;
+    postfix: string;
+    place: string;
+    comment: string;
+    /**
+     * Converts the annotation to a string
+     * @returns The annotation as a concatenated string
+     */
+    toString: () => string;
 }
