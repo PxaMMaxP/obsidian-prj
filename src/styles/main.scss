@@ -4,6 +4,7 @@
 @import 'partials/table';
 @import 'partials/editableDataView';
 @import 'partials/markdownRenderHeader';
+@import 'partials/customForm';
 
 .prj-block-container.panel {
     @include mobileGeneralStyles;
@@ -13,6 +14,7 @@
 
 @media (min-width: 681px) and (max-width: 1200px) {
     @include mobileGeneralStyles;
+
     .prj-block-container:not(.panel) {
         @include mobileTableGeneralStyles;
         @include mobileTable2ColumnStyles;
@@ -21,6 +23,7 @@
 
 @media (max-width: 680px) {
     @include mobileGeneralStyles;
+
     .prj-block-container:not(.panel) {
         @include mobileTableGeneralStyles;
         @include mobileTable1ColumnStyles;
