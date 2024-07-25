@@ -8,7 +8,6 @@ import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
-import CreateNewMetadataModal from 'src/libs/Modals/CreateNewMetadataModal';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import { PrjDocumentData } from './Data/PrjDocumentData';
