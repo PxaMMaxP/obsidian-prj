@@ -1,4 +1,5 @@
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 
 interface ILoggerMock_ {
     reset: () => void;
@@ -47,6 +48,22 @@ const MockLogger_: ILogger_ & ILoggerMock_ = {
         logger.setLogLevel.mockClear();
     },
 } as unknown as ILogger_ & ILoggerMock_;
+
+/**
+ * Register the mock logger on the DI container
+ * as `ILogger_`.
+ */
+export function registerMockLogger(): void {
+    const diContainer = DIContainer.getInstance();
+    diContainer.register('ILogger_', MockLogger_);
+}
+
+/**
+ * Reset the mock logger.
+ */
+export function resetMockLogger(): void {
+    MockLogger_.reset();
+}
 
 export { MockLogger_ };
 export default MockLogger;
