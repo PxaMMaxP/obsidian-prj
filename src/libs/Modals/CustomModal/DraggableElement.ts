@@ -44,6 +44,8 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
     private _initialX = 0;
     private _initialY = 0;
 
+    private _animationFrameId: number | null = null;
+
     /**
      * Creates a new instance of the draggable element.
      * @param draggableElement The element that should be draggable.
@@ -78,6 +80,10 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
      */
     onunload(): void {
         this._cssRuleComponent.onunload();
+
+        if (this._animationFrameId !== null) {
+            cancelAnimationFrame(this._animationFrameId);
+        }
     }
 
     /**
@@ -138,7 +144,13 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
             event.preventDefault();
             this._currentX = event.clientX - this._initialX;
             this._currentY = event.clientY - this._initialY;
-            this.updatePosition();
+
+            if (this._animationFrameId === null) {
+                this._animationFrameId = requestAnimationFrame(() => {
+                    this.updatePosition();
+                    this._animationFrameId = null;
+                });
+            }
         }
     }
 
@@ -163,9 +175,9 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
     private generateUID(): string {
         const charset =
             'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let uid = '';
+        let uid = 'x';
 
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 11; i++) {
             const randomIndex = Math.floor(Math.random() * charset.length);
             uid += charset[randomIndex];
         }
