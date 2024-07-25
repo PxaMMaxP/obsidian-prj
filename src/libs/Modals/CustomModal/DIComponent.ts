@@ -32,6 +32,17 @@ export abstract class DIComponent implements Component {
      */
     constructor() {
         this[componentSymbol];
+
+        this.load = this.load.bind(this);
+        this.onload = this.onload.bind(this);
+        this.unload = this.unload.bind(this);
+        this.onunload = this.onunload.bind(this);
+        this.addChild = this.addChild.bind(this);
+        this.removeChild = this.removeChild.bind(this);
+        this.register = this.register.bind(this);
+        this.registerEvent = this.registerEvent.bind(this);
+        this.registerDomEvent = this.registerDomEvent.bind(this);
+        this.registerInterval = this.registerInterval.bind;
     }
 
     /**
@@ -123,10 +134,11 @@ export abstract class DIComponent implements Component {
      * @inheritdoc
      */
     registerDomEvent(...args: unknown[]): void {
-        const registerDomEvent = this[componentSymbol].registerDomEvent as (
-            ...args: unknown[]
-        ) => void;
-        registerDomEvent(...args);
+        (
+            this[componentSymbol].registerDomEvent as (
+                ...args: unknown[]
+            ) => void
+        )(...args);
     }
 
     /**
