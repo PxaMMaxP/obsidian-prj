@@ -25,6 +25,11 @@ export interface ICustomModal {
     get content(): HTMLElement;
 
     /**
+     * Gets the unique class name of the draggable element.
+     */
+    get draggableClassName(): string | undefined;
+
+    /**
      * Opens the modal.
      * @throws {MissingCallbackError} If the `onOpen` callback is missing.
      * @throws {CallbackError} If an error occurs in the `shouldOpen` callback.

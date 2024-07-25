@@ -41,6 +41,13 @@ export class CustomModal implements ICustomModal {
     private _draggableElement?: IDraggableElement;
 
     /**
+     * Gets the unique class name of the draggable element.
+     */
+    public get draggableClassName(): string | undefined {
+        return this._draggableElement?.className;
+    }
+
+    /**
      * Called before the modal is opened.
      * @returns True if the modal can be opened, otherwise false.
      */
@@ -233,8 +240,8 @@ export class CustomModal implements ICustomModal {
             this._logger?.error('Error in onClose callback', error);
             throw new CallbackError('onClose', error);
         }
-        this._container.remove();
         this._component.unload();
+        this._container.remove();
     }
 
     /**
@@ -255,7 +262,7 @@ export class CustomModal implements ICustomModal {
 
         if (this._isDraggable) {
             this._draggableElement = new this._IDraggableElement_(
-                this._modal,
+                this._container,
                 this._title,
                 this._component,
             );

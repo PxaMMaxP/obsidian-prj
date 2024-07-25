@@ -2,7 +2,10 @@
  * @jest-environment jsdom
  */
 
-import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
+import MockLogger, {
+    registerMockLogger,
+    resetMockLogger,
+} from 'src/__mocks__/ILogger.mock';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { CustomModal } from '../CustomModal';
 import { MissingCallbackError, CallbackError } from '../interfaces/Exceptions';
@@ -26,7 +29,7 @@ const MockComponent = jest.fn().mockImplementation(() => ({
 
 // Registering the mocks
 const diContainer = DIContainer.getInstance();
-diContainer.register('ILogger_', MockLogger_);
+registerMockLogger();
 diContainer.register('IApp', mockIApp);
 diContainer.register('ILifecycleManager_', mockILifecycleManager);
 diContainer.register('IDraggableElement_', mockIDraggableElement);
@@ -36,7 +39,7 @@ describe('CustomModal', () => {
     let customModal: CustomModal;
 
     beforeEach(() => {
-        MockLogger_.reset();
+        resetMockLogger();
         customModal = new CustomModal();
         document.body.innerHTML = ''; // Reset the document body for each test
     });
