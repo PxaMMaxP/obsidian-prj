@@ -3,146 +3,155 @@
  */
 
 import { Component } from 'obsidian';
+import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { DraggableElement } from '../DraggableElement';
+import { ICSSStyleRuleComponent } from '../interfaces/ICSSStyleRuleComponent';
 
-const mockComponent = {
+// Mocks
+const MockComponent: Component = {
+    load: jest.fn(),
+    onload: jest.fn(),
+    unload: jest.fn(),
+    onunload: jest.fn(),
+    addChild: jest.fn(),
+    removeChild: jest.fn(),
+    register: jest.fn(),
+    registerEvent: jest.fn(),
     registerDomEvent: jest.fn((element, event, callback) => {
         element.addEventListener(event, callback);
-    }),
+    }) as unknown as Component['registerDomEvent'],
+    registerInterval: jest.fn(),
 };
+
+const MockComponent_ = jest.fn().mockImplementation(() => {
+    return MockComponent;
+});
+
+DIContainer.getInstance().register('Obsidian.Component_', MockComponent_);
+
+const MockICSSStyleRuleComponent: Partial<ICSSStyleRuleComponent> = {
+    onload: jest.fn(),
+    onunload: jest.fn(),
+    updateProperty: jest.fn(),
+};
+
+const MockICSSStyleRuleComponent_ = jest.fn().mockImplementation(() => {
+    return MockICSSStyleRuleComponent;
+});
+
+DIContainer.getInstance().register(
+    'ICSSStyleRuleComponent_',
+    MockICSSStyleRuleComponent_,
+);
 
 describe('DraggableElement', () => {
     let draggableElement: DraggableElement;
-    let draggableElementNode: HTMLElement;
-    let dragHandleNode: HTMLElement;
+    let mockElement: HTMLElement;
+    let mockHandle: HTMLElement;
 
     beforeEach(() => {
-        document.body.innerHTML = ''; // Clear the document body before each test
-
-        // Create mock DOM elements
-        draggableElementNode = document.createElement('div');
-        dragHandleNode = document.createElement('div');
-        document.body.appendChild(draggableElementNode);
-        document.body.appendChild(dragHandleNode);
+        jest.clearAllMocks();
+        mockElement = document.createElement('div');
+        mockHandle = document.createElement('div');
 
         draggableElement = new DraggableElement(
-            draggableElementNode,
-            dragHandleNode,
-            mockComponent as unknown as Component,
+            mockElement,
+            mockHandle,
+            MockComponent,
         );
     });
 
-    test('should register drag events on enableDragging', () => {
-        draggableElement.enableDragging();
+    it('should initialize with correct properties', () => {
+        expect(draggableElement).toBeInstanceOf(DraggableElement);
+        expect(MockComponent.addChild).toHaveBeenCalledWith(draggableElement);
 
-        expect(mockComponent.registerDomEvent).toHaveBeenCalledWith(
-            dragHandleNode,
+        expect(mockElement.classList.contains(draggableElement.className)).toBe(
+            true,
+        );
+        expect(MockICSSStyleRuleComponent_.mock.instances.length).toBe(1);
+        expect(MockICSSStyleRuleComponent.onload).toHaveBeenCalled();
+    });
+
+    it('should enable dragging', () => {
+        draggableElement.enableDragging();
+        expect(mockHandle.style.cursor).toBe('grab');
+        expect(MockComponent.registerDomEvent).toHaveBeenCalledTimes(3);
+
+        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
+            mockHandle,
             'mousedown',
             expect.any(Function),
         );
 
-        expect(mockComponent.registerDomEvent).toHaveBeenCalledWith(
+        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
             document,
             'mousemove',
             expect.any(Function),
         );
 
-        expect(mockComponent.registerDomEvent).toHaveBeenCalledWith(
+        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
             document,
             'mouseup',
             expect.any(Function),
         );
-        expect(dragHandleNode.style.cursor).toBe('grab');
     });
 
-    test('should start dragging on mousedown', () => {
-        draggableElement.enableDragging();
-
-        const mouseDownEvent = new MouseEvent('mousedown', {
+    it('should handle mousedown event', () => {
+        const event = new MouseEvent('mousedown', {
             clientX: 100,
             clientY: 100,
-            bubbles: true, // Ensure the event bubbles up
         });
+        jest.spyOn(event, 'target', 'get').mockReturnValue(mockHandle);
 
-        dragHandleNode.dispatchEvent(mouseDownEvent);
+        draggableElement.enableDragging();
+        mockHandle.dispatchEvent(event);
 
         expect(draggableElement['_isDragging']).toBe(true);
         expect(draggableElement['_initialX']).toBe(100);
         expect(draggableElement['_initialY']).toBe(100);
-        expect(dragHandleNode.style.cursor).toBe('grabbing');
+        expect(mockHandle.style.cursor).toBe('grabbing');
     });
 
-    test('should move element on mousemove', () => {
+    it('should handle mousemove event', () => {
         draggableElement.enableDragging();
+        draggableElement['_isDragging'] = true;
+        draggableElement['_initialX'] = 50;
+        draggableElement['_initialY'] = 50;
 
-        const mouseDownEvent = new MouseEvent('mousedown', {
-            clientX: 100,
-            clientY: 100,
-            bubbles: true,
-        });
-
-        dragHandleNode.dispatchEvent(mouseDownEvent);
-
-        const mouseMoveEvent = new MouseEvent('mousemove', {
+        const event = new MouseEvent('mousemove', {
             clientX: 150,
             clientY: 150,
-            bubbles: true,
         });
+        document.dispatchEvent(event);
 
-        // Simulate the dragging state
-        draggableElement['_isDragging'] = true;
-        draggableElement['_initialX'] = 100;
-        draggableElement['_initialY'] = 100;
+        expect(draggableElement['_currentX']).toBe(100);
+        expect(draggableElement['_currentY']).toBe(100);
 
-        jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
-            cb(0);
-
-            return 1;
-        });
-
-        document.dispatchEvent(mouseMoveEvent);
-
-        // Force the updatePosition call
-        requestAnimationFrame(() => {
-            expect(draggableElement['_currentX']).toBe(50);
-            expect(draggableElement['_currentY']).toBe(50);
-
-            expect(draggableElementNode.style.transform).toBe(
-                'translate(50px, 50px)',
-            );
-        });
+        expect(MockICSSStyleRuleComponent.updateProperty).toHaveBeenCalledWith(
+            'translate(100px, 100px)',
+        );
     });
 
-    test('should stop dragging on mouseup', () => {
+    it('should handle mouseup event', () => {
         draggableElement.enableDragging();
+        draggableElement['_isDragging'] = true;
+        mockHandle.style.cursor = 'grabbing';
 
-        const mouseDownEvent = new MouseEvent('mousedown', {
-            clientX: 100,
-            clientY: 100,
-            bubbles: true,
-        });
-
-        dragHandleNode.dispatchEvent(mouseDownEvent);
-
-        const mouseUpEvent = new MouseEvent('mouseup', { bubbles: true });
-
-        document.dispatchEvent(mouseUpEvent);
+        const event = new MouseEvent('mouseup');
+        document.dispatchEvent(event);
 
         expect(draggableElement['_isDragging']).toBe(false);
-        expect(dragHandleNode.style.cursor).toBe('grab');
-        expect(draggableElement['_animationFrameId']).toBeNull();
+        expect(mockHandle.style.cursor).toBe('grab');
     });
 
-    test('should cancel animation frame on mouseup if dragging', () => {
-        draggableElement.enableDragging();
+    it('should unload properly', () => {
+        draggableElement.onunload();
+        expect(MockICSSStyleRuleComponent.onunload).toHaveBeenCalled();
+    });
 
-        draggableElement['_isDragging'] = true;
-        draggableElement['_animationFrameId'] = requestAnimationFrame(() => {});
-
-        const mouseUpEvent = new MouseEvent('mouseup', { bubbles: true });
-
-        document.dispatchEvent(mouseUpEvent);
-
-        expect(draggableElement['_animationFrameId']).toBeNull();
+    it('should generate a UID', () => {
+        const uid = draggableElement['generateUID']();
+        expect(uid).toHaveLength(12);
+        expect(/[a-zA-Z0-9]{12}/.test(uid)).toBe(true);
     });
 });
