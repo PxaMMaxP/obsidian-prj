@@ -20,6 +20,11 @@ export interface ICustomModal_ {
  */
 export interface ICustomModal {
     /**
+     * The component that the modal belongs to.
+     */
+    get component(): Component;
+
+    /**
      * The content of the modal.
      */
     get content(): HTMLElement;

@@ -38,6 +38,14 @@ export class CustomModal implements ICustomModal {
     private readonly _beforeUnload: () => void = this.close.bind(this);
     @Inject('Obsidian.Component_', (x: ForceConstructor<Component>) => new x())
     protected _component: Component;
+
+    /**
+     * @inheritdoc
+     */
+    public get component(): Component {
+        return this._component;
+    }
+
     private _draggableElement?: IDraggableElement;
 
     /**
