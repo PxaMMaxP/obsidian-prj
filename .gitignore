@@ -37,3 +37,5 @@ docs/*
 src/auto-imports.ts
 
 *.ignore.*
+
+.locale
