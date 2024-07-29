@@ -113,6 +113,8 @@ describe('DraggableElement', () => {
     });
 
     it('should handle mousemove event', () => {
+        jest.useFakeTimers();
+
         draggableElement.enableDragging();
         draggableElement['_isDragging'] = true;
         draggableElement['_initialX'] = 50;
@@ -124,12 +126,16 @@ describe('DraggableElement', () => {
         });
         document.dispatchEvent(event);
 
+        jest.advanceTimersByTime(16);
+
         expect(draggableElement['_currentX']).toBe(100);
         expect(draggableElement['_currentY']).toBe(100);
 
         expect(MockICSSStyleRuleComponent.updateProperty).toHaveBeenCalledWith(
             'translate(100px, 100px)',
         );
+
+        jest.useRealTimers();
     });
 
     it('should handle mouseup event', () => {
