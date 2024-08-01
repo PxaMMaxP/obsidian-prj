@@ -2,9 +2,9 @@ import { Component, EventRef } from 'obsidian';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
 
-const _componentSymbol = Symbol('_component');
-const componentSymbol = Symbol('component');
-const _Component_Symbol = Symbol('_Component_');
+const __componentInstance = Symbol('componentInstance');
+const _componentClass = Symbol('componentClass');
+const _componentOriginalMethods = Symbol('componentOriginalMethods');
 
 /**
  * Custom implementation of {@link Component}
@@ -12,27 +12,95 @@ const _Component_Symbol = Symbol('_Component_');
  */
 export abstract class DIComponent implements Component {
     @Inject('Obsidian.Component_')
-    private readonly [_Component_Symbol]!: ForceConstructor<Component>;
+    private readonly [_componentClass]!: ForceConstructor<Component>;
 
-    private [_componentSymbol]?: Component;
+    private [__componentInstance]?: Component;
+    private [_componentOriginalMethods]?: Component;
 
     /**
-     * Gets or creates the component instance.
+     * Retrieves or initializes the component instance.
      */
-    private get [componentSymbol](): Component {
-        if (this[_componentSymbol] == null) {
-            this[_componentSymbol] = new this[_Component_Symbol]();
+    private get componentInstance(): Component {
+        if (!this[__componentInstance]) {
+            this[__componentInstance] = new this[_componentClass]();
         }
 
-        return this[_componentSymbol];
+        return this[__componentInstance];
+    }
+
+    /**
+     * Retrieves or initializes the original methods of the component.
+     */
+    private get componentOriginalMethods(): Component {
+        if (!this[_componentOriginalMethods]) {
+            this[_componentOriginalMethods] = this.getOriginalMethods();
+        }
+
+        return this[_componentOriginalMethods];
+    }
+
+    /**
+     * Gets the current original reference
+     * of the methods of the component.
+     * @returns The original reference of the methods of the component.
+     */
+    private getOriginalMethods(): Component {
+        return {
+            load: this.componentInstance.load.bind(this.componentInstance),
+            onload: this.componentInstance.onload.bind(this.componentInstance),
+            unload: this.componentInstance.unload.bind(this.componentInstance),
+            onunload: this.componentInstance.onunload.bind(
+                this.componentInstance,
+            ),
+            addChild: this.componentInstance.addChild.bind(
+                this.componentInstance,
+            ),
+            removeChild: this.componentInstance.removeChild.bind(
+                this.componentInstance,
+            ),
+            register: this.componentInstance.register.bind(
+                this.componentInstance,
+            ),
+            registerEvent: this.componentInstance.registerEvent.bind(
+                this.componentInstance,
+            ),
+            registerDomEvent: this.componentInstance.registerDomEvent.bind(
+                this.componentInstance,
+            ),
+            registerInterval: this.componentInstance.registerInterval.bind(
+                this.componentInstance,
+            ),
+        };
+    }
+
+    /**
+     * Overrides the original methods of the component.
+     */
+    private overrideMethods(): void {
+        if (this.componentOriginalMethods) {
+            this.componentInstance.load = this.load.bind(this);
+            this.componentInstance.onload = this.onload.bind(this);
+            this.componentInstance.unload = this.unload.bind(this);
+            this.componentInstance.onunload = this.onunload.bind(this);
+            this.componentInstance.addChild = this.addChild.bind(this);
+            this.componentInstance.removeChild = this.removeChild.bind(this);
+            this.componentInstance.register = this.register.bind(this);
+
+            this.componentInstance.registerEvent =
+                this.registerEvent.bind(this);
+
+            this.componentInstance.registerDomEvent =
+                this.registerDomEvent.bind(this);
+
+            this.componentInstance.registerInterval =
+                this.registerInterval.bind(this);
+        }
     }
 
     /**
      * @inheritdoc
      */
     constructor() {
-        this[componentSymbol];
-
         this.load = this.load.bind(this);
         this.onload = this.onload.bind(this);
         this.unload = this.unload.bind(this);
@@ -42,14 +110,16 @@ export abstract class DIComponent implements Component {
         this.register = this.register.bind(this);
         this.registerEvent = this.registerEvent.bind(this);
         this.registerDomEvent = this.registerDomEvent.bind(this);
-        this.registerInterval = this.registerInterval.bind;
+        this.registerInterval = this.registerInterval.bind(this);
+
+        this.overrideMethods();
     }
 
     /**
      * @inheritdoc
      */
     load(): void {
-        this[componentSymbol].load();
+        this.componentOriginalMethods.load();
     }
 
     /**
@@ -57,14 +127,14 @@ export abstract class DIComponent implements Component {
      * @overload
      */
     onload(): void {
-        this[componentSymbol].onload();
+        this.componentOriginalMethods.onload();
     }
 
     /**
      * @inheritdoc
      */
     unload(): void {
-        this[componentSymbol].unload();
+        this.componentOriginalMethods.unload();
     }
 
     /**
@@ -72,35 +142,35 @@ export abstract class DIComponent implements Component {
      * @overload
      */
     onunload(): void {
-        this[componentSymbol].onunload();
+        this.componentOriginalMethods.onunload();
     }
 
     /**
      * @inheritdoc
      */
     addChild<T extends Component>(component: T): T {
-        return this[componentSymbol].addChild(component);
+        return this.componentOriginalMethods.addChild(component);
     }
 
     /**
      * @inheritdoc
      */
     removeChild<T extends Component>(component: T): T {
-        return this[componentSymbol].removeChild(component);
+        return this.componentOriginalMethods.removeChild(component);
     }
 
     /**
      * @inheritdoc
      */
     register(cb: () => unknown): void {
-        this[componentSymbol].register(cb);
+        this.componentOriginalMethods.register(cb);
     }
 
     /**
      * @inheritdoc
      */
     registerEvent(eventRef: EventRef): void {
-        this[componentSymbol].registerEvent(eventRef);
+        this.componentOriginalMethods.registerEvent(eventRef);
     }
 
     /**
@@ -135,7 +205,7 @@ export abstract class DIComponent implements Component {
      */
     registerDomEvent(...args: unknown[]): void {
         (
-            this[componentSymbol].registerDomEvent as (
+            this.componentOriginalMethods.registerDomEvent as (
                 ...args: unknown[]
             ) => void
         )(...args);
@@ -145,6 +215,6 @@ export abstract class DIComponent implements Component {
      * @inheritdoc
      */
     registerInterval(id: number): number {
-        return this[componentSymbol].registerInterval(id);
+        return this.componentOriginalMethods.registerInterval(id);
     }
 }
