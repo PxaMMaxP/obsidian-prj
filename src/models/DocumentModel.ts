@@ -5,7 +5,8 @@ import { Path } from 'src/classes/Path';
 import type { IApp } from 'src/interfaces/IApp';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
@@ -17,6 +18,7 @@ import IPrjModel from './interfaces/IPrjModel';
 /**
  * Represents the model for a document.
  */
+@Register('DocumentModel_')
 export class DocumentModel
     extends FileModel<PrjDocumentData>
     implements IPrjModel<PrjDocumentData>
@@ -168,7 +170,7 @@ export class DocumentModel
         if (file instanceof TFile) {
             return file;
         } else {
-            this._logger?.warn(`No files found for ${fileLinkData.filename}`);
+            this._logger?.trace(`No files found for ${fileLinkData.filename}`);
 
             return undefined;
         }
