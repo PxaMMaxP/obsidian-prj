@@ -31,7 +31,7 @@ export type SetDelegate<ClassInstType, InputType, PropertieType> = (
  * @template PropertieType - The type of the property to be lazily loaded.
  * @template InputType - The type of the input value used in the setter delegate.
  * @param get - A delegate function to retrieve the property value.
- * @param set - An optional delegate function or `false`. If `false`, no setter is defined. If `undefined`, a simple setter is used. If a function, the function is used as the setter.
+ * @param set - An optional delegate function or `Readonly`. If `Readonly`, no setter is defined. If `undefined`, a simple setter is used. If a function, the function is used as the setter.
  * @returns A decorator function to be applied on the class property.
  * @remarks This decorator does not handle asynchronous loading or error handling. Asynchronous operations and errors should be managed within the provided delegates.
  * @example
@@ -62,7 +62,7 @@ export type SetDelegate<ClassInstType, InputType, PropertieType> = (
  */
 export function LazzyLoading<ClassInstType, PropertieType, InputType>(
     get: GetDelegate<ClassInstType, PropertieType>,
-    set?: SetDelegate<ClassInstType, InputType, PropertieType> | false,
+    set?: SetDelegate<ClassInstType, InputType, PropertieType> | 'Readonly',
 ) {
     return function (
         target: ClassInstType,
@@ -86,7 +86,7 @@ export function LazzyLoading<ClassInstType, PropertieType, InputType>(
         };
 
         // Handle setter definition based on the set parameter
-        if (set !== false) {
+        if (set !== 'Readonly') {
             descriptor.set = function (value: InputType) {
                 if (typeof set === 'function') {
                     this[privatePropertyKey] = set(value, this);
