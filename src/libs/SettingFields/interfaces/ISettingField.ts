@@ -1,5 +1,5 @@
 import { Component } from 'obsidian';
-import { IInternalSettingItem } from './ISetting';
+import { IInternalSettingItem } from './SettingItem';
 
 export type SettingFieldConfigurator<
     T extends new (...args: unknown[]) => unknown,

@@ -2,32 +2,17 @@
  * @jest-environment jsdom
  */
 
-import { Component } from 'obsidian';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import {
+    MockComponent,
+    MockComponentRef,
+    registerMockComponent,
+    resetMockComponent,
+} from '../__mocks__/Component.mock';
 import { DraggableElement } from '../DraggableElement';
 import { ICSSStyleRuleComponent } from '../interfaces/ICSSStyleRuleComponent';
 
-// Mocks
-const MockComponent: Component = {
-    load: jest.fn(),
-    onload: jest.fn(),
-    unload: jest.fn(),
-    onunload: jest.fn(),
-    addChild: jest.fn(),
-    removeChild: jest.fn(),
-    register: jest.fn(),
-    registerEvent: jest.fn(),
-    registerDomEvent: jest.fn((element, event, callback) => {
-        element.addEventListener(event, callback);
-    }) as unknown as Component['registerDomEvent'],
-    registerInterval: jest.fn(),
-};
-
-const MockComponent_ = jest.fn().mockImplementation(() => {
-    return MockComponent;
-});
-
-DIContainer.getInstance().register('Obsidian.Component_', MockComponent_);
+registerMockComponent();
 
 const MockICSSStyleRuleComponent: Partial<ICSSStyleRuleComponent> = {
     onload: jest.fn(),
@@ -51,6 +36,7 @@ describe('DraggableElement', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        resetMockComponent();
         mockElement = document.createElement('div');
         mockHandle = document.createElement('div');
 
@@ -63,7 +49,10 @@ describe('DraggableElement', () => {
 
     it('should initialize with correct properties', () => {
         expect(draggableElement).toBeInstanceOf(DraggableElement);
-        expect(MockComponent.addChild).toHaveBeenCalledWith(draggableElement);
+
+        expect(MockComponentRef.addChild).toHaveBeenCalledWith(
+            draggableElement,
+        );
 
         expect(mockElement.classList.contains(draggableElement.className)).toBe(
             true,
@@ -75,21 +64,21 @@ describe('DraggableElement', () => {
     it('should enable dragging', () => {
         draggableElement.enableDragging();
         expect(mockHandle.style.cursor).toBe('grab');
-        expect(MockComponent.registerDomEvent).toHaveBeenCalledTimes(3);
+        expect(MockComponentRef.registerDomEvent).toHaveBeenCalledTimes(3);
 
-        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
+        expect(MockComponentRef.registerDomEvent).toHaveBeenCalledWith(
             mockHandle,
             'mousedown',
             expect.any(Function),
         );
 
-        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
+        expect(MockComponentRef.registerDomEvent).toHaveBeenCalledWith(
             document,
             'mousemove',
             expect.any(Function),
         );
 
-        expect(MockComponent.registerDomEvent).toHaveBeenCalledWith(
+        expect(MockComponentRef.registerDomEvent).toHaveBeenCalledWith(
             document,
             'mouseup',
             expect.any(Function),
