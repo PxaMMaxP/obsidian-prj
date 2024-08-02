@@ -14,7 +14,7 @@ export interface ISettingField_<
      */
     new (
         parent: IInternalSettingItem,
-        configure: SettingFieldConfigurator<Type>,
+        configure?: SettingFieldConfigurator<Type>,
     ): ISettingField;
 }
 

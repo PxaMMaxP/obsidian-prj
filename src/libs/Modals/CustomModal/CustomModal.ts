@@ -216,15 +216,15 @@ export class CustomModal implements ICustomModal {
             this._beforeUnload,
         );
 
-        this._component.load();
         this.buildModal();
+        this._component.load();
 
         if (this._isDraggable && this._draggableElement != null) {
             this._draggableElement.enableDragging();
         }
 
         try {
-            this._onOpen();
+            this._onOpen?.();
         } catch (error) {
             this._logger?.error('Error in onOpen callback', error);
             throw new CallbackError('onOpen', error);
