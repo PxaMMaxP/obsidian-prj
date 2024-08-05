@@ -58,6 +58,28 @@ export function registerMockLogger(): void {
     diContainer.register('ILogger_', MockLogger_);
 }
 
+const UndefinedMockLogger_: ILogger_ & ILoggerMock_ = {
+    getLogger: jest.fn(() => undefined),
+    getInstance: jest.fn(() => undefined),
+    reset: () => {
+        const logger = MockLogger as unknown as ILoggerMock;
+        logger.warn.mockClear();
+        logger.info.mockClear();
+        logger.error.mockClear();
+        logger.trace.mockClear();
+        logger.debug.mockClear();
+        logger.setLogLevel.mockClear();
+    },
+} as unknown as ILogger_ & ILoggerMock_;
+
+/**
+ * Register an empty mock logger on the DI container
+ */
+export function registerEmptyMockLogger(): void {
+    const diContainer = DIContainer.getInstance();
+    diContainer.register('ILogger_', UndefinedMockLogger_);
+}
+
 /**
  * Reset the mock logger.
  */
