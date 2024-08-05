@@ -39,3 +39,4 @@ src/auto-imports.ts
 *.ignore.*
 
 .locale
+isolate-*-v8.log
