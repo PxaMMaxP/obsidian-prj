@@ -1,7 +1,6 @@
 /* eslint-disable jsdoc/check-tag-names */
 import { Component } from 'obsidian';
 import { ICustomModal } from 'src/libs/Modals/CustomModal/interfaces/ICustomModal';
-import { SettingFieldConfigurator } from './ISettingField';
 
 export type SettingConfigurator = (setting: ISettingItemFluentAPI) => void;
 
@@ -12,7 +11,7 @@ export interface ISettingItem_ {
     /**
      * Creates a new setting block.
      * @param parentModal The `ICustomModal` instance that the setting field belongs to.
-     * @param configure A function that configures the setting field {@link SettingItem.onload|on load}.
+     * @param configure A function that configures the setting field {@link ISettingItem.onload|on load}.
      * @param parentContainerEl The container element to add the setting block.
      * Only if `modal` is `undefined`.
      * @param parentComponent The component that the setting field belongs to.
@@ -154,7 +153,7 @@ export interface ISettingItemFluentAPI extends ISettingItem {
      */
     add<Type extends new (...args: unknown[]) => unknown>(
         settingField: Type,
-        configure: SettingFieldConfigurator<Type>,
+        configure: ConstructorParameters<Type>[1],
     ): ISettingItemFluentAPI;
 
     /**
