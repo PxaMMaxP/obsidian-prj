@@ -31,10 +31,13 @@ describe('SettingItem', () => {
         mockComponent = new MockComponent_();
         containerEl = document.createElement('div');
 
-        mockModal = {
-            content: containerEl,
-            component: mockComponent,
-        } as ICustomModal;
+        // mockModal = {
+        //     content: containerEl,
+        //     component: mockComponent,
+        // } as unknown as ICustomModal;
+
+        mockModal = mockComponent as unknown as ICustomModal;
+        (mockModal.content as any) = containerEl;
     });
 
     it('should instantiate SettingItem correctly', () => {

@@ -30,34 +30,25 @@ export abstract class DIComponent implements Component {
      * @returns The original reference of the methods of the component.
      */
     private getOriginalMethods(): Component {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const bindOrAssign = <T>(
+            method: T & { bind?: (X: unknown) => T },
+        ): T => (method?.bind ? method.bind(this[_componentInstance]) : method);
+
         return {
-            load: this[_componentInstance].load.bind(this[_componentInstance]),
-            onload: this[_componentInstance].onload.bind(
-                this[_componentInstance],
+            load: bindOrAssign(this[_componentInstance].load),
+            onload: bindOrAssign(this[_componentInstance].onload),
+            unload: bindOrAssign(this[_componentInstance].unload),
+            onunload: bindOrAssign(this[_componentInstance].onunload),
+            addChild: bindOrAssign(this[_componentInstance].addChild),
+            removeChild: bindOrAssign(this[_componentInstance].removeChild),
+            register: bindOrAssign(this[_componentInstance].register),
+            registerEvent: bindOrAssign(this[_componentInstance].registerEvent),
+            registerDomEvent: bindOrAssign(
+                this[_componentInstance].registerDomEvent,
             ),
-            unload: this[_componentInstance].unload.bind(
-                this[_componentInstance],
-            ),
-            onunload: this[_componentInstance].onunload.bind(
-                this[_componentInstance],
-            ),
-            addChild: this[_componentInstance].addChild.bind(
-                this[_componentInstance],
-            ),
-            removeChild: this[_componentInstance].removeChild.bind(
-                this[_componentInstance],
-            ),
-            register: this[_componentInstance].register.bind(
-                this[_componentInstance],
-            ),
-            registerEvent: this[_componentInstance].registerEvent.bind(
-                this[_componentInstance],
-            ),
-            registerDomEvent: this[_componentInstance].registerDomEvent.bind(
-                this[_componentInstance],
-            ),
-            registerInterval: this[_componentInstance].registerInterval.bind(
-                this[_componentInstance],
+            registerInterval: bindOrAssign(
+                this[_componentInstance].registerInterval,
             ),
         };
     }

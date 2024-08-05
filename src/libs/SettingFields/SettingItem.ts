@@ -3,7 +3,6 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { InstantiationError, SettingError } from './interfaces/Exceptions';
-import { SettingFieldConfigurator } from './interfaces/ISettingField';
 import type {
     IInternalSettingItem,
     ISettingItem,
@@ -23,85 +22,23 @@ import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal
 @Register('ISettingItem_')
 @ImplementsStatic<ISettingItem_>()
 export class SettingItem extends DIComponent implements IInternalSettingItem {
+    //#region Dependencies
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('SettingItem'), false)
     protected _logger?: ILogger;
+    //#endregion
 
     /**
-     * The container element of
-     * this whole setting field **Parent**.
+     * @inheritdoc
      */
     public readonly parentContainerEl: HTMLElement | DocumentFragment;
     /**
-     * The component that the setting item belongs to.
+     * @inheritdoc
      */
     public readonly parentComponent: Component;
     /**
-     * The `ICustomModal` instance that the setting item belongs to.
+     * @inheritdoc
      */
     public readonly parentModal: ICustomModal | undefined;
-
-    /**
-     * Creates a new setting block.
-     * @param parentModal The `ICustomModal` instance that the setting field belongs to.
-     * @param configure A function that configures the setting field {@link SettingItem.onload|on load}.
-     * @param parentContainerEl The container element to add the setting block.
-     * Only if `modal` is `undefined`.
-     * @param parentComponent The component that the setting field belongs to.
-     * It is used to register the setting block as a child of the component.
-     * Only if `modal` is `undefined`.
-     */
-    constructor(
-        parentModal: ICustomModal | undefined,
-        configure?: SettingConfigurator,
-        parentContainerEl?: HTMLElement | DocumentFragment,
-        parentComponent?: Component,
-    ) {
-        super();
-
-        if (parentModal != undefined) {
-            this.parentContainerEl = parentModal.content;
-            this.parentComponent = parentModal.component;
-            this.parentModal = parentModal;
-        } else if (
-            parentContainerEl != undefined &&
-            parentComponent != undefined
-        ) {
-            this.parentContainerEl = parentContainerEl;
-            this.parentComponent = parentComponent;
-            this.parentModal = undefined;
-        } else {
-            this._logger?.error(
-                'Invalid arguments for `SettingItem` constructor.',
-                'Arguments:',
-                parentModal,
-                configure,
-                parentContainerEl,
-                parentComponent,
-            );
-
-            throw new SettingError(
-                'Invalid arguments for `SettingItem` constructor.',
-            );
-        }
-
-        this._configurator = configure;
-
-        this.parentComponent.addChild(this);
-    }
-
-    /**
-     * The configurator function that configures the setting item.
-     */
-    private readonly _configurator?: SettingConfigurator;
-
-    /**
-     * Apply the {@link SettingConfigurator} to the setting item.
-     */
-    public override onload(): void {
-        if (this._configurator) {
-            this._configurator(this);
-        }
-    }
 
     /**
      * @inheritdoc
@@ -157,9 +94,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     @LazzyLoading((ctx: SettingItem) => {
         const displayEl = document.createElement('div');
         displayEl.classList.add('setting-item-display');
-        const children = ctx.settingFieldEl.children;
-        const middleIndex = Math.floor(children.length / 2);
-        ctx.settingFieldEl.insertBefore(displayEl, children[middleIndex]);
+        ctx.settingFieldEl.insertBefore(displayEl, ctx.inputEl);
 
         return displayEl;
     }, 'Readonly')
@@ -176,6 +111,69 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
         return inputEl;
     }, 'Readonly')
     public readonly inputEl: HTMLElement;
+
+    /**
+     * Creates a new setting block.
+     * @param parentModal The `ICustomModal` instance that the setting field belongs to.
+     * @param configure A function that configures the setting field {@link SettingItem.onload|on load}.
+     * @param parentContainerEl The container element to add the setting block.
+     * Only if `modal` is `undefined`.
+     * @param parentComponent The component that the setting field belongs to.
+     * It is used to register the setting block as a child of the component.
+     * Only if `modal` is `undefined`.
+     */
+    constructor(
+        parentModal: ICustomModal | undefined,
+        configure?: SettingConfigurator,
+        parentContainerEl?: HTMLElement | DocumentFragment,
+        parentComponent?: Component,
+    ) {
+        super();
+
+        if (parentModal != undefined) {
+            this.parentContainerEl = parentModal.content;
+            this.parentComponent = parentModal;
+            this.parentModal = parentModal;
+        } else if (
+            parentContainerEl != undefined &&
+            parentComponent != undefined
+        ) {
+            this.parentContainerEl = parentContainerEl;
+            this.parentComponent = parentComponent;
+            this.parentModal = undefined;
+        } else {
+            this._logger?.error(
+                'Invalid arguments for `SettingItem` constructor.',
+                'Arguments:',
+                parentModal,
+                configure,
+                parentContainerEl,
+                parentComponent,
+            );
+
+            throw new SettingError(
+                'Invalid arguments for `SettingItem` constructor.',
+            );
+        }
+
+        this._configurator = configure;
+
+        this.parentComponent.addChild(this);
+    }
+
+    /**
+     * The configurator function that configures the setting item.
+     */
+    private readonly _configurator?: SettingConfigurator;
+
+    /**
+     * Apply the {@link SettingConfigurator} to the setting item.
+     */
+    public override onload(): void {
+        if (this._configurator) {
+            this._configurator(this);
+        }
+    }
 
     /**
      * @inheritdoc
@@ -246,7 +244,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
      */
     add<Type extends new (...args: unknown[]) => unknown>(
         settingField: Type,
-        configure: SettingFieldConfigurator<Type>,
+        configure: ConstructorParameters<Type>[1],
     ): ISettingItemFluentAPI {
         let settingFieldInstance: unknown;
 
