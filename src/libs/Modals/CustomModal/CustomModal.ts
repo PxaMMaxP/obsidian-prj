@@ -1,11 +1,10 @@
-import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
-import { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { DIComponent } from './DIComponent';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
 import {
     ICloseCallback,
@@ -25,7 +24,8 @@ import type {
  */
 @Register('ICustomModal_')
 @ImplementsStatic<ICustomModal_>()
-export class CustomModal implements ICustomModal {
+export class CustomModal extends DIComponent implements ICustomModal {
+    //#region Dependencies
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('CustomModal'), false)
     protected readonly _logger?: ILogger;
     @Inject('IApp')
@@ -34,22 +34,14 @@ export class CustomModal implements ICustomModal {
     private readonly _ILifecycleManager!: ILifecycleManager_;
     @Inject('IDraggableElement_')
     private readonly _IDraggableElement_!: IDraggableElement_;
+    //#endregion
 
     private readonly _beforeUnload: () => void = this.close.bind(this);
-    @Inject('Obsidian.Component_', (x: ForceConstructor<Component>) => new x())
-    protected _component: Component;
-
-    /**
-     * @inheritdoc
-     */
-    public get component(): Component {
-        return this._component;
-    }
 
     private _draggableElement?: IDraggableElement;
 
     /**
-     * Gets the unique class name of the draggable element.
+     * @inheritdoc
      */
     public get draggableClassName(): string | undefined {
         return this._draggableElement?.className;
@@ -109,11 +101,7 @@ export class CustomModal implements ICustomModal {
 
             // Add event listener to close the modal
             // if the background is clicked
-            this._component.registerDomEvent(
-                this.__bg,
-                'click',
-                this.close.bind(this),
-            );
+            this.registerDomEvent(this.__bg, 'click', this.close.bind(this));
         }
 
         const fragment = new DocumentFragment();
@@ -134,7 +122,7 @@ export class CustomModal implements ICustomModal {
         }
 
         // Add event listener to close the modal
-        this._component.registerDomEvent(
+        this.registerDomEvent(
             this.__closeButton,
             'click',
             this.close.bind(this),
@@ -183,12 +171,9 @@ export class CustomModal implements ICustomModal {
 
     /**
      * Creates a new Modal.
-     * @param component The component that the modal belongs to.
      */
-    constructor(component?: Component) {
-        if (component != null) {
-            this._component = component;
-        }
+    constructor() {
+        super();
     }
 
     /**
@@ -217,7 +202,7 @@ export class CustomModal implements ICustomModal {
         );
 
         this.buildModal();
-        this._component.load();
+        this.load();
 
         if (this._isDraggable && this._draggableElement != null) {
             this._draggableElement.enableDragging();
@@ -248,7 +233,7 @@ export class CustomModal implements ICustomModal {
             this._logger?.error('Error in onClose callback', error);
             throw new CallbackError('onClose', error);
         }
-        this._component.unload();
+        this.unload();
         this._container.remove();
     }
 
@@ -272,7 +257,7 @@ export class CustomModal implements ICustomModal {
             this._draggableElement = new this._IDraggableElement_(
                 this._container,
                 this._title,
-                this._component,
+                this,
             );
         }
     }

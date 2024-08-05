@@ -8,22 +8,16 @@ import { CallbackError, MissingCallbackError } from './Exceptions';
 export interface ICustomModal_ {
     /**
      * Creates a new Modal.
-     * @param component The component that the modal belongs to.
      * @see {@link ICustomModal}
      */
-    new (component?: Component): ICustomModal;
+    new (): ICustomModal;
 }
 
 /**
  * Interface for the custom modal.
  * @see {@link ICustomModal_}
  */
-export interface ICustomModal {
-    /**
-     * The component that the modal belongs to.
-     */
-    get component(): Component;
-
+export interface ICustomModal extends Component {
     /**
      * The content of the modal.
      */
