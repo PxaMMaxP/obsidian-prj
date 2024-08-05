@@ -2,6 +2,14 @@ import { Component, EventRef } from 'obsidian';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
+import {
+    IComponent,
+    IDIComponent,
+    _IDIComponent,
+    isIDIComponent,
+    isLoaded,
+    shouldRemoveOnUnload,
+} from './interfaces/IDIComponent';
 
 export const _componentInstance = Symbol('componentInstance');
 export const _componentClass = Symbol('componentClass');
@@ -11,14 +19,14 @@ export const _componentOriginalMethods = Symbol('componentOriginalMethods');
  * Custom implementation of {@link Component}
  * that uses dependency injection for itself.
  */
-export abstract class DIComponent implements Component {
+export abstract class DIComponent implements IDIComponent {
     @Inject('Obsidian.Component_')
     private readonly [_componentClass]!: ForceConstructor<Component>;
 
     @LazzyLoading((ctx) => {
         return new ctx[_componentClass]();
     })
-    private [_componentInstance]!: Component;
+    private [_componentInstance]!: Component & IComponent;
     @LazzyLoading((ctx) => {
         return ctx.getOriginalMethods();
     })
@@ -98,6 +106,23 @@ export abstract class DIComponent implements Component {
     /**
      * @inheritdoc
      */
+    public readonly [_IDIComponent] = this;
+
+    /**
+     * @inheritdoc
+     */
+    public get [isLoaded](): boolean {
+        return this[_componentInstance]._loaded ?? false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public [shouldRemoveOnUnload] = false;
+
+    /**
+     * @inheritdoc
+     */
     load(): void {
         this[_componentOriginalMethods].load();
     }
@@ -129,6 +154,16 @@ export abstract class DIComponent implements Component {
      * @inheritdoc
      */
     addChild<T extends Component>(component: T): T {
+        if (isIDIComponent(component)) {
+            component[shouldRemoveOnUnload] = this[shouldRemoveOnUnload];
+
+            component.register(() => {
+                if (component[shouldRemoveOnUnload]) {
+                    this.removeChild(component);
+                }
+            });
+        }
+
         return this[_componentOriginalMethods].addChild(component);
     }
 

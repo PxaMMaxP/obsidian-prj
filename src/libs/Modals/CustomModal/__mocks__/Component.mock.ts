@@ -2,22 +2,37 @@
 import { Component } from 'obsidian';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 
-const RegisteredEvents = Symbol('RegisteredEvents');
+const RegisteredDomEvents = Symbol('RegisteredEvents');
 const RegisteredChilds = Symbol('RegisteredChilds');
 const Loaded = Symbol('Loaded');
-const Original = Symbol('Original');
+const RegisteredUnloadingEvents = Symbol('Original');
 /**
  * Mock component class.
  */
 class MockComponent {
+    /**
+     * Gets whether the component is loaded.
+     */
+    protected get _loaded(): boolean {
+        return this[Loaded];
+    }
+
+    /**
+     * Sets whether the component is loaded.
+     */
+    protected set _loaded(value: boolean) {
+        this[Loaded] = value;
+    }
+
     [Loaded]: boolean;
     [RegisteredChilds]: { component: MockComponent }[];
-    [RegisteredEvents]: {
+    [RegisteredDomEvents]: {
         element: HTMLElement;
         event: string;
         callback: EventListenerOrEventListenerObject;
         options?: boolean | AddEventListenerOptions;
     }[];
+    [RegisteredUnloadingEvents]: (() => void)[] = [];
 
     /**
      * Creates a new instance of the mock component.
@@ -25,29 +40,36 @@ class MockComponent {
     constructor() {
         this[Loaded] = false;
         this[RegisteredChilds] = [];
-        this[RegisteredEvents] = [];
+        this[RegisteredDomEvents] = [];
     }
 
     load = jest.fn(function (this: MockComponent) {
-        this.onload();
+        if (!this[Loaded]) {
+            this[Loaded] = true;
+            this.onload();
+        }
 
         this[RegisteredChilds].forEach(({ component }) => {
-            component.load?.();
+            if (!component[Loaded]) {
+                component.load?.();
+            }
         });
-
-        this[Loaded] = true;
     });
 
     onload = jest.fn(function (this: MockComponent) {});
 
     unload = jest.fn(function (this: MockComponent) {
-        this.onunload();
+        if (this[Loaded]) {
+            this.onunload();
+            this[Loaded] = false;
+            this[RegisteredUnloadingEvents].forEach((cb) => cb());
+        }
 
         this[RegisteredChilds].forEach(({ component }) => {
-            component.unload?.();
+            if (component[Loaded]) {
+                component.unload?.();
+            }
         });
-
-        this[Loaded] = false;
     });
 
     onunload = jest.fn(function (this: MockComponent) {});
@@ -77,7 +99,9 @@ class MockComponent {
         return child;
     });
 
-    register = jest.fn(function (this: MockComponent) {});
+    register = jest.fn(function (cb: () => unknown) {
+        this[RegisteredUnloadingEvents].push(cb);
+    });
 
     registerEvent = jest.fn(function (this: MockComponent) {});
 
@@ -91,7 +115,7 @@ class MockComponent {
         element.addEventListener(event, callback, options);
 
         // Register the event for later removal
-        this[RegisteredEvents].push({
+        this[RegisteredDomEvents].push({
             element,
             event,
             callback,
@@ -103,12 +127,12 @@ class MockComponent {
 
     clearRegisteredEvents = jest.fn(function (this: MockComponent) {
         // Clear registered DOM events
-        this[RegisteredEvents].forEach(
+        this[RegisteredDomEvents].forEach(
             ({ element, event, callback, options }) => {
                 element.removeEventListener(event, callback, options);
             },
         );
-        this[RegisteredEvents] = [];
+        this[RegisteredDomEvents] = [];
     });
 }
 
@@ -122,8 +146,8 @@ export const MockComponent_ = jest.fn().mockImplementation(() => {
 const ActiveMocks: MockComponent[] = [];
 
 /**
- *
- * @param instance
+ * Register the mock instance on the active mocks list.
+ * @param instance The instance to register.
  */
 function registerMockInstance(instance: MockComponent): void {
     ActiveMocks.push(instance);
