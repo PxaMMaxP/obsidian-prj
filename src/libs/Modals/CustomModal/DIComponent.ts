@@ -1,10 +1,11 @@
 import { Component, EventRef } from 'obsidian';
+import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
 
-const __componentInstance = Symbol('componentInstance');
-const _componentClass = Symbol('componentClass');
-const _componentOriginalMethods = Symbol('componentOriginalMethods');
+export const _componentInstance = Symbol('componentInstance');
+export const _componentClass = Symbol('componentClass');
+export const _componentOriginalMethods = Symbol('componentOriginalMethods');
 
 /**
  * Custom implementation of {@link Component}
@@ -14,30 +15,14 @@ export abstract class DIComponent implements Component {
     @Inject('Obsidian.Component_')
     private readonly [_componentClass]!: ForceConstructor<Component>;
 
-    private [__componentInstance]?: Component;
-    private [_componentOriginalMethods]?: Component;
-
-    /**
-     * Retrieves or initializes the component instance.
-     */
-    private get componentInstance(): Component {
-        if (!this[__componentInstance]) {
-            this[__componentInstance] = new this[_componentClass]();
-        }
-
-        return this[__componentInstance];
-    }
-
-    /**
-     * Retrieves or initializes the original methods of the component.
-     */
-    private get componentOriginalMethods(): Component {
-        if (!this[_componentOriginalMethods]) {
-            this[_componentOriginalMethods] = this.getOriginalMethods();
-        }
-
-        return this[_componentOriginalMethods];
-    }
+    @LazzyLoading((ctx) => {
+        return new ctx[_componentClass]();
+    })
+    private [_componentInstance]!: Component;
+    @LazzyLoading((ctx) => {
+        return ctx.getOriginalMethods();
+    })
+    private [_componentOriginalMethods]!: Component;
 
     /**
      * Gets the current original reference
@@ -46,29 +31,33 @@ export abstract class DIComponent implements Component {
      */
     private getOriginalMethods(): Component {
         return {
-            load: this.componentInstance.load.bind(this.componentInstance),
-            onload: this.componentInstance.onload.bind(this.componentInstance),
-            unload: this.componentInstance.unload.bind(this.componentInstance),
-            onunload: this.componentInstance.onunload.bind(
-                this.componentInstance,
+            load: this[_componentInstance].load.bind(this[_componentInstance]),
+            onload: this[_componentInstance].onload.bind(
+                this[_componentInstance],
             ),
-            addChild: this.componentInstance.addChild.bind(
-                this.componentInstance,
+            unload: this[_componentInstance].unload.bind(
+                this[_componentInstance],
             ),
-            removeChild: this.componentInstance.removeChild.bind(
-                this.componentInstance,
+            onunload: this[_componentInstance].onunload.bind(
+                this[_componentInstance],
             ),
-            register: this.componentInstance.register.bind(
-                this.componentInstance,
+            addChild: this[_componentInstance].addChild.bind(
+                this[_componentInstance],
             ),
-            registerEvent: this.componentInstance.registerEvent.bind(
-                this.componentInstance,
+            removeChild: this[_componentInstance].removeChild.bind(
+                this[_componentInstance],
             ),
-            registerDomEvent: this.componentInstance.registerDomEvent.bind(
-                this.componentInstance,
+            register: this[_componentInstance].register.bind(
+                this[_componentInstance],
             ),
-            registerInterval: this.componentInstance.registerInterval.bind(
-                this.componentInstance,
+            registerEvent: this[_componentInstance].registerEvent.bind(
+                this[_componentInstance],
+            ),
+            registerDomEvent: this[_componentInstance].registerDomEvent.bind(
+                this[_componentInstance],
+            ),
+            registerInterval: this[_componentInstance].registerInterval.bind(
+                this[_componentInstance],
             ),
         };
     }
@@ -77,22 +66,22 @@ export abstract class DIComponent implements Component {
      * Overrides the original methods of the component.
      */
     private overrideMethods(): void {
-        if (this.componentOriginalMethods) {
-            this.componentInstance.load = this.load.bind(this);
-            this.componentInstance.onload = this.onload.bind(this);
-            this.componentInstance.unload = this.unload.bind(this);
-            this.componentInstance.onunload = this.onunload.bind(this);
-            this.componentInstance.addChild = this.addChild.bind(this);
-            this.componentInstance.removeChild = this.removeChild.bind(this);
-            this.componentInstance.register = this.register.bind(this);
+        if (this[_componentOriginalMethods]) {
+            this[_componentInstance].load = this.load.bind(this);
+            this[_componentInstance].onload = this.onload.bind(this);
+            this[_componentInstance].unload = this.unload.bind(this);
+            this[_componentInstance].onunload = this.onunload.bind(this);
+            this[_componentInstance].addChild = this.addChild.bind(this);
+            this[_componentInstance].removeChild = this.removeChild.bind(this);
+            this[_componentInstance].register = this.register.bind(this);
 
-            this.componentInstance.registerEvent =
+            this[_componentInstance].registerEvent =
                 this.registerEvent.bind(this);
 
-            this.componentInstance.registerDomEvent =
+            this[_componentInstance].registerDomEvent =
                 this.registerDomEvent.bind(this);
 
-            this.componentInstance.registerInterval =
+            this[_componentInstance].registerInterval =
                 this.registerInterval.bind(this);
         }
     }
@@ -119,7 +108,7 @@ export abstract class DIComponent implements Component {
      * @inheritdoc
      */
     load(): void {
-        this.componentOriginalMethods.load();
+        this[_componentOriginalMethods].load();
     }
 
     /**
@@ -127,14 +116,14 @@ export abstract class DIComponent implements Component {
      * @overload
      */
     onload(): void {
-        this.componentOriginalMethods.onload();
+        this[_componentOriginalMethods].onload();
     }
 
     /**
      * @inheritdoc
      */
     unload(): void {
-        this.componentOriginalMethods.unload();
+        this[_componentOriginalMethods].unload();
     }
 
     /**
@@ -142,35 +131,35 @@ export abstract class DIComponent implements Component {
      * @overload
      */
     onunload(): void {
-        this.componentOriginalMethods.onunload();
+        this[_componentOriginalMethods].onunload();
     }
 
     /**
      * @inheritdoc
      */
     addChild<T extends Component>(component: T): T {
-        return this.componentOriginalMethods.addChild(component);
+        return this[_componentOriginalMethods].addChild(component);
     }
 
     /**
      * @inheritdoc
      */
     removeChild<T extends Component>(component: T): T {
-        return this.componentOriginalMethods.removeChild(component);
+        return this[_componentOriginalMethods].removeChild(component);
     }
 
     /**
      * @inheritdoc
      */
     register(cb: () => unknown): void {
-        this.componentOriginalMethods.register(cb);
+        this[_componentOriginalMethods].register(cb);
     }
 
     /**
      * @inheritdoc
      */
     registerEvent(eventRef: EventRef): void {
-        this.componentOriginalMethods.registerEvent(eventRef);
+        this[_componentOriginalMethods].registerEvent(eventRef);
     }
 
     /**
@@ -205,7 +194,7 @@ export abstract class DIComponent implements Component {
      */
     registerDomEvent(...args: unknown[]): void {
         (
-            this.componentOriginalMethods.registerDomEvent as (
+            this[_componentOriginalMethods].registerDomEvent as (
                 ...args: unknown[]
             ) => void
         )(...args);
@@ -215,6 +204,6 @@ export abstract class DIComponent implements Component {
      * @inheritdoc
      */
     registerInterval(id: number): number {
-        return this.componentOriginalMethods.registerInterval(id);
+        return this[_componentOriginalMethods].registerInterval(id);
     }
 }

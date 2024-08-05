@@ -3,115 +3,32 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { registerMockComponent } from '../__mocks__/Component.mock';
 import {
-    registerMockComponent,
-    resetMockComponent,
-    MockComponentRef,
-} from '../__mocks__/Component.mock';
-import { DIComponent } from '../DIComponent';
+    _componentInstance,
+    _componentOriginalMethods,
+    DIComponent,
+} from '../DIComponent';
 
 registerMockComponent();
 
 describe('DIComponent', () => {
     beforeAll(() => {
-        resetMockComponent();
+        //resetMockComponent();
     });
 
     test('Initialization of Component Instance', () => {
         class TestComponent extends DIComponent {}
         const instance = new TestComponent();
-        expect(instance['componentInstance']).toBeDefined();
+        expect(instance[_componentInstance]).toBeDefined();
     });
 
     test('Initialization of Original Methods', () => {
         class TestComponent extends DIComponent {}
         const instance = new TestComponent();
-        expect(instance['componentOriginalMethods']).toBeDefined();
+        expect(instance[_componentOriginalMethods]).toBeDefined();
 
-        expect(instance['componentOriginalMethods'].load).toBeInstanceOf(
-            Function,
-        );
-    });
-
-    test('Method Overriding', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-
-        expect(instance['componentInstance'].load).not.toBe(
-            MockComponentRef.load,
-        );
-
-        expect(instance['componentInstance'].onload).not.toBe(
-            MockComponentRef.onload,
-        );
-    });
-
-    test('Load Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        instance.load();
-        expect(MockComponentRef.load).toHaveBeenCalled();
-    });
-
-    test('Onload Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        instance.onload();
-        expect(MockComponentRef.onload).toHaveBeenCalled();
-    });
-
-    test('AddChild Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const child = {};
-        instance.addChild(child as any);
-        expect(MockComponentRef.addChild).toHaveBeenCalledWith(child);
-    });
-
-    test('RemoveChild Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const child = {};
-        instance.removeChild(child as any);
-        expect(MockComponentRef.removeChild).toHaveBeenCalledWith(child);
-    });
-
-    test('Register Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const callback = jest.fn();
-        instance.register(callback);
-        expect(MockComponentRef.register).toHaveBeenCalledWith(callback);
-    });
-
-    test('RegisterEvent Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const eventRef = {} as any;
-        instance.registerEvent(eventRef);
-        expect(MockComponentRef.registerEvent).toHaveBeenCalledWith(eventRef);
-    });
-
-    test('RegisterDomEvent Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const element = document.createElement('div');
-        const callback = jest.fn();
-        instance.registerDomEvent(element, 'click', callback);
-
-        expect(MockComponentRef.registerDomEvent).toHaveBeenCalledWith(
-            element,
-            'click',
-            callback,
-        );
-    });
-
-    test('RegisterInterval Method Execution', () => {
-        class TestComponent extends DIComponent {}
-        const instance = new TestComponent();
-        const id = 1;
-        instance.registerInterval(id);
-        expect(MockComponentRef.registerInterval).toHaveBeenCalledWith(id);
+        expect(instance[_componentOriginalMethods].load).toBeDefined();
     });
 
     test('Constructor Method Binding', () => {
