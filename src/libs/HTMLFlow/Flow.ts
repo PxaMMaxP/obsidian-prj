@@ -286,6 +286,21 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
+    toggleClass(className: string | string[]): IFlowApi<Tag> {
+        if (Array.isArray(className)) {
+            for (const name of className) {
+                this._element.classList.toggle(name);
+            }
+        } else {
+            this._element.classList.toggle(className);
+        }
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     setStyles(styles: Partial<CSSStyleDeclaration>): IFlowApi<Tag> {
         Object.assign(this._element.style, styles);
 
@@ -406,7 +421,11 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     ): IFlowApi<Tag> {
         const arrowCallback = (ev: HTMLElementEventMap[EventKey]): unknown => {
             try {
-                return callback(this.element, ev);
+                const flow = new Flow<Tag>(this._element, () => {});
+                const returnValue = callback(this.element, ev, flow);
+                this.addChild(flow);
+
+                return returnValue;
             } catch (error) {
                 this._logger?.error(
                     'An error occurred while executing the event listener.',

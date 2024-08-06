@@ -56,4 +56,5 @@ export type IFlowEventCallback<
 > = (
     el: HTMLElementTagNameMap[Tag],
     ev: HTMLElementEventMap[EventKey],
+    flow: IFlowApi<Tag>,
 ) => unknown;

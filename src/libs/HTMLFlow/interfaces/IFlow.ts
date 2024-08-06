@@ -108,6 +108,24 @@ export interface IFlowApi<Tag extends keyof HTMLElementTagNameMap>
     removeClass(classNames: string[]): IFlowApi<Tag>;
 
     /**
+     * **Toggles a class of the element:**
+     * - If the class is present, it removes it.
+     * - If the class is not present, it adds it.
+     * @param className The class to toggle.
+     * @returns The current instance of the fluent HTML API.
+     */
+    toggleClass(className: string): IFlowApi<Tag>;
+
+    /**
+     * **Toggles classes of the element:**
+     * - If the class is present, it removes it.
+     * - If the class is not present, it adds it.
+     * @param className The classes to toggle.
+     * @returns The current instance of the fluent HTML API.
+     */
+    toggleClass(className: string[]): IFlowApi<Tag>;
+
+    /**
      * Sets CSS styles for the element.
      * @param styles An object containing CSS property-value pairs.
      * @returns The current instance of the fluent HTML API.
