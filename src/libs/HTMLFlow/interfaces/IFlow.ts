@@ -1,13 +1,40 @@
 import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { shouldRemoveOnUnload } from 'src/libs/Modals/CustomModal/interfaces/IDIComponent';
 import { IFlowSymbol } from './IFlowTag';
-import { IFlowConfig } from '../types/IFlowDelegates';
+import {
+    IFlowConfig,
+    IFlowElCallback,
+    IFlowEventCallback,
+} from '../types/IFlowDelegates';
+
+export interface IFlowConditionalApi {
+    /**
+     * Runs the configuration if the condition is true.
+     * @param condition A condition to check.
+     * @param cfg The configuration to apply if the condition is true.
+     * @returns The current instance of the fluent HTML API.
+     */
+    if(
+        condition: boolean | (() => boolean),
+        cfg: IFlowConfig<keyof HTMLElementTagNameMap>,
+    ): IFlowApi<keyof HTMLElementTagNameMap>;
+}
 
 /**
  * Fluent API of the Flow class.
  */
-export interface IFlowApi<Tag extends keyof HTMLElementTagNameMap> {
+export interface IFlowApi<Tag extends keyof HTMLElementTagNameMap>
+    extends IFlowConditionalApi {
     //#region General
+
+    /**
+     * Gets the element of the Flow instance.
+     * @param callback The callback to execute with the element.
+     * @returns The current instance of the fluent HTML API.
+     * @remarks You can use this method to get the element and
+     * attach it to properties or variables.
+     */
+    getEl(callback: IFlowElCallback<Tag>): IFlowApi<Tag>;
 
     /**
      * Sets the ID of the element.
@@ -165,9 +192,9 @@ export interface IFlowApi<Tag extends keyof HTMLElementTagNameMap> {
      * @param callback The callback to execute when the event is triggered.
      * @param options The options to apply to the event listener.
      */
-    addEventListener<K extends keyof HTMLElementEventMap>(
-        type: K,
-        callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => unknown,
+    addEventListener<EventKey extends keyof HTMLElementEventMap>(
+        type: EventKey,
+        callback: IFlowEventCallback<Tag, EventKey>,
         options?: boolean | AddEventListenerOptions,
     ): IFlowApi<Tag>;
 
@@ -190,7 +217,8 @@ export interface IFlowBuildApi<Tag extends keyof HTMLElementTagNameMap> {
 export interface IFlow<Tag extends keyof HTMLElementTagNameMap>
     extends DIComponent,
         IFlowApi<Tag>,
-        IFlowBuildApi<Tag> {
+        IFlowBuildApi<Tag>,
+        IFlowConditionalApi {
     /**
      * Enables the removal of the element
      * and its children when the element is unloaded.

@@ -5,7 +5,11 @@ import { IFlow_, IFlowApi } from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
 import { IFlowSymbol, isIFlowTagged } from './interfaces/IFlowTag';
 import { isConfigFunction, isFindFunction } from './types/IFlowDelegates';
-import type { IFlowConfig } from './types/IFlowDelegates';
+import type {
+    IFlowConfig,
+    IFlowElCallback,
+    IFlowEventCallback,
+} from './types/IFlowDelegates';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
 import { DIComponent } from '../Modals/CustomModal/DIComponent';
@@ -165,7 +169,40 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
         return this._element;
     }
 
+    /**
+     * @inheritdoc
+     */
+    if(
+        condition: boolean | (() => boolean),
+        cfg: IFlowConfig<keyof HTMLElementTagNameMap>,
+    ): IFlowApi<keyof HTMLElementTagNameMap> {
+        if (
+            condition === true ||
+            (typeof condition === 'function' && condition())
+        ) {
+            cfg(this);
+        }
+
+        return this;
+    }
+
     //#region General Flow API
+
+    /**
+     * @inheritdoc
+     */
+    getEl(callback: IFlowElCallback<Tag>): IFlowApi<Tag> {
+        try {
+            callback(this._element);
+        } catch (error) {
+            this._logger?.error(
+                'An error occurred while getting the element.',
+                error,
+            );
+        }
+
+        return this;
+    }
 
     /**
      * @inheritdoc
@@ -358,12 +395,22 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    addEventListener<K extends keyof HTMLElementEventMap>(
-        type: K,
-        callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => unknown,
+    addEventListener<EventKey extends keyof HTMLElementEventMap>(
+        type: EventKey,
+        callback: IFlowEventCallback<Tag, EventKey>,
         options?: boolean | AddEventListenerOptions,
     ): IFlowApi<Tag> {
-        this.registerDomEvent(this._element, type, callback, options);
+        const arrowCallback = (ev: HTMLElementEventMap[EventKey]): unknown => {
+            try {
+                return callback(this.element, ev);
+            } catch (error) {
+                this._logger?.error(
+                    'An error occurred while executing the event listener.',
+                    error,
+                );
+            }
+        };
+        this.registerDomEvent(this._element, type, arrowCallback, options);
 
         return this;
     }

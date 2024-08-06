@@ -36,3 +36,24 @@ export function isFindFunction(
 ): find is IFlowFindFunction<keyof HTMLElementTagNameMap> {
     return typeof find === 'function';
 }
+
+/**
+ * Callback function which get the element.
+ * @param el The element.
+ */
+export type IFlowElCallback<Tag extends keyof HTMLElementTagNameMap> = (
+    el: HTMLElementTagNameMap[Tag],
+) => unknown;
+
+/**
+ * Callback function for an event.
+ * @param el The element.
+ * @param ev The event.
+ */
+export type IFlowEventCallback<
+    Tag extends keyof HTMLElementTagNameMap,
+    EventKey extends keyof HTMLElementEventMap,
+> = (
+    el: HTMLElementTagNameMap[Tag],
+    ev: HTMLElementEventMap[EventKey],
+) => unknown;
