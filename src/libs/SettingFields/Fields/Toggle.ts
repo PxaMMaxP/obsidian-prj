@@ -42,9 +42,7 @@ export class Toggle extends DIComponent implements IToggleInternal {
                 .appendChildEl('input', (cfg) => {
                     cfg.setId('toggleEl')
                         .setAttribute('type', 'checkbox')
-                        .getEl((el) => {
-                            this.toggleEl = el as HTMLInputElement;
-                        });
+                        .getEl((el) => (this.toggleEl = el));
                 });
         });
     };
@@ -83,7 +81,7 @@ export class Toggle extends DIComponent implements IToggleInternal {
     /**
      * The container of the toggle.
      */
-    private _toggleContainerEl: HTMLElement;
+    private _toggleContainerEl: HTMLDivElement;
 
     /**
      * @inheritdoc
