@@ -27,7 +27,7 @@ export interface IToggle extends Component, ISettingField {
      * Gets the value of the toggle.
      * @returns The value of the toggle.
      */
-    isToggled(): boolean;
+    get isToggled(): boolean;
 
     /**
      * Loads the toggle field.
