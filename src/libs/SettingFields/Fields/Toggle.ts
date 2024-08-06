@@ -25,53 +25,36 @@ export class Toggle extends DIComponent implements IToggleInternal {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
 
+    private _isToggled = false;
+    /**
+     * @inheritdoc
+     */
+    public get isToggled(): boolean {
+        return this._isToggled;
+    }
+
     private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
         cfg,
     ) => {
         cfg.appendChildEl('div', (cfg) => {
-            cfg.setId('checkbox-containerEl')
+            cfg.getEl((el) => (this._toggleContainerEl = el))
+                .setId('checkbox-containerEl')
                 .addClass(['checkbox-container'])
-                .getEl((el) => (this._toggleContainerEl = el))
-
+                .addClass(this._isToggled ? 'is-enabled' : 'is-disabled')
                 .if(this._settings.isDisabled !== true, (cfg) => {
-                    cfg.addEventListener('click', this._toggleEvent).addClass(
-                        'is-disabled',
-                    );
+                    cfg.addEventListener('click', (_, __, flow) => {
+                        flow?.toggleClass(['is-enabled', 'is-disabled']);
+                        this._isToggled = !this._isToggled;
+                    });
                 })
 
                 .appendChildEl('input', (cfg) => {
-                    cfg.setId('toggleEl')
-                        .setAttribute('type', 'checkbox')
-                        .getEl((el) => (this.toggleEl = el));
+                    cfg.getEl((el) => (this.toggleEl = el))
+                        .setId('toggleEl')
+                        .setAttribute('type', 'checkbox');
                 });
         });
     };
-
-    private readonly _toggleEvent: (
-        el: HTMLElement,
-        ev: MouseEvent,
-    ) => unknown = (el, ev) => {
-        this._configureToggleState(el, !this.isToggled());
-        this._settings.onChangeCallback?.(this.isToggled());
-    };
-
-    /**
-     * Set the toggle state.
-     * @param container The container of the toggle.
-     * @param isToggled The state of the toggle.
-     */
-    private _configureToggleState(
-        container: HTMLElement,
-        isToggled: boolean,
-    ): void {
-        if (isToggled) {
-            container.removeClass('is-disabled');
-            container.addClass('is-enabled');
-        } else {
-            container.removeClass('is-enabled');
-            container.addClass('is-disabled');
-        }
-    }
 
     /**
      * @inheritdoc
@@ -102,7 +85,6 @@ export class Toggle extends DIComponent implements IToggleInternal {
         super();
 
         this.parentSettingItem = parentSettingItem;
-
         this._configurator = configurator;
     }
 
@@ -111,16 +93,9 @@ export class Toggle extends DIComponent implements IToggleInternal {
      */
     public override onload(): void {
         this._configurator?.(this);
-
+        this._isToggled = this._settings.isToggled ?? false;
         const flow = new Flow(this.parentSettingItem.inputEl, this._flowConfig);
         this.addChild(flow);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public isToggled(): boolean {
-        return this._toggleContainerEl.classList.contains('is-enabled');
     }
 
     /**
