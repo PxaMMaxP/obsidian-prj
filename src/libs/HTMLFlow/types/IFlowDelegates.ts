@@ -4,8 +4,8 @@ import { IFlow, IFlowApi } from '../interfaces/IFlow';
  * Configuration function for the Flow Api.
  */
 
-export type IFlowConfig<Tag extends keyof HTMLElementTagNameMap> = (
-    cfg: IFlowApi<Tag>,
+export type IFlowConfig<Tag extends keyof HTMLElementTagNameMap | 'void'> = (
+    cfg: Tag extends keyof HTMLElementTagNameMap ? IFlowApi<Tag> : never,
 ) => void;
 
 /**
@@ -24,7 +24,7 @@ export function isConfigFunction(
  */
 export type IFlowFindFunction<Tag extends keyof HTMLElementTagNameMap> = (
     ctx: IFlow<Tag>,
-) => HTMLElement;
+) => HTMLElement | undefined;
 
 /**
  * Checks if the given find function is a valid find function for the Flow Api.
@@ -34,7 +34,7 @@ export type IFlowFindFunction<Tag extends keyof HTMLElementTagNameMap> = (
 export function isFindFunction(
     find: unknown,
 ): find is IFlowFindFunction<keyof HTMLElementTagNameMap> {
-    return typeof find === 'function';
+    return find !== null && typeof find === 'function';
 }
 
 /**
@@ -52,9 +52,20 @@ export type IFlowElCallback<Tag extends keyof HTMLElementTagNameMap> = (
  */
 export type IFlowEventCallback<
     Tag extends keyof HTMLElementTagNameMap,
-    EventKey extends keyof HTMLElementEventMap,
+    EventKey extends keyof HTMLElementEventMap | 'void',
 > = (
     el: HTMLElementTagNameMap[Tag],
-    ev: HTMLElementEventMap[EventKey],
+    ev: EventKey extends keyof HTMLElementEventMap
+        ? HTMLElementEventMap[EventKey]
+        : typeof Event,
     flow: IFlowApi<Tag>,
 ) => unknown;
+
+/**
+ * Callback function for a `then` call.
+ * @param ctx The flow context.
+ * @param element The element.
+ */
+export type IFlowThenCallback<
+    Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
+> = (ctx: IFlow<Tag>, element: HTMLElementTagNameMap[Tag]) => unknown;

@@ -1,6 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import type { IFlow } from './interfaces/IFlow';
+import type { IFlow, IFlowApiType } from './interfaces/IFlow';
 import { IFlow_, IFlowApi } from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
 import { IFlowSymbol, isIFlowTagged } from './interfaces/IFlowTag';
@@ -9,6 +9,7 @@ import type {
     IFlowConfig,
     IFlowElCallback,
     IFlowEventCallback,
+    IFlowThenCallback,
 } from './types/IFlowDelegates';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
@@ -155,7 +156,7 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      */
     public override onload(): void {
         try {
-            this._config(this);
+            this._config(this as unknown as IFlowApiType<Tag>);
         } catch (error) {
             this._logger?.error(
                 'An error occurred while building the element.',
@@ -184,7 +185,7 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
             condition === true ||
             (typeof condition === 'function' && condition())
         ) {
-            cfg(this);
+            cfg(this as unknown as IFlowApiType<Tag>);
         }
 
         return this;
@@ -195,9 +196,9 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    getEl(callback: IFlowElCallback<Tag>): IFlowApi<Tag> {
+    getEl(callback: IFlowElCallback<Tag> | undefined): IFlowApi<Tag> {
         try {
-            callback(this._element);
+            callback?.(this._element);
         } catch (error) {
             this._logger?.error(
                 'An error occurred while getting the element.',
@@ -211,8 +212,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public setId(id: string): IFlowApi<Tag> {
-        this._element.id = id;
+    public setId(id: string | undefined): IFlowApi<Tag> {
+        if (id != null && typeof id === 'string') {
+            this._element.id = id;
+        }
 
         return this;
     }
@@ -220,8 +223,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    setInnerHTML(html: string): IFlowApi<Tag> {
-        this._element.innerHTML = html;
+    setInnerHTML(html: string | undefined): IFlowApi<Tag> {
+        if (html != null && typeof html === 'string') {
+            this._element.innerHTML = html;
+        }
 
         return this;
     }
@@ -229,8 +234,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public setTextContent(text: string): IFlowApi<Tag> {
-        this._element.textContent = text;
+    public setTextContent(text: string | undefined): IFlowApi<Tag> {
+        if (text != null && typeof text === 'string') {
+            this._element.textContent = text;
+        }
 
         return this;
     }
@@ -238,10 +245,8 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    then(
-        cb: (ctx: IFlow<Tag>, element: HTMLElementTagNameMap[Tag]) => unknown,
-    ): IFlowApi<Tag> {
-        cb(this, this._element);
+    then(cb: IFlowThenCallback<Tag> | undefined): IFlowApi<Tag> {
+        cb?.(this, this._element);
 
         return this;
     }
@@ -251,8 +256,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public setClass(className: string): IFlowApi<Tag> {
-        this._element.className = className;
+    public setClass(className: string | undefined): IFlowApi<Tag> {
+        if (className != null && typeof className === 'string') {
+            this._element.className = className;
+        }
 
         return this;
     }
@@ -260,10 +267,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public addClass(className: string | string[]): IFlowApi<Tag> {
+    public addClass(className: string | string[] | undefined): IFlowApi<Tag> {
         if (Array.isArray(className)) {
             this._element.classList.add(...className);
-        } else {
+        } else if (className != null && typeof className === 'string') {
             this._element.classList.add(className);
         }
 
@@ -273,10 +280,12 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public removeClass(className: string | string[]): IFlowApi<Tag> {
+    public removeClass(
+        className: string | string[] | undefined,
+    ): IFlowApi<Tag> {
         if (Array.isArray(className)) {
             this._element.classList.remove(...className);
-        } else {
+        } else if (className != null && typeof className === 'string') {
             this._element.classList.remove(className);
         }
 
@@ -286,12 +295,12 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    toggleClass(className: string | string[]): IFlowApi<Tag> {
+    toggleClass(className: string | string[] | undefined): IFlowApi<Tag> {
         if (Array.isArray(className)) {
             for (const name of className) {
                 this._element.classList.toggle(name);
             }
-        } else {
+        } else if (className != null && typeof className === 'string') {
             this._element.classList.toggle(className);
         }
 
@@ -301,8 +310,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    setStyles(styles: Partial<CSSStyleDeclaration>): IFlowApi<Tag> {
-        Object.assign(this._element.style, styles);
+    setStyles(styles: Partial<CSSStyleDeclaration> | undefined): IFlowApi<Tag> {
+        if (styles != null) {
+            Object.assign(this._element.style, styles);
+        }
 
         return this;
     }
@@ -315,15 +326,26 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      * @inheritdoc
      */
     public setAttribute(
-        nameOrAttributes: string | { [name: string]: string },
-        value?: string,
+        name?: unknown | undefined,
+        value?: unknown | undefined,
     ): IFlowApi<Tag> {
-        if (typeof nameOrAttributes === 'string') {
+        const _name: string | undefined =
+            typeof name === 'string' ? name : undefined;
+
+        const _value: string | undefined =
+            typeof value === 'string' ? value : undefined;
+
+        const _attributes: { [name: string]: string } | undefined =
+            name != null && typeof name === 'object'
+                ? (name as { [name: string]: string })
+                : undefined;
+
+        if (_name != null && _value != null) {
             // Single attribute case
-            this._element.setAttribute(nameOrAttributes, value as string);
-        } else {
+            this._element.setAttribute(_name, _value);
+        } else if (_attributes != null) {
             // Multiple attributes case
-            for (const [name, val] of Object.entries(nameOrAttributes)) {
+            for (const [name, val] of Object.entries(_attributes)) {
                 this._element.setAttribute(name, val);
             }
         }
@@ -334,8 +356,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public removeAttribute(name: string): IFlowApi<Tag> {
-        this._element.removeAttribute(name);
+    public removeAttribute(name: string | undefined): IFlowApi<Tag> {
+        if (name != null && typeof name === 'string') {
+            this._element.removeAttribute(name);
+        }
 
         return this;
     }
@@ -352,7 +376,7 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
 
         if (child != null) {
             this._element.appendChild(child);
-        } else if (isConfigFunction(cfg)) {
+        } else if (tagName !== 'void' && isConfigFunction(cfg)) {
             const element = new Flow(
                 tagName as keyof HTMLElementTagNameMap,
                 Flow.injectedCfg(
@@ -373,8 +397,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    appendToEl(parent: HTMLElement): IFlowApi<Tag> {
-        parent.appendChild(this._element);
+    appendToEl(parent: HTMLElement | undefined): IFlowApi<Tag> {
+        if (parent != null) {
+            parent?.appendChild(this._element);
+        }
 
         return this;
     }
@@ -389,7 +415,10 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
             this._element.removeChild(child);
         } else if (isFindFunction(find)) {
             try {
-                const childElement = find(this);
+                const childElement = find(this as IFlow<Tag>);
+
+                if (childElement == null) return this;
+
                 this._element.removeChild(childElement);
 
                 if (isIFlowTagged(childElement)) {
@@ -414,26 +443,32 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    addEventListener<EventKey extends keyof HTMLElementEventMap>(
+    addEventListener<EventKey extends keyof HTMLElementEventMap | 'void'>(
         type: EventKey,
         callback: IFlowEventCallback<Tag, EventKey>,
         options?: boolean | AddEventListenerOptions,
     ): IFlowApi<Tag> {
-        const arrowCallback = (ev: HTMLElementEventMap[EventKey]): unknown => {
-            try {
-                const flow = new Flow<Tag>(this._element, () => {});
-                const returnValue = callback(this.element, ev, flow);
-                this.addChild(flow);
+        if (type !== 'void') {
+            const arrowCallback = (
+                ev: EventKey extends keyof HTMLElementEventMap
+                    ? HTMLElementEventMap[EventKey]
+                    : never,
+            ): unknown => {
+                try {
+                    const flow = new Flow<Tag>(this._element, () => {});
+                    const returnValue = callback(this.element, ev, flow);
+                    this.addChild(flow);
 
-                return returnValue;
-            } catch (error) {
-                this._logger?.error(
-                    'An error occurred while executing the event listener.',
-                    error,
-                );
-            }
-        };
-        this.registerDomEvent(this._element, type, arrowCallback, options);
+                    return returnValue;
+                } catch (error) {
+                    this._logger?.error(
+                        'An error occurred while executing the event listener.',
+                        error,
+                    );
+                }
+            };
+            this.registerDomEvent(this._element, type, arrowCallback, options);
+        }
 
         return this;
     }
