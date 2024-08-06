@@ -3,6 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
+import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { ConfigurationError } from './interfaces/Exceptions';
@@ -34,19 +35,20 @@ export class Toggle extends DIComponent implements IToggleInternal {
     }
 
     private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
-        cfg,
+        cfg: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
         cfg.appendChildEl('div', (cfg) => {
             cfg.getEl((el) => (this._toggleContainerEl = el))
                 .setId('checkbox-containerEl')
                 .addClass(['checkbox-container'])
                 .addClass(this._isToggled ? 'is-enabled' : 'is-disabled')
-                .if(this._settings.isDisabled !== true, (cfg) => {
-                    cfg.addEventListener('click', (_, __, flow) => {
+                .addEventListener(
+                    this._settings.isDisabled !== true ? 'click' : 'void',
+                    (_, __, flow) => {
                         flow?.toggleClass(['is-enabled', 'is-disabled']);
                         this._isToggled = !this._isToggled;
-                    });
-                })
+                    },
+                )
 
                 .appendChildEl('input', (cfg) => {
                     cfg.getEl((el) => (this.toggleEl = el))
