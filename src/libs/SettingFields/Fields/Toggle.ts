@@ -1,8 +1,9 @@
 import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Flow } from 'src/libs/HTMLFlow/Flow';
+import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
@@ -24,46 +25,65 @@ export class Toggle extends DIComponent implements IToggleInternal {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
 
-    /**
-     * Gets the value of the toggle.
-     */
-    private get _checked(): boolean {
-        if (this.toggleEl[_value] == null)
-            this.toggleEl[_value] = this._settings.isToggled ?? false;
+    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        cfg,
+    ) => {
+        cfg.appendChildEl('div', (cfg) => {
+            cfg.setId('checkbox-containerEl')
+                .addClass(['checkbox-container'])
+                .getEl((el) => (this._toggleContainerEl = el))
 
-        return this.toggleEl[_value];
-    }
+                .if(this._settings.isDisabled !== true, (cfg) => {
+                    cfg.addEventListener('click', this._toggleEvent).addClass(
+                        'is-disabled',
+                    );
+                })
+
+                .appendChildEl('input', (cfg) => {
+                    cfg.setId('toggleEl')
+                        .setAttribute('type', 'checkbox')
+                        .getEl((el) => {
+                            this.toggleEl = el as HTMLInputElement;
+                        });
+                });
+        });
+    };
+
+    private readonly _toggleEvent: (
+        el: HTMLElement,
+        ev: MouseEvent,
+    ) => unknown = (el, ev) => {
+        this._configureToggleState(el, !this.isToggled());
+        this._settings.onChangeCallback?.(this.isToggled());
+    };
 
     /**
-     * Sets the value of the toggle.
+     * Set the toggle state.
+     * @param container The container of the toggle.
+     * @param isToggled The state of the toggle.
      */
-    private set _checked(value: boolean) {
-        this.toggleEl[_value] = value;
+    private _configureToggleState(
+        container: HTMLElement,
+        isToggled: boolean,
+    ): void {
+        if (isToggled) {
+            container.removeClass('is-disabled');
+            container.addClass('is-enabled');
+        } else {
+            container.removeClass('is-enabled');
+            container.addClass('is-disabled');
+        }
     }
 
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: Toggle) => {
-        const toggleEl = document.createElement('input');
-        toggleEl.type = 'checkbox';
-        ctx._toggleContainerEl.appendChild(toggleEl);
-
-        return toggleEl;
-    }, 'Readonly')
-    public readonly toggleEl: HTMLInputElement & IToggleValue;
+    public toggleEl: HTMLInputElement;
 
     /**
      * The container of the toggle.
      */
-    @LazzyLoading((ctx: Toggle) => {
-        const toggleEl = document.createElement('div');
-        toggleEl.addClasses(['checkbox-container']);
-        ctx.parentSettingItem.inputEl.appendChild(toggleEl);
-
-        return toggleEl;
-    }, 'Readonly')
-    private readonly _toggleContainerEl: HTMLElement;
+    private _toggleContainerEl: HTMLElement;
 
     /**
      * @inheritdoc
@@ -91,61 +111,18 @@ export class Toggle extends DIComponent implements IToggleInternal {
     /**
      * @inheritdoc
      */
-    public isToggled(): boolean {
-        return this._checked;
-    }
+    public override onload(): void {
+        this._configurator?.(this);
 
-    private readonly _toggleEvent: (ev: Event) => unknown = (ev) => {
-        const newState = !this._checked;
-        this._configureToggleState(newState);
-        this._settings.onChangeCallback?.(newState);
-    };
+        const flow = new Flow(this.parentSettingItem.inputEl, this._flowConfig);
+        this.addChild(flow);
+    }
 
     /**
      * @inheritdoc
      */
-    public override onload(): void {
-        this._configurator?.(this);
-
-        this._configureToggleState(this._settings.isToggled ?? false);
-
-        // If the toggle is disabled, do not register the click event.
-        if (this._settings.isDisabled !== true) {
-            this.registerDomEvent(
-                this._toggleContainerEl,
-                'click',
-                this._toggleEvent,
-            );
-        }
-
-        try {
-            this._settings.thenCallback?.(this);
-        } catch (error) {
-            this._logger?.error(
-                'An error occurred while executing the `then` callback.',
-                'The Component will be unloaded.',
-                'Error:',
-                error,
-            );
-            this.unload();
-            throw new ConfigurationError(`then-Callback`, error);
-        }
-    }
-
-    /**
-     * Set the toggle state.
-     * @param isToggled The state of the toggle.
-     */
-    private _configureToggleState(isToggled: boolean): void {
-        this._checked = isToggled;
-
-        if (isToggled) {
-            this._toggleContainerEl.removeClass('is-disabled');
-            this._toggleContainerEl.addClass('is-enabled');
-        } else {
-            this._toggleContainerEl.removeClass('is-enabled');
-            this._toggleContainerEl.addClass('is-disabled');
-        }
+    public isToggled(): boolean {
+        return this._toggleContainerEl.classList.contains('is-enabled');
     }
 
     /**
@@ -179,7 +156,18 @@ export class Toggle extends DIComponent implements IToggleInternal {
      * @inheritdoc
      */
     then(callback: (toggle: IToggleInternal) => void): IToggleFluentAPI {
-        this._settings.thenCallback = callback;
+        try {
+            callback?.(this);
+        } catch (error) {
+            this._logger?.error(
+                'An error occurred while executing the `then` callback.',
+                'The Component will be unloaded.',
+                'Error:',
+                error,
+            );
+            this.unload();
+            throw new ConfigurationError(`then-Callback`, error);
+        }
 
         return this;
     }
@@ -213,13 +201,3 @@ interface IToggleSettings {
 }
 
 const _value = Symbol('ListEntry');
-
-/**
- * Extends the HTMLInputElement to store the value of the toggle.
- */
-interface IToggleValue extends HTMLInputElement {
-    /**
-     * The value of the toggle.
-     */
-    [_value]?: boolean;
-}
