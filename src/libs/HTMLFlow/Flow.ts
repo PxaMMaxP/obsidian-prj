@@ -124,7 +124,11 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
             this._config = cfg;
             this._element = document.createElement(tagName);
             this.markElementWithSymbol(this._element);
+
+            return this;
         }
+
+        throw new Error('The tag name or element must be provided.');
     }
 
     /**
