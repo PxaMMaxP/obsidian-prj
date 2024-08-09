@@ -12,6 +12,7 @@ import type {
 } from './interfaces/SettingItem';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
+import { DIContainer } from '../DependencyInjection/DIContainer';
 import { DIComponent } from '../DIComponent/DIComponent';
 import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal';
 
@@ -246,16 +247,25 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
         settingField: Type,
         configure: ConstructorParameters<Type>[1],
     ): ISettingItemFluentAPI {
+        let settingField_: Type;
         let settingFieldInstance: unknown;
 
+        if (typeof settingField === 'string') {
+            settingField_ = DIContainer.getInstance().resolve<Type>(
+                'SettingFields.' + settingField,
+            );
+        } else {
+            settingField_ = settingField;
+        }
+
         try {
-            settingFieldInstance = new settingField(this, configure);
+            settingFieldInstance = new settingField_(this, configure);
         } catch (error) {
             this._logger?.error(
-                `Error instantiating ${settingField.name}: ${error.message}`,
+                `Error instantiating ${settingField_.name}: ${error.message}`,
             );
             this._unload();
-            throw new InstantiationError(settingField.name, error);
+            throw new InstantiationError(settingField_.name, error);
         }
 
         this.addChild(settingFieldInstance as Component);

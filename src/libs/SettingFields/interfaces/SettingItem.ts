@@ -2,6 +2,8 @@
 import { Component } from 'obsidian';
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { ICustomModal } from 'src/libs/Modals/CustomModal/interfaces/ICustomModal';
+import { SettingFieldConfigurator } from './ISettingField';
+import { ISettingFieldTagNameMap } from '../Fields/interfaces/FieldTagNameMap';
 
 export type SettingConfigurator = (setting: ISettingItemFluentAPI) => void;
 
@@ -155,6 +157,17 @@ export interface ISettingItemFluentAPI extends ISettingItem {
     add<Type extends new (...args: unknown[]) => unknown>(
         settingField: Type,
         configure: ConstructorParameters<Type>[1],
+    ): ISettingItemFluentAPI;
+
+    /**
+     * Adds a setting field to the setting.
+     * @param settingFieldTag The setting field to add. It should be a key of {@link ISettingFieldTagNameMap}.
+     * @param configure A function that configures the setting field.
+     * @returns The setting field.
+     */
+    add<Tag extends keyof ISettingFieldTagNameMap>(
+        settingFieldTag: Tag,
+        configure: SettingFieldConfigurator<ISettingFieldTagNameMap[Tag]>,
     ): ISettingItemFluentAPI;
 
     /**
