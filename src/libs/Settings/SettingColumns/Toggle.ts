@@ -49,6 +49,7 @@ export class Toggle extends DIComponent implements IToggleProtected {
                     (_, __, flow) => {
                         flow?.toggleClass(['is-enabled', 'is-disabled']);
                         this._isToggled = !this._isToggled;
+                        this._settings.onChangeCallback?.(this._isToggled);
                     },
                 )
 
