@@ -51,8 +51,10 @@ export type IFlowElCallback<Tag extends keyof HTMLElementTagNameMap> = (
  * @param ev The event.
  */
 export type IFlowEventCallback<
-    Tag extends keyof HTMLElementTagNameMap,
-    EventKey extends keyof HTMLElementEventMap | 'void',
+    Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
+    EventKey extends
+        | keyof HTMLElementEventMap
+        | 'void' = keyof HTMLElementEventMap,
 > = (
     el: HTMLElementTagNameMap[Tag],
     ev: EventKey extends keyof HTMLElementEventMap

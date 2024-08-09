@@ -303,5 +303,5 @@ export interface IFlow_<
     new (
         tag: Tag | HTMLElementTagNameMap[Tag],
         cfg: IFlowConfig<Tag>,
-    ): IFlowBuildApi<Tag>;
+    ): IFlow<Tag> & DIComponent;
 }
