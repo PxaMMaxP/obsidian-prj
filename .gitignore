@@ -1,5 +1,5 @@
 # vscode
-.vscode 
+.vscode
 
 # Intellij
 *.iml
@@ -35,3 +35,8 @@ coverage/*
 docs/*
 
 src/auto-imports.ts
+
+*.ignore.*
+
+.locale
+isolate-*-v8.log

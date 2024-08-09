@@ -8,21 +8,25 @@ import { CallbackError, MissingCallbackError } from './Exceptions';
 export interface ICustomModal_ {
     /**
      * Creates a new Modal.
-     * @param component The component that the modal belongs to.
      * @see {@link ICustomModal}
      */
-    new (component?: Component): ICustomModal;
+    new (): ICustomModal;
 }
 
 /**
  * Interface for the custom modal.
  * @see {@link ICustomModal_}
  */
-export interface ICustomModal {
+export interface ICustomModal extends Component {
     /**
      * The content of the modal.
      */
     get content(): HTMLElement;
+
+    /**
+     * Gets the unique class name of the draggable element.
+     */
+    get draggableClassName(): string | undefined;
 
     /**
      * Opens the modal.
@@ -95,23 +99,19 @@ export interface ICustomModal {
 }
 
 /**
- * Interface for the callback to determine if the modal should open.
+ * Type for the callback to determine if the modal should open.
  * @returns {boolean} True if the modal can be opened, otherwise false.
  */
-export interface IShouldOpenCallback {
-    (): boolean;
-}
+export type IShouldOpenCallback = () => boolean;
 
 /**
- * Interface for the callback to be called when the modal is opened.
+ * Type for the callback to be called when the modal is opened.
+ * @param modal The modal that will be opened.
  */
-export interface IOpenCallback {
-    (): void;
-}
+export type IOpenCallback = (modal: ICustomModal) => void;
 
 /**
- * Interface for the callback to be called when the modal is closed.
+ * Type for the callback to be called when the modal is closed.
+ * @param modal The modal that will be closed.
  */
-export interface ICloseCallback {
-    (): void;
-}
+export type ICloseCallback = (modal: ICustomModal) => void;

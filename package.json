@@ -59,6 +59,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@nozbe/microfuzz": "^1.0.0",
     "axios": "^1.7.2",
     "crypto-js": "^4.2.0",
     "eslint-plugin-prettier": "^5.2.1",
