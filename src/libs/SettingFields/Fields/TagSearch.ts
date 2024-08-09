@@ -4,6 +4,7 @@ import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { ITag, ITag_ } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
@@ -25,15 +26,16 @@ import type {
     ISettingField_,
     SettingFieldConfigurator,
 } from '../interfaces/ISettingField';
-import { IInternalSettingItem } from '../interfaces/SettingItem';
+import type { IInternalSettingItem } from '../interfaces/SettingItem';
 
 /**
  * Represents a tag search field.
  */
+@Register('SettingFields.tagsearch')
 export class TagSearch extends DIComponent implements ITagSearchInternal {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     private readonly _logger?: ILogger;
-    @Inject('DisplayField_')
+    @Inject('SettingFields.display')
     private readonly _IDisplayField_!: ISettingField_<typeof DisplayField>;
     @Inject('IGenericSuggest_')
     private readonly _IGenericSuggest_!: IGenericSuggest_<string>;

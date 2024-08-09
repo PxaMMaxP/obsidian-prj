@@ -3,6 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import {
     IDropdownFluentAPI,
@@ -21,6 +22,7 @@ import type { IInternalSettingItem } from '../interfaces/SettingItem';
 /**
  * Represents a dropdown field.
  */
+@Register('SettingFields.dropdown')
 @ImplementsStatic<ISettingField_<typeof Dropdown>>()
 export class Dropdown extends DIComponent implements IInternalDropdown {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)

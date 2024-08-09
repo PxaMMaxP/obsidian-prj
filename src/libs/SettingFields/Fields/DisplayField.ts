@@ -23,7 +23,7 @@ import { IInternalSettingItem } from '../interfaces/SettingItem';
 /**
  * Represents a display field.
  */
-@Register('DisplayField_')
+@Register('SettingFields.display')
 @ImplementsStatic<ISettingField_<typeof DisplayField>>()
 export class DisplayField<EntryType, ListType>
     extends Component

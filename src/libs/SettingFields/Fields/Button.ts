@@ -1,5 +1,6 @@
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
@@ -8,12 +9,13 @@ import {
     IButtonInternal,
     OnClickCallback,
 } from './interfaces/IButton';
-import { SettingFieldConfigurator } from '../interfaces/ISettingField';
-import { IInternalSettingItem } from '../interfaces/SettingItem';
+import type { SettingFieldConfigurator } from '../interfaces/ISettingField';
+import type { IInternalSettingItem } from '../interfaces/SettingItem';
 
 /**
  * A button field.
  */
+@Register('SettingFields.button')
 export class Button extends DIComponent implements IButtonInternal {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;

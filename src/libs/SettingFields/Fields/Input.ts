@@ -3,6 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import {
@@ -31,6 +32,7 @@ import type { IInternalSettingItem } from '../interfaces/SettingItem';
 /**
  * Represents an input field.
  */
+@Register('SettingFields.input')
 @ImplementsStatic<ISettingField_<typeof Input>>()
 export class Input extends DIComponent implements IInternalInput {
     @Inject('IApp')
