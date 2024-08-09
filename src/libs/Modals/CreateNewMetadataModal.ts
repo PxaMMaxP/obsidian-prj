@@ -21,10 +21,6 @@ import type { ForceConstructor } from '../DependencyInjection/types/GenericContr
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../SettingFields/Components/GenericSuggest';
-import { Dropdown } from '../SettingFields/Fields/Dropdown';
-import { Input } from '../SettingFields/Fields/Input';
-import { TagSearch } from '../SettingFields/Fields/TagSearch';
-import { Toggle } from '../SettingFields/Fields/Toggle';
 import type { ISettingItem_ } from '../SettingFields/interfaces/SettingItem';
 import type { ITags, ITags_ } from '../Tags/interfaces/ITags';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
@@ -150,7 +146,7 @@ export class CreateNewMetadataModal {
                         'Metadata sub type description',
                     ),
                 )
-                .add(Dropdown, (dropdown) => {
+                .add('dropdown', (dropdown) => {
                     dropdown
                         .onChange((item) => {
                             this._result.subType = item.key;
@@ -177,7 +173,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Document date description'),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder('YYYY.MM.DD')
                         .onChange((value) => {
@@ -196,7 +192,7 @@ export class CreateNewMetadataModal {
                         'Date of delivery description',
                     ),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder('YYYY.MM.DD')
                         .onChange((value) => {
@@ -213,7 +209,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Title description'),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder(this._ITranslationService.get('Title'))
                         .onChange((value) => {
@@ -230,7 +226,7 @@ export class CreateNewMetadataModal {
                     this._ITranslationService.get('Description description'),
                 )
                 .setClass('custom-form-textarea')
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setInputElType('HTMLTextAreaElement')
                         .setPlaceholder(
@@ -249,7 +245,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Sender description'),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder(this._ITranslationService.get('Sender'))
                         .onChange((value) => {
@@ -272,7 +268,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Recipient description'),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder(
                             this._ITranslationService.get('Recipient'),
@@ -297,7 +293,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Hide description'),
                 )
-                .add(Toggle, (input) => {
+                .add('toggle', (input) => {
                     input.onChange((value) => {
                         this._result.hide = value;
                     });
@@ -313,7 +309,7 @@ export class CreateNewMetadataModal {
                         'Dont change PDF path description',
                     ),
                 )
-                .add(Toggle, (input) => {
+                .add('toggle', (input) => {
                     input.onChange((value) => {
                         this._result.dontChangePdfPath = value;
                     });
@@ -336,7 +332,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('Tags description'),
                 )
-                .add(TagSearch, (tagSearch) => {
+                .add('tagsearch', (tagSearch) => {
                     tagSearch
                         .setDefaultEntries(() => {
                             const activeFile =
@@ -361,7 +357,7 @@ export class CreateNewMetadataModal {
                 .setDescription(
                     this._ITranslationService.get('File description'),
                 )
-                .add(Input, (input) => {
+                .add('input', (input) => {
                     input
                         .setPlaceholder(this._ITranslationService.get('File'))
                         .onChange((value) => {
@@ -399,27 +395,6 @@ export class CreateNewMetadataModal {
                         }),
                 );
         });
-
-        // new this._ISetting_(this._customModal, (setting) => {
-        //     setting
-        //         .add(Button, (btn) =>
-        //             btn
-        //                 .setButtonText(this._ITranslationService.get('Save'))
-        //                 .setCta(true)
-        //                 .onClick(() => {
-        //                     this.save();
-        //                     this._customModal.close();
-        //                 }),
-        //         )
-        //         .add(Button, (btn) =>
-        //             btn
-        //                 .setButtonText(this._ITranslationService.get('Cancel'))
-        //                 .setCta(true)
-        //                 .onClick(() => {
-        //                     this._customModal.close();
-        //                 }),
-        //         );
-        // });
     }
 
     /**
