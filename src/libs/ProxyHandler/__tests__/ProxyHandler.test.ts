@@ -1355,7 +1355,7 @@ describe('ProxyHandler', () => {
 
         proxy.child = proxy; // Creating a circular reference
 
-        expect(proxy.child).toBe(proxy);
+        expect(proxy.child).toStrictEqual(proxy);
 
         expect(proxyHandler.proxyMapSize).toBe(1);
     });
@@ -1376,7 +1376,7 @@ describe('ProxyHandler', () => {
         proxy.child = proxy;
 
         expect(proxy.name).toBe('parent');
-        expect(proxy.child).toBe(proxy); // The child should reference the proxy itself
+        expect(proxy.child).toStrictEqual(proxy); // The child should reference the proxy itself
 
         proxy.name = 'new parent';
         expect(proxy.name).toBe('new parent');

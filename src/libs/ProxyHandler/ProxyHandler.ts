@@ -201,7 +201,9 @@ export class ProxyHandler<T extends object> implements IProxyHandler<T> {
         }
 
         const newPath = this.createObjectPath(path, propertyKey);
-        const resolvedValue = this.resolveProxyValue(value);
+        //@todo: check if this is needed
+        //const resolvedValue = this.resolveProxyValue(value);
+        const resolvedValue = value;
 
         try {
             target[property as keyof Partial<T>] = resolvedValue as

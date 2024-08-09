@@ -11,7 +11,7 @@ import KanbanSync from './libs/KanbanSync/KanbanSync';
 import { LifecycleManager } from './libs/LifecycleManager/LifecycleManager';
 import AddAnnotationModal from './libs/Modals/AddAnnotationModal';
 import ChangeStatusModal from './libs/Modals/ChangeStatusModal';
-import CreateNewMetadataModal from './libs/Modals/CreateNewMetadataModal';
+import { CreateNewMetadataModal } from './libs/Modals/CreateNewMetadataModal';
 import CreateNewNoteModal from './libs/Modals/CreateNewNoteModal';
 import CreateNewProjectModal from './libs/Modals/CreateNewProjectModal';
 import CreateNewTaskManagementModal from './libs/Modals/CreateNewTaskManagementModal';

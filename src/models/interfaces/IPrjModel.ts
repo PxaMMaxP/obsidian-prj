@@ -1,5 +1,12 @@
 import { TFile } from 'obsidian';
 
+export interface IPrjModel_<T> {
+    new (file: TFile | undefined): T;
+}
+
+/**
+ * Interface for project models.
+ */
 export default interface IPrjModel<T> {
     /**
      * Get **data** of the model.

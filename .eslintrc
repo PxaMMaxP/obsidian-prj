@@ -201,7 +201,8 @@
           "ClassDeclaration": true,
           "ArrowFunctionExpression": false,
           "FunctionExpression": false
-        }
+        },
+        "minLineCount": 10
       }
     ],
     "jsdoc/require-param": [

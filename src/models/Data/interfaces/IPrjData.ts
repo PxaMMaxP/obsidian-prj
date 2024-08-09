@@ -1,4 +1,3 @@
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
@@ -11,7 +10,7 @@ export interface IPrjData_<T> {
      * Create a new instance of {@link IPrjData}
      * as represented of project metadata.
      */
-    new (data: Partial<T>, dependencies?: IDIContainer): IPrjData & T;
+    new (data: Partial<T>): IPrjData & T;
 }
 
 /**

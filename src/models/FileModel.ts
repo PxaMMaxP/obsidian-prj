@@ -79,7 +79,7 @@ export class FileModel<
     private readonly _ctor: new (data?: Partial<T>) => T;
     /**
      * The proxy of the data object.
-     * @see {@link FileModel._data}
+     * @see {@link FileModel["_data"]}
      * @see {@link FileModel.createProxy}
      */
     private _dataProxy: T | undefined = undefined;

@@ -27,4 +27,9 @@ export interface IDraggableElement {
      * Enables dragging for the draggable element.
      */
     enableDragging(): void;
+
+    /**
+     * Gets the unique class name of the draggable element.
+     */
+    get className(): string;
 }
