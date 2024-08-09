@@ -4,11 +4,6 @@ import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import type {
-    GenericSuggest,
-    GetSuggestionsCallback,
-    IGenericSuggest_,
-} from 'src/libs/Modals/Components/GenericSuggest';
 import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import type { ITag, ITag_ } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
@@ -21,6 +16,11 @@ import {
     ITagSearchFluentAPI,
     ITagSearchInternal,
 } from './interfaces/ITagSearch';
+import type {
+    IGenericSuggest_,
+    GetSuggestionsCallback,
+    IGenericSuggest,
+} from '../Components/interfaces/IGenericSuggest';
 import type {
     ISettingField_,
     SettingFieldConfigurator,
@@ -46,7 +46,7 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
 
     public readonly parentSettingItem: IInternalSettingItem & Component;
     private _displayField?: IDisplayFieldFluentAPI<ITag, ITags>;
-    private _suggester?: GenericSuggest<unknown>;
+    private _suggester?: IGenericSuggest<unknown>;
     private readonly _configurator?: SettingFieldConfigurator<ITagSearchFluentAPI>;
 
     /**
@@ -205,19 +205,11 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
 
                     return filteredItems;
                 },
-                (suggestion: string, el) => {
-                    el.setText(suggestion);
-                },
-                this._IApp,
             );
 
-            if (
-                this.parentSettingItem?.parentModal?.draggableClassName != null
-            ) {
-                this._suggester.suggestContainer?.classList.add(
-                    this.parentSettingItem?.parentModal?.draggableClassName,
-                );
-            }
+            this._suggester.suggestContainerEl?.classList.add(
+                this.parentSettingItem?.parentModal?.draggableClassName || '',
+            );
         }
     }
 
