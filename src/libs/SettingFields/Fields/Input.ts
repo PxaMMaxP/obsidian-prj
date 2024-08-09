@@ -10,11 +10,6 @@ import {
     IFlowConfig,
     IFlowEventCallback,
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
-import type {
-    GenericSuggest,
-    GetSuggestionsCallback,
-    IGenericSuggest_,
-} from 'src/libs/Modals/Components/GenericSuggest';
 import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
@@ -24,6 +19,11 @@ import {
     InputType,
     OnChangeCallback,
 } from './interfaces/IInput';
+import type {
+    GetSuggestionsCallback,
+    IGenericSuggest,
+    IGenericSuggest_,
+} from '../Components/interfaces/IGenericSuggest';
 import type {
     ISettingField_,
     SettingFieldConfigurator,
@@ -113,7 +113,7 @@ export class Input extends DIComponent implements IInternalInput {
     public readonly parentSettingItem: IInternalSettingItem & Component;
     private readonly _configurator?: SettingFieldConfigurator<IInputFluentAPI>;
     private readonly _settings: IInputSettings = new InputSettings();
-    private _suggester?: GenericSuggest<unknown>;
+    private _suggester?: IGenericSuggest<unknown>;
 
     /**
      * Creates a new input field.
@@ -252,9 +252,7 @@ export class Input extends DIComponent implements IInternalInput {
             inputEl,
             (value: string) => {
                 inputEl.value = value;
-
-                if (this._settings.onChangeCallback)
-                    this._settings.onChangeCallback(inputEl.value);
+                this._settings.onChangeCallback?.(inputEl.value);
             },
             (input: string) => {
                 const suggestions =
@@ -266,33 +264,16 @@ export class Input extends DIComponent implements IInternalInput {
                     return [];
                 }
 
-                const items = suggestions.map((suggestion) => ({
-                    value: suggestion,
-                }));
-
-                const fuzzySearch = createFuzzySearch(items, {
-                    getText: (item) => [item.value],
-                });
-
-                const results = fuzzySearch(input);
-
-                const filteredItems = results.map(
-                    (result) => result.item.value,
-                );
-
-                return filteredItems;
+                return createFuzzySearch(
+                    suggestions.map((value) => ({ value })),
+                    { getText: (item) => [item.value] },
+                )(input).map((result) => result.item.value);
             },
-            (suggestion: string, el) => {
-                el.setText(suggestion);
-            },
-            this._IApp,
         );
 
-        if (this.parentSettingItem?.parentModal?.draggableClassName != null) {
-            this._suggester.suggestContainer?.classList.add(
-                this.parentSettingItem?.parentModal?.draggableClassName,
-            );
-        }
+        this._suggester.suggestContainerEl?.classList.add(
+            this.parentSettingItem?.parentModal?.draggableClassName || '',
+        );
     }
 }
 

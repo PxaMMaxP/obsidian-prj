@@ -9,11 +9,11 @@ import {
 } from 'src/__mocks__/ILogger.mock';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
-import { GetSuggestionsCallback } from 'src/libs/Modals/Components/GenericSuggest';
 import {
     MockComponent_,
     registerMockComponent,
 } from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
+import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
 import { IInternalSettingItem } from '../../interfaces/SettingItem';
 import { Input } from '../Input';
 

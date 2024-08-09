@@ -1,5 +1,5 @@
 import { Component } from 'obsidian';
-import { GetSuggestionsCallback } from 'src/libs/Modals/Components/GenericSuggest';
+import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
 import { ISettingField } from '../../interfaces/ISettingField';
 import { IInternalSettingItem } from '../../interfaces/SettingItem';
 
