@@ -209,7 +209,7 @@ export class CustomModal extends DIComponent implements ICustomModal {
         }
 
         try {
-            this._onOpen?.();
+            this._onOpen?.(this);
         } catch (error) {
             this._logger?.error('Error in onOpen callback', error);
             throw new CallbackError('onOpen', error);
@@ -228,7 +228,7 @@ export class CustomModal extends DIComponent implements ICustomModal {
         );
 
         try {
-            this._onClose?.();
+            this._onClose?.(this);
         } catch (error) {
             this._logger?.error('Error in onClose callback', error);
             throw new CallbackError('onClose', error);

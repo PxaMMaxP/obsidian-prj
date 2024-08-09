@@ -99,23 +99,19 @@ export interface ICustomModal extends Component {
 }
 
 /**
- * Interface for the callback to determine if the modal should open.
+ * Type for the callback to determine if the modal should open.
  * @returns {boolean} True if the modal can be opened, otherwise false.
  */
-export interface IShouldOpenCallback {
-    (): boolean;
-}
+export type IShouldOpenCallback = () => boolean;
 
 /**
- * Interface for the callback to be called when the modal is opened.
+ * Type for the callback to be called when the modal is opened.
+ * @param modal The modal that will be opened.
  */
-export interface IOpenCallback {
-    (): void;
-}
+export type IOpenCallback = (modal: ICustomModal) => void;
 
 /**
- * Interface for the callback to be called when the modal is closed.
+ * Type for the callback to be called when the modal is closed.
+ * @param modal The modal that will be closed.
  */
-export interface ICloseCallback {
-    (): void;
-}
+export type ICloseCallback = (modal: ICustomModal) => void;
