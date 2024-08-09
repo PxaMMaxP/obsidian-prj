@@ -21,6 +21,7 @@ import type { ForceConstructor } from '../DependencyInjection/types/GenericContr
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../SettingFields/Components/GenericSuggest';
+import { Button } from '../SettingFields/Fields/Button';
 import { Dropdown } from '../SettingFields/Fields/Dropdown';
 import { Input } from '../SettingFields/Fields/Input';
 import { TagSearch } from '../SettingFields/Fields/TagSearch';
@@ -379,25 +380,26 @@ export class CreateNewMetadataModal {
                 });
         });
 
-        new this._Setting_(this._customModal.content)
-            .addButton((btn) =>
-                btn
-                    .setButtonText(this._ITranslationService.get('Save'))
-                    .setCta()
-                    //.setDisabled(true)
-                    .onClick(() => {
-                        this.save();
-                        this._customModal.close();
-                    }),
-            )
-            .addButton((btn) =>
-                btn
-                    .setButtonText(this._ITranslationService.get('Cancel'))
-                    .setCta()
-                    .onClick(() => {
-                        this._customModal.close();
-                    }),
-            );
+        new this._ISetting_(this._customModal, (setting) => {
+            setting
+                .add(Button, (btn) =>
+                    btn
+                        .setButtonText(this._ITranslationService.get('Save'))
+                        .setCta(true)
+                        .onClick(() => {
+                            this.save();
+                            this._customModal.close();
+                        }),
+                )
+                .add(Button, (btn) =>
+                    btn
+                        .setButtonText(this._ITranslationService.get('Cancel'))
+                        .setCta(true)
+                        .onClick(() => {
+                            this._customModal.close();
+                        }),
+                );
+        });
     }
 
     /**
