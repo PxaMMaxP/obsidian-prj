@@ -4,37 +4,41 @@ import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import {
     AddDelegate,
     CreateEntryDelegate,
     IDisplayEntry,
-    IDisplayFieldFluentAPI,
+    IDisplayFluentApi,
     entryObject,
     NewListDelegate,
     RemoveDelegate,
     GetEntriesDelegate,
+    IDisplay,
 } from './interfaces/IDisplayField';
 import type {
-    ISettingField_,
-    SettingFieldConfigurator,
-} from '../interfaces/ISettingField';
-import { IInternalSettingItem } from '../interfaces/SettingItem';
+    ISettingColumn_,
+    SettingColumnConfigurator,
+} from '../interfaces/ISettingColumn';
+import { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a display field.
  */
 @Register('SettingFields.display')
-@ImplementsStatic<ISettingField_<typeof DisplayField>>()
+@ImplementsStatic<ISettingColumn_<typeof DisplayField>>()
 export class DisplayField<EntryType, ListType>
-    extends Component
-    implements IDisplayFieldFluentAPI<EntryType, ListType>
+    extends DIComponent
+    implements
+        IDisplay<EntryType, ListType>,
+        IDisplayFluentApi<EntryType, ListType>
 {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('Display'), false)
     protected _logger?: ILogger;
 
-    private readonly _parentSettingItem: IInternalSettingItem & Component;
-    private readonly _configurator?: SettingFieldConfigurator<
-        IDisplayFieldFluentAPI<EntryType, ListType>
+    private readonly _parentSettingItem: ISettingRowProtected & Component;
+    private readonly _configurator?: SettingColumnConfigurator<
+        IDisplayFluentApi<EntryType, ListType>
     >;
 
     @LazzyLoading((context: DisplayField<EntryType, ListType>) => {
@@ -69,9 +73,9 @@ export class DisplayField<EntryType, ListType>
      * @param configurator The function that configures the display field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem & Component,
-        configurator?: SettingFieldConfigurator<
-            IDisplayFieldFluentAPI<EntryType, ListType>
+        parentSettingItem: ISettingRowProtected & Component,
+        configurator?: SettingColumnConfigurator<
+            IDisplayFluentApi<EntryType, ListType>
         >,
     ) {
         super();
@@ -204,7 +208,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setList(
         newListDelegate: NewListDelegate<ListType>,
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._newListDelegate = newListDelegate;
 
         return this;
@@ -215,7 +219,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setListClasses(
         classes: string[],
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._classes = classes;
 
         return this;
@@ -226,7 +230,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setAddDelegate(
         addDelegate: AddDelegate<EntryType, ListType>,
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._addDelegate = addDelegate;
 
         return this;
@@ -237,7 +241,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setCreateEntryDelegate(
         createEntryDelegate: CreateEntryDelegate<EntryType>,
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._createEntryDelegate = createEntryDelegate;
 
         return this;
@@ -248,7 +252,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setRemoveDelegate(
         removeDelegate: RemoveDelegate<EntryType, ListType>,
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._removeDelegate = removeDelegate;
 
         return this;
@@ -259,7 +263,7 @@ export class DisplayField<EntryType, ListType>
      */
     public setDefaultEntries(
         entriesDelegate: GetEntriesDelegate<EntryType>,
-    ): IDisplayFieldFluentAPI<EntryType, ListType> {
+    ): IDisplayFluentApi<EntryType, ListType> {
         this._defaultEntries = entriesDelegate;
 
         return this;

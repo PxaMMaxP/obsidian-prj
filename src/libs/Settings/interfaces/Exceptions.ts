@@ -1,11 +1,11 @@
-import { ISettingItem, ISettingItemFluentAPI } from './SettingItem';
+import { ISettingRow, ISettingRowFluentApi } from './ISettingRow';
 
 /**
- * General error class for {@link ISettingItem}
+ * General error class for {@link ISettingRow}
  */
-export class SettingError extends Error {
+export class SettingRowError extends Error {
     /**
-     * Creates a new instance of {@link SettingError}
+     * Creates a new instance of {@link SettingRowError}
      * @param message **The error message**
      */
     constructor(message: string) {
@@ -15,10 +15,10 @@ export class SettingError extends Error {
 }
 
 /**
- * Error class for instantiation errors in {@link ISettingItem}.
- * @see {@link ISettingItemFluentAPI.add}
+ * Error class for instantiation errors in {@link ISettingRow}.
+ * @see {@link ISettingRowFluentApi.add}
  */
-export class InstantiationError extends SettingError {
+export class InstantiationError extends SettingRowError {
     /**
      * Creates a new instance of {@link InstantiationError}
      * @param instanceName **The name of the instance**
@@ -31,10 +31,10 @@ export class InstantiationError extends SettingError {
 }
 
 /**
- * Error class for configuration errors in {@link ISettingItem}.
- * @see {@link ISettingItemFluentAPI.add}
+ * Error class for configuration errors in {@link ISettingRow}.
+ * @see {@link ISettingRowFluentApi.add}
  */
-export class ConfigurationError extends SettingError {
+export class ConfigurationError extends SettingRowError {
     /**
      * Creates a new instance of {@link ConfigurationError}
      * @param instanceName **The name of the instance**
@@ -47,10 +47,10 @@ export class ConfigurationError extends SettingError {
 }
 
 /**
- * Error class for errors in the callback functions in {@link ISettingItem}.
- * @see {@link ISettingItemFluentAPI.then}
+ * Error class for errors in the callback functions in {@link ISettingRow}.
+ * @see {@link ISettingRowFluentApi.then}
  */
-export class CallbackError extends SettingError {
+export class CallbackError extends SettingRowError {
     /**
      * Creates a new instance of {@link CallbackError}
      * @param callbackName **The name of the callback**

@@ -1,22 +1,14 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
-import { ISettingField } from '../../interfaces/ISettingField';
-import { IInternalSettingItem } from '../../interfaces/SettingItem';
+import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
+import {
+    ISettingColumn,
+    ISettingColumnProtected,
+} from '../../interfaces/ISettingColumn';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IInternalInput extends IInputFluentAPI {
-    /**
-     * The input field element.
-     */
-    get inputEl(): HTMLInputElement | HTMLTextAreaElement;
-
-    /**
-     * The parent setting item.
-     */
-    get parentSettingItem(): IInternalSettingItem;
-}
-
-export interface IInput extends IDIComponent, ISettingField {
+/**
+ * Main interface for the input column.
+ */
+export interface IInput extends IDIComponent, ISettingColumn {
     /**
      * Gets the value of the input field.
      * @returns The value of the input field.
@@ -24,58 +16,66 @@ export interface IInput extends IDIComponent, ISettingField {
     getValue(): string;
 }
 
-export type InputType = 'text' | 'password' | 'number' | 'date';
-export type InputElementType = 'HTMLInputElement' | 'HTMLTextAreaElement';
+/**
+ * Protected interface for the input column.
+ */
+export interface IInputProtected extends ISettingColumnProtected {
+    /**
+     * @inheritdoc
+     */
+    get elements(): {
+        /**
+         * The input field element.
+         */
+        inputEl: HTMLInputElement | HTMLTextAreaElement;
+    };
+}
 
 /**
- * A callback that is called when the value of the input field changes.
- * @param value The value of the input field.
- * @returns The new value of the input field.
+ * The fluent API for the input column.
  */
-export type OnChangeCallback = (value: string) => void;
-
-export interface IInputFluentAPI extends IInput {
+export interface IInputFluentApi {
     /**
      * Sets the element type of the input field.
      * @param inputType The element type of the input field.
      * @returns The input field.
      */
-    setInputElType(inputType: InputElementType): IInputFluentAPI;
+    setInputElType(inputType: InputElementType): IInputFluentApi;
 
     /**
      * Sets the type of the input field.
      * @param type The type of the input field.
      * @returns The input field.
      */
-    setType(type: InputType): IInputFluentAPI;
+    setType(type: InputType): IInputFluentApi;
 
     /**
      * Disables or enables the input field.
      * @param shouldDisabled Whether the input field should be disabled.
      * @returns The input field.
      */
-    setDisabled(shouldDisabled: boolean): IInputFluentAPI;
+    setDisabled(shouldDisabled: boolean): IInputFluentApi;
 
     /**
      * Sets the value of the input field.
      * @param value The value of the input field.
      * @returns The input field.
      */
-    setValue(value: string): IInputFluentAPI;
+    setValue(value: string): IInputFluentApi;
 
     /**
      * Sets the placeholder of the input field.
      * @param placeholder The placeholder of the input field.
      * @returns The input field.
      */
-    setPlaceholder(placeholder: string): IInputFluentAPI;
+    setPlaceholder(placeholder: string): IInputFluentApi;
 
     /**
      * Sets a callback that is called when the value of the input field changes.
      * @param callback The callback function.
      * @returns The input field.
      */
-    onChange(callback: OnChangeCallback): IInputFluentAPI;
+    onChange(callback: OnChangeCallback): IInputFluentApi;
 
     /**
      * Adds a suggestion to the input field.
@@ -84,7 +84,7 @@ export interface IInputFluentAPI extends IInput {
      */
     addSuggestion(
         getSuggestionsCallback: GetSuggestionsCallback<string>,
-    ): IInputFluentAPI;
+    ): IInputFluentApi;
 
     /**
      * Method for modifying the input field.
@@ -92,5 +92,22 @@ export interface IInputFluentAPI extends IInput {
      * when the input field is modified.
      * @returns The input field.
      */
-    then(callback: (input: IInternalInput) => void): IInputFluentAPI;
+    then(callback: (input: IInputProtected) => void): IInputFluentApi;
 }
+
+/**
+ * Input types of {@link IInput}.
+ */
+export type InputType = 'text' | 'password' | 'number' | 'date';
+
+/**
+ * Element types of {@link IInput}.
+ */
+export type InputElementType = 'HTMLInputElement' | 'HTMLTextAreaElement';
+
+/**
+ * A callback that is called when the value of the input field changes.
+ * @param value The value of the input field.
+ * @returns The new value of the input field.
+ */
+export type OnChangeCallback = (value: string) => void;

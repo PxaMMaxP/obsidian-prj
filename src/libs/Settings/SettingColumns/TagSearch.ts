@@ -1,5 +1,4 @@
 import createFuzzySearch from '@nozbe/microfuzz';
-import { Component } from 'obsidian';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
@@ -11,32 +10,37 @@ import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { DisplayField } from './DisplayField';
 import type {
     GetEntriesDelegate,
-    IDisplayFieldFluentAPI,
+    IDisplay,
+    IDisplayFluentApi,
 } from './interfaces/IDisplayField';
 import {
+    ITagSearch,
     ITagSearchFluentAPI,
-    ITagSearchInternal,
+    ITagSearchProtected,
 } from './interfaces/ITagSearch';
 import type {
     IGenericSuggest_,
-    GetSuggestionsCallback,
     IGenericSuggest,
-} from '../Components/interfaces/IGenericSuggest';
+    GetSuggestionsCallback,
+} from '../components/interfaces/IGenericSuggest';
 import type {
-    ISettingField_,
-    SettingFieldConfigurator,
-} from '../interfaces/ISettingField';
-import type { IInternalSettingItem } from '../interfaces/SettingItem';
+    ISettingColumn_,
+    SettingColumnConfigurator,
+} from '../interfaces/ISettingColumn';
+import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a tag search field.
  */
 @Register('SettingFields.tagsearch')
-export class TagSearch extends DIComponent implements ITagSearchInternal {
+export class TagSearch
+    extends DIComponent
+    implements ITagSearch, ITagSearchProtected, ITagSearchFluentAPI
+{
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     private readonly _logger?: ILogger;
     @Inject('SettingFields.display')
-    private readonly _IDisplayField_!: ISettingField_<typeof DisplayField>;
+    private readonly _IDisplayField_!: ISettingColumn_<typeof DisplayField>;
     @Inject('IGenericSuggest_')
     private readonly _IGenericSuggest_!: IGenericSuggest_<string>;
     @Inject('IApp')
@@ -46,10 +50,24 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
     @Inject('ITag_')
     protected readonly _ITag_!: ITag_;
 
-    public readonly parentSettingItem: IInternalSettingItem & Component;
-    private _displayField?: IDisplayFieldFluentAPI<ITag, ITags>;
+    public readonly parentSettingItem: ISettingRowProtected;
+    private _displayField?: IDisplay<ITag, ITags> &
+        IDisplayFluentApi<ITag, ITags>;
     private _suggester?: IGenericSuggest<unknown>;
-    private readonly _configurator?: SettingFieldConfigurator<ITagSearchFluentAPI>;
+    private readonly _configurator?: SettingColumnConfigurator<ITagSearchFluentAPI>;
+
+    /**
+     * @inheritdoc
+     */
+    public get elements(): {
+        searchContainerEl: HTMLInputElement;
+        inputEl: HTMLInputElement;
+    } {
+        return {
+            searchContainerEl: this._searchContainerEl,
+            inputEl: this._inputEl,
+        };
+    }
 
     /**
      * @inheritdoc
@@ -61,7 +79,7 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
 
         return searchContainerEl;
     }, 'Readonly')
-    public readonly searchContainerEl: HTMLInputElement;
+    private readonly _searchContainerEl: HTMLInputElement;
 
     /**
      * @inheritdoc
@@ -72,11 +90,11 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
         inputEl.enterKeyHint = 'search';
         inputEl.spellcheck = false;
         inputEl.placeholder = ctx._placeholder;
-        ctx.searchContainerEl.prepend(inputEl);
+        ctx._searchContainerEl.prepend(inputEl);
 
         return inputEl;
     }, 'Readonly')
-    public readonly inputEl: HTMLInputElement;
+    private readonly _inputEl: HTMLInputElement;
 
     /**
      * @inheritdoc
@@ -84,11 +102,11 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
     @LazzyLoading((ctx: TagSearch) => {
         const clearButtonEl = document.createElement('div');
         clearButtonEl.addClass('search-input-clear-button');
-        ctx.searchContainerEl.appendChild(clearButtonEl);
+        ctx._searchContainerEl.appendChild(clearButtonEl);
 
         ctx.registerDomEvent(clearButtonEl, 'click', () => {
-            ctx.inputEl.value = '';
-            ctx.inputEl.focus();
+            ctx._inputEl.value = '';
+            ctx._inputEl.focus();
         });
 
         return clearButtonEl;
@@ -115,8 +133,8 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
      * @param configurator The function that configures the input field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem,
-        configurator?: SettingFieldConfigurator<ITagSearchFluentAPI>,
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<ITagSearchFluentAPI>,
     ) {
         super();
 
@@ -160,12 +178,12 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
                         return entry.getObsidianLink();
                     });
             },
-        ) as IDisplayFieldFluentAPI<ITag, ITags>;
+        ) as IDisplay<ITag, ITags> & IDisplayFluentApi<ITag, ITags>;
 
         this.addChild(this._displayField);
 
-        this.searchContainerEl;
-        this.inputEl;
+        this._searchContainerEl;
+        this._inputEl;
         this._clearButtonEl;
 
         this.buildSuggester();
@@ -177,7 +195,7 @@ export class TagSearch extends DIComponent implements ITagSearchInternal {
     private buildSuggester(): void {
         if (this._getSuggestionsCallback != null) {
             this._suggester = new this._IGenericSuggest_(
-                this.inputEl,
+                this._inputEl,
                 (value: string) => {
                     const tag = new this._ITag_(value);
                     this._displayField?.addEntry(tag);

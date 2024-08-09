@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { ISettingField } from '../../interfaces/ISettingField';
-import { IInternalSettingItem } from '../../interfaces/SettingItem';
-
-/**
- * The internal button field.
- */
-export interface IButtonInternal extends IButtonFluentAPI {
-    /**
-     * The button element.
-     */
-    get buttenEl(): HTMLButtonElement;
-
-    /**
-     * The parent setting item.
-     */
-    get parentSettingItem(): IInternalSettingItem;
-}
+import {
+    ISettingColumn,
+    ISettingColumnProtected,
+} from '../../interfaces/ISettingColumn';
 
 /**
  * Represents a button field.
  */
-export interface IButton extends IDIComponent, ISettingField {
-    // --
+export interface IButton extends IDIComponent, ISettingColumn {}
+
+/**
+ * The internal button field.
+ */
+export interface IButtonProtected extends ISettingColumnProtected {
+    /**
+     * @inheritdoc
+     */
+    get elements(): {
+        /**
+         * The button element.
+         */
+        buttonEl: HTMLButtonElement;
+    };
 }
 
 /**
  * The fluent API for the button field.
  */
-export interface IButtonFluentAPI extends IButton {
+export interface IButtonFluentAPI {
     /**
      * Enables or disables **Call to Action**.
      * @param isCtaEnabled Whether **Call to Action** is enabled.
@@ -62,3 +62,25 @@ export interface IButtonFluentAPI extends IButton {
  * A callback that is called when the button is clicked.
  */
 export type OnClickCallback = (evt: MouseEvent) => unknown;
+
+/**
+ * Represents the settings of a button field.
+ */
+export interface IButtonSettings {
+    /**
+     * The text of the button.
+     */
+    text: string;
+    /**
+     * Whether **Call to Action** is enabled.
+     */
+    cta: boolean;
+    /**
+     * The callback that is called when the button is clicked.
+     */
+    onClick?: OnClickCallback;
+    /**
+     * Whether the button is disabled.
+     */
+    isDisabled: boolean;
+}

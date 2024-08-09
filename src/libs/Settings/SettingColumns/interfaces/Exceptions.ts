@@ -1,11 +1,11 @@
-import { ISettingField } from '../../interfaces/ISettingField';
+import { ISettingColumn } from '../../interfaces/ISettingColumn';
 
 /**
- * General error class for {@link ISettingField}
+ * General error class for {@link ISettingColumn}
  */
-export class SettingFieldError extends Error {
+export class SettingColumnError extends Error {
     /**
-     * Creates a new instance of {@link SettingFieldError}
+     * Creates a new instance of {@link SettingColumnError}
      * @param message **The error message**
      */
     constructor(message: string) {
@@ -15,9 +15,9 @@ export class SettingFieldError extends Error {
 }
 
 /**
- * Error class for configuration errors in {@link ISettingField}.
+ * Error class for configuration errors in {@link ISettingColumn}.
  */
-export class ConfigurationError extends SettingFieldError {
+export class ConfigurationError extends SettingColumnError {
     /**
      * Creates a new instance of {@link ConfigurationError}
      * @param configurationName **The name of the instance**

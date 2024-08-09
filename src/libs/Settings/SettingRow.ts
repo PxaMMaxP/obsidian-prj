@@ -2,14 +2,14 @@ import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { InstantiationError, SettingError } from './interfaces/Exceptions';
+import { InstantiationError, SettingRowError } from './interfaces/Exceptions';
 import type {
-    IInternalSettingItem,
-    ISettingItem,
-    ISettingItem_,
-    ISettingItemFluentAPI,
+    ISettingRowProtected,
+    ISettingRow,
+    ISettingRow_,
+    ISettingRowFluentApi,
     SettingConfigurator,
-} from './interfaces/SettingItem';
+} from './interfaces/ISettingRow';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
 import { DIContainer } from '../DependencyInjection/DIContainer';
@@ -17,14 +17,14 @@ import { DIComponent } from '../DIComponent/DIComponent';
 import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal';
 
 /**
- * Implementation of {@link ISettingItem}.
- * Represents a setting item block.
+ * Implementation of {@link ISettingRow}.
+ * Represents a setting row.
  */
-@Register('ISettingItem_')
-@ImplementsStatic<ISettingItem_>()
-export class SettingItem extends DIComponent implements IInternalSettingItem {
+@Register('ISettingRow_')
+@ImplementsStatic<ISettingRow_>()
+export class SettingRow extends DIComponent implements ISettingRowProtected {
     //#region Dependencies
-    @Inject('ILogger_', (x: ILogger_) => x.getLogger('SettingItem'), false)
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('SettingRow'), false)
     protected _logger?: ILogger;
     //#endregion
 
@@ -44,22 +44,22 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const settingFieldEl = document.createElement('div');
         settingFieldEl.classList.add('setting-item');
         ctx.parentContainerEl.appendChild(settingFieldEl);
 
         return settingFieldEl;
     }, 'Readonly')
-    public readonly settingFieldEl: HTMLElement;
+    public readonly settingRowEl: HTMLElement;
 
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const infoEl = document.createElement('div');
         infoEl.classList.add('setting-item-info');
-        ctx.settingFieldEl.insertBefore(infoEl, ctx.settingFieldEl.firstChild);
+        ctx.settingRowEl.insertBefore(infoEl, ctx.settingRowEl.firstChild);
 
         return infoEl;
     }, 'Readonly')
@@ -68,7 +68,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const nameEl = document.createElement('div');
         nameEl.classList.add('setting-item-name');
         ctx.infoEl.insertBefore(nameEl, ctx.infoEl.firstChild);
@@ -80,7 +80,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const descriptionEl = document.createElement('div');
         descriptionEl.classList.add('setting-item-description');
         ctx.infoEl.appendChild(descriptionEl);
@@ -92,10 +92,10 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const displayEl = document.createElement('div');
         displayEl.classList.add('setting-item-display');
-        ctx.settingFieldEl.insertBefore(displayEl, ctx.inputEl);
+        ctx.settingRowEl.insertBefore(displayEl, ctx.inputEl);
 
         return displayEl;
     }, 'Readonly')
@@ -104,22 +104,22 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    @LazzyLoading((ctx: SettingItem) => {
+    @LazzyLoading((ctx: SettingRow) => {
         const inputEl = document.createElement('div');
         inputEl.classList.add('setting-item-control');
-        ctx.settingFieldEl.appendChild(inputEl);
+        ctx.settingRowEl.appendChild(inputEl);
 
         return inputEl;
     }, 'Readonly')
     public readonly inputEl: HTMLElement;
 
     /**
-     * Creates a new setting block.
-     * @param parentModal The `ICustomModal` instance that the setting field belongs to.
-     * @param configure A function that configures the setting field {@link SettingItem.onload|on load}.
-     * @param parentContainerEl The container element to add the setting block.
+     * Creates a new setting row.
+     * @param parentModal The `ICustomModal` instance that the setting row belongs to.
+     * @param configure A function that configures the setting row {@link ISettingRow.onload|on load}.
+     * @param parentContainerEl The container element to add the setting row.
      * Only if `modal` is `undefined`.
-     * @param parentComponent The component that the setting field belongs to.
+     * @param parentComponent The component that the setting row belongs to.
      * It is used to register the setting block as a child of the component.
      * Only if `modal` is `undefined`.
      */
@@ -144,7 +144,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
             this.parentModal = undefined;
         } else {
             this._logger?.error(
-                'Invalid arguments for `SettingItem` constructor.',
+                'Invalid arguments for `SettingRow` constructor.',
                 'Arguments:',
                 parentModal,
                 configure,
@@ -152,8 +152,8 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
                 parentComponent,
             );
 
-            throw new SettingError(
-                'Invalid arguments for `SettingItem` constructor.',
+            throw new SettingRowError(
+                'Invalid arguments for `SettingRow` constructor.',
             );
         }
 
@@ -163,12 +163,12 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     }
 
     /**
-     * The configurator function that configures the setting item.
+     * The configurator function that configures the setting row.
      */
     private readonly _configurator?: SettingConfigurator;
 
     /**
-     * Apply the {@link SettingConfigurator} to the setting item.
+     * @inheritdoc
      */
     public override onload(): void {
         if (this._configurator) {
@@ -179,11 +179,11 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    setClass(className: string | string[]): ISettingItemFluentAPI {
+    setClass(className: string | string[]): ISettingRowFluentApi {
         if (Array.isArray(className)) {
-            this.settingFieldEl.classList.add(...className);
+            this.settingRowEl.classList.add(...className);
         } else {
-            this.settingFieldEl.classList.add(className);
+            this.settingRowEl.classList.add(className);
         }
 
         return this;
@@ -192,7 +192,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    setName(name: string | DocumentFragment): ISettingItemFluentAPI {
+    setName(name: string | DocumentFragment): ISettingRowFluentApi {
         if (typeof name === 'string') {
             this.nameEl.innerText = name;
         } else {
@@ -207,7 +207,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
      */
     setDescription(
         description: string | DocumentFragment,
-    ): ISettingItemFluentAPI {
+    ): ISettingRowFluentApi {
         if (typeof description === 'string') {
             this.descriptionEl.innerText = description;
         } else {
@@ -220,7 +220,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    setDisplay(display: string | DocumentFragment): ISettingItemFluentAPI {
+    setDisplay(display: string | DocumentFragment): ISettingRowFluentApi {
         if (typeof display === 'string') {
             this.displayEl.innerText = display;
         } else {
@@ -233,20 +233,17 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
     /**
      * @inheritdoc
      */
-    setDisabled(shouldDisabled: boolean): ISettingItemFluentAPI {
+    setDisabled(shouldDisabled: boolean): ISettingRowFluentApi {
         throw new Error('Method not implemented.');
     }
 
     /**
-     * Adds a setting field to the setting.
-     * @param settingField The setting field to add.
-     * @param configure A function that configures the setting field.
-     * @returns The setting field.
+     * @inheritdoc
      */
     add<Type extends new (...args: unknown[]) => unknown>(
         settingField: Type,
         configure: ConstructorParameters<Type>[1],
-    ): ISettingItemFluentAPI {
+    ): ISettingRowFluentApi {
         let settingField_: Type;
         let settingFieldInstance: unknown;
 
@@ -277,7 +274,7 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
      * @inheritdoc
      */
     private _unload(): void {
-        this._logger?.warn('`SettingItem` forced to unload.');
+        this._logger?.warn('`SettingRow` forced to unload.');
         this.parentComponent.removeChild(this);
     }
 
@@ -285,8 +282,8 @@ export class SettingItem extends DIComponent implements IInternalSettingItem {
      * @inheritdoc
      */
     then(
-        callback: (settingField: ISettingItem) => ISettingItemFluentAPI,
-    ): ISettingItemFluentAPI {
+        callback: (settingField: ISettingRow) => ISettingRowFluentApi,
+    ): ISettingRowFluentApi {
         try {
             return callback(this);
         } catch (error) {

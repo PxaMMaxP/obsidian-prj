@@ -5,18 +5,23 @@ import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import {
+    IButton,
     IButtonFluentAPI,
-    IButtonInternal,
+    IButtonProtected,
+    IButtonSettings,
     OnClickCallback,
 } from './interfaces/IButton';
-import type { SettingFieldConfigurator } from '../interfaces/ISettingField';
-import type { IInternalSettingItem } from '../interfaces/SettingItem';
+import type { SettingColumnConfigurator } from '../interfaces/ISettingColumn';
+import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * A button field.
  */
 @Register('SettingFields.button')
-export class Button extends DIComponent implements IButtonInternal {
+export class Button
+    extends DIComponent
+    implements IButton, IButtonProtected, IButtonFluentAPI
+{
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
     @Inject('IFlow_')
@@ -49,14 +54,16 @@ export class Button extends DIComponent implements IButtonInternal {
     /**
      * @inheritdoc
      */
-    public readonly parentSettingItem: IInternalSettingItem;
-    private readonly _configurator?: SettingFieldConfigurator<IButtonFluentAPI>;
+    public readonly parentSettingItem: ISettingRowProtected;
+    private readonly _configurator?: SettingColumnConfigurator<IButtonFluentAPI>;
 
     /**
      * @inheritdoc
      */
-    get buttenEl(): HTMLButtonElement {
-        return this._buttonEl;
+    public get elements(): {
+        buttonEl: HTMLButtonElement;
+    } {
+        return { buttonEl: this._buttonEl };
     }
 
     /**
@@ -65,8 +72,8 @@ export class Button extends DIComponent implements IButtonInternal {
      * @param configurator The configurator of the button field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem,
-        configurator?: SettingFieldConfigurator<IButtonFluentAPI>,
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<IButtonFluentAPI>,
     ) {
         super();
 
@@ -121,26 +128,4 @@ export class Button extends DIComponent implements IButtonInternal {
 
         return this;
     }
-}
-
-/**
- * Represents the settings of a button field.
- */
-interface IButtonSettings {
-    /**
-     * The text of the button.
-     */
-    text: string;
-    /**
-     * Whether **Call to Action** is enabled.
-     */
-    cta: boolean;
-    /**
-     * The callback that is called when the button is clicked.
-     */
-    onClick?: OnClickCallback;
-    /**
-     * Whether the button is disabled.
-     */
-    isDisabled: boolean;
 }

@@ -12,29 +12,33 @@ import {
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
-    IInputFluentAPI,
-    IInternalInput,
+    IInput,
+    IInputFluentApi,
+    IInputProtected,
     InputElementType,
     InputType,
     OnChangeCallback,
 } from './interfaces/IInput';
 import type {
-    GetSuggestionsCallback,
-    IGenericSuggest,
     IGenericSuggest_,
-} from '../Components/interfaces/IGenericSuggest';
+    IGenericSuggest,
+    GetSuggestionsCallback,
+} from '../components/interfaces/IGenericSuggest';
 import type {
-    ISettingField_,
-    SettingFieldConfigurator,
-} from '../interfaces/ISettingField';
-import type { IInternalSettingItem } from '../interfaces/SettingItem';
+    ISettingColumn_,
+    SettingColumnConfigurator,
+} from '../interfaces/ISettingColumn';
+import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents an input field.
  */
 @Register('SettingFields.input')
-@ImplementsStatic<ISettingField_<typeof Input>>()
-export class Input extends DIComponent implements IInternalInput {
+@ImplementsStatic<ISettingColumn_<typeof Input>>()
+export class Input
+    extends DIComponent
+    implements IInput, IInputProtected, IInputFluentApi
+{
     @Inject('IApp')
     protected readonly _IApp!: IApp;
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
@@ -49,7 +53,7 @@ export class Input extends DIComponent implements IInternalInput {
     ) => {
         cfg.appendChildEl(this._settings.inputElType, (cfg) => {
             // Add the suggestions if `getSuggestionsCallback` is set.
-            cfg.getEl((el) => (this.inputEl = el))
+            cfg.getEl((el) => (this.elements.inputEl = el))
                 .setId('inputEl')
                 .setAttribute('placeholder', this._settings.placeholder)
                 .setAttribute('value', this._settings.value)
@@ -76,7 +80,9 @@ export class Input extends DIComponent implements IInternalInput {
                 .addEventListener(
                     this._settings.onChangeCallback != null ? 'change' : 'void',
                     () => {
-                        this._settings.onChangeCallback?.(this.inputEl.value);
+                        this._settings.onChangeCallback?.(
+                            this.elements.inputEl.value,
+                        );
                     },
                 )
                 // Add the suggestions if `getSuggestionsCallback` is set.
@@ -94,7 +100,12 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public inputEl: HTMLInputElement | HTMLTextAreaElement;
+    public readonly elements: {
+        /**
+         * @inheritdoc
+         */
+        inputEl: HTMLInputElement | HTMLTextAreaElement;
+    } = { inputEl: null as never };
 
     /**
      * Updates the minimum height of the input field.
@@ -150,8 +161,8 @@ export class Input extends DIComponent implements IInternalInput {
         );
     }
 
-    public readonly parentSettingItem: IInternalSettingItem;
-    private readonly _configurator?: SettingFieldConfigurator<IInputFluentAPI>;
+    public readonly parentSettingItem: ISettingRowProtected;
+    private readonly _configurator?: SettingColumnConfigurator<IInputFluentApi>;
     private readonly _settings: IInputSettings = new InputSettings();
     private _suggester?: IGenericSuggest<unknown>;
 
@@ -161,8 +172,8 @@ export class Input extends DIComponent implements IInternalInput {
      * @param configurator The function that configures the input field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem,
-        configurator?: SettingFieldConfigurator<IInputFluentAPI>,
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<IInputFluentApi>,
     ) {
         super();
 
@@ -189,13 +200,13 @@ export class Input extends DIComponent implements IInternalInput {
      * @inheritdoc
      */
     public getValue(): string {
-        return this.inputEl.value;
+        return this.elements.inputEl.value;
     }
 
     /**
      * @inheritdoc
      */
-    public setInputElType(inputType: InputElementType): IInputFluentAPI {
+    public setInputElType(inputType: InputElementType): IInputFluentApi {
         this._settings.inputElType = inputType;
 
         return this;
@@ -204,7 +215,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public setType(type: InputType): IInputFluentAPI {
+    public setType(type: InputType): IInputFluentApi {
         this._settings.inputType = type;
 
         return this;
@@ -213,7 +224,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public setDisabled(shouldDisabled: boolean): IInputFluentAPI {
+    public setDisabled(shouldDisabled: boolean): IInputFluentApi {
         this._settings.isDisabled = shouldDisabled;
 
         return this;
@@ -222,7 +233,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public setValue(value: string): IInputFluentAPI {
+    public setValue(value: string): IInputFluentApi {
         this._settings.value = value;
 
         return this;
@@ -231,7 +242,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public setPlaceholder(placeholder: string): IInputFluentAPI {
+    public setPlaceholder(placeholder: string): IInputFluentApi {
         this._settings.placeholder = placeholder;
 
         return this;
@@ -240,7 +251,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    public onChange(callback: OnChangeCallback): IInputFluentAPI {
+    public onChange(callback: OnChangeCallback): IInputFluentApi {
         this._settings.onChangeCallback = callback;
 
         return this;
@@ -251,7 +262,7 @@ export class Input extends DIComponent implements IInternalInput {
      */
     public addSuggestion(
         getSuggestionsCb: GetSuggestionsCallback<string>,
-    ): IInputFluentAPI {
+    ): IInputFluentApi {
         this._settings.getSuggestionsCallback = getSuggestionsCb;
 
         return this;
@@ -260,7 +271,7 @@ export class Input extends DIComponent implements IInternalInput {
     /**
      * @inheritdoc
      */
-    then(callback: (input: IInternalInput) => void): IInputFluentAPI {
+    then(callback: (input: IInputProtected) => void): IInputFluentApi {
         try {
             callback?.(this);
         } catch (error) {

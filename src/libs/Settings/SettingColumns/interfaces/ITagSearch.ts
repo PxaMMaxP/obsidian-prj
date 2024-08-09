@@ -1,37 +1,19 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-import { Component } from 'obsidian';
+import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { GetEntriesDelegate } from './IDisplayField';
-import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
-
-/**
- * The internal tag search interface.
- * @see {@link ITagSearch}
- */
-export interface ITagSearchInternal extends ITagSearchFluentAPI {
-    /**
-     * The parent setting item.
-     */
-    get parentSettingItem(): Component;
-
-    /**
-     * The search container element.
-     */
-    get searchContainerEl(): HTMLInputElement;
-
-    /**
-     * The input field element.
-     */
-    get inputEl(): HTMLInputElement | HTMLTextAreaElement;
-}
+import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
+import {
+    ISettingColumn,
+    ISettingColumnProtected,
+} from '../../interfaces/ISettingColumn';
 
 /**
  * Represents a tag search field.
- * @see {@link ITagSearchInternal}
+ * @see {@link ITagSearchProtected}
  * @see {@link ITagSearchFluentAPI}
  */
-export interface ITagSearch extends Component {
+export interface ITagSearch extends IDIComponent, ISettingColumn {
     /**
      * The list of tags which are displayed in the tag search.
      */
@@ -43,10 +25,30 @@ export interface ITagSearch extends Component {
 }
 
 /**
+ * The internal tag search interface.
+ * @see {@link ITagSearch}
+ */
+export interface ITagSearchProtected extends ISettingColumnProtected {
+    /**
+     * @inheritdoc
+     */
+    get elements(): {
+        /**
+         * The search container element.
+         */
+        searchContainerEl: HTMLInputElement;
+        /**
+         * The input field element.
+         */
+        inputEl: HTMLInputElement;
+    };
+}
+
+/**
  * The fluent API for the tag search field.
  * @see {@link ITagSearch}
  */
-export interface ITagSearchFluentAPI extends ITagSearch {
+export interface ITagSearchFluentAPI {
     /**
      * Sets the placeholder of the tag search.
      * @param placeholder The placeholder of the tag search.

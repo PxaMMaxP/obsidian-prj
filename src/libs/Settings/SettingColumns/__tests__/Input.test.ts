@@ -13,8 +13,8 @@ import {
     MockComponent_,
     registerMockComponent,
 } from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
-import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
-import { IInternalSettingItem } from '../../interfaces/SettingItem';
+import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
+import { ISettingRowProtected } from '../../interfaces/ISettingRow';
 import { Input } from '../Input';
 
 registerMockLogger();
@@ -23,8 +23,8 @@ DIContainer.getInstance().register('IGenericSuggest_', {});
 DIContainer.getInstance().register('IApp', {});
 DIContainer.getInstance().register('IFlow_', Flow);
 
-const SettingItemMock: IInternalSettingItem & Component =
-    new MockComponent_() as unknown as IInternalSettingItem & Component;
+const SettingItemMock: ISettingRowProtected & Component =
+    new MockComponent_() as unknown as ISettingRowProtected & Component;
 
 (SettingItemMock['inputEl'] as HTMLDivElement) = document.createElement('div');
 
@@ -52,14 +52,14 @@ describe('Input', () => {
         const input = new Input(SettingItemMock);
         input.setPlaceholder('test placeholder');
         input.load();
-        expect(input.inputEl.placeholder).toBe('test placeholder');
+        expect(input.elements.inputEl.placeholder).toBe('test placeholder');
     });
 
     it('should set input element type correctly', () => {
         const input = new Input(SettingItemMock);
         input.setInputElType('HTMLTextAreaElement');
         input.load();
-        expect(input.inputEl.tagName.toLowerCase()).toBe('textarea');
+        expect(input.elements.inputEl.tagName.toLowerCase()).toBe('textarea');
     });
 
     it('should set input type correctly', () => {
@@ -67,8 +67,8 @@ describe('Input', () => {
         input.setInputElType('HTMLInputElement').setType('password');
         input.load();
 
-        if (input.inputEl instanceof HTMLInputElement) {
-            expect(input.inputEl.type).toBe('password');
+        if (input.elements.inputEl instanceof HTMLInputElement) {
+            expect(input.elements.inputEl.type).toBe('password');
         } else {
             throw new Error(
                 'Input element is not an instance of HTMLInputElement',
@@ -81,8 +81,8 @@ describe('Input', () => {
         const mockCallback = jest.fn();
         input.onChange(mockCallback);
         input.load();
-        input.inputEl.value = 'new value';
-        input.inputEl.dispatchEvent(new Event('change'));
+        input.elements.inputEl.value = 'new value';
+        input.elements.inputEl.dispatchEvent(new Event('change'));
         expect(mockCallback).toHaveBeenCalledWith('new value');
     });
 

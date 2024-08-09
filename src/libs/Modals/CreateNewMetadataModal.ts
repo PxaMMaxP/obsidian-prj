@@ -20,8 +20,8 @@ import { Resolve } from '../DependencyInjection/functions/Resolve';
 import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
-import { GenericSuggest } from '../SettingFields/Components/GenericSuggest';
-import type { ISettingItem_ } from '../SettingFields/interfaces/SettingItem';
+import { GenericSuggest } from '../Settings/components/GenericSuggest';
+import type { ISettingRow_ } from '../Settings/interfaces/ISettingRow';
 import type { ITags, ITags_ } from '../Tags/interfaces/ITags';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
@@ -58,8 +58,8 @@ export class CreateNewMetadataModal {
     private readonly _IPrjSettings!: IPrjSettings;
     @Inject('ITags_')
     private readonly _ITags_: ITags_;
-    @Inject('ISettingItem_')
-    private readonly _ISetting_: ISettingItem_;
+    @Inject('ISettingRow_')
+    private readonly _ISetting_: ISettingRow_;
 
     private readonly _customModal: ICustomModal = new this._ICustomModal_();
 
@@ -251,7 +251,7 @@ export class CreateNewMetadataModal {
                         .onChange((value) => {
                             this._result.sender = value;
                         })
-                        .addSuggestion((input) =>
+                        .addSuggestion((_input) =>
                             (
                                 this._IDocumentModel_ as unknown as {
                                     getAllSenderRecipients(): string[];
@@ -276,7 +276,7 @@ export class CreateNewMetadataModal {
                         .onChange((value) => {
                             this._result.recipient = value;
                         })
-                        .addSuggestion((input) =>
+                        .addSuggestion((_input) =>
                             (
                                 this._IDocumentModel_ as unknown as {
                                     getAllSenderRecipients(): string[];
@@ -344,7 +344,7 @@ export class CreateNewMetadataModal {
                         })
                         .setList(this._result.tags as ITags)
                         .setPlaceholder(this._ITranslationService.get('Tags'))
-                        .addSuggestion((input) => {
+                        .addSuggestion(() => {
                             return Array.from(tagsSet);
                         });
                 });
@@ -363,7 +363,7 @@ export class CreateNewMetadataModal {
                         .onChange((value) => {
                             this._result.file = value;
                         })
-                        .addSuggestion((input) =>
+                        .addSuggestion((_input) =>
                             (
                                 this._IDocumentModel_ as unknown as {
                                     getAllPDFsWithoutMetadata(): TFile[];

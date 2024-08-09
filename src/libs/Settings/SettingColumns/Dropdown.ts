@@ -6,29 +6,42 @@ import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import {
-    IDropdownFluentAPI,
-    IInternalDropdown,
+    IDropdown,
+    IDropdownFluentApi,
+    IDropdownProtected,
     OnChangeCallback,
     SelectItem,
     SelectOptions,
     SelectOptionsCallback,
 } from './interfaces/IDropdown';
 import type {
-    ISettingField_,
-    SettingFieldConfigurator,
-} from '../interfaces/ISettingField';
-import type { IInternalSettingItem } from '../interfaces/SettingItem';
+    ISettingColumn_,
+    SettingColumnConfigurator,
+} from '../interfaces/ISettingColumn';
+import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a dropdown field.
  */
 @Register('SettingFields.dropdown')
-@ImplementsStatic<ISettingField_<typeof Dropdown>>()
-export class Dropdown extends DIComponent implements IInternalDropdown {
-    @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
+@ImplementsStatic<ISettingColumn_<typeof Dropdown>>()
+export class Dropdown
+    extends DIComponent
+    implements IDropdown, IDropdownProtected, IDropdownFluentApi
+{
+    @Inject('ILogger_', (x: ILogger_) => x.getLogger('Dropdown'), false)
     protected _logger?: ILogger;
 
-    public readonly parentSettingItem: IInternalSettingItem & Component;
+    public readonly parentSettingItem: ISettingRowProtected & Component;
+
+    /**
+     * @inheritdoc
+     */
+    public get elements(): {
+        selectEl: HTMLSelectElement;
+    } {
+        return { selectEl: this._selectEl };
+    }
 
     /**
      * @inheritdoc
@@ -40,7 +53,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
 
         return selectEl;
     }, 'Readonly')
-    public readonly selectEl: HTMLSelectElement;
+    private readonly _selectEl: HTMLSelectElement;
 
     private _value?: SelectItem;
 
@@ -53,8 +66,8 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
      * @param configurator A function that configures the dropdown field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem,
-        configurator?: SettingFieldConfigurator<IDropdownFluentAPI>,
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<IDropdownFluentApi>,
     ) {
         super();
 
@@ -63,7 +76,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
         this._configurator = configurator;
     }
 
-    private readonly _configurator?: SettingFieldConfigurator<IDropdownFluentAPI>;
+    private readonly _configurator?: SettingColumnConfigurator<IDropdownFluentApi>;
 
     /**
      * @inheritdoc
@@ -78,8 +91,8 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
      */
     getSelectedValue(): SelectItem {
         return {
-            key: this.selectEl.value,
-            value: this.selectEl.selectedOptions[0].text,
+            key: this._selectEl.value,
+            value: this._selectEl.selectedOptions[0].text,
         };
     }
 
@@ -87,7 +100,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
      * @inheritdoc
      */
     build(): void {
-        this.registerDomEvent(this.selectEl, 'change', () => {
+        this.registerDomEvent(this._selectEl, 'change', () => {
             if (this._onChangeCallback) {
                 this._onChangeCallback(this.getSelectedValue());
             }
@@ -101,32 +114,33 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
                 optionEl.value = option.key;
                 optionEl.text = option.value;
 
-                this.selectEl.appendChild(optionEl);
+                this._selectEl.appendChild(optionEl);
             });
         }
 
         if (
             this._value != null &&
-            this.selectEl.querySelector(`option[value="${this._value.key}"]`) !=
-                null
+            this._selectEl.querySelector(
+                `option[value="${this._value.key}"]`,
+            ) != null
         ) {
-            this.selectEl.value = this._value.key;
+            this._selectEl.value = this._value.key;
         } else {
-            this.selectEl.value = this.selectEl.options[0].value;
+            this._selectEl.value = this._selectEl.options[0].value;
         }
     }
 
     /**
      * @inheritdoc
      */
-    setDisabled(shouldDisabled: boolean): IDropdownFluentAPI {
+    setDisabled(shouldDisabled: boolean): IDropdownFluentApi {
         throw new Error('Method not implemented.');
     }
 
     /**
      * @inheritdoc
      */
-    setValue(key: string, value: string): IDropdownFluentAPI {
+    setValue(key: string, value: string): IDropdownFluentApi {
         this._value = {
             key,
             value,
@@ -138,7 +152,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
     /**
      * @inheritdoc
      */
-    onChange(callback: OnChangeCallback): IDropdownFluentAPI {
+    onChange(callback: OnChangeCallback): IDropdownFluentApi {
         this._onChangeCallback = callback;
 
         return this;
@@ -149,7 +163,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
      */
     setOptions(
         options: SelectOptions | SelectOptionsCallback,
-    ): IDropdownFluentAPI {
+    ): IDropdownFluentApi {
         if (typeof options === 'function') {
             this._options = options;
         } else {
@@ -162,7 +176,7 @@ export class Dropdown extends DIComponent implements IInternalDropdown {
     /**
      * @inheritdoc
      */
-    then(callback: (dropdown: IInternalDropdown) => void): IDropdownFluentAPI {
+    then(callback: (dropdown: IDropdownProtected) => void): IDropdownFluentApi {
         throw new Error('Method not implemented.');
     }
 }

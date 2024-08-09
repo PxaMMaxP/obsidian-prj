@@ -10,21 +10,21 @@ import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
     IToggleFluentAPI,
-    IToggleInternal,
+    IToggleProtected,
     OnChangeCallback,
 } from './interfaces/IToggle';
 import type {
-    ISettingField_,
-    SettingFieldConfigurator,
-} from '../interfaces/ISettingField';
-import type { IInternalSettingItem } from '../interfaces/SettingItem';
+    ISettingColumn_,
+    SettingColumnConfigurator,
+} from '../interfaces/ISettingColumn';
+import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a toggle field.
  */
 @Register('SettingFields.toggle')
-@ImplementsStatic<ISettingField_<typeof Toggle>>()
-export class Toggle extends DIComponent implements IToggleInternal {
+@ImplementsStatic<ISettingColumn_<typeof Toggle>>()
+export class Toggle extends DIComponent implements IToggleProtected {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
 
@@ -40,7 +40,7 @@ export class Toggle extends DIComponent implements IToggleInternal {
         cfg: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
         cfg.appendChildEl('div', (cfg) => {
-            cfg.getEl((el) => (this._toggleContainerEl = el))
+            cfg.getEl((el) => (this.elements._toggleContainerEl = el))
                 .setId('checkbox-containerEl')
                 .addClass(['checkbox-container'])
                 .addClass(this._isToggled ? 'is-enabled' : 'is-disabled')
@@ -53,7 +53,7 @@ export class Toggle extends DIComponent implements IToggleInternal {
                 )
 
                 .appendChildEl('input', (cfg) => {
-                    cfg.getEl((el) => (this.toggleEl = el))
+                    cfg.getEl((el) => (this.elements.toggleEl = el))
                         .setId('toggleEl')
                         .setAttribute('type', 'checkbox');
                 });
@@ -63,18 +63,27 @@ export class Toggle extends DIComponent implements IToggleInternal {
     /**
      * @inheritdoc
      */
-    public toggleEl: HTMLInputElement;
-
-    /**
-     * The container of the toggle.
-     */
-    private _toggleContainerEl: HTMLDivElement;
+    public readonly elements: {
+        /**
+         * @inheritdoc
+         */
+        toggleEl: HTMLInputElement;
+        /**
+         * The container of the toggle.
+         */
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        _toggleContainerEl: HTMLDivElement;
+    } = {
+        toggleEl: null as never,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        _toggleContainerEl: null as never,
+    };
 
     /**
      * @inheritdoc
      */
-    public readonly parentSettingItem: IInternalSettingItem & Component;
-    private readonly _configurator?: SettingFieldConfigurator<IToggleFluentAPI>;
+    public readonly parentSettingItem: ISettingRowProtected & Component;
+    private readonly _configurator?: SettingColumnConfigurator<IToggleFluentAPI>;
     private readonly _settings: IToggleSettings = {};
 
     /**
@@ -83,8 +92,8 @@ export class Toggle extends DIComponent implements IToggleInternal {
      * @param configurator A function that configures the field.
      */
     constructor(
-        parentSettingItem: IInternalSettingItem,
-        configurator?: SettingFieldConfigurator<IToggleFluentAPI>,
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<IToggleFluentAPI>,
     ) {
         super();
 
@@ -132,7 +141,7 @@ export class Toggle extends DIComponent implements IToggleInternal {
     /**
      * @inheritdoc
      */
-    then(callback: (toggle: IToggleInternal) => void): IToggleFluentAPI {
+    then(callback: (toggle: IToggleProtected) => void): IToggleFluentAPI {
         try {
             callback?.(this);
         } catch (error) {

@@ -1,29 +1,15 @@
-import { Component } from 'obsidian';
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { ISettingField } from '../../interfaces/ISettingField';
-
-/**
- * The internal toggle field.
- * @see {@link IToggle}
- */
-export interface IToggleInternal extends IToggleFluentAPI {
-    /**
-     * The toggle element.
-     */
-    get toggleEl(): HTMLInputElement;
-
-    /**
-     * The parent setting item.
-     */
-    get parentSettingItem(): Component;
-}
+import {
+    ISettingColumn,
+    ISettingColumnProtected,
+} from '../../interfaces/ISettingColumn';
 
 /**
  * Represents a toggle field.
- * @see {@link IToggleInternal}
+ * @see {@link IToggleProtected}
  * @see {@link IToggleFluentAPI}
  */
-export interface IToggle extends IDIComponent, ISettingField {
+export interface IToggle extends IDIComponent, ISettingColumn {
     /**
      * Gets the value of the toggle.
      * @returns The value of the toggle.
@@ -37,15 +23,26 @@ export interface IToggle extends IDIComponent, ISettingField {
 }
 
 /**
- * A callback that is called when the value of the toggle changes.
+ * The internal toggle field.
+ * @see {@link IToggle}
  */
-export type OnChangeCallback = (isToggled: boolean) => void;
+export interface IToggleProtected extends ISettingColumnProtected {
+    /**
+     * @inheritdoc
+     */
+    get elements(): {
+        /**
+         * The toggle element.
+         */
+        toggleEl: HTMLInputElement;
+    };
+}
 
 /**
  * The fluent API for the toggle field.
  * @see {@link IToggle}
  */
-export interface IToggleFluentAPI extends IToggle {
+export interface IToggleFluentAPI {
     /**
      * Sets the value of the toggle.
      * @param isToggled The value of the toggle.
@@ -71,5 +68,10 @@ export interface IToggleFluentAPI extends IToggle {
      * @param callback The callback that modifies the toggle field.
      * @returns The toggle fluent API.
      */
-    then(callback: (toggle: IToggleInternal) => void): IToggleFluentAPI;
+    then(callback: (toggle: IToggleProtected) => void): IToggleFluentAPI;
 }
+
+/**
+ * A callback that is called when the value of the toggle changes.
+ */
+export type OnChangeCallback = (isToggled: boolean) => void;
