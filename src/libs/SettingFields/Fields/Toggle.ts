@@ -166,13 +166,6 @@ interface IToggleSettings {
      * A callback that is called when the value of the toggle changes.
      */
     onChangeCallback?: OnChangeCallback;
-
-    /**
-     * A callback that is called after the toggle field is configured.
-     * @param toggle The toggle field.
-     * @returns The new toggle field.
-     */
-    thenCallback?: (toggle: IToggleInternal) => void;
 }
 
 const _value = Symbol('ListEntry');
