@@ -8,6 +8,7 @@ import {
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
 import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { Flow } from 'src/libs/HTMLFlow/Flow';
 import { GetSuggestionsCallback } from 'src/libs/Modals/Components/GenericSuggest';
 import {
     MockComponent_,
@@ -20,6 +21,7 @@ registerMockLogger();
 registerMockComponent();
 DIContainer.getInstance().register('IGenericSuggest_', {});
 DIContainer.getInstance().register('IApp', {});
+DIContainer.getInstance().register('IFlow_', Flow);
 
 const SettingItemMock: IInternalSettingItem & Component =
     new MockComponent_() as unknown as IInternalSettingItem & Component;
