@@ -11,7 +11,6 @@ import { DocumentModel } from 'src/models/DocumentModel';
 import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
-import { GenericSuggest } from './Components/GenericSuggest';
 import type {
     ICustomModal_,
     ICustomModal,
@@ -21,6 +20,7 @@ import { Resolve } from '../DependencyInjection/functions/Resolve';
 import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
+import { GenericSuggest } from '../SettingFields/Components/GenericSuggest';
 import { Dropdown } from '../SettingFields/Fields/Dropdown';
 import { Input } from '../SettingFields/Fields/Input';
 import { TagSearch } from '../SettingFields/Fields/TagSearch';

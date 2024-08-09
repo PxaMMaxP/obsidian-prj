@@ -4,7 +4,6 @@ import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import { DIComponent } from './DIComponent';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
 import {
     ICloseCallback,
@@ -17,6 +16,7 @@ import type {
     IDraggableElement,
     IDraggableElement_,
 } from './interfaces/IDraggableElement';
+import { DIComponent } from '../../DIComponent/DIComponent';
 
 /**
  * Represents a custom modal, which can be dragged around

@@ -2,7 +2,6 @@ import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
-import { DIComponent } from './DIComponent';
 import type {
     ICSSStyleRuleComponent,
     ICSSStyleRuleComponent_,
@@ -11,6 +10,7 @@ import {
     IDraggableElement,
     IDraggableElement_,
 } from './interfaces/IDraggableElement';
+import { DIComponent } from '../../DIComponent/DIComponent';
 
 /**
  * Draggable element class.

@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import createFuzzySearch from '@nozbe/microfuzz';
-import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import {
     IFlowConfig,
     IFlowEventCallback,
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
-import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
     IInputFluentAPI,
@@ -101,6 +99,7 @@ export class Input extends DIComponent implements IInternalInput {
      * @param el The input field element.
      * @param ev The event.
      * @param flow The flow API.
+     * @remarks This method will only be registered if the input field is a textarea.
      */
     private readonly updateMinHeight: IFlowEventCallback<
         'textarea' | 'input',
@@ -110,7 +109,46 @@ export class Input extends DIComponent implements IInternalInput {
         el.style.minHeight = `${Math.max(lineCount + 1, 4)}lh`;
     };
 
-    public readonly parentSettingItem: IInternalSettingItem & Component;
+    /**
+     * Builds the suggester for the input field.
+     * @param inputEl The input element on which the suggester should be built.
+     */
+    private buildSuggester(inputEl: HTMLInputElement): void {
+        if (
+            this._settings.getSuggestionsCallback == null ||
+            !(inputEl instanceof HTMLInputElement)
+        )
+            return;
+
+        this._suggester = new this._IGenericSuggest_(
+            inputEl,
+            (value: string) => {
+                inputEl.value = value;
+                this._settings.onChangeCallback?.(inputEl.value);
+            },
+            (input: string) => {
+                const suggestions =
+                    this._settings.getSuggestionsCallback?.(input);
+
+                if (suggestions == null) {
+                    this._logger?.warn('The suggestions are null.');
+
+                    return [];
+                }
+
+                return createFuzzySearch(
+                    suggestions.map((value) => ({ value })),
+                    { getText: (item) => [item.value] },
+                )(input).map((result) => result.item.value);
+            },
+        );
+
+        this._suggester.suggestContainerEl?.classList.add(
+            this.parentSettingItem?.parentModal?.draggableClassName || '',
+        );
+    }
+
+    public readonly parentSettingItem: IInternalSettingItem;
     private readonly _configurator?: SettingFieldConfigurator<IInputFluentAPI>;
     private readonly _settings: IInputSettings = new InputSettings();
     private _suggester?: IGenericSuggest<unknown>;
@@ -235,45 +273,6 @@ export class Input extends DIComponent implements IInternalInput {
         }
 
         return this;
-    }
-
-    /**
-     * Builds the suggester for the input field.
-     * @param inputEl The input element on which the suggester should be built.
-     */
-    private buildSuggester(inputEl: HTMLInputElement): void {
-        if (
-            this._settings.getSuggestionsCallback == null ||
-            !(inputEl instanceof HTMLInputElement)
-        )
-            return;
-
-        this._suggester = new this._IGenericSuggest_(
-            inputEl,
-            (value: string) => {
-                inputEl.value = value;
-                this._settings.onChangeCallback?.(inputEl.value);
-            },
-            (input: string) => {
-                const suggestions =
-                    this._settings.getSuggestionsCallback?.(input);
-
-                if (suggestions == null) {
-                    this._logger?.warn('The suggestions are null.');
-
-                    return [];
-                }
-
-                return createFuzzySearch(
-                    suggestions.map((value) => ({ value })),
-                    { getText: (item) => [item.value] },
-                )(input).map((result) => result.item.value);
-            },
-        );
-
-        this._suggester.suggestContainerEl?.classList.add(
-            this.parentSettingItem?.parentModal?.draggableClassName || '',
-        );
     }
 }
 

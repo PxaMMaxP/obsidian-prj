@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/check-tag-names */
 import { Component } from 'obsidian';
+import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { ICustomModal } from 'src/libs/Modals/CustomModal/interfaces/ICustomModal';
 
 export type SettingConfigurator = (setting: ISettingItemFluentAPI) => void;
@@ -50,7 +51,7 @@ export interface IInternalSettingItem extends ISettingItemFluentAPI {
 /**
  * Interface for setting items.
  */
-export interface ISettingItem extends Component {
+export interface ISettingItem extends IDIComponent {
     /**
      * The container element of
      * this whole setting field.

@@ -1,4 +1,5 @@
 import { Component } from 'obsidian';
+import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { ISettingField } from '../../interfaces/ISettingField';
 
 /**
@@ -22,7 +23,7 @@ export interface IToggleInternal extends IToggleFluentAPI {
  * @see {@link IToggleInternal}
  * @see {@link IToggleFluentAPI}
  */
-export interface IToggle extends Component, ISettingField {
+export interface IToggle extends IDIComponent, ISettingField {
     /**
      * Gets the value of the toggle.
      * @returns The value of the toggle.

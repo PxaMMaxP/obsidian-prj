@@ -1,4 +1,4 @@
-import { Component } from 'obsidian';
+import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
 import { ISettingField } from '../../interfaces/ISettingField';
 import { IInternalSettingItem } from '../../interfaces/SettingItem';
@@ -13,10 +13,10 @@ export interface IInternalInput extends IInputFluentAPI {
     /**
      * The parent setting item.
      */
-    get parentSettingItem(): IInternalSettingItem & Component;
+    get parentSettingItem(): IInternalSettingItem;
 }
 
-export interface IInput extends Component, ISettingField {
+export interface IInput extends IDIComponent, ISettingField {
     /**
      * Gets the value of the input field.
      * @returns The value of the input field.

@@ -13,11 +13,11 @@ import type {
 } from './types/IFlowDelegates';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
-import { DIComponent } from '../Modals/CustomModal/DIComponent';
+import { DIComponent } from '../DIComponent/DIComponent';
 import {
     isLoaded,
     shouldRemoveOnUnload,
-} from '../Modals/CustomModal/interfaces/IDIComponent';
+} from '../DIComponent/interfaces/IDIComponent';
 
 /**
  * A HTML Fluent API class.

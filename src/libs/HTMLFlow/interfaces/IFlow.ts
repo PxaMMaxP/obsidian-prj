@@ -1,5 +1,5 @@
-import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
-import { shouldRemoveOnUnload } from 'src/libs/Modals/CustomModal/interfaces/IDIComponent';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
+import { shouldRemoveOnUnload } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { IFlowSymbol } from './IFlowTag';
 import {
     IFlowConfig,

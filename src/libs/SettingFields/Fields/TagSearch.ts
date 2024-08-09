@@ -4,7 +4,7 @@ import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { ITag, ITag_ } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { DisplayField } from './DisplayField';

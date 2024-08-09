@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Component } from 'obsidian';
-import { GetSuggestionsCallback } from 'src/libs/Modals/Components/GenericSuggest';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
 import { GetEntriesDelegate } from './IDisplayField';
+import { GetSuggestionsCallback } from '../../Components/interfaces/IGenericSuggest';
 
 /**
  * The internal tag search interface.

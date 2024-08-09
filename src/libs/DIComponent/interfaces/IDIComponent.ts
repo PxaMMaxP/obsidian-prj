@@ -36,6 +36,9 @@ export function isIDIComponent(
     return (component as IDIComponent)[_IDIComponent] !== undefined;
 }
 
+/**
+ * Private and reverse engineered interface of the component.
+ */
 export interface IComponent extends Component {
     /**
      * Tells whether the component is loaded.

@@ -2,10 +2,10 @@ import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
 import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
-import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
     IToggleFluentAPI,

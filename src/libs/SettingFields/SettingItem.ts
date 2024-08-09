@@ -12,7 +12,7 @@ import type {
 } from './interfaces/SettingItem';
 import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Register } from '../DependencyInjection/decorators/Register';
-import { DIComponent } from '../Modals/CustomModal/DIComponent';
+import { DIComponent } from '../DIComponent/DIComponent';
 import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal';
 
 /**

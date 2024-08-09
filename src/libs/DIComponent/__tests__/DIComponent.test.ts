@@ -3,7 +3,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { registerMockComponent } from '../__mocks__/Component.mock';
+import { registerMockComponent } from '../../Modals/CustomModal/__mocks__/Component.mock';
 import {
     _componentInstance,
     _componentOriginalMethods,

@@ -2,11 +2,11 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
-import { DIComponent } from './DIComponent';
 import {
     ICSSStyleRuleComponent,
     ICSSStyleRuleComponent_,
 } from './interfaces/ICSSStyleRuleComponent';
+import { DIComponent } from '../../DIComponent/DIComponent';
 
 /**
  * CSS Style Rule Component class.

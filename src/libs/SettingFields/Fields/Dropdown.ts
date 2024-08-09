@@ -3,7 +3,7 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { DIComponent } from 'src/libs/Modals/CustomModal/DIComponent';
+import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import {
     IDropdownFluentAPI,
     IInternalDropdown,

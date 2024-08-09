@@ -10,11 +10,11 @@ import MockLogger, {
     registerMockLogger,
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
+import { _componentInstance } from 'src/libs/DIComponent/DIComponent';
 import {
     registerMockComponent,
     resetMockComponent,
 } from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
-import { _componentInstance } from 'src/libs/Modals/CustomModal/DIComponent';
 import { Flow } from '../Flow';
 import { IFlowConfig } from '../types/IFlowDelegates';
 
