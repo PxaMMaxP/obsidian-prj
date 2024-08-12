@@ -95,7 +95,7 @@ export interface IFlowApi<
      * @param classNames The classes to add.
      * @returns The current instance of the fluent HTML API.
      */
-    addClass(classNames: string[] | undefined): IFlowApi<Tag>;
+    addClass(classNames: (string | undefined)[] | undefined): IFlowApi<Tag>;
 
     /**
      * Removes a class from the element.
@@ -109,7 +109,7 @@ export interface IFlowApi<
      * @param classNames The classes to remove.
      * @returns The current instance of the fluent HTML API.
      */
-    removeClass(classNames: string[] | undefined): IFlowApi<Tag>;
+    removeClass(classNames: (string | undefined)[] | undefined): IFlowApi<Tag>;
 
     /**
      * **Toggles a class of the element:**
@@ -127,7 +127,7 @@ export interface IFlowApi<
      * @param className The classes to toggle.
      * @returns The current instance of the fluent HTML API.
      */
-    toggleClass(className: string[] | undefined): IFlowApi<Tag>;
+    toggleClass(className: (string | undefined)[] | undefined): IFlowApi<Tag>;
 
     /**
      * Sets CSS styles for the element.
@@ -157,7 +157,7 @@ export interface IFlowApi<
      * @returns The current instance of the fluent HTML API.
      */
     setAttribute(
-        attributes: { [name: string]: string } | undefined,
+        attributes: { [name: string]: string | undefined } | undefined,
     ): IFlowApi<Tag>;
 
     /**
@@ -226,6 +226,29 @@ export interface IFlowApi<
     ): IFlowApi<Tag>;
 
     //#endregion
+
+    //# Set generic methods
+
+    /**
+     * Sets the **Atrributes**, **Classes**, **Styles** and **Events** of the element.
+     * @param value The values to set.
+     * @returns The Flow instance.
+     */
+    set(value: ISetValueType<Tag> | undefined): IFlowApi<Tag>;
+
+    //#endregion
+}
+
+export interface ISetValueType<
+    Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
+> {
+    [key: string]: string | unknown;
+    Events?:
+        | Array<Parameters<IFlowApi['addEventListener']> | undefined>
+        | undefined;
+    Styles?: Partial<CSSStyleDeclaration> | undefined;
+    Classes?: (string | undefined)[] | string | undefined;
+    Then?: IFlowThenCallback<Tag> | undefined;
 }
 
 /**

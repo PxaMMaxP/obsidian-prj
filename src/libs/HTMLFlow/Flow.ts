@@ -1,6 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import type { IFlow, IFlowApiType } from './interfaces/IFlow';
+import type { IFlow, IFlowApiType, ISetValueType } from './interfaces/IFlow';
 import { IFlow_, IFlowApi } from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
 import { IFlowSymbol, isIFlowTagged } from './interfaces/IFlowTag';
@@ -246,7 +246,16 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      * @inheritdoc
      */
     then(cb: IFlowThenCallback<Tag> | undefined): IFlowApi<Tag> {
-        cb?.(this, this._element);
+        if (cb != null) {
+            try {
+                cb(this as IFlow<Tag>, this._element);
+            } catch (error) {
+                this._logger?.error(
+                    'An error occurred while executing the then callback.',
+                    error,
+                );
+            }
+        }
 
         return this;
     }
@@ -267,9 +276,15 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    public addClass(className: string | string[] | undefined): IFlowApi<Tag> {
+    public addClass(
+        className: string | (string | undefined)[] | undefined,
+    ): IFlowApi<Tag> {
         if (Array.isArray(className)) {
-            this._element.classList.add(...className);
+            for (const name of className) {
+                if (name != null && typeof name === 'string') {
+                    this._element.classList.add(name);
+                }
+            }
         } else if (className != null && typeof className === 'string') {
             this._element.classList.add(className);
         }
@@ -281,10 +296,14 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      * @inheritdoc
      */
     public removeClass(
-        className: string | string[] | undefined,
+        className: string | (string | undefined)[] | undefined,
     ): IFlowApi<Tag> {
         if (Array.isArray(className)) {
-            this._element.classList.remove(...className);
+            className.forEach((name) => {
+                if (name != null && typeof name === 'string') {
+                    this._element.classList.remove(name);
+                }
+            });
         } else if (className != null && typeof className === 'string') {
             this._element.classList.remove(className);
         }
@@ -295,10 +314,14 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
     /**
      * @inheritdoc
      */
-    toggleClass(className: string | string[] | undefined): IFlowApi<Tag> {
+    toggleClass(
+        className: string | (string | undefined)[] | undefined,
+    ): IFlowApi<Tag> {
         if (Array.isArray(className)) {
             for (const name of className) {
-                this._element.classList.toggle(name);
+                if (name != null && typeof name === 'string') {
+                    this._element.classList.toggle(name);
+                }
             }
         } else if (className != null && typeof className === 'string') {
             this._element.classList.toggle(className);
@@ -346,7 +369,9 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
         } else if (_attributes != null) {
             // Multiple attributes case
             for (const [name, val] of Object.entries(_attributes)) {
-                this._element.setAttribute(name, val);
+                if (name != null && val != null) {
+                    this._element.setAttribute(name, val);
+                }
             }
         }
 
@@ -468,6 +493,52 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
                 }
             };
             this.registerDomEvent(this._element, type, arrowCallback, options);
+        }
+
+        return this;
+    }
+
+    //#endregion
+
+    //# Set generic methods
+
+    /**
+     * @inheritdoc
+     */
+    set(value: ISetValueType<Tag> | undefined): IFlowApi<Tag> {
+        if (value != null) {
+            const keys = Object.keys(value);
+
+            for (const key of keys) {
+                const events = value[key] as
+                    | Array<
+                          | Parameters<IFlowApi<Tag>['addEventListener']>
+                          | undefined
+                      >
+                    | undefined;
+
+                switch (key) {
+                    case 'Events':
+                        events?.forEach((ev): void => {
+                            if (ev?.[0] != null && ev?.[1] != null) {
+                                this.addEventListener(ev[0], ev[1], ev[2]);
+                            }
+                        });
+                        break;
+                    case 'Styles':
+                        this.setStyles(value[key]);
+                        break;
+                    case 'Classes':
+                        this.addClass(value[key]);
+                        break;
+                    case 'Then':
+                        this.then(value[key]);
+                        break;
+                    default:
+                        this.setAttribute(key, value[key]);
+                        break;
+                }
+            }
         }
 
         return this;
