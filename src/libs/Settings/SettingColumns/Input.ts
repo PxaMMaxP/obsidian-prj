@@ -6,6 +6,7 @@ import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { Opts } from 'src/libs/HTMLFlow/Opts';
 import {
     IFlowConfig,
     IFlowEventCallback,
@@ -51,49 +52,42 @@ export class Input
     private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
         cfg: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
-        cfg.appendChildEl(this._settings.inputElType, (cfg) => {
-            // Add the suggestions if `getSuggestionsCallback` is set.
-            cfg.getEl((el) => (this.elements.inputEl = el))
+        const opts = Opts.inspect(this._settings);
+
+        cfg.appendChildEl(this._settings.inputElType, (inputEl) => {
+            inputEl
+                .getEl((el) => (this.elements.inputEl = el))
                 .setId('inputEl')
-                .setAttribute('placeholder', this._settings.placeholder)
-                .setAttribute('value', this._settings.value)
-                .setAttribute(
-                    'disabled',
-                    this._settings.isDisabled ? 'true' : undefined,
-                )
-                // If the input element is a textarea, the type attribute is not set.
-                .setAttribute(
-                    this._settings.inputElType === 'textarea'
+                .set({
+                    placeholder: this._settings.placeholder,
+                    value: this._settings.value,
+                    disabled: opts.isDisabled ? 'true' : undefined,
+                    // If the input element is a textarea, the type attribute is not set.
+                    type: opts.inputElType.is('textarea')
                         ? undefined
-                        : 'type',
-                    this._settings.inputType,
-                )
-                // If the input element is a textarea,
-                // a event listener is added to update the minimum height of the textarea.
-                .addEventListener(
-                    this._settings.inputElType === 'textarea'
-                        ? 'input'
-                        : 'void',
-                    this.updateMinHeight,
-                )
-                // If a change callback is set, a event listener is added to the input element.
-                .addEventListener(
-                    this._settings.onChangeCallback != null ? 'change' : 'void',
-                    () => {
-                        this._settings.onChangeCallback?.(
-                            this.elements.inputEl.value,
-                        );
-                    },
-                )
-                // Add the suggestions if `getSuggestionsCallback` is set.
-                .then(
-                    this._settings.getSuggestionsCallback != null
-                        ? (el) => {
-                              const inputEl = el.element as HTMLInputElement;
-                              this.buildSuggester(inputEl);
-                          }
+                        : this._settings.inputType,
+                    Events: [
+                        opts.inputElType.is('textarea')
+                            ? // Add event listener to update the minimum height of the textarea.
+                              ['input', this.updateMinHeight]
+                            : [
+                                  opts.onChangeCallback?.is()
+                                      ? // Add event listener to call the onChangeCallback.
+                                        'change'
+                                      : 'void',
+                                  () => {
+                                      this._settings.onChangeCallback?.(
+                                          this.elements.inputEl.value,
+                                      );
+                                  },
+                              ],
+                    ],
+                    Then: opts.getSuggestionsCallback?.is()
+                        ? // Add the suggestions.
+                          (ctx, el) =>
+                              this.buildSuggester(el as HTMLInputElement)
                         : undefined,
-                );
+                });
         });
     };
 
