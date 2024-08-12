@@ -108,7 +108,11 @@
         "format": [
           "camelCase"
         ],
-        "leadingUnderscore": "forbid"
+        "leadingUnderscore": "forbid",
+        "filter": {
+          "regex": "^(Events|Styles|Classes|Then)$",
+          "match": false
+        }
       },
       {
         "selector": "typeProperty",
@@ -134,7 +138,7 @@
           "camelCase"
         ],
         "filter": {
-          "regex": ".*-event$",
+          "regex": ".*-event$|^(Events|Styles|Classes|Then)$",
           "match": false
         }
       }
