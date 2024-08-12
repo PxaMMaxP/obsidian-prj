@@ -70,4 +70,4 @@ export type IFlowEventCallback<
  */
 export type IFlowThenCallback<
     Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
-> = (ctx: IFlow<Tag>, element: HTMLElementTagNameMap[Tag]) => unknown;
+> = (ctx: IFlow<Tag>, el: HTMLElementTagNameMap[Tag]) => unknown;
