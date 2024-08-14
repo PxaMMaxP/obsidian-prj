@@ -75,11 +75,10 @@ export class Input
                                       ? // Add event listener to call the onChangeCallback.
                                         'change'
                                       : 'void',
-                                  () => {
+                                  () =>
                                       this._settings.onChangeCallback?.(
                                           this.elements.inputEl.value,
-                                      );
-                                  },
+                                      ),
                               ],
                     ],
                     Then: opts.getSuggestionsCallback?.is()

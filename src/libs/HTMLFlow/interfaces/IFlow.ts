@@ -239,13 +239,15 @@ export interface IFlowApi<
     //#endregion
 }
 
+type EventParameters<Tag extends keyof HTMLElementTagNameMap> =
+    | Array<Parameters<IFlowApi<Tag>['addEventListener']> | undefined>
+    | undefined;
+
 export interface ISetValueType<
     Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
 > {
     [key: string]: string | unknown;
-    Events?:
-        | Array<Parameters<IFlowApi['addEventListener']> | undefined>
-        | undefined;
+    Events?: EventParameters<Tag>;
     Styles?: Partial<CSSStyleDeclaration> | undefined;
     Classes?: (string | undefined)[] | string | undefined;
     Then?: IFlowThenCallback<Tag> | undefined;
