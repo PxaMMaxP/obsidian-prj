@@ -1,6 +1,6 @@
 import { Component, EventRef } from 'obsidian';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
-import type { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
+import type { ForceConstructor } from 'ts-injex';
 import { Inject } from 'ts-injex';
 import {
     IComponent,
