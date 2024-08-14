@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { DIContainer } from '../DIContainer';
 
 /**
@@ -5,6 +6,7 @@ import { DIContainer } from '../DIContainer';
  * @param identifier The identifier of the dependency
  * @returns The resolved dependency
  * @throws Error if the dependency is not found
+ * @deprecated Use the `Resolve` function from the `ts-injex` package instead.
  */
 export function Resolve<T>(identifier: string): T;
 /**
@@ -12,6 +14,7 @@ export function Resolve<T>(identifier: string): T;
  * @param identifier The identifier of the dependency
  * @param necessary If true, throws an error if the dependency is not found
  * @returns The resolved dependency or undefined if the dependency is not found
+ * @deprecated Use the `Resolve` function from the `ts-injex` package instead.
  */
 export function Resolve<T>(identifier: string, necessary: false): T | undefined;
 
@@ -20,6 +23,7 @@ export function Resolve<T>(identifier: string, necessary: false): T | undefined;
  * @param identifier The identifier of the dependency
  * @param necessary If true, throws an error if the dependency is not found
  * @returns The resolved dependency or undefined if the dependency is not found
+ * @deprecated Use the `Resolve` function from the `ts-injex` package instead.
  */
 export function Resolve<T>(
     identifier: string,

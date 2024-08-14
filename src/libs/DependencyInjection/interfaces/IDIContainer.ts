@@ -1,5 +1,7 @@
+/* eslint-disable deprecation/deprecation */
 /**
  * Static Dependency Injection Container Interface
+ * @deprecated Use the `ITSInjex_` interface from the `ts-injex` package instead.
  */
 export interface IDIContainer_ {
     /**
@@ -10,6 +12,7 @@ export interface IDIContainer_ {
 
 /**
  * Dependency Injection Container Interface
+ * @deprecated Use the `ITSInjex` interface from the `ts-injex` package instead.
  */
 export interface IDIContainer {
     /**

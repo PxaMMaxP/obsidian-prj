@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { DIContainer } from '../DIContainer';
 import { InitDelegate } from '../types/InitDelegate';
 
@@ -27,6 +28,7 @@ import { InitDelegate } from '../types/InitDelegate';
  *   private _logger?: ILogger;
  * }
  * ```
+ * @deprecated Use the `@Inject` decorator from the `ts-injex` package instead.
  */
 export function Inject<T, U>(
     identifier: string,

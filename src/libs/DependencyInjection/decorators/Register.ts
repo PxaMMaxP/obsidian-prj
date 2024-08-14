@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { DIContainer } from '../DIContainer';
 
 /**
@@ -14,6 +15,7 @@ import { DIContainer } from '../DIContainer';
  *   // ...
  * }
  * ```
+ * @deprecated Use the `@Register` decorator from the `ts-injex` package instead.
  */
 export function Register<
     TargetType extends new (...args: unknown[]) => InstanceType<TargetType>,
