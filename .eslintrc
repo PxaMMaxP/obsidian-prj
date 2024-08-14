@@ -10,7 +10,8 @@
     "prettier",
     "import",
     "jsdoc",
-    "override"
+    "override",
+    "@stylistic"
   ],
   "extends": [
     "eslint:recommended",
@@ -63,8 +64,7 @@
         "format": [],
         "custom": {
           "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*_?|_{1,2}[a-z][a-zA-Z0-9]*)$",
-          "match": true,
-          "message": "Private class properties should be prefixed with an underscore. Exceptions are private class properties that are interfaces. These should be prefixed with '_I'."
+          "match": true
         }
       },
       {
@@ -75,8 +75,7 @@
         "format": [],
         "custom": {
           "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*_?|_{1,2}[a-z][a-zA-Z0-9]*)$",
-          "match": true,
-          "message": "Protected class properties should be prefixed with an underscore. Exceptions are protected class properties that are interfaces. These should be prefixed with '_I'."
+          "match": true
         }
       },
       {
@@ -143,7 +142,8 @@
         }
       }
     ],
-    "@typescript-eslint/padding-line-between-statements": [
+    "@typescript-eslint/no-unused-expressions": "off",
+    "@stylistic/padding-line-between-statements": [
       "warn",
       {
         "blankLine": "always",
