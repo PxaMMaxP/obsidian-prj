@@ -5,11 +5,11 @@ import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IPrj } from 'src/interfaces/IPrj';
 import { Inject } from 'ts-injex';
 import { resolve } from 'ts-injex';
+import type { ForceConstructor } from 'ts-injex';
 import type {
     ICustomModal_,
     ICustomModal,
 } from './CustomModal/interfaces/ICustomModal';
-import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import { FileType } from '../FileType/FileType';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';

@@ -12,11 +12,11 @@ import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import { Inject, resolve } from 'ts-injex';
+import type { ForceConstructor } from 'ts-injex';
 import type {
     ICustomModal_,
     ICustomModal,
 } from './CustomModal/interfaces/ICustomModal';
-import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../Settings/components/GenericSuggest';
