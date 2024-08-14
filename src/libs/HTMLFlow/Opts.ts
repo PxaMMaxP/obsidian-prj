@@ -1,10 +1,10 @@
+import { Register } from 'ts-injex';
 import {
     IOptsInspector,
     IOptsWrapper,
     isOperator,
     Operator,
 } from './interfaces/IOpts';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Options inspector factory.

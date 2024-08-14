@@ -1,9 +1,9 @@
 import { Menu, TAbstractFile, TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
+import { Inject } from 'ts-injex';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
-import { Inject } from '../DependencyInjection/decorators/Inject';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';

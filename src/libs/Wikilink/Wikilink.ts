@@ -1,6 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Register } from 'ts-injex';
 import { IWikilink, IWikilink_, IWikilinkMatch } from './IWikilink';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents a Wikilink and its parsed components.

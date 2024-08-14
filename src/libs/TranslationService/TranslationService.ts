@@ -2,12 +2,11 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Translations } from 'src/translations/Translations';
 import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject, RegisterInstance } from 'ts-injex';
 import ILanguageTranslations from './interfaces/ILanguageTranslations';
 import ITranslationService, {
     ITranslationService_,
 } from './interfaces/ITranslationService';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { RegisterInstance } from '../DependencyInjection/decorators/RegisterInstance';
 
 /**
  * A service that provides translations for the application.

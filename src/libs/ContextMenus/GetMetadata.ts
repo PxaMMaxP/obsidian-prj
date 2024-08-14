@@ -4,10 +4,10 @@ import { Singleton } from 'src/classes/decorators/Singleton';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { FileType } from 'src/libs/FileType/FileType';
 import { DocumentModel } from 'src/models/DocumentModel';
+import { Inject } from 'ts-injex';
+import type { ITSinjex } from 'ts-injex';
 import { ContextMenu } from './ContextMenu';
 import { IContextMenu } from './interfaces/IContextMenu';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import type { IDIContainer } from '../DependencyInjection/interfaces/IDIContainer';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from '../LifecycleManager/interfaces/ILifecycleObject';
@@ -36,7 +36,7 @@ export class GetMetadata extends ContextMenu implements IContextMenu {
      * Initializes a instance of the GetMetadata class.
      * @param dependencies The dependencies for the context menu.
      */
-    constructor(dependencies?: IDIContainer) {
+    constructor(dependencies?: ITSinjex) {
         super();
     }
 

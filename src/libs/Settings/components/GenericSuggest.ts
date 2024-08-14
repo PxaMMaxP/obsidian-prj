@@ -1,7 +1,7 @@
 import { AbstractInputSuggest, App } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
+import { Register } from 'ts-injex';
 import type {
     GetSuggestionsCallback,
     IGenericSuggest,
@@ -94,7 +94,7 @@ export class GenericSuggest<T>
         getSuggestions: GetSuggestionsCallback<T>,
         renderSuggestion?: RenderSuggestionCallback<T>,
     ) {
-        const app = DIContainer.getInstance().resolve<App>('IApp');
+        const app = TSinjex.getInstance().resolve<App>('IApp');
         super(app, inputEl);
 
         this.inputEl = inputEl;

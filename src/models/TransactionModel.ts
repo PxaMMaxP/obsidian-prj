@@ -1,7 +1,6 @@
 import { isIPrimitive } from 'src/interfaces/DataType/IPrimitive';
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { ITSinjex, TSinjex } from 'ts-injex';
 
 /**
  * The type of return value of the `callWriteChanges` method.
@@ -27,7 +26,7 @@ type WriteChangesReturnType = {
  * - To discard the changes, call the `abortTransaction` method.
  */
 export class TransactionModel<T> {
-    protected _dependencies: IDIContainer;
+    protected _dependencies: ITSinjex;
     protected _logger?: ILogger;
     /**
      * A promise that resolves when the changes are written to the file.
@@ -78,9 +77,9 @@ export class TransactionModel<T> {
         writeChanges:
             | ((update: T, previousPromise?: Promise<void>) => Promise<void>)
             | undefined,
-        dependencies?: IDIContainer,
+        dependencies?: ITSinjex,
     ) {
-        this._dependencies = dependencies ?? DIContainer.getInstance();
+        this._dependencies = dependencies ?? TSinjex.getInstance();
 
         this._logger = this._dependencies
             .resolve<ILogger_>('ILogger_', false)

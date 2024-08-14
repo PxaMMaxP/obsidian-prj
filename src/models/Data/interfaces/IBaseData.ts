@@ -1,6 +1,6 @@
 import { ToStringFieldSymbol } from 'src/classes/decorators/ToStringFieldDecorator';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
+import { ITSinjex } from 'ts-injex';
 
 export interface IBaseData_<T> {
     /**
@@ -8,7 +8,7 @@ export interface IBaseData_<T> {
      * @param data The optional data to merge into the current instance.
      * @param dependencies The optional dependencies to use for the model.
      */
-    new (data: Partial<T>, dependencies?: IDIContainer): unknown;
+    new (data: Partial<T>, dependencies?: ITSinjex): unknown;
     /**
      * The mapping of YAML keys to the corresponding properties.
      * @remarks This property should be overridden in

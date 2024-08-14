@@ -2,8 +2,8 @@ import Lng from 'src/classes/Lng';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import Prj from 'src/main';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
+import { Inject } from 'ts-injex';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
-import { Inject } from '../DependencyInjection/decorators/Inject';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**

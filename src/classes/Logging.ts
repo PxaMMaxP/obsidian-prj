@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import { Register } from 'ts-injex';
 import { ImplementsStatic } from './decorators/ImplementsStatic';
 
 /**

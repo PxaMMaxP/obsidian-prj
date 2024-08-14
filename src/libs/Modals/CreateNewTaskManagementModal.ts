@@ -9,8 +9,8 @@ import PrjTopicData from 'src/models/Data/PrjTopicData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { IFormResult, FormConfiguration, Field } from 'src/types/ModalFormType';
 import PrjTypes from 'src/types/PrjTypes';
+import { resolve } from 'ts-injex';
 import BaseModalForm from './BaseModalForm';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 import { ITags } from '../Tags/interfaces/ITags';
 import { Tag } from '../Tags/Tag';
@@ -448,7 +448,7 @@ export default class CreateNewTaskManagementModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const plugin = Resolve<IPrj>('IPrj');
+        const plugin = resolve<IPrj>('IPrj');
 
         Logging.getLogger('CreateNewTaskManagementModal').trace(
             "Registering 'CreateTaskManagementModal' commands",

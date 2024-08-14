@@ -6,8 +6,7 @@ import IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IMetadataCacheEvents } from 'src/interfaces/IMetadataCacheEvents';
 import { FileType } from 'src/libs/FileType/FileType';
 import type { IPrjSettings } from 'src/types/PrjSettings';
-import { Inject } from './DependencyInjection/decorators/Inject';
-import { RegisterInstance } from './DependencyInjection/decorators/RegisterInstance';
+import { Inject, RegisterInstance } from 'ts-injex';
 import GenericEvents, { IEvent } from './GenericEvents';
 import { Lifecycle } from './LifecycleManager/decorators/Lifecycle';
 

@@ -1,10 +1,9 @@
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
+import { ITSinjex, TSinjex } from 'ts-injex';
 import { TransactionModel } from '../TransactionModel';
 
 describe('TransactionModel', () => {
-    let diContainerMock: IDIContainer;
+    let diContainerMock: ITSinjex;
 
     class TestTransactionModel<T> extends TransactionModel<T> {
         public testUpdateKeyValue(key: string, value: unknown): void {
@@ -20,7 +19,7 @@ describe('TransactionModel', () => {
     beforeEach(() => {
         writeChangesMock = jest.fn().mockResolvedValue(undefined);
 
-        diContainerMock = DIContainer.getInstance();
+        diContainerMock = TSinjex.getInstance();
 
         diContainerMock.register('ILogger_', MockLogger_);
     });

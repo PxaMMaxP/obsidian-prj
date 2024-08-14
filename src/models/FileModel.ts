@@ -1,7 +1,5 @@
 import { App, TFile } from 'obsidian';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import type {
@@ -9,6 +7,7 @@ import type {
     IProxyHandler_,
 } from 'src/libs/ProxyHandler/interfaces/IProxyHandler';
 import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject, ITSinjex } from 'ts-injex';
 import PrjBaseData from './Data/PrjBaseData';
 import { TransactionModel } from './TransactionModel';
 import { YamlKeyMap } from '../types/YamlKeyMap';
@@ -101,7 +100,7 @@ export class FileModel<
         file: TFile | undefined,
         ctor: new (data?: Partial<T>) => T,
         yamlKeyMap: YamlKeyMap | undefined,
-        dependencies?: IDIContainer,
+        dependencies?: ITSinjex,
     ) {
         super(undefined, dependencies);
 

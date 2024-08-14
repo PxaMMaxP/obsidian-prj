@@ -2,6 +2,8 @@ import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Inject, TSinjex } from 'ts-injex';
+import { Register } from 'ts-injex';
 import { InstantiationError, SettingRowError } from './interfaces/Exceptions';
 import type {
     ISettingRowProtected,
@@ -10,9 +12,6 @@ import type {
     ISettingRowFluentApi,
     SettingConfigurator,
 } from './interfaces/ISettingRow';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Register } from '../DependencyInjection/decorators/Register';
-import { DIContainer } from '../DependencyInjection/DIContainer';
 import { DIComponent } from '../DIComponent/DIComponent';
 import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal';
 
@@ -248,7 +247,7 @@ export class SettingRow extends DIComponent implements ISettingRowProtected {
         let settingFieldInstance: unknown;
 
         if (typeof settingField === 'string') {
-            settingField_ = DIContainer.getInstance().resolve<Type>(
+            settingField_ = TSinjex.getInstance().resolve<Type>(
                 'SettingFields.' + settingField,
             );
         } else {

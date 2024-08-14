@@ -1,5 +1,7 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import type { IFlow, IFlowApiType, ISetValueType } from './interfaces/IFlow';
 import { IFlow_, IFlowApi } from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
@@ -11,8 +13,6 @@ import type {
     IFlowEventCallback,
     IFlowThenCallback,
 } from './types/IFlowDelegates';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Register } from '../DependencyInjection/decorators/Register';
 import { DIComponent } from '../DIComponent/DIComponent';
 import {
     isLoaded,

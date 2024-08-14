@@ -4,7 +4,7 @@
 
 import { TFile } from 'obsidian';
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import AddAnnotationModal from '../AddAnnotationModal';
 
 const mockIApp = {
@@ -91,15 +91,14 @@ const mockSettingInstance = {
 const mockSetting = jest.fn().mockImplementation(() => mockSettingInstance);
 
 // Registering the mocks
-const diContainer = DIContainer.getInstance();
-diContainer.register('ILogger_', MockLogger_);
-diContainer.register('IApp', mockIApp);
-diContainer.register('IMetadataCache', mockIMetadataCache);
-diContainer.register('IHelperGeneral_', mockIHelperGeneral);
-diContainer.register('IHelperObsidian', mockIHelperObsidian);
-diContainer.register('ICustomModal_', mockICustomModal);
-diContainer.register('ITranslationService', mockTranslationService);
-diContainer.register('Obsidian.Setting_', mockSetting);
+TSinjex.register('ILogger_', MockLogger_);
+TSinjex.register('IApp', mockIApp);
+TSinjex.register('IMetadataCache', mockIMetadataCache);
+TSinjex.register('IHelperGeneral_', mockIHelperGeneral);
+TSinjex.register('IHelperObsidian', mockIHelperObsidian);
+TSinjex.register('ICustomModal_', mockICustomModal);
+TSinjex.register('ITranslationService', mockTranslationService);
+TSinjex.register('Obsidian.Setting_', mockSetting);
 
 describe('AddAnnotationModal', () => {
     let addAnnotationModal: AddAnnotationModal;
@@ -206,7 +205,7 @@ describe('AddAnnotationModal', () => {
         const mockPlugin = {
             addCommand: jest.fn(),
         };
-        diContainer.register('IPrj', mockPlugin);
+        TSinjex.register('IPrj', mockPlugin);
         AddAnnotationModal.registerCommand();
 
         expect(MockLogger.trace).toHaveBeenCalledWith(
@@ -220,7 +219,7 @@ describe('AddAnnotationModal', () => {
                 throw new Error('Test Error');
             }),
         };
-        diContainer.register('IPrj', mockPlugin);
+        TSinjex.register('IPrj', mockPlugin);
         AddAnnotationModal.registerCommand();
 
         expect(MockLogger.error).toHaveBeenCalledWith(
@@ -235,7 +234,7 @@ describe('AddAnnotationModal', () => {
                 .fn()
                 .mockImplementation(({ callback }) => callback()),
         };
-        diContainer.register('IPrj', mockPlugin);
+        TSinjex.register('IPrj', mockPlugin);
 
         AddAnnotationModal.registerCommand();
 

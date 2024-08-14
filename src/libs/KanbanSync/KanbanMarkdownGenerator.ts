@@ -1,9 +1,9 @@
 import { TFile } from 'obsidian';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Inject } from 'ts-injex';
 import { KanbanBoard, KanbanList } from './KanbanModels';
 import { ArchivedString, CompletedString } from './KanbanTypes';
-import { Inject } from '../DependencyInjection/decorators/Inject';
 
 /**
  * Represents a markdown generator for a kanban board.

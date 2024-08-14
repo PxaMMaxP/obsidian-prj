@@ -2,11 +2,10 @@ import { CachedMetadata, TFile } from 'obsidian';
 import API from 'src/classes/API';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject, resolve } from 'ts-injex';
 import KanbanMarkdownGenerator from './KanbanMarkdownGenerator';
 import { KanbanBoard } from './KanbanModels';
 import KanbanParser from './KanbanParser';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 
 /**
@@ -175,7 +174,7 @@ export default class KanbanSync {
      * Registers the event listeners for KanbanSync.
      */
     public static registerEvent(): void {
-        const metadataCache = Resolve<IMetadataCache>('IMetadataCache');
+        const metadataCache = resolve<IMetadataCache>('IMetadataCache');
 
         metadataCache.on('prj-task-management-file-changed-event', (file) => {
             this.checkIfKanbanIsLinkedEvent(file);
@@ -204,7 +203,7 @@ export default class KanbanSync {
      * @returns An array of TFile objects representing the linked Kanban files.
      */
     public static getLinkedKanbanFiles(file: TFile): TFile[] {
-        const metadataCache = Resolve<IMetadataCache>('IMetadataCache');
+        const metadataCache = resolve<IMetadataCache>('IMetadataCache');
         const linkedFiles = metadataCache.getBacklinks(file);
 
         const kanbanFiles = linkedFiles.filter((file) => {

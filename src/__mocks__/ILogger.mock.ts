@@ -1,5 +1,5 @@
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 
 interface ILoggerMock_ {
     reset: () => void;
@@ -54,8 +54,7 @@ const MockLogger_: ILogger_ & ILoggerMock_ = {
  * as `ILogger_`.
  */
 export function registerMockLogger(): void {
-    const diContainer = DIContainer.getInstance();
-    diContainer.register('ILogger_', MockLogger_);
+    TSinjex.register('ILogger_', MockLogger_);
 }
 
 const UndefinedMockLogger_: ILogger_ & ILoggerMock_ = {
@@ -76,8 +75,7 @@ const UndefinedMockLogger_: ILogger_ & ILoggerMock_ = {
  * Register an empty mock logger on the DI container
  */
 export function registerEmptyMockLogger(): void {
-    const diContainer = DIContainer.getInstance();
-    diContainer.register('ILogger_', UndefinedMockLogger_);
+    TSinjex.register('ILogger_', UndefinedMockLogger_);
 }
 
 /**

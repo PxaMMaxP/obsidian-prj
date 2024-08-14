@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import { Inject } from 'ts-injex';
 import { KanbanBoard, KanbanList, KanbanCard } from './KanbanModels';
-import { Inject } from '../DependencyInjection/decorators/Inject';
 import type { IStatusType_ } from '../StatusType/interfaces/IStatusType';
 
 /**

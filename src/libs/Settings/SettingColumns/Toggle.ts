@@ -1,12 +1,12 @@
 import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
 import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
     IToggleFluentAPI,

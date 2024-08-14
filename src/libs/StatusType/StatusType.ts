@@ -1,13 +1,13 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { isIStringConvertible } from 'src/interfaces/DataType/IStringifiable';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import { Inject } from 'ts-injex';
+import { Register } from 'ts-injex';
 import {
     IStatusType,
     IStatusType_,
     StatusTypes,
 } from './interfaces/IStatusType';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Register } from '../DependencyInjection/decorators/Register';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
 /**

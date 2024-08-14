@@ -37,6 +37,7 @@ describe('SettingItem', () => {
         // } as unknown as ICustomModal;
 
         mockModal = mockComponent as unknown as ICustomModal;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (mockModal.content as any) = containerEl;
     });
 

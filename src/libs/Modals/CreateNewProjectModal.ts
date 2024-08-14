@@ -2,8 +2,8 @@ import Lng from 'src/classes/Lng';
 import { ILogger_ } from 'src/interfaces/ILogger';
 import { IPrj } from 'src/interfaces/IPrj';
 import { Field, FormConfiguration } from 'src/types/ModalFormType';
+import { resolve } from 'ts-injex';
 import CreateNewTaskManagementModal from './CreateNewTaskManagementModal';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
@@ -72,9 +72,9 @@ export default class CreateNewProjectModal extends CreateNewTaskManagementModal 
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const plugin = Resolve<IPrj>('IPrj');
+        const plugin = resolve<IPrj>('IPrj');
 
-        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+        const logger = resolve<ILogger_>('ILogger_').getLogger(
             'CreateNewProjectModal',
         );
         logger.trace("Registering 'CreateNewProjectModal' commands");

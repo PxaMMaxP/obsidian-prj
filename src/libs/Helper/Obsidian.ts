@@ -2,12 +2,11 @@ import { App, Notice, TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Inject, RegisterInstance } from 'ts-injex';
 import {
     IHelperObsidian_,
     IHelperObsidian,
 } from './interfaces/IHelperObsidian';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { RegisterInstance } from '../DependencyInjection/decorators/RegisterInstance';
 
 /**
  * Represents a class for Obsidian related helper methods.

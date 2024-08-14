@@ -1,11 +1,11 @@
 import { Component, setIcon } from 'obsidian';
 import Lng from 'src/classes/Lng';
-import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { FileType } from 'src/libs/FileType/FileType';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { IPrjSettings } from 'src/types/PrjSettings';
+import { resolve } from 'ts-injex';
 
 /**
  * General components class for `BlockRenderComponent`.
@@ -90,7 +90,7 @@ export default class GeneralComponents {
                     .setLinkType('tag')
                     .setFormator((value: string) => {
                         const baseTag =
-                            Resolve<IPrjSettings>('IPrjSettings').baseTag + '/';
+                            resolve<IPrjSettings>('IPrjSettings').baseTag + '/';
                         let valueReduced = value;
 
                         if (

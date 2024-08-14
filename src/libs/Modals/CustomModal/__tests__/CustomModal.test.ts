@@ -6,7 +6,7 @@ import MockLogger, {
     registerMockLogger,
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import { CustomModal } from '../CustomModal';
 import { MissingCallbackError, CallbackError } from '../interfaces/Exceptions';
 
@@ -28,12 +28,11 @@ const MockComponent = jest.fn().mockImplementation(() => ({
 }));
 
 // Registering the mocks
-const diContainer = DIContainer.getInstance();
 registerMockLogger();
-diContainer.register('IApp', mockIApp);
-diContainer.register('ILifecycleManager_', mockILifecycleManager);
-diContainer.register('IDraggableElement_', mockIDraggableElement);
-diContainer.register('Obsidian.Component_', MockComponent);
+TSinjex.register('IApp', mockIApp);
+TSinjex.register('ILifecycleManager_', mockILifecycleManager);
+TSinjex.register('IDraggableElement_', mockIDraggableElement);
+TSinjex.register('Obsidian.Component_', MockComponent);
 
 describe('CustomModal', () => {
     let customModal: CustomModal;

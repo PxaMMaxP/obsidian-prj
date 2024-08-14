@@ -1,12 +1,12 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type {
     IStatusType,
     IStatusType_,
 } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Priority, Energy, HistoryEntries } from 'src/types/PrjTypes';
+import { Inject } from 'ts-injex';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjTaskManagementData } from './interfaces/IPrjTaskManagementData';
 import { PrjData } from './PrjData';

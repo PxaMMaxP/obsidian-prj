@@ -1,7 +1,7 @@
 import { MarkdownRenderChild } from 'obsidian';
 import type { ILogger } from 'src/interfaces/ILogger';
+import { Register } from 'ts-injex';
 import { ICustomizableRenderChild } from './ICustomizableRenderChild';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Customizable Render Child class.

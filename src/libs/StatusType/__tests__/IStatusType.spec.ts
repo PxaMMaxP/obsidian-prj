@@ -1,6 +1,6 @@
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import ITranslationService from 'src/libs/TranslationService/interfaces/ITranslationService';
+import { TSinjex } from 'ts-injex';
 import { IStatusType_, IStatusType } from '../interfaces/IStatusType';
 
 /**
@@ -11,7 +11,7 @@ import { IStatusType_, IStatusType } from '../interfaces/IStatusType';
 export function test_IStatusType(StatusType: IStatusType_): void {
     describe('IDIContainer Implementation Tests', () => {
         let statusType: IStatusType;
-        DIContainer.getInstance().register('ILogger_', MockLogger_);
+        TSinjex.getInstance().register('ILogger_', MockLogger_);
 
         const ITranslationServiceMock: ITranslationService = {
             get: jest.fn(),
@@ -33,7 +33,7 @@ export function test_IStatusType(StatusType: IStatusType_): void {
             },
         };
 
-        DIContainer.getInstance().register(
+        TSinjex.getInstance().register(
             'ITranslationService',
             ITranslationServiceMock,
         );

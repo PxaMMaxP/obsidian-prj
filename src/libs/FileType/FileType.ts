@@ -1,6 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Register } from 'ts-injex';
 import { IFileType, FileTypes, IFileType_ } from './interfaces/IFileType';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents the types used in the app for files.

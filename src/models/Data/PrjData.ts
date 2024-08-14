@@ -1,13 +1,13 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type {
     IFileType,
     IFileType_,
 } from 'src/libs/FileType/interfaces/IFileType';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { FileSubType } from 'src/types/PrjTypes';
+import { Inject } from 'ts-injex';
 import { IPrjData, IPrjData_ } from './interfaces/IPrjData';
 import PrjBaseData from './PrjBaseData';
 

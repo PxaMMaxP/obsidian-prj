@@ -1,7 +1,7 @@
 import { moment } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
-import { Register } from '../DependencyInjection/decorators/Register';
+import { Register } from 'ts-injex';
 import { Lifecycle } from '../LifecycleManager/decorators/Lifecycle';
 
 export interface IHelperGeneral_ {
@@ -21,6 +21,7 @@ export interface IHelperGeneral_ {
 @ImplementsStatic<IHelperGeneral_>()
 @Register('IHelperGeneral_')
 export class HelperGeneral {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     private static readonly _md5 = require('crypto-js/md5');
 
     /**
