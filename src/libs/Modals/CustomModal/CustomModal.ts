@@ -1,9 +1,9 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
 import {
     ICloseCallback,

@@ -8,7 +8,7 @@ import {
     IResultData,
 } from 'src/types/ModalFormType';
 import type { IPrjSettings } from 'src/types/PrjSettings';
-import { Inject } from '../DependencyInjection/decorators/Inject';
+import { Inject } from 'ts-injex';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**

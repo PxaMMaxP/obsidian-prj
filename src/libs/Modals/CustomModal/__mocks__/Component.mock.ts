@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Component } from 'obsidian';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 
 const RegisteredDomEvents = Symbol('RegisteredEvents');
 const RegisteredChilds = Symbol('RegisteredChilds');
@@ -158,8 +158,8 @@ function registerMockInstance(instance: MockComponent): void {
  * as `Obsidian.Component_`.
  */
 export function registerMockComponent(): void {
-    const diContainer = DIContainer.getInstance();
-    diContainer.register('Obsidian.Component_', MockComponent_);
+    const diContainer = TSinjex.getInstance();
+    TSinjex.register('Obsidian.Component_', MockComponent_);
 }
 
 /**

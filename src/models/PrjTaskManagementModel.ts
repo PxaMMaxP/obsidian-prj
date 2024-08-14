@@ -2,8 +2,6 @@ import { TFile, moment } from 'obsidian';
 import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import type {
     IStatusType,
@@ -11,6 +9,7 @@ import type {
 } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tag } from 'src/libs/Tags/Tag';
 import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject, ITSinjex } from 'ts-injex';
 import { IPrjData } from './Data/interfaces/IPrjData';
 import { IPrjTaskManagementData } from './Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from './Data/PrjBaseData';
@@ -60,7 +59,7 @@ export class PrjTaskManagementModel<
     constructor(
         file: TFile | undefined,
         ctor: new (data?: Partial<T>) => T,
-        dependencies?: IDIContainer,
+        dependencies?: ITSinjex,
     ) {
         super(file, ctor, undefined, dependencies);
     }

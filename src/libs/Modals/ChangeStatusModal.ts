@@ -9,12 +9,12 @@ import { FileType } from 'src/libs/FileType/FileType';
 import { IPrjTaskManagementData } from 'src/models/Data/interfaces/IPrjTaskManagementData';
 import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
+import { Inject } from 'ts-injex';
+import { resolve } from 'ts-injex';
 import type {
     ICustomModal,
     ICustomModal_,
 } from './CustomModal/interfaces/ICustomModal';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 
 /**
@@ -116,9 +116,9 @@ export default class ChangeStatusModal {
      * Registers the command to open the modal
      */
     public static registerCommand(): void {
-        const plugin = Resolve<IPrj>('IPrj');
+        const plugin = resolve<IPrj>('IPrj');
 
-        const logger = Resolve<ILogger_>('ILogger_', false)?.getLogger(
+        const logger = resolve<ILogger_>('ILogger_', false)?.getLogger(
             'ChangeStatusModal',
         );
 

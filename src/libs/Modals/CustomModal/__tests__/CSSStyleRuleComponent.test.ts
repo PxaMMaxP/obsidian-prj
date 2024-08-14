@@ -3,7 +3,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from 'obsidian';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import { CSSStyleRuleComponent } from '../CSSStyleRuleComponent';
 
 // Mock für CSSStyleSheet und CSSStyleRule
@@ -57,7 +57,7 @@ const MockComponent_ = jest.fn().mockImplementation(() => {
     return MockComponent;
 });
 
-DIContainer.getInstance().register('Obsidian.Component_', MockComponent_);
+TSinjex.getInstance().register('Obsidian.Component_', MockComponent_);
 
 describe('CSSStyleRuleComponent', () => {
     let component: CSSStyleRuleComponent;

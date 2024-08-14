@@ -1,13 +1,13 @@
 import { Component, MarkdownRenderer, setIcon } from 'obsidian';
 import Lng from 'src/classes/Lng';
 import { IApp } from 'src/interfaces/IApp';
-import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { FileTypes } from 'src/libs/FileType/interfaces/IFileType';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { UrgencySymbols } from 'src/types/PrjTypes';
+import { resolve } from 'ts-injex';
 
 /**
  * Represents the project components.
@@ -46,7 +46,7 @@ export default class ProjectComponents {
                         const div = document.createElement('div');
 
                         MarkdownRenderer.render(
-                            Resolve<IApp>('IApp'),
+                            resolve<IApp>('IApp'),
                             value ?? '',
                             div,
                             '',

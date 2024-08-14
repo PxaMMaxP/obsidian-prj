@@ -11,8 +11,8 @@ import {
     IFormResult,
     IResultData,
 } from 'src/types/ModalFormType';
+import { resolve } from 'ts-injex';
 import BaseModalForm from './BaseModalForm';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import { HelperObsidian } from '../Helper/Obsidian';
 
 /**
@@ -31,10 +31,10 @@ export default class CreateNewNoteModal extends BaseModalForm {
      * @remarks No cleanup needed
      */
     public static registerCommand(): void {
-        const plugin = Resolve<IPrj>('IPrj');
+        const plugin = resolve<IPrj>('IPrj');
 
         const logger =
-            Resolve<ILogger_>('ILogger_').getLogger('CreateNewNoteModal');
+            resolve<ILogger_>('ILogger_').getLogger('CreateNewNoteModal');
         logger.trace("Registering 'CreateNewNoteModal' commands");
 
         plugin.addCommand({

@@ -2,10 +2,9 @@
 
 import { TFile } from 'obsidian';
 import { Path } from 'src/classes/Path';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import type { IPrjSettings } from 'src/types/PrjSettings';
+import { Inject, ITSinjex } from 'ts-injex';
 import PrjNoteData from './Data/PrjNoteData';
 import { FileModel } from './FileModel';
 import IPrjModel from './interfaces/IPrjModel';
@@ -38,7 +37,7 @@ export class NoteModel
      * @param file The file to create the model for.
      * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+    constructor(file: TFile | undefined, dependencies?: ITSinjex) {
         super(file, PrjNoteData, undefined, dependencies);
     }
 
@@ -111,6 +110,8 @@ export class NoteModel
 
             if (firstTag && firstTag !== undefined) {
                 const lastTagElement = firstTag.getElements().last();
+                //@todo: check if this is correct
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 lastTagElement && newFileName.push(lastTagElement);
             }
         }

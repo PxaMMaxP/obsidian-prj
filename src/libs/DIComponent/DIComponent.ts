@@ -1,7 +1,7 @@
 import { Component, EventRef } from 'obsidian';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
 import type { ForceConstructor } from 'src/libs/DependencyInjection/types/GenericContructor';
+import { Inject } from 'ts-injex';
 import {
     IComponent,
     IDIComponent,
@@ -38,7 +38,6 @@ export abstract class DIComponent implements IDIComponent {
      * @returns The original reference of the methods of the component.
      */
     private getOriginalMethods(): Component {
-        // eslint-disable-next-line @typescript-eslint/ban-types
         const bindOrAssign = <T>(
             method: T & { bind?: (X: unknown) => T },
         ): T => (method?.bind ? method.bind(this[_componentInstance]) : method);

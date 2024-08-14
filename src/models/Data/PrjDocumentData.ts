@@ -2,9 +2,9 @@
 import { fieldConfig } from 'src/classes/decorators/FieldConfigDecorator';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { toStringField } from 'src/classes/decorators/ToStringFieldDecorator';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { IFileType } from 'src/libs/FileType/interfaces/IFileType';
 import { YamlKeyMap } from 'src/types/YamlKeyMap';
+import { Register } from 'ts-injex';
 import { IPrjData_ } from './interfaces/IPrjData';
 import { IPrjDocument } from './interfaces/IPrjDocument';
 import { PrjData } from './PrjData';

@@ -3,12 +3,12 @@ import API from 'src/classes/API';
 import Lng from 'src/classes/Lng';
 import { IApp } from 'src/interfaces/IApp';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import EditableDataView from 'src/libs/EditableDataView/EditableDataView';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import { DocumentModel } from 'src/models/DocumentModel';
 import { IPrjSettings } from 'src/types/PrjSettings';
+import { resolve } from 'ts-injex';
 
 /**
  * Represents a collection of static methods for creating various components related to documents.
@@ -276,8 +276,8 @@ export default class DocumentComponents {
         documentModel: DocumentModel,
         editability = true,
     ): void {
-        const metadataCache = Resolve<IMetadataCache>('IMetadataCache');
-        const app = Resolve<IApp>('IApp');
+        const metadataCache = resolve<IMetadataCache>('IMetadataCache');
+        const app = resolve<IApp>('IApp');
 
         new EditableDataView(fileLink, component).addLink((link) => {
             link.setValue(documentModel.data.title ?? '')
@@ -339,7 +339,7 @@ export default class DocumentComponents {
         component: Component,
         documentModel: DocumentModel,
     ): void {
-        const settings = Resolve<IPrjSettings>('IPrjSettings');
+        const settings = resolve<IPrjSettings>('IPrjSettings');
 
         new EditableDataView(metadataLink, component).addLink((link) => {
             link.setValue(documentModel.file.path)

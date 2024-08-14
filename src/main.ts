@@ -1,11 +1,10 @@
 import { Component, Plugin, Setting } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
+import { Inject, TSinjex } from 'ts-injex';
 import API from './classes/API';
 import Lng from './classes/Lng';
 import type IMetadataCache from './interfaces/IMetadataCache';
-import { Inject } from './libs/DependencyInjection/decorators/Inject';
-import { DIContainer } from './libs/DependencyInjection/DIContainer';
 import { HelperObsidian } from './libs/Helper/Obsidian';
 import KanbanSync from './libs/KanbanSync/KanbanSync';
 import { LifecycleManager } from './libs/LifecycleManager/LifecycleManager';
@@ -33,16 +32,16 @@ export default class Prj extends Plugin {
     /**
      * Will be called when the plugin is loaded
      */
-    async onload(): Promise<void> {
+    onload(): void {
         // eslint-disable-next-line no-console
         console.log("Loading plugin 'PRJ'");
 
-        DIContainer.getInstance().register('IPrj', this);
-        DIContainer.getInstance().register('IApp', this.app);
-        DIContainer.getInstance().register('Obsidian.Component_', Component);
-        DIContainer.getInstance().register('Obsidian.Setting_', Setting);
+        TSinjex.getInstance().register('IPrj', this);
+        TSinjex.getInstance().register('IApp', this.app);
+        TSinjex.getInstance().register('Obsidian.Component_', Component);
+        TSinjex.getInstance().register('Obsidian.Setting_', Setting);
 
-        await this.loadSettings();
+        this.loadSettings();
 
         LifecycleManager.register('before', 'init', () => {
             // eslint-disable-next-line no-console
@@ -58,7 +57,7 @@ export default class Prj extends Plugin {
         LifecycleManager.register('after', 'init', () => this.onLayoutReady());
 
         if (this.app.workspace.layoutReady) {
-            await new LifecycleManager().onInit();
+            new LifecycleManager().onInit();
         } else {
             this.app.workspace.onLayoutReady(async () => {
                 await new LifecycleManager().onInit();
@@ -168,7 +167,7 @@ export default class Prj extends Plugin {
             await this.loadData(),
         );
 
-        DIContainer.getInstance().register('IPrjSettings', this.settings);
+        TSinjex.getInstance().register('IPrjSettings', this.settings);
 
         this.addSettingTab(new SettingTab(this.app, this));
     }

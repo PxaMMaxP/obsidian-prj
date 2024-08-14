@@ -1,6 +1,6 @@
 import { Component, Platform, setIcon } from 'obsidian';
-import { Resolve } from 'src/libs/DependencyInjection/functions/Resolve';
 import { IPrjSettings } from 'src/types/PrjSettings';
+import { resolve } from 'ts-injex';
 
 /**
  * A cursor position.
@@ -111,7 +111,7 @@ export default abstract class BaseComponent {
         if (
             editabilityEnabled &&
             (Platform.isMobile
-                ? Resolve<IPrjSettings>('IPrjSettings').mobile
+                ? resolve<IPrjSettings>('IPrjSettings').mobile
                 : true)
         ) {
             this._buttonContainer = document.createElement('div');

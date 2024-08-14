@@ -2,11 +2,11 @@ import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject } from 'ts-injex';
+import { Register } from 'ts-injex';
 import type { ITag, ITag_ } from './interfaces/ITag';
 import { ITags, ITags_ } from './interfaces/ITags';
 import { TagTree } from './types/TagTree';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents an array of tags.

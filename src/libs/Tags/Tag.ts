@@ -1,8 +1,8 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
+import { Inject } from 'ts-injex';
+import { Register } from 'ts-injex';
 import type { ITag, ITag_ } from './interfaces/ITag';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Represents a tag.

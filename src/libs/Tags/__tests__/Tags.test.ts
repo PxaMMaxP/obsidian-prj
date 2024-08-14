@@ -1,7 +1,7 @@
 import { TFile } from 'obsidian';
 import MockLogger, { MockLogger_ } from 'src/__mocks__/ILogger.mock';
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import { ITag, ITag_ } from '../interfaces/ITag';
 import { Tags } from '../Tags';
 
@@ -112,14 +112,14 @@ describe('Tags', () => {
 
         MockTagClass = MockTag as unknown as ITag_;
 
-        DIContainer.getInstance().register('IMetadataCache', mockMetadataCache);
-        DIContainer.getInstance().register('ITag_', MockTagClass);
-        DIContainer.getInstance().register('ILogger_', MockLogger_);
+        TSinjex.getInstance().register('IMetadataCache', mockMetadataCache);
+        TSinjex.getInstance().register('ITag_', MockTagClass);
+        TSinjex.getInstance().register('ILogger_', MockLogger_);
     });
 
     // Constructor Tests
     test('should initialize with no tags and no logger', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(undefined);
         expect(tagsArray.primitiveOf()).toEqual([]);
@@ -127,7 +127,7 @@ describe('Tags', () => {
     });
 
     test('should initialize with a single tag', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags('tag1');
         expect(tagsArray.primitiveOf()).toEqual(['tag1']);
@@ -135,7 +135,7 @@ describe('Tags', () => {
     });
 
     test('should initialize with an array of tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
@@ -209,28 +209,28 @@ describe('Tags', () => {
     });
 
     test('should return all tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         expect(tagsArray.primitiveOf()).toEqual(['tag1', 'tag2']);
     });
 
     test('should return all tags as a comma-separated string', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         expect(tagsArray.toString()).toBe('tag1, tag2');
     });
 
     test('should return the correct number of tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         expect(tagsArray.length).toBe(2);
     });
 
     test('should iterate over all tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         const tags: string[] = [];
@@ -259,7 +259,7 @@ describe('Tags', () => {
     });
 
     test('should not log when adding a tag without a logger', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1']);
         tagsArray.add('tag1');
@@ -269,7 +269,7 @@ describe('Tags', () => {
     });
 
     test('should not log when removing a non-existing tag without a logger', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1']);
 
@@ -282,7 +282,7 @@ describe('Tags', () => {
 
     // Tests for specificTags property
     test('should return specific tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag1/subtag1', 'tag2']);
 
@@ -294,7 +294,7 @@ describe('Tags', () => {
 
     // Tests for getTagTree method
     test('should return tag tree', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag1/subtag1', 'tag2']);
 
@@ -369,7 +369,7 @@ describe('Tags', () => {
     });
 
     test('should return true when tag exists in the tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1', 'tag2']);
         const tagToCheck = new MockTagClass('tag1');
@@ -378,7 +378,7 @@ describe('Tags', () => {
 
     // Test when a single tag exists in the tags array
     test('should return true when a single tag exists in the tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1']);
         const tagToCheck = new MockTagClass('tag1');
@@ -387,7 +387,7 @@ describe('Tags', () => {
 
     // Test when a single tag does not exist in the tags array
     test('should return false when a single tag does not exist in the tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1']);
         const tagToCheck = new MockTagClass('tag2');
@@ -396,7 +396,7 @@ describe('Tags', () => {
 
     // Test when the tag partially matches an existing tag
     test('should return true when a tag partially matches an existing tag', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1/part']);
         const tagToCheck = new MockTagClass('tag1');
@@ -405,7 +405,7 @@ describe('Tags', () => {
 
     // Test when the tag does not match any part of existing tags
     test('should return false when the tag does not match any part of existing tags', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags(['tag1/part']);
         const tagToCheck = new MockTagClass('tag2');
@@ -414,7 +414,7 @@ describe('Tags', () => {
 
     // Test when the tag array is empty
     test('should return false when the tags array is empty', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const tagsArray = new Tags([]);
         const tagToCheck = new MockTagClass('tag1');
@@ -423,7 +423,7 @@ describe('Tags', () => {
 
     // Test when checking a complex tag that contains multiple tags
     test('should return true when all tags in a complex tag exist in the tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const complexTag = new Tags(['tag1', 'tag2']);
         const tagsArray = new Tags(['tag1', 'tag2']);
@@ -432,7 +432,7 @@ describe('Tags', () => {
 
     // Test when checking a complex tag where not all tags exist in the tags array
     test('should return false when not all tags in a complex tag exist in the tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const complexTag = new Tags(['tag1', 'tag2']);
         const tagsArray = new Tags(['tag1']);
@@ -441,7 +441,7 @@ describe('Tags', () => {
 
     // Test when checking a complex tag with empty tags array
     test('should return false when checking a complex tag with an empty tags array', () => {
-        DIContainer.getInstance().register('ILogger_', undefined);
+        TSinjex.getInstance().register('ILogger_', undefined);
 
         const complexTag = new Tags(['tag1', 'tag2']);
         const tagsArray = new Tags([]);

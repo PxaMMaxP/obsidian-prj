@@ -2,8 +2,7 @@
 import { App, TFile } from 'obsidian';
 import MockLogger from 'src/__mocks__/ILogger.mock';
 import { ILogger } from 'src/interfaces/ILogger';
-import { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
-import { DIContainer } from '../../DependencyInjection/DIContainer';
+import { ITSinjex, TSinjex } from 'ts-injex';
 import { HelperObsidian } from '../Obsidian';
 
 jest.mock('src/libs/LifecycleManager/decorators/Lifecycle'); // Disable Lifecycle
@@ -37,13 +36,13 @@ jest.mock('obsidian', () => {
 });
 
 describe('HelperObsidian', () => {
-    let diContainerMock: IDIContainer;
+    let diContainerMock: ITSinjex;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let appMock: any;
     let loggerMock: ILogger | undefined;
 
     const initializeMocks = (withLogger: boolean) => {
-        diContainerMock = DIContainer.getInstance();
+        diContainerMock = TSinjex.getInstance();
         appMock = new App();
         loggerMock = withLogger ? MockLogger : undefined;
 

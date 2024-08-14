@@ -1,12 +1,12 @@
 import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Path } from 'src/classes/Path';
-import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
 import { StatusTypes } from 'src/libs/StatusType/interfaces/IStatusType';
 import { Tags } from 'src/libs/Tags/Tags';
+import type { ITSinjex } from 'ts-injex';
 import PrjTaskData from './Data/PrjTaskData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 // @import-me
@@ -54,7 +54,7 @@ export class TaskModel extends PrjTaskManagementModel<PrjTaskData> {
      * @param file The file to create the TaskModel from.
      * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+    constructor(file: TFile | undefined, dependencies?: ITSinjex) {
         super(file, PrjTaskData, dependencies);
     }
 

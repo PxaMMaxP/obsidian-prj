@@ -1,8 +1,8 @@
 import { TFile } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import { Lifecycle } from 'src/libs/LifecycleManager/decorators/Lifecycle';
 import { ILifecycleObject } from 'src/libs/LifecycleManager/interfaces/ILifecycleObject';
+import type { ITSinjex } from 'ts-injex';
 import PrjProjectData from './Data/PrjProjectData';
 import { PrjTaskManagementModel } from './PrjTaskManagementModel';
 
@@ -17,7 +17,7 @@ export class ProjectModel extends PrjTaskManagementModel<PrjProjectData> {
      * @param file The file to create the model for.
      * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+    constructor(file: TFile | undefined, dependencies?: ITSinjex) {
         super(file, PrjProjectData, dependencies);
     }
 

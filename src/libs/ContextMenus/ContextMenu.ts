@@ -2,8 +2,8 @@ import { Menu, TAbstractFile } from 'obsidian';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import type { IPrj } from 'src/interfaces/IPrj';
+import { Inject } from 'ts-injex';
 import { IContextMenu } from './interfaces/IContextMenu';
-import { Inject } from '../DependencyInjection/decorators/Inject';
 
 /**
  * Represents a class for creating a context menu.

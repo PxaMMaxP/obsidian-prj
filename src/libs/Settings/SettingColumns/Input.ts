@@ -2,8 +2,6 @@ import createFuzzySearch from '@nozbe/microfuzz';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
@@ -11,6 +9,8 @@ import {
     IFlowConfig,
     IFlowEventCallback,
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import { ConfigurationError } from './interfaces/Exceptions';
 import {
     IInput,

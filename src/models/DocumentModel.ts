@@ -4,13 +4,13 @@ import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import type { IApp } from 'src/interfaces/IApp';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
-import type { IDIContainer } from 'src/libs/DependencyInjection/interfaces/IDIContainer';
 import FileManager, { Filename } from 'src/libs/FileManager';
 import { HelperGeneral } from 'src/libs/Helper/General';
 import { Wikilink } from 'src/libs/Wikilink/Wikilink';
 import type { IPrjSettings } from 'src/types/PrjSettings';
+import type { ITSinjex } from 'ts-injex';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import { PrjDocumentData } from './Data/PrjDocumentData';
 import { FileModel } from './FileModel';
 import IPrjModel from './interfaces/IPrjModel';
@@ -43,7 +43,7 @@ export class DocumentModel
      * @param file The file to create the model for.
      * @param dependencies The optional dependencies to use.
      */
-    constructor(file: TFile | undefined, dependencies?: IDIContainer) {
+    constructor(file: TFile | undefined, dependencies?: ITSinjex) {
         super(file, PrjDocumentData, PrjDocumentData.yamlKeyMap, dependencies);
     }
 

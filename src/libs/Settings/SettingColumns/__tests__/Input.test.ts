@@ -7,21 +7,21 @@ import {
     registerMockLogger,
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
 import {
     MockComponent_,
     registerMockComponent,
 } from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
+import { TSinjex } from 'ts-injex';
 import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
 import { ISettingRowProtected } from '../../interfaces/ISettingRow';
 import { Input } from '../Input';
 
 registerMockLogger();
 registerMockComponent();
-DIContainer.getInstance().register('IGenericSuggest_', {});
-DIContainer.getInstance().register('IApp', {});
-DIContainer.getInstance().register('IFlow_', Flow);
+TSinjex.getInstance().register('IGenericSuggest_', {});
+TSinjex.getInstance().register('IApp', {});
+TSinjex.getInstance().register('IFlow_', Flow);
 
 const SettingItemMock: ISettingRowProtected & Component =
     new MockComponent_() as unknown as ISettingRowProtected & Component;

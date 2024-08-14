@@ -3,7 +3,7 @@
  */
 
 import IMetadataCache from 'src/interfaces/IMetadataCache';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import { Tag } from '../Tag';
 
 describe('Tag', () => {
@@ -22,7 +22,7 @@ describe('Tag', () => {
             ],
         } as unknown as IMetadataCache;
 
-        DIContainer.getInstance().register('IMetadataCache', metadataCacheMock);
+        TSinjex.getInstance().register('IMetadataCache', metadataCacheMock);
     });
 
     // Constructor Tests
@@ -102,7 +102,7 @@ describe('Tag', () => {
             cache: [],
         } as unknown as IMetadataCache;
 
-        DIContainer.getInstance().register(
+        TSinjex.getInstance().register(
             'IMetadataCache',
             metadataCacheMockEmpty,
         );

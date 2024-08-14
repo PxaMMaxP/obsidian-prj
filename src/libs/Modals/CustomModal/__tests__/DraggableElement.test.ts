@@ -3,7 +3,7 @@
  */
 
 import { Component } from 'obsidian';
-import { DIContainer } from 'src/libs/DependencyInjection/DIContainer';
+import { TSinjex } from 'ts-injex';
 import {
     MockComponent_,
     registerMockComponent,
@@ -24,7 +24,7 @@ const MockICSSStyleRuleComponent_ = jest.fn().mockImplementation(() => {
     return MockICSSStyleRuleComponent;
 });
 
-DIContainer.getInstance().register(
+TSinjex.getInstance().register(
     'ICSSStyleRuleComponent_',
     MockICSSStyleRuleComponent_,
 );

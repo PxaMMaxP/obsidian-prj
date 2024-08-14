@@ -11,12 +11,11 @@ import { DocumentModel } from 'src/models/DocumentModel';
 import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
+import { Inject, resolve } from 'ts-injex';
 import type {
     ICustomModal_,
     ICustomModal,
 } from './CustomModal/interfaces/ICustomModal';
-import { Inject } from '../DependencyInjection/decorators/Inject';
-import { Resolve } from '../DependencyInjection/functions/Resolve';
 import type { ForceConstructor } from '../DependencyInjection/types/GenericContructor';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
@@ -401,13 +400,13 @@ export class CreateNewMetadataModal {
      * Registers the command to open the modal
      */
     public static registerCommand(): void {
-        const plugin = Resolve<IPrj>('IPrj');
+        const plugin = resolve<IPrj>('IPrj');
 
-        const iTranslationService = Resolve<ITranslationService>(
+        const iTranslationService = resolve<ITranslationService>(
             'ITranslationService',
         );
 
-        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+        const logger = resolve<ILogger_>('ILogger_').getLogger(
             'CreateNewMetadataModal',
         );
 

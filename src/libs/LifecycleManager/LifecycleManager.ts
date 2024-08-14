@@ -1,6 +1,7 @@
 /* eslint-disable jsdoc/require-description */
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { Singleton } from 'src/classes/decorators/Singleton';
+import { Register } from 'ts-injex';
 import {
     ILifecycleCallback,
     ILifecycleManager,
@@ -8,7 +9,6 @@ import {
     ILifecycleState,
     ILifecycleTime,
 } from './interfaces/ILifecycleManager';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * Lifecycle manager class.

@@ -3,7 +3,7 @@ import { Logging } from 'src/classes/Logging';
 import { Path } from 'src/classes/Path';
 import { IApp } from 'src/interfaces/IApp';
 import { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { Resolve } from './DependencyInjection/functions/Resolve';
+import { resolve } from 'ts-injex';
 
 /**
  * A class that handles file operations.
@@ -129,7 +129,7 @@ export default class FileManager {
         logger?.trace(`Moving/renaming file ${file.name} to ${path}`);
 
         try {
-            await Resolve<IApp>('IApp').fileManager.renameFile(file, path);
+            await resolve<IApp>('IApp').fileManager.renameFile(file, path);
         } catch (error) {
             logger?.error(
                 `Moving/renaming file ${file.name} to ${path} failed: `,
@@ -157,7 +157,7 @@ export default class FileManager {
         filename: Filename,
         content?: string,
     ): Promise<TFile | undefined> {
-        const logger = Resolve<ILogger_>('ILogger_').getLogger(
+        const logger = resolve<ILogger_>('ILogger_').getLogger(
             'FileManager/createFile',
         );
 
@@ -172,7 +172,7 @@ export default class FileManager {
         );
 
         try {
-            const file = await Resolve<IApp>('IApp').vault.create(
+            const file = await resolve<IApp>('IApp').vault.create(
                 filePath,
                 content ?? '',
             );

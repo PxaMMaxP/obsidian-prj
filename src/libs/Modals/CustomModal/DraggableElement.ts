@@ -1,7 +1,7 @@
 import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { Inject } from 'src/libs/DependencyInjection/decorators/Inject';
-import { Register } from 'src/libs/DependencyInjection/decorators/Register';
+import { Register } from 'ts-injex';
+import { Inject } from 'ts-injex';
 import type {
     ICSSStyleRuleComponent,
     ICSSStyleRuleComponent_,

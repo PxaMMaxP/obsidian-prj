@@ -1,8 +1,8 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { ILogger } from 'src/interfaces/ILogger';
+import { Register } from 'ts-injex';
 import { IProxyHandler, IProxyHandler_ } from './interfaces/IProxyHandler';
 import { ObjectPath } from './types/ObjectPath';
-import { Register } from '../DependencyInjection/decorators/Register';
 
 /**
  * A class responsible for
