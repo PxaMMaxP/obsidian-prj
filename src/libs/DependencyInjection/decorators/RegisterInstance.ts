@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { DIContainer } from '../DIContainer';
 import { InitDelegate } from '../types/InitDelegate';
 
@@ -16,6 +17,7 @@ import { InitDelegate } from '../types/InitDelegate';
  *   // ...
  * }
  * ```
+ * @deprecated Use the `@RegisterInstance` decorator from the `ts-injex` package instead.
  */
 export function RegisterInstance<
     TargetType extends new (..._args: unknown[]) => InstanceType<TargetType>,

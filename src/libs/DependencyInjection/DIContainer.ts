@@ -1,3 +1,4 @@
+/* eslint-disable deprecation/deprecation */
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import { IDIContainer, IDIContainer_ } from './interfaces/IDIContainer';
 
@@ -18,6 +19,7 @@ interface IDependency {
 
 /**
  * Dependency Injection Container
+ * @deprecated Use the `DIContainer` class from the `ts-injex` package instead.
  */
 @ImplementsStatic<IDIContainer_>()
 export class DIContainer implements IDIContainer {
