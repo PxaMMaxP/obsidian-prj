@@ -57,7 +57,7 @@
     "ts-jest": "^29.2.3",
     "tslib": "^2.6.3",
     "typedoc": "^0.26.5",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@nozbe/microfuzz": "^1.0.0",
