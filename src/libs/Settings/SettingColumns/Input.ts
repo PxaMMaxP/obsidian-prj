@@ -66,21 +66,26 @@ export class Input
                     type: opts.inputElType.is('textarea')
                         ? undefined
                         : this._settings.inputType,
-                    Events: [
-                        opts.inputElType.is('textarea')
-                            ? // Add event listener to update the minimum height of the textarea.
-                              ['input', this.updateMinHeight]
-                            : [
+                    Events: opts.inputElType.is('textarea')
+                        ? [
+                              ['input', this.updateMinHeight],
+                              [
                                   opts.onChangeCallback?.is()
-                                      ? // Add event listener to call the onChangeCallback.
-                                        'change'
+                                      ? 'change'
                                       : 'void',
                                   () =>
                                       this._settings.onChangeCallback?.(
                                           this.elements.inputEl.value,
                                       ),
                               ],
-                    ],
+                          ]
+                        : [
+                              opts.onChangeCallback?.is() ? 'change' : 'void',
+                              () =>
+                                  this._settings.onChangeCallback?.(
+                                      this.elements.inputEl.value,
+                                  ),
+                          ],
                     Then: opts.getSuggestionsCallback?.is()
                         ? // Add the suggestions.
                           (ctx, el) =>
@@ -149,9 +154,14 @@ export class Input
             },
         );
 
-        this._suggester.suggestContainerEl?.classList.add(
-            this.parentSettingItem?.parentModal?.draggableClassName || '',
-        );
+        const draggableClassName =
+            this.parentSettingItem?.parentModal?.draggableClassName;
+
+        if (draggableClassName != null) {
+            this._suggester.suggestContainerEl?.classList.add(
+                draggableClassName,
+            );
+        }
     }
 
     public readonly parentSettingItem: ISettingRowProtected;

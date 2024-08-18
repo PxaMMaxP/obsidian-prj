@@ -11,10 +11,7 @@ import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Inject } from 'ts-injex';
 import { resolve } from 'ts-injex';
-import type {
-    ICustomModal,
-    ICustomModal_,
-} from './CustomModal/interfaces/ICustomModal';
+import type { IModal, IModal_ } from './CustomModal/interfaces/IModal';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 
 /**
@@ -25,10 +22,10 @@ export default class ChangeStatusModal {
     protected readonly _IApp!: IApp;
     @Inject('IMetadataCache')
     private readonly _IMetadataCache!: IMetadataCache;
-    @Inject('ICustomModal_')
-    private readonly _ICustomModal_!: ICustomModal_;
+    @Inject('IModal_')
+    private readonly _ICustomModal_!: IModal_;
 
-    private readonly _customModal: ICustomModal = new this._ICustomModal_();
+    private readonly _customModal: IModal = new this._ICustomModal_();
 
     private _selectedStatus: StatusTypes;
     private _activeModel: PrjTaskManagementModel<
