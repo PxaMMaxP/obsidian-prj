@@ -11,7 +11,7 @@ import PrjBaseData from 'src/models/Data/PrjBaseData';
 import { PrjTaskManagementModel } from 'src/models/PrjTaskManagementModel';
 import { Inject } from 'ts-injex';
 import { resolve } from 'ts-injex';
-import type { IModal, IModal_ } from './CustomModal/interfaces/IModal';
+import type { IModal, IModal_ } from './Modal/interfaces/IModal';
 import { StatusTypes } from '../StatusType/interfaces/IStatusType';
 
 /**

@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 import { Component } from 'obsidian';
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { IModal } from 'src/libs/Modals/CustomModal/interfaces/IModal';
+import { IModal } from 'src/libs/Modals/Modal/interfaces/IModal';
 import { SettingColumnConfigurator } from './ISettingColumn';
 import { ISettingColumnTagNameMap } from '../SettingColumns/interfaces/ISettingColumnTagNameMap';
 

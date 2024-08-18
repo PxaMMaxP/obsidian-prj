@@ -10,7 +10,7 @@ import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import { Inject, resolve } from 'ts-injex';
-import type { IModal_, IModal } from './CustomModal/interfaces/IModal';
+import type { IModal_, IModal } from './Modal/interfaces/IModal';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../Settings/components/GenericSuggest';

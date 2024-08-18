@@ -14,7 +14,7 @@ import { _componentInstance } from 'src/libs/DIComponent/DIComponent';
 import {
     registerMockComponent,
     resetMockComponent,
-} from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
+} from 'src/libs/Modals/Modal/__mocks__/Component.mock';
 import { Flow } from '../Flow';
 import { IFlowConfig } from '../types/IFlowDelegates';
 
