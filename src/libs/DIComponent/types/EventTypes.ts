@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { IDIComponent } from '../interfaces/IDIComponent';
 
 /**
@@ -28,9 +29,17 @@ export type EventRegistry = Record<EventKey, (EventCallback | undefined)[]>;
 export type InjectDelegate = (ctx: IDIComponent & unknown) => void;
 
 export type SpecificEventMap = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+    /**
+     * All indipendent Windows should have this classes.
+     * The parent will emit this event to all children
+     * after the parent and children are loaded.
+     */
     'common-window-classes': [string[]];
-    inject: [InjectDelegate];
+    /**
+     * A child can emit this event to the parent with the
+     * key of the result and the result itself.
+     */
+    result: [string, unknown];
 };
 
 export type SpecificEventCallback<K extends keyof SpecificEventMap> = (
