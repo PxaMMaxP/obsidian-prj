@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { Component } from 'obsidian';
+import { IComponent } from './IDIComponentCore';
+import { EventArgsType, EventKey, EventCallback } from '../types/EventTypes';
+import {
+    _childrenComponents,
+    _IDIComponent,
+    _parentComponent,
+    isLoaded,
+    shouldRemoveOnUnload,
+} from '../types/IDIComponentSymbols';
 
-export const isLoaded = Symbol('isLoaded');
-export const shouldRemoveOnUnload = Symbol('shouldAutoRemove');
-export const _IDIComponent = Symbol('isLoaded');
-
-export interface IDIComponent extends Component {
+export interface IDIComponent extends IComponent, IDIComponentEvents {
     /**
      * A reference to the IDIComponent,
      * if the component is an instance of it.
@@ -23,38 +26,65 @@ export interface IDIComponent extends Component {
      * Only works if both components are instances of IDIComponent.
      */
     [shouldRemoveOnUnload]: boolean;
+
+    /**
+     * The parent component of the component.
+     */
+    [_parentComponent]?: IDIComponent | IComponent;
+
+    /**
+     * The children components of the component.
+     */
+    [_childrenComponents]?: (IDIComponent | IComponent)[];
+
+    /**
+     * Add a child component to the component and
+     * if the child component is an instance of {@link IDIComponent}
+     * and `shouldRemoveOnUnload` is set to `true`,
+     * it will be automatically removed when unloaded.
+     * @inheritdoc
+     */
+    addChild<T extends IComponent>(component: T): T;
 }
 
 /**
- * Checks whether the component is an instance of IDIComponent.
- * @param component The component to check.
- * @returns Whether the component is an instance of IDIComponent.
+ * Event related interface for IDIComponent.
  */
-export function isIDIComponent(
-    component: Component,
-): component is Required<IDIComponent> {
-    return (component as IDIComponent)[_IDIComponent] !== undefined;
-}
-
-/**
- * Private and reverse engineered interface of the component.
- */
-export interface IComponent extends Component {
+export interface IDIComponentEvents {
     /**
-     * Tells whether the component is loaded.
+     * Emits an event with the given name and arguments
+     * which can be listened to by any parent component
+     * in the hierarchy.
+     * **Once listened to, the event will not be propagated.**
+     * @param event The name of the event.
+     * @param args The arguments to pass to the event.
      */
-    _loaded?: boolean;
-
-    /**
-     * Registered child components.
-     * @see {@link Component.addChild}
-     * @see {@link Component.removeChild}
-     */
-    _children?: unknown[];
+    emitEvent<EventArgs extends EventArgsType = EventArgsType>(
+        event: EventKey,
+        ...args: EventArgs[]
+    ): void;
 
     /**
-     * Registered on unloading events.
-     * @see {@link Component.register}
+     * Broadcasts an event with the given name and arguments
+     * to all child components in the hierarchy.
+     * **The event is always passed on regardless of listeners.**
+     * @param event The name of the event.
+     * @param args The arguments to pass to the event.
      */
-    _events?: unknown[];
+    broadcastEvent<EventArgs extends EventArgsType = EventArgsType>(
+        event: EventKey,
+        ...args: EventArgs[]
+    ): void;
+
+    /**
+     * Registers a callback to be called when the event is emitted.
+     * Works for both parent and child components;
+     * e.g. with `emitEvent` and `broadcastEvent`.
+     * @param event The name of the event or `*` for all events.
+     * @param cb The callback to call when the event is emitted.
+     */
+    on<EventArgs extends EventArgsType = EventArgsType>(
+        event: EventKey,
+        cb: EventCallback<EventArgs>,
+    ): void;
 }
