@@ -17,7 +17,6 @@ import {
     IInput,
     IInputFluentApi,
     IInputProtected,
-    InputElementType,
     InputType,
     OnChangeCallback,
 } from './interfaces/IInput';
@@ -209,10 +208,8 @@ export class Input
     /**
      * @inheritdoc
      */
-    public setInputElType(inputType: InputElementType): IInputFluentApi {
-        this._settings.inputElType = inputType;
-
-        return this;
+    public get value(): string {
+        return this.elements.inputEl.value;
     }
 
     /**
@@ -305,20 +302,11 @@ export class Input
  * Represents the settings for the input field.
  */
 class InputSettings implements IInputSettings {
-    private _inputElType: InputElementType = 'HTMLInputElement';
-
-    /**
-     * @inheritdoc
-     */
-    public set inputElType(value: InputElementType) {
-        this._inputElType = value;
-    }
-
     /**
      * @inheritdoc
      */
     public get inputElType(): 'input' | 'textarea' {
-        return this._inputElType === 'HTMLInputElement' ? 'input' : 'textarea';
+        return this.inputType === 'textArea' ? 'textarea' : 'input';
     }
 
     /**
@@ -361,13 +349,6 @@ class InputSettings implements IInputSettings {
  * Represents an interface for the settings for the input field.
  */
 interface IInputSettings {
-    /**
-     * Sets the element type of the input field.
-     * @param value The element type of the input field
-     * as either `HTMLInputElement` or `HTMLTextAreaElement`.
-     */
-    set inputElType(value: InputElementType);
-
     /**
      * Gets the element type of the input field.
      * @returns The element type of the input field

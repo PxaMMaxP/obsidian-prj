@@ -121,6 +121,11 @@ export class Modal extends DIComponent implements IModal, IModalFluentApi {
         return this._draggableElement?.className;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public readonly result: Record<string, unknown> = {};
+
     private _modalContainer: HTMLDivElement;
     private _title: HTMLDivElement;
     private _draggableElement?: IDraggableElement;

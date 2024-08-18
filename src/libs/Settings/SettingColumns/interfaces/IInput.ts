@@ -8,13 +8,7 @@ import {
 /**
  * Main interface for the input column.
  */
-export interface IInput extends IDIComponent, ISettingColumn {
-    /**
-     * Gets the value of the input field.
-     * @returns The value of the input field.
-     */
-    getValue(): string;
-}
+export interface IInput extends IDIComponent, ISettingColumn {}
 
 /**
  * Protected interface for the input column.
@@ -35,13 +29,6 @@ export interface IInputProtected extends ISettingColumnProtected {
  * The fluent API for the input column.
  */
 export interface IInputFluentApi {
-    /**
-     * Sets the element type of the input field.
-     * @param inputType The element type of the input field.
-     * @returns The input field.
-     */
-    setInputElType(inputType: InputElementType): IInputFluentApi;
-
     /**
      * Sets the type of the input field.
      * @param type The type of the input field.
@@ -105,7 +92,7 @@ export interface IInputFluentApi {
 /**
  * Input types of {@link IInput}.
  */
-export type InputType = 'text' | 'password' | 'number' | 'date';
+export type InputType = 'textArea' | 'text' | 'password' | 'number' | 'date';
 
 /**
  * Element types of {@link IInput}.

@@ -53,6 +53,10 @@ export interface ISettingColumn extends IDIComponent {
      * Apply the {@link SettingColumnConfigurator} to the setting item.
      */
     onload(): void;
+    /**
+     * Get the value of the setting column.
+     */
+    get value(): unknown;
 }
 
 /**

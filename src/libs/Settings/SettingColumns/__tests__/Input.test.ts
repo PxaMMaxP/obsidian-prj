@@ -45,7 +45,7 @@ describe('Input', () => {
         const input = new Input(SettingItemMock);
         input.setValue('test value');
         input.load();
-        expect(input.getValue()).toBe('test value');
+        expect(input.value).toBe('test value');
     });
 
     it('should set and get placeholder correctly', () => {
@@ -57,14 +57,14 @@ describe('Input', () => {
 
     it('should set input element type correctly', () => {
         const input = new Input(SettingItemMock);
-        input.setInputElType('HTMLTextAreaElement');
+        input.setType('textArea');
         input.load();
         expect(input.elements.inputEl.tagName.toLowerCase()).toBe('textarea');
     });
 
     it('should set input type correctly', () => {
         const input = new Input(SettingItemMock);
-        input.setInputElType('HTMLInputElement').setType('password');
+        input.setType('password');
         input.load();
 
         if (input.elements.inputEl instanceof HTMLInputElement) {

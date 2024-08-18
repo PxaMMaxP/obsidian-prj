@@ -37,6 +37,11 @@ export interface IModal extends IDIComponent, IModalFluentApi {
      * Gets the unique class name of the draggable element.
      */
     get draggableClassName(): string | undefined;
+
+    /**
+     * The results of the modal.
+     */
+    get result(): Record<string, unknown>;
 }
 
 export interface IModalFluentApi {

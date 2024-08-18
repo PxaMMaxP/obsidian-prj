@@ -222,7 +222,7 @@ export class CreateNewMetadataModal {
                     .add('input', (input) => {
                         input
                             .setSpellcheck(true)
-                            .setInputElType('HTMLTextAreaElement')
+                            .setType('textArea')
                             .setPlaceholder(
                                 this._ITranslationService.get('Description'),
                             )
