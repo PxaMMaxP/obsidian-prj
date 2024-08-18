@@ -44,7 +44,7 @@ export class OptsWrapper<T> implements IOptsWrapper<T> {
      * @inheritdoc
      */
     public get value(): T {
-        return this.value;
+        return this._value;
     }
 
     /**
