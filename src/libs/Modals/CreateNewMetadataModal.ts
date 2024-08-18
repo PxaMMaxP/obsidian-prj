@@ -1,22 +1,16 @@
-import { Setting, TFile } from 'obsidian';
+import { TFile } from 'obsidian';
 import API from 'src/classes/API';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import type IMetadataCache from 'src/interfaces/IMetadataCache';
 import { IPrj } from 'src/interfaces/IPrj';
-import type { IPrjData_ } from 'src/models/Data/interfaces/IPrjData';
 import { IPrjDocument } from 'src/models/Data/interfaces/IPrjDocument';
-import { PrjDocumentData } from 'src/models/Data/PrjDocumentData';
 import { DocumentModel } from 'src/models/DocumentModel';
 import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import { Inject, resolve } from 'ts-injex';
-import type { ForceConstructor } from 'ts-injex';
-import type {
-    ICustomModal_,
-    ICustomModal,
-} from './CustomModal/interfaces/ICustomModal';
+import type { IModal_, IModal } from './CustomModal/interfaces/IModal';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../Settings/components/GenericSuggest';
@@ -42,15 +36,10 @@ export class CreateNewMetadataModal {
     private readonly _IHelperGeneral!: IHelperGeneral_;
     @Inject('IHelperObsidian')
     private readonly _IHelperObsidian!: IHelperObsidian;
-    @Inject('ICustomModal_')
-    private readonly _ICustomModal_!: ICustomModal_;
+    @Inject('IModal_')
+    private readonly _ICustomModal_!: IModal_;
     @Inject('ITranslationService')
     private readonly _ITranslationService!: ITranslationService;
-    @Inject('Obsidian.Setting_')
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    private readonly _Setting_!: ForceConstructor<Setting>;
-    @Inject('IPrjDocument_')
-    private readonly _IPrjDocument_!: IPrjData_<PrjDocumentData>;
     @Inject('DocumentModel_')
     private readonly _IDocumentModel_!: IPrjModel_<DocumentModel>;
     @Inject('IPrjSettings')
@@ -60,7 +49,7 @@ export class CreateNewMetadataModal {
     @Inject('ISettingRow_')
     private readonly _ISetting_: ISettingRow_;
 
-    private readonly _customModal: ICustomModal = new this._ICustomModal_();
+    private readonly _customModal: IModal = new this._ICustomModal_();
 
     private readonly _result: Partial<Record<keyof IPrjDocument, unknown>> = {};
     temp: GenericSuggest<string>;
@@ -72,6 +61,7 @@ export class CreateNewMetadataModal {
         this._customModal
             .setBackgroundDimmed(false)
             .setDraggableEnabled(true)
+            .setTitle(this._ITranslationService.get('Create new metadata'))
             .setOnOpen(this.onOpen.bind(this))
             .open();
     }
@@ -131,10 +121,6 @@ export class CreateNewMetadataModal {
      */
     private onOpen(): void {
         this._customModal.content.addClass('custom-form');
-
-        this._customModal.setTitle(
-            this._ITranslationService.get('Create new metadata'),
-        );
 
         // Sub type
         new this._ISetting_(this._customModal, (setting) => {

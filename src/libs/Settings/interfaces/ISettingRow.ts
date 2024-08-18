@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/check-tag-names */
 import { Component } from 'obsidian';
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { ICustomModal } from 'src/libs/Modals/CustomModal/interfaces/ICustomModal';
+import { IModal } from 'src/libs/Modals/CustomModal/interfaces/IModal';
 import { SettingColumnConfigurator } from './ISettingColumn';
 import { ISettingColumnTagNameMap } from '../SettingColumns/interfaces/ISettingColumnTagNameMap';
 
@@ -22,7 +22,7 @@ export interface ISettingRow_ {
      * Only if `modal` is `undefined`.
      */
     new (
-        parentModal: ICustomModal | undefined,
+        parentModal: IModal | undefined,
         configure?: SettingConfigurator,
         parentContainerEl?: HTMLElement | DocumentFragment,
         parentComponent?: Component,
@@ -47,7 +47,7 @@ export interface ISettingRowProtected extends ISettingRowFluentApi {
     /**
      * The `ICustomModal` instance that the setting row belongs to.
      */
-    get parentModal(): ICustomModal | undefined;
+    get parentModal(): IModal | undefined;
 }
 
 /**

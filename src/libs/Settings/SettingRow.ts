@@ -13,7 +13,7 @@ import type {
     SettingConfigurator,
 } from './interfaces/ISettingRow';
 import { DIComponent } from '../DIComponent/DIComponent';
-import type { ICustomModal } from '../Modals/CustomModal/interfaces/ICustomModal';
+import type { IModal } from '../Modals/CustomModal/interfaces/IModal';
 
 /**
  * Implementation of {@link ISettingRow}.
@@ -38,7 +38,7 @@ export class SettingRow extends DIComponent implements ISettingRowProtected {
     /**
      * @inheritdoc
      */
-    public readonly parentModal: ICustomModal | undefined;
+    public readonly parentModal: IModal | undefined;
 
     /**
      * @inheritdoc
@@ -123,7 +123,7 @@ export class SettingRow extends DIComponent implements ISettingRowProtected {
      * Only if `modal` is `undefined`.
      */
     constructor(
-        parentModal: ICustomModal | undefined,
+        parentModal: IModal | undefined,
         configure?: SettingConfigurator,
         parentContainerEl?: HTMLElement | DocumentFragment,
         parentComponent?: Component,

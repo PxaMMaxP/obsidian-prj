@@ -96,7 +96,7 @@ TSinjex.register('IApp', mockIApp);
 TSinjex.register('IMetadataCache', mockIMetadataCache);
 TSinjex.register('IHelperGeneral_', mockIHelperGeneral);
 TSinjex.register('IHelperObsidian', mockIHelperObsidian);
-TSinjex.register('ICustomModal_', mockICustomModal);
+TSinjex.register('IModal_', mockICustomModal);
 TSinjex.register('ITranslationService', mockTranslationService);
 TSinjex.register('Obsidian.Setting_', mockSetting);
 

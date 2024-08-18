@@ -227,9 +227,14 @@ export class TagSearch
                 },
             );
 
-            this._suggester.suggestContainerEl?.classList.add(
-                this.parentSettingItem?.parentModal?.draggableClassName || '',
-            );
+            const draggableClassName =
+                this.parentSettingItem?.parentModal?.draggableClassName;
+
+            if (draggableClassName != null) {
+                this._suggester.suggestContainerEl?.classList.add(
+                    draggableClassName,
+                );
+            }
         }
     }
 

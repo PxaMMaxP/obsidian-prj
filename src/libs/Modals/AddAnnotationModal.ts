@@ -7,9 +7,9 @@ import { Inject } from 'ts-injex';
 import { resolve } from 'ts-injex';
 import type { ForceConstructor } from 'ts-injex';
 import type {
-    ICustomModal_,
-    ICustomModal,
-} from './CustomModal/interfaces/ICustomModal';
+    IModal_,
+    IModal,
+} from './CustomModal/interfaces/IModal';
 import { FileType } from '../FileType/FileType';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
@@ -33,15 +33,15 @@ export default class AddAnnotationModal {
     private readonly _IHelperGeneral!: IHelperGeneral_;
     @Inject('IHelperObsidian')
     private readonly _IHelperObsidian!: IHelperObsidian;
-    @Inject('ICustomModal_')
-    private readonly _ICustomModal_!: ICustomModal_;
+    @Inject('IModal_')
+    private readonly _ICustomModal_!: IModal_;
     @Inject('ITranslationService')
     private readonly _ITranslationService!: ITranslationService;
     @Inject('Obsidian.Setting_')
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private readonly _Setting_!: ForceConstructor<Setting>;
 
-    private readonly _customModal: ICustomModal = new this._ICustomModal_();
+    private readonly _customModal: IModal = new this._ICustomModal_();
 
     private _activeFile?: TFile;
     protected _annotation: Annotation = {

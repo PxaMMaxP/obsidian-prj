@@ -12,7 +12,7 @@ import {
     registerMockComponent,
     resetMockComponent,
 } from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
-import { ICustomModal } from 'src/libs/Modals/CustomModal/interfaces/ICustomModal';
+import { IModal } from 'src/libs/Modals/CustomModal/interfaces/IModal';
 import { InstantiationError } from '../interfaces/Exceptions';
 import { SettingRow } from '../SettingRow';
 
@@ -21,7 +21,7 @@ registerMockComponent();
 
 describe('SettingItem', () => {
     let mockComponent: Component;
-    let mockModal: ICustomModal | undefined;
+    let mockModal: IModal | undefined;
     let containerEl: HTMLElement;
 
     beforeEach(() => {
@@ -36,7 +36,7 @@ describe('SettingItem', () => {
         //     component: mockComponent,
         // } as unknown as ICustomModal;
 
-        mockModal = mockComponent as unknown as ICustomModal;
+        mockModal = mockComponent as unknown as IModal;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (mockModal.content as any) = containerEl;
     });
