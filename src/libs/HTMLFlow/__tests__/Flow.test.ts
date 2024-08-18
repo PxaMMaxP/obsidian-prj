@@ -10,7 +10,7 @@ import MockLogger, {
     registerMockLogger,
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
-import { _componentInstance } from 'src/libs/DIComponent/DIComponent';
+import { _componentInstance } from 'src/libs/DIComponent/types/IDIComponentSymbols';
 import {
     registerMockComponent,
     resetMockComponent,
