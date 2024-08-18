@@ -56,7 +56,7 @@ export interface ISettingColumn extends IDIComponent {
     /**
      * Get the value of the setting column.
      */
-    get value(): unknown;
+    readonly value?: unknown;
 }
 
 /**
