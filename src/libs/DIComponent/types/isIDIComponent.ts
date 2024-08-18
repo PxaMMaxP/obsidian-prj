@@ -9,5 +9,5 @@ import { IDIComponent } from '../interfaces/IDIComponent';
 export function isIDIComponent(
     component: unknown,
 ): component is Required<IDIComponent> {
-    return (component as IDIComponent)[_IDIComponent] !== undefined;
+    return (component as IDIComponent)?.[_IDIComponent] !== undefined;
 }

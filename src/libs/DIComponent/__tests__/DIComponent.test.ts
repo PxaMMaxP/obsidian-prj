@@ -4,12 +4,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { registerMockComponent } from '../../Modals/Modal/__mocks__/Component.mock';
+import { DIComponent } from '../DIComponent';
+import { IDIComponent } from '../interfaces/IDIComponent';
+import { IComponent } from '../interfaces/IDIComponentCore';
+import { EventCallback } from '../types/EventTypes';
 import {
-    DIComponent,
-} from '../DIComponent';
-import {
+    _childrenComponents,
     _componentInstance,
-    _componentOriginalMethods
+    _componentOriginalMethods,
+    _parentComponent,
+    _registeredEvents,
+    broadcastEvent,
+    emitEvent,
+    onEvent,
 } from '../types/IDIComponentSymbols';
 
 registerMockComponent();
@@ -145,5 +152,149 @@ describe('DIComponent', () => {
         const id = 1;
         instance.registerInterval(id);
         expect(instance.registerInterval).toHaveBeenCalledWith(id);
+    });
+});
+
+describe('DIComponent - Events', () => {
+    class TestComponent extends DIComponent {
+        public get registry() {
+            return this[_registeredEvents];
+        }
+
+        public get children() {
+            return this[_childrenComponents];
+        }
+
+        public get parent(): IDIComponent | IComponent | undefined {
+            return this[_parentComponent];
+        }
+
+        public setLoaded(loaded: boolean) {
+            this[_componentInstance]._loaded = loaded;
+        }
+    }
+
+    let instance: TestComponent;
+
+    beforeEach(() => {
+        instance = new TestComponent();
+    });
+
+    test('registered events should be defined', () => {
+        const cb: EventCallback = () => {};
+        instance[onEvent]('test', cb);
+
+        expect(instance.registry).toBeDefined();
+        expect(instance.registry['test'].length).toBe(1);
+        expect(instance.registry['test'][0]).toBe(cb);
+    });
+
+    test('a registered event should not called on `emitEvent` when the component is not loaded', () => {
+        const cb = jest.fn();
+        instance[onEvent]('test', cb);
+
+        instance[emitEvent]('test');
+
+        expect(cb).not.toHaveBeenCalled();
+    });
+
+    test('a registered event should be only loaded called on `emitEvent`', () => {
+        const cb = jest.fn();
+        instance[onEvent]('test', cb);
+
+        instance.setLoaded(true);
+        instance[emitEvent]('test');
+
+        expect(cb).toHaveBeenCalled();
+    });
+
+    test('a registered event should not called on `broadcastEvent` when the component is not loaded', () => {
+        const cb = jest.fn();
+        instance[onEvent]('test', cb);
+
+        instance[broadcastEvent]('test');
+
+        expect(cb).not.toHaveBeenCalled();
+    });
+
+    test('a registered event should be only loaded called on `broadcastEvent`', () => {
+        const cb = jest.fn();
+        instance[onEvent]('test', cb);
+
+        instance.setLoaded(true);
+        instance[broadcastEvent]('test');
+
+        expect(cb).toHaveBeenCalled();
+    });
+
+    test('an error should be log on console when an error occurs on event execution', () => {
+        const consoleErrorSpy = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+
+        const cb = () => {
+            throw new Error('test');
+        };
+        instance[onEvent]('test', cb);
+
+        instance.setLoaded(true);
+        instance[broadcastEvent]('test');
+
+        // eslint-disable-next-line no-console
+        expect(console.error).toHaveBeenCalled();
+
+        consoleErrorSpy.mockRestore();
+    });
+
+    test('the parent should be set on `addChild`', () => {
+        const child = new TestComponent();
+        instance.addChild(child);
+
+        expect(child.parent).toBe(instance);
+    });
+
+    test('a event from `emitEvent` should be propagated to the parent when it is not executed', () => {
+        const child = instance;
+        const parent = new TestComponent();
+        parent.addChild(child);
+
+        const cb = jest.fn();
+        parent[onEvent]('test', cb);
+
+        parent.setLoaded(true);
+        child.setLoaded(true);
+        child[emitEvent]('test');
+
+        expect(cb).toHaveBeenCalled();
+    });
+
+    test('a event from `broadcastEvent` should be propagated to the children', () => {
+        const child = new TestComponent();
+        instance.children.push(child);
+
+        const cb = jest.fn();
+        child[onEvent]('test', cb);
+
+        child.setLoaded(true);
+        instance.setLoaded(true);
+        instance[broadcastEvent]('test');
+
+        expect(cb).toHaveBeenCalled();
+    });
+
+    test('a `reflect` event should be reflected from the parent to the children', () => {
+        const parent = instance;
+
+        const child = new TestComponent();
+        parent.children.push(child);
+
+        const cb = jest.fn();
+        child[onEvent]('test', cb);
+
+        parent.setLoaded(true);
+        child.setLoaded(true);
+        child[emitEvent]('reflect', 'test');
+
+        expect(cb).toHaveBeenCalled();
     });
 });

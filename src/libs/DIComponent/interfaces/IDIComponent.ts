@@ -1,12 +1,25 @@
 import { IComponent } from './IDIComponentCore';
-import { EventArgsType, EventKey, EventCallback } from '../types/EventTypes';
+import {
+    EventKey,
+    EventCallback,
+    SpecificEventCallback,
+    SpecificEventMap,
+    InjectDelegate,
+} from '../types/EventTypes';
 import {
     _childrenComponents,
     _IDIComponent,
     _parentComponent,
+    broadcastEvent,
+    emitEvent,
     isLoaded,
+    onEvent,
     shouldRemoveOnUnload,
 } from '../types/IDIComponentSymbols';
+
+export interface IDIComponent_ {
+    new (): IDIComponent;
+}
 
 export interface IDIComponent extends IComponent, IDIComponentEvents {
     /**
@@ -52,6 +65,14 @@ export interface IDIComponent extends IComponent, IDIComponentEvents {
  */
 export interface IDIComponentEvents {
     /**
+     * @inheritdoc
+     */
+    [emitEvent]<K extends keyof SpecificEventMap>(
+        event: K,
+        ...args: SpecificEventMap[K]
+    ): void;
+
+    /**
      * Emits an event with the given name and arguments
      * which can be listened to by any parent component
      * in the hierarchy.
@@ -59,9 +80,20 @@ export interface IDIComponentEvents {
      * @param event The name of the event.
      * @param args The arguments to pass to the event.
      */
-    emitEvent<EventArgs extends EventArgsType = EventArgsType>(
-        event: EventKey,
-        ...args: EventArgs[]
+    [emitEvent](event: EventKey, ...args: unknown[]): void;
+
+    /**
+     * Emits an event which will be reflected by the last parent.
+     * The parent emits an event with the `reflectedEvent` as name
+     * and the given arguments.
+     * @param event 'reflect'
+     * @param reflectedEvent The name of the reflected event.
+     * @param args The arguments to pass to the event.
+     */
+    [emitEvent](
+        event: 'reflect',
+        reflectedEvent: EventKey,
+        ...args: unknown[]
     ): void;
 
     /**
@@ -71,9 +103,27 @@ export interface IDIComponentEvents {
      * @param event The name of the event.
      * @param args The arguments to pass to the event.
      */
-    broadcastEvent<EventArgs extends EventArgsType = EventArgsType>(
-        event: EventKey,
-        ...args: EventArgs[]
+    [broadcastEvent](event: EventKey, ...args: unknown[]): void;
+
+    /**
+     * Broadcasts an event with `targetEvent` as name and
+     * `targetHandler` as delegate to all child components in the hierarchy.
+     * @param event 'inject'
+     * @param targetEvent The name of the event in the receiver components.
+     * @param targetHandler The delegate to send to the receiver components.
+     */
+    [broadcastEvent](
+        event: 'inject',
+        targetEvent: EventKey,
+        targetHandler: InjectDelegate,
+    ): void;
+
+    /**
+     * @inheritdoc
+     */
+    [broadcastEvent]<K extends keyof SpecificEventMap>(
+        event: K,
+        ...args: SpecificEventMap[K]
     ): void;
 
     /**
@@ -83,8 +133,10 @@ export interface IDIComponentEvents {
      * @param event The name of the event or `*` for all events.
      * @param cb The callback to call when the event is emitted.
      */
-    on<EventArgs extends EventArgsType = EventArgsType>(
-        event: EventKey,
-        cb: EventCallback<EventArgs>,
+    [onEvent](event: EventKey, cb: EventCallback): void;
+
+    [onEvent]<K extends keyof SpecificEventMap>(
+        event: K,
+        cb: SpecificEventCallback<K>,
     ): void;
 }
