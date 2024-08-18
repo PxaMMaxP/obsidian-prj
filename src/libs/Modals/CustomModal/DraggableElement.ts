@@ -91,6 +91,7 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
      */
     public enableDragging(): void {
         if (this._dragHandle != null) {
+            this._dragHandle.classList.add('draggable-handle');
             this._dragHandle.style.cursor = 'grab';
 
             this.registerDomEvent(
@@ -131,7 +132,7 @@ export class DraggableElement extends DIComponent implements IDraggableElement {
             this._isDragging = true;
             this._initialX = event.clientX - this._currentX;
             this._initialY = event.clientY - this._currentY;
-            this._dragHandle.style.cursor = 'grabbing'; // Change cursor to grabbing
+            this._dragHandle.style.cursor = 'grabbing';
         }
     }
 

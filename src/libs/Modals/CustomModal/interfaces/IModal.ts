@@ -1,23 +1,28 @@
-import { Component } from 'obsidian';
+import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { CallbackError, MissingCallbackError } from './Exceptions';
+import {
+    IShouldOpenCallback,
+    IOpenCallback,
+    ICloseCallback,
+} from '../types/IModalCallbacks';
 
 /**
- * Static interface for the custom modal.
- * @see {@link ICustomModal}
+ * Static interface for the Modal interface.
+ * @see {@link IModal} for the instance interface.
  */
-export interface ICustomModal_ {
+export interface IModal_ {
     /**
      * Creates a new Modal.
-     * @see {@link ICustomModal}
+     * @see {@link IModal}
      */
-    new (): ICustomModal;
+    new (): IModal;
 }
 
 /**
- * Interface for the custom modal.
- * @see {@link ICustomModal_}
+ * Instance interface for the Modal interface.
+ * @see {@link IModal_} for the static interface.
  */
-export interface ICustomModal extends Component {
+export interface IModal extends IDIComponent {
     /**
      * The content of the modal.
      */
@@ -97,21 +102,3 @@ export interface ICustomModal extends Component {
      */
     setBackgroundDimmed(willDimBackground: boolean): this;
 }
-
-/**
- * Type for the callback to determine if the modal should open.
- * @returns {boolean} True if the modal can be opened, otherwise false.
- */
-export type IShouldOpenCallback = () => boolean;
-
-/**
- * Type for the callback to be called when the modal is opened.
- * @param modal The modal that will be opened.
- */
-export type IOpenCallback = (modal: ICustomModal) => void;
-
-/**
- * Type for the callback to be called when the modal is closed.
- * @param modal The modal that will be closed.
- */
-export type ICloseCallback = (modal: ICustomModal) => void;
