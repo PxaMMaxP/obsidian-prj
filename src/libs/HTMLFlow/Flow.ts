@@ -19,10 +19,7 @@ import type {
     IFlowThenCallback,
 } from './types/IFlowDelegates';
 import { DIComponent } from '../DIComponent/DIComponent';
-import {
-    isLoaded,
-    shouldRemoveOnUnload,
-} from '../DIComponent/interfaces/IDIComponent';
+import { shouldRemoveOnUnload, isLoaded } from '../DIComponent/types/IDIComponentSymbols';
 
 /**
  * A HTML Fluent API class.

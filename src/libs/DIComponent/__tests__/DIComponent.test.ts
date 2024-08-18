@@ -5,10 +5,12 @@
 
 import { registerMockComponent } from '../../Modals/Modal/__mocks__/Component.mock';
 import {
-    _componentInstance,
-    _componentOriginalMethods,
     DIComponent,
 } from '../DIComponent';
+import {
+    _componentInstance,
+    _componentOriginalMethods
+} from '../types/IDIComponentSymbols';
 
 registerMockComponent();
 
