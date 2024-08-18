@@ -62,7 +62,8 @@ export class Input
                     placeholder: this._settings.placeholder,
                     value: this._settings.value,
                     disabled: opts.isDisabled ? 'true' : undefined,
-                    // If the input element is a textarea, the type attribute is not set.
+                    spellcheck: opts.shouldSpellCheck ? 'true' : 'false',
+                    // If the input element is as textarea, the type attribute is not set.
                     type: opts.inputElType.is('textarea')
                         ? undefined
                         : this._settings.inputType,
@@ -274,6 +275,15 @@ export class Input
     /**
      * @inheritdoc
      */
+    setSpellcheck(shouldSpellcheck: boolean): IInputFluentApi {
+        this._settings.shouldSpellCheck = shouldSpellcheck;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     then(callback: (input: IInputProtected) => void): IInputFluentApi {
         try {
             callback?.(this);
@@ -341,6 +351,11 @@ class InputSettings implements IInputSettings {
      * @inheritdoc
      */
     public isDisabled = false;
+
+    /**
+     * @inheritdoc
+     */
+    shouldSpellCheck = false;
 }
 
 /**
@@ -398,4 +413,9 @@ interface IInputSettings {
      * @default false
      */
     isDisabled: boolean;
+
+    /**
+     * Whether the input field should be spell checked.
+     */
+    shouldSpellCheck: boolean;
 }

@@ -4,6 +4,10 @@ import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
+import type {
+    ISettingRow_,
+    SettingConfigurator,
+} from 'src/libs/Settings/interfaces/ISettingRow';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
@@ -11,7 +15,7 @@ import type {
     IDraggableElement,
     IDraggableElement_,
 } from './interfaces/IDraggableElement';
-import { IModal, IModal_ } from './interfaces/IModal';
+import { IModal, IModal_, IModalFluentApi } from './interfaces/IModal';
 import { IModalSettings } from './interfaces/IModalSettings';
 import {
     ICloseCallback,
@@ -26,7 +30,7 @@ import { DIComponent } from '../../DIComponent/DIComponent';
  */
 @Register('IModal_')
 @ImplementsStatic<IModal_>()
-export class Modal extends DIComponent implements IModal {
+export class Modal extends DIComponent implements IModal, IModalFluentApi {
     @Inject('IFlow_')
     protected readonly _IFlow_!: IFlow_;
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('CustomModal'), false)
@@ -35,6 +39,8 @@ export class Modal extends DIComponent implements IModal {
     private readonly _ILifecycleManager_!: ILifecycleManager_;
     @Inject('IDraggableElement_')
     private readonly _IDraggableElement_!: IDraggableElement_;
+    @Inject('ISettingRow_')
+    private readonly _ISetting_: ISettingRow_;
 
     private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
         cfg: IFlowApi<keyof HTMLElementTagNameMap>,
@@ -296,6 +302,26 @@ export class Modal extends DIComponent implements IModal {
      */
     public setBackgroundDimmed(willDimBackground: boolean): this {
         this._settings.willDimBackground = willDimBackground;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public addSettingRow(configure: SettingConfigurator): IModalFluentApi {
+        new this._ISetting_(this, configure);
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public then(
+        callback: (modal: IModal & IModalFluentApi) => unknown,
+    ): IModalFluentApi {
+        callback(this);
 
         return this;
     }
