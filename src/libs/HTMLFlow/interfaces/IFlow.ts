@@ -1,5 +1,5 @@
+import { shouldRemoveOnUnload } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
-import { shouldRemoveOnUnload } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { IFlowSymbol } from './IFlowTag';
 import {
     EventsParameters,
