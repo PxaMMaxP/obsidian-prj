@@ -10,7 +10,12 @@ import type { IPrjModel_ } from 'src/models/interfaces/IPrjModel';
 import type { IPrjSettings } from 'src/types/PrjSettings';
 import PrjTypes, { FileSubType } from 'src/types/PrjTypes';
 import { Inject, resolve } from 'ts-injex';
-import type { IModal_, IModal } from './Modal/interfaces/IModal';
+import type {
+    IModal_,
+    IModal,
+    IModalFluentApi,
+} from './Modal/interfaces/IModal';
+import { IOpenCallback } from './Modal/types/IModalCallbacks';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
 import { GenericSuggest } from '../Settings/components/GenericSuggest';
@@ -62,7 +67,7 @@ export class CreateNewMetadataModal {
             .setBackgroundDimmed(false)
             .setDraggableEnabled(true)
             .setTitle(this._ITranslationService.get('Create new metadata'))
-            .setOnOpen(this.onOpen.bind(this))
+            .setOnOpen(this.onOpen)
             .open();
     }
 
@@ -117,270 +122,276 @@ export class CreateNewMetadataModal {
     }
 
     /**
-     * Builds the content of the modal
+     * Creates the modal content
+     * @param modal The modal to add the content to.
      */
-    private onOpen(): void {
-        this._customModal.content.addClass('custom-form');
-
-        // Sub type
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Metadata sub type'))
-                .setDescription(
-                    this._ITranslationService.get(
-                        'Metadata sub type description',
-                    ),
-                )
-                .add('dropdown', (dropdown) => {
-                    dropdown
-                        .onChange((item) => {
-                            this._result.subType = item.key;
-                        })
-                        .setOptions([
-                            {
-                                key: 'none',
-                                value: this._ITranslationService.get('None'),
-                            },
-                            {
-                                key: 'Cluster',
-                                value: this._ITranslationService.get(
-                                    'Metadata Cluster',
-                                ),
-                            },
-                        ]);
-                });
-        });
-
-        // Date
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Document date'))
-                .setDescription(
-                    this._ITranslationService.get('Document date description'),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder('YYYY.MM.DD')
-                        .onChange((value) => {
-                            this._result.date = value;
-                        })
-                        .setType('date');
-                });
-        });
-
-        // Date of delivery
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Date of delivery'))
-                .setDescription(
-                    this._ITranslationService.get(
-                        'Date of delivery description',
-                    ),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder('YYYY.MM.DD')
-                        .onChange((value) => {
-                            this._result.dateOfDelivery = value;
-                        })
-                        .setType('date');
-                });
-        });
-
-        // Title
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Title'))
-                .setDescription(
-                    this._ITranslationService.get('Title description'),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder(this._ITranslationService.get('Title'))
-                        .onChange((value) => {
-                            this._result.title = value;
-                        });
-                });
-        });
-
-        // Description
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Description'))
-                .setDescription(
-                    this._ITranslationService.get('Description description'),
-                )
-                .setClass('custom-form-textarea')
-                .add('input', (input) => {
-                    input
-                        .setInputElType('HTMLTextAreaElement')
-                        .setPlaceholder(
-                            this._ITranslationService.get('Description'),
-                        )
-                        .onChange((value) => {
-                            this._result.description = value;
-                        });
-                });
-        });
-
-        // Sender
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Sender'))
-                .setDescription(
-                    this._ITranslationService.get('Sender description'),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder(this._ITranslationService.get('Sender'))
-                        .onChange((value) => {
-                            this._result.sender = value;
-                        })
-                        .addSuggestion((_input) =>
-                            (
-                                this._IDocumentModel_ as unknown as {
-                                    getAllSenderRecipients(): string[];
-                                }
-                            ).getAllSenderRecipients(),
-                        );
-                });
-        });
-
-        // Recipient
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Recipient'))
-                .setDescription(
-                    this._ITranslationService.get('Recipient description'),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder(
-                            this._ITranslationService.get('Recipient'),
-                        )
-                        .onChange((value) => {
-                            this._result.recipient = value;
-                        })
-                        .addSuggestion((_input) =>
-                            (
-                                this._IDocumentModel_ as unknown as {
-                                    getAllSenderRecipients(): string[];
-                                }
-                            ).getAllSenderRecipients(),
-                        );
-                });
-        });
-
-        // Hide (Toggle)
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Hide'))
-                .setDescription(
-                    this._ITranslationService.get('Hide description'),
-                )
-                .add('toggle', (input) => {
-                    input.onChange((value) => {
-                        this._result.hide = value;
+    private readonly onOpen: IOpenCallback = (
+        modal: IModal & IModalFluentApi,
+    ) => {
+        modal
+            .then((modal) => modal.content.addClass('custom-form'))
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Metadata sub type'))
+                    .setDescription(
+                        this._ITranslationService.get(
+                            'Metadata sub type description',
+                        ),
+                    )
+                    .add('dropdown', (dropdown) => {
+                        dropdown
+                            .onChange((item) => {
+                                this._result.subType = item.key;
+                            })
+                            .setOptions([
+                                {
+                                    key: 'none',
+                                    value: this._ITranslationService.get(
+                                        'None',
+                                    ),
+                                },
+                                {
+                                    key: 'Cluster',
+                                    value: this._ITranslationService.get(
+                                        'Metadata Cluster',
+                                    ),
+                                },
+                            ]);
                     });
-                });
-        });
-
-        // Dont change PDF path (Toggle)
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Dont change PDF path'))
-                .setDescription(
-                    this._ITranslationService.get(
-                        'Dont change PDF path description',
-                    ),
-                )
-                .add('toggle', (input) => {
-                    input.onChange((value) => {
-                        this._result.dontChangePdfPath = value;
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Document date'))
+                    .setDescription(
+                        this._ITranslationService.get(
+                            'Document date description',
+                        ),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setPlaceholder('YYYY.MM.DD')
+                            .onChange((value) => {
+                                this._result.date = value;
+                            })
+                            .setType('date');
                     });
-                });
-        });
-
-        // Tags test..
-        this._result.tags = new this._ITags_(undefined);
-
-        const tags = this._IMetadataCache.cache
-            .map((tag) => tag?.metadata?.frontmatter?.tags)
-            .filter((tag) => tag !== undefined) as string[][];
-
-        const tagsFlat = tags.flat();
-        const tagsSet = new Set(tagsFlat);
-
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('Tags'))
-                .setDescription(
-                    this._ITranslationService.get('Tags description'),
-                )
-                .add('tagsearch', (tagSearch) => {
-                    tagSearch
-                        .setDefaultEntries(() => {
-                            const activeFile =
-                                this._IHelperObsidian.getActiveFile();
-                            const activeFileTags = new this._ITags_(undefined);
-                            activeFileTags.loadTagsFromFile(activeFile);
-
-                            return activeFileTags.value || [];
-                        })
-                        .setList(this._result.tags as ITags)
-                        .setPlaceholder(this._ITranslationService.get('Tags'))
-                        .addSuggestion(() => {
-                            return Array.from(tagsSet);
-                        });
-                });
-        });
-
-        // File (Text)
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .setName(this._ITranslationService.get('File'))
-                .setDescription(
-                    this._ITranslationService.get('File description'),
-                )
-                .add('input', (input) => {
-                    input
-                        .setPlaceholder(this._ITranslationService.get('File'))
-                        .onChange((value) => {
-                            this._result.file = value;
-                        })
-                        .addSuggestion((_input) =>
-                            (
-                                this._IDocumentModel_ as unknown as {
-                                    getAllPDFsWithoutMetadata(): TFile[];
-                                }
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Date of delivery'))
+                    .setDescription(
+                        this._ITranslationService.get(
+                            'Date of delivery description',
+                        ),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setPlaceholder('YYYY.MM.DD')
+                            .onChange((value) => {
+                                this._result.dateOfDelivery = value;
+                            })
+                            .setType('date');
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Title'))
+                    .setDescription(
+                        this._ITranslationService.get('Title description'),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setSpellcheck(true)
+                            .setPlaceholder(
+                                this._ITranslationService.get('Title'),
                             )
-                                .getAllPDFsWithoutMetadata()
-                                .map((file) => file.name),
-                        );
-                });
-        });
+                            .onChange((value) => {
+                                this._result.title = value;
+                            });
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Description'))
+                    .setDescription(
+                        this._ITranslationService.get(
+                            'Description description',
+                        ),
+                    )
+                    .setClass('custom-form-textarea')
+                    .add('input', (input) => {
+                        input
+                            .setSpellcheck(true)
+                            .setInputElType('HTMLTextAreaElement')
+                            .setPlaceholder(
+                                this._ITranslationService.get('Description'),
+                            )
+                            .onChange((value) => {
+                                this._result.description = value;
+                            });
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Sender'))
+                    .setDescription(
+                        this._ITranslationService.get('Sender description'),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setPlaceholder(
+                                this._ITranslationService.get('Sender'),
+                            )
+                            .onChange((value) => {
+                                this._result.sender = value;
+                            })
+                            .addSuggestion((_input) =>
+                                (
+                                    this._IDocumentModel_ as unknown as {
+                                        getAllSenderRecipients(): string[];
+                                    }
+                                ).getAllSenderRecipients(),
+                            );
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Recipient'))
+                    .setDescription(
+                        this._ITranslationService.get('Recipient description'),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setPlaceholder(
+                                this._ITranslationService.get('Recipient'),
+                            )
+                            .onChange((value) => {
+                                this._result.recipient = value;
+                            })
+                            .addSuggestion((_input) =>
+                                (
+                                    this._IDocumentModel_ as unknown as {
+                                        getAllSenderRecipients(): string[];
+                                    }
+                                ).getAllSenderRecipients(),
+                            );
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('Hide'))
+                    .setDescription(
+                        this._ITranslationService.get('Hide description'),
+                    )
+                    .add('toggle', (input) => {
+                        input.onChange((value) => {
+                            this._result.hide = value;
+                        });
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(
+                        this._ITranslationService.get('Dont change PDF path'),
+                    )
+                    .setDescription(
+                        this._ITranslationService.get(
+                            'Dont change PDF path description',
+                        ),
+                    )
+                    .add('toggle', (input) => {
+                        input.onChange((value) => {
+                            this._result.dontChangePdfPath = value;
+                        });
+                    });
+            })
+            .addSettingRow((setting) => {
+                this._result.tags = new this._ITags_(undefined);
 
-        new this._ISetting_(this._customModal, (setting) => {
-            setting
-                .add('button', (btn) =>
-                    btn
-                        .setButtonText(this._ITranslationService.get('Save'))
-                        .setCta(true)
-                        .onClick(() => {
-                            this.save();
-                            this._customModal.close();
-                        }),
-                )
-                .add('button', (btn) =>
-                    btn
-                        .setButtonText(this._ITranslationService.get('Cancel'))
-                        .setCta(true)
-                        .onClick(() => {
-                            this._customModal.close();
-                        }),
-                );
-        });
-    }
+                const tags = this._IMetadataCache.cache
+                    .map((tag) => tag?.metadata?.frontmatter?.tags)
+                    .filter((tag) => tag !== undefined) as string[][];
+
+                const tagsFlat = tags.flat();
+                const tagsSet = new Set(tagsFlat);
+
+                setting
+                    .setName(this._ITranslationService.get('Tags'))
+                    .setDescription(
+                        this._ITranslationService.get('Tags description'),
+                    )
+                    .add('tagsearch', (tagSearch) => {
+                        tagSearch
+                            .setDefaultEntries(() => {
+                                const activeFile =
+                                    this._IHelperObsidian.getActiveFile();
+
+                                const activeFileTags = new this._ITags_(
+                                    undefined,
+                                );
+                                activeFileTags.loadTagsFromFile(activeFile);
+
+                                return activeFileTags.value || [];
+                            })
+                            .setList(this._result.tags as ITags)
+                            .setPlaceholder(
+                                this._ITranslationService.get('Tags'),
+                            )
+                            .addSuggestion(() => {
+                                return Array.from(tagsSet);
+                            });
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .setName(this._ITranslationService.get('File'))
+                    .setDescription(
+                        this._ITranslationService.get('File description'),
+                    )
+                    .add('input', (input) => {
+                        input
+                            .setPlaceholder(
+                                this._ITranslationService.get('File'),
+                            )
+                            .onChange((value) => {
+                                this._result.file = value;
+                            })
+                            .addSuggestion((_input) =>
+                                (
+                                    this._IDocumentModel_ as unknown as {
+                                        getAllPDFsWithoutMetadata(): TFile[];
+                                    }
+                                )
+                                    .getAllPDFsWithoutMetadata()
+                                    .map((file) => file.name),
+                            );
+                    });
+            })
+            .addSettingRow((setting) => {
+                setting
+                    .add('button', (btn) =>
+                        btn
+                            .setButtonText(
+                                this._ITranslationService.get('Save'),
+                            )
+                            .setCta(true)
+                            .onClick(() => {
+                                this.save();
+                                this._customModal.close();
+                            }),
+                    )
+                    .add('button', (btn) =>
+                        btn
+                            .setButtonText(
+                                this._ITranslationService.get('Cancel'),
+                            )
+                            .setCta(true)
+                            .onClick(() => {
+                                this._customModal.close();
+                            }),
+                    );
+            });
+    };
 
     /**
      * Registers the command to open the modal
