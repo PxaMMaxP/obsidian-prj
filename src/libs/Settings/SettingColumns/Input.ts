@@ -2,6 +2,7 @@ import createFuzzySearch from '@nozbe/microfuzz';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { onEvent } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
@@ -154,15 +155,6 @@ export class Input
                 )(input).map((result) => result.item.value);
             },
         );
-
-        const draggableClassName =
-            this.parentSettingItem?.parentModal?.draggableClassName;
-
-        if (draggableClassName != null) {
-            this._suggester.suggestContainerEl?.classList.add(
-                draggableClassName,
-            );
-        }
     }
 
     public readonly parentSettingItem: ISettingRowProtected;
@@ -198,6 +190,13 @@ export class Input
         );
 
         this.addChild(flow);
+
+        /**
+         * Adds the common window classes to the suggester container.
+         */
+        this[onEvent]('common-window-classes', (classes: string[]) => {
+            this._suggester?.suggestContainerEl?.classList.add(...classes);
+        });
     }
 
     /**

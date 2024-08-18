@@ -1,5 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { broadcastEvent, DIComponent } from 'src/libs/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
@@ -22,7 +23,6 @@ import {
     IOpenCallback,
     IShouldOpenCallback,
 } from './types/IModalCallbacks';
-import { DIComponent } from '../../DIComponent/DIComponent';
 
 /**
  * Represents a custom modal, which can be dragged around
@@ -233,6 +233,15 @@ export class Modal extends DIComponent implements IModal, IModalFluentApi {
      */
     public override onload(): void {
         this._open();
+
+        /**
+         * Broadcast the common window classes to the plugin.
+         */
+        if (this._draggableElement?.className != null) {
+            this[broadcastEvent]('common-window-classes', [
+                this._draggableElement.className,
+            ]);
+        }
     }
 
     /**

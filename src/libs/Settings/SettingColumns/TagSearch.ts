@@ -2,6 +2,7 @@ import createFuzzySearch from '@nozbe/microfuzz';
 import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import { onEvent } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { ITag, ITag_ } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
@@ -149,6 +150,13 @@ export class TagSearch
     public override onload(): void {
         this._configurator?.(this);
         this.build();
+
+        /**
+         * Adds the common window classes to the suggester container.
+         */
+        this[onEvent]('common-window-classes', (classes: string[]) => {
+            this._suggester?.suggestContainerEl?.classList.add(...classes);
+        });
     }
 
     /**
@@ -226,15 +234,6 @@ export class TagSearch
                     return filteredItems;
                 },
             );
-
-            const draggableClassName =
-                this.parentSettingItem?.parentModal?.draggableClassName;
-
-            if (draggableClassName != null) {
-                this._suggester.suggestContainerEl?.classList.add(
-                    draggableClassName,
-                );
-            }
         }
     }
 
