@@ -13,7 +13,7 @@ import type {
     SettingConfigurator,
 } from './interfaces/ISettingRow';
 import { DIComponent } from '../DIComponent/DIComponent';
-import type { IModal } from '../Modals/CustomModal/interfaces/IModal';
+import type { IModal } from '../Modals/Modal/interfaces/IModal';
 
 /**
  * Implementation of {@link ISettingRow}.

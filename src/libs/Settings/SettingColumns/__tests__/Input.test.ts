@@ -11,7 +11,7 @@ import { Flow } from 'src/libs/HTMLFlow/Flow';
 import {
     MockComponent_,
     registerMockComponent,
-} from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
+} from 'src/libs/Modals/Modal/__mocks__/Component.mock';
 import { TSinjex } from 'ts-injex';
 import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
 import { ISettingRowProtected } from '../../interfaces/ISettingRow';

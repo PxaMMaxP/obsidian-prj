@@ -11,8 +11,8 @@ import {
     MockComponent_,
     registerMockComponent,
     resetMockComponent,
-} from 'src/libs/Modals/CustomModal/__mocks__/Component.mock';
-import { IModal } from 'src/libs/Modals/CustomModal/interfaces/IModal';
+} from 'src/libs/Modals/Modal/__mocks__/Component.mock';
+import { IModal } from 'src/libs/Modals/Modal/interfaces/IModal';
 import { InstantiationError } from '../interfaces/Exceptions';
 import { SettingRow } from '../SettingRow';
 

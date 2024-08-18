@@ -9,7 +9,7 @@ import type { ForceConstructor } from 'ts-injex';
 import type {
     IModal_,
     IModal,
-} from './CustomModal/interfaces/IModal';
+} from './Modal/interfaces/IModal';
 import { FileType } from '../FileType/FileType';
 import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
