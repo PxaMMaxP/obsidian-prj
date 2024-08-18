@@ -2,6 +2,13 @@ import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import { shouldRemoveOnUnload } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { IFlowSymbol } from './IFlowTag';
 import {
+    EventsParameters,
+    TupleToUnion,
+    StylesParameters,
+    ClassesParameters,
+    AddEventsParameters,
+} from '../types/IFlow';
+import {
     IFlowConfig,
     IFlowElCallback,
     IFlowEventCallback,
@@ -98,6 +105,13 @@ export interface IFlowApi<
     addClass(classNames: (string | undefined)[] | undefined): IFlowApi<Tag>;
 
     /**
+     * @inheritdoc
+     */
+    addClass(
+        classNames: (string | undefined)[] | string | undefined,
+    ): IFlowApi<Tag>;
+
+    /**
      * Removes a class from the element.
      * @param className The class to remove.
      * @returns The current instance of the fluent HTML API.
@@ -176,7 +190,9 @@ export interface IFlowApi<
      * @param child The child element to append.
      * @returns The current instance of the fluent HTML API
      */
-    appendChildEl(child: HTMLElement | undefined): IFlowApi<Tag>;
+    appendChildEl(
+        child: DocumentFragment | HTMLElement | undefined,
+    ): IFlowApi<Tag>;
 
     /**
      * Appends a new child element to the current element.
@@ -219,10 +235,27 @@ export interface IFlowApi<
      * @param callback The callback to execute when the event is triggered.
      * @param options The options to apply to the event listener.
      */
-    addEventListener<EventKey extends keyof HTMLElementEventMap | 'void'>(
+    addEventListener<
+        EventKey extends keyof HTMLElementEventMap | 'void' =
+            | keyof HTMLElementEventMap
+            | 'void',
+    >(
         type: EventKey,
         callback: IFlowEventCallback<Tag, EventKey>,
         options?: boolean | AddEventListenerOptions,
+    ): IFlowApi<Tag>;
+
+    /**
+     * Adds multiple event listeners to the element.
+     * @param events The events to add.
+     * @returns The current instance of the fluent HTML API.
+     */
+    addEventListener<
+        EventKey extends keyof HTMLElementEventMap | 'void' =
+            | keyof HTMLElementEventMap
+            | 'void',
+    >(
+        events: AddEventsParameters<Tag, EventKey>[],
     ): IFlowApi<Tag>;
 
     //#endregion
@@ -239,18 +272,43 @@ export interface IFlowApi<
     //#endregion
 }
 
-type EventParameters<Tag extends keyof HTMLElementTagNameMap> =
-    | Array<Parameters<IFlowApi<Tag>['addEventListener']> | undefined>
-    | undefined;
-
+/**
+ * Parameter of the `set` method.
+ * @see {@link IFlowApi.set}
+ */
 export interface ISetValueType<
     Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
 > {
+    /**
+     * General parameters of the element.
+     * Will be applied to the element directly as attributes.
+     */
     [key: string]: string | unknown;
-    Events?: EventParameters<Tag>;
-    Styles?: Partial<CSSStyleDeclaration> | undefined;
-    Classes?: (string | undefined)[] | string | undefined;
-    Then?: IFlowThenCallback<Tag> | undefined;
+
+    /**
+     * Events to add to the element.
+     */
+    Events?: EventsParameters<Tag>;
+
+    /**
+     * Styles to apply to the element.
+     */
+    Styles?: TupleToUnion<StylesParameters<Tag>>;
+
+    /**
+     * Classes to apply to the element.
+     */
+    Classes?: TupleToUnion<ClassesParameters<Tag>>;
+
+    /**
+     * The Text content of the element.
+     */
+    TextContent?: string;
+
+    /**
+     * `Then` callback to execute after the element is created.
+     */
+    Then?: IFlowThenCallback<Tag>;
 }
 
 /**

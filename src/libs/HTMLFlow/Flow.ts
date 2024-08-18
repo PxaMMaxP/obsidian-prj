@@ -6,6 +6,11 @@ import type { IFlow, IFlowApiType, ISetValueType } from './interfaces/IFlow';
 import { IFlow_, IFlowApi } from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
 import { IFlowSymbol, isIFlowTagged } from './interfaces/IFlowTag';
+import {
+    isAddEventsParameters,
+    isArrayOfAddEventsParameters,
+} from './types/IFlow';
+import type { AddEventsParameters, EventsParameters } from './types/IFlow';
 import { isConfigFunction, isFindFunction } from './types/IFlowDelegates';
 import type {
     IFlowConfig,
@@ -145,13 +150,21 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
         if (isIFlowTagged(el) && ref != undefined) {
             return ref;
         } else {
-            el[IFlowSymbol] = new WeakRef(this);
+            try {
+                el[IFlowSymbol] = new WeakRef(this);
+            } catch (error) {
+                this._logger?.error(
+                    'An error occurred while marking the element with the Flow symbol.',
+                    error,
+                );
+            }
 
             return undefined;
         }
     }
 
     /**
+     * Loads the configuration of the element.
      * @inheritdoc
      */
     public override onload(): void {
@@ -162,6 +175,16 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
                 'An error occurred while building the element.',
                 error,
             );
+        }
+    }
+
+    /**
+     * Removes the Flow symbol from the element.
+     * @inheritdoc
+     */
+    public override onunload(): void {
+        if (this._element[IFlowSymbol] != null) {
+            this._element[IFlowSymbol] = undefined;
         }
     }
 
@@ -397,7 +420,11 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      * @inheritdoc
      */
     appendChildEl(tagName: unknown, cfg?: unknown): IFlowApi<Tag> {
-        const child = tagName instanceof HTMLElement ? tagName : undefined;
+        const child =
+            tagName instanceof HTMLElement ||
+            tagName instanceof DocumentFragment
+                ? tagName
+                : undefined;
 
         if (child != null) {
             this._element.appendChild(child);
@@ -469,11 +496,19 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
      * @inheritdoc
      */
     addEventListener<EventKey extends keyof HTMLElementEventMap | 'void'>(
-        type: EventKey,
-        callback: IFlowEventCallback<Tag, EventKey>,
+        type: EventKey | AddEventsParameters<Tag, EventKey>[],
+        callback?: IFlowEventCallback<Tag, EventKey>,
         options?: boolean | AddEventListenerOptions,
     ): IFlowApi<Tag> {
-        if (type !== 'void') {
+        if (isArrayOfAddEventsParameters(type)) {
+            const events = type;
+
+            events.forEach((ev) => {
+                if (ev?.[0] != null && ev?.[1] != null) {
+                    this.addEventListener(ev[0], ev[1], ev[2]);
+                }
+            });
+        } else if (type !== 'void' && callback != null) {
             const arrowCallback = (
                 ev: EventKey extends keyof HTMLElementEventMap
                     ? HTMLElementEventMap[EventKey]
@@ -510,20 +545,21 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
             const keys = Object.keys(value);
 
             for (const key of keys) {
-                const events = value[key] as
-                    | Array<
-                          | Parameters<IFlowApi<Tag>['addEventListener']>
-                          | undefined
-                      >
-                    | undefined;
+                const events = value[key] as EventsParameters<Tag>;
 
                 switch (key) {
                     case 'Events':
-                        events?.forEach((ev): void => {
-                            if (ev?.[0] != null && ev?.[1] != null) {
-                                this.addEventListener(ev[0], ev[1], ev[2]);
-                            }
-                        });
+                        if (events == null) break;
+
+                        if (isAddEventsParameters(events)) {
+                            this.addEventListener(
+                                events?.[0],
+                                events?.[1],
+                                events?.[2],
+                            );
+                        } else if (isArrayOfAddEventsParameters(events)) {
+                            this.addEventListener(events);
+                        }
                         break;
                     case 'Styles':
                         this.setStyles(value[key]);
@@ -533,6 +569,9 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
                         break;
                     case 'Then':
                         this.then(value[key]);
+                        break;
+                    case 'TextContent':
+                        this.setTextContent(value[key]);
                         break;
                     default:
                         this.setAttribute(key, value[key]);
