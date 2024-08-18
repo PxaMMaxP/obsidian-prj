@@ -87,6 +87,13 @@ export interface IInputFluentApi {
     ): IInputFluentApi;
 
     /**
+     * Enables or disables the spellcheck of the input field.
+     * @param shouldSpellcheck Whether the spellcheck should be enabled.
+     * @returns The input field.
+     */
+    setSpellcheck(shouldSpellcheck: boolean): IInputFluentApi;
+
+    /**
      * Method for modifying the input field.
      * @param callback The callback function, which will be called
      * when the input field is modified.

@@ -1,4 +1,4 @@
-import { IModal } from '../interfaces/IModal';
+import { IModal, IModalFluentApi } from '../interfaces/IModal';
 
 /**
  * Type for the callback to determine if the modal should open.
@@ -11,10 +11,10 @@ export type IShouldOpenCallback = () => boolean;
  * @param modal The modal that will be opened.
  */
 
-export type IOpenCallback = (modal: IModal) => void;
+export type IOpenCallback = (modal: IModal & IModalFluentApi) => void;
 /**
  * Type for the callback to be called when the modal is closed.
  * @param modal The modal that will be closed.
  */
 
-export type ICloseCallback = (modal: IModal) => void;
+export type ICloseCallback = (modal: IModal & IModalFluentApi) => void;
