@@ -6,9 +6,12 @@ import MockLogger, {
     registerMockLogger,
     resetMockLogger,
 } from 'src/__mocks__/ILogger.mock';
+import { Flow } from 'src/libs/HTMLFlow/Flow';
+import { IFlowSymbol, IFlowTag } from 'src/libs/HTMLFlow/interfaces/IFlowTag';
 import { TSinjex } from 'ts-injex';
-import { CustomModal } from '../CustomModal';
+import { MockComponent_ } from '../__mocks__/Component.mock';
 import { MissingCallbackError, CallbackError } from '../interfaces/Exceptions';
+import { Modal } from '../Modal';
 
 const mockIApp = {};
 
@@ -21,29 +24,31 @@ const mockIDraggableElement = jest.fn().mockImplementation(() => ({
     enableDragging: jest.fn(),
 }));
 
-const MockComponent = jest.fn().mockImplementation(() => ({
-    load: jest.fn(),
-    unload: jest.fn(),
-    registerDomEvent: jest.fn(),
-}));
-
 // Registering the mocks
 registerMockLogger();
 TSinjex.register('IApp', mockIApp);
 TSinjex.register('ILifecycleManager_', mockILifecycleManager);
 TSinjex.register('IDraggableElement_', mockIDraggableElement);
-TSinjex.register('Obsidian.Component_', MockComponent);
+TSinjex.register('Obsidian.Component_', MockComponent_);
+TSinjex.register('IFlow_', Flow);
 
 describe('CustomModal', () => {
-    let customModal: CustomModal;
+    let customModal: Modal;
 
     beforeEach(() => {
+        const body = document.body as HTMLElement & IFlowTag;
+        // Reset the flow symbol for each test
+        body[IFlowSymbol] = undefined;
+        body.innerHTML = ''; // Reset the document body for each test
+
         resetMockLogger();
-        customModal = new CustomModal();
-        document.body.innerHTML = ''; // Reset the document body for each test
+        customModal = new Modal();
+        customModal.setOnOpen(() => {});
     });
 
     test('should throw MissingCallbackError if _onOpen is not set when calling open', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        customModal.setOnOpen(undefined as any);
         expect(() => customModal.open()).toThrow(MissingCallbackError);
 
         expect(MockLogger.error).toHaveBeenCalledWith(
@@ -72,6 +77,7 @@ describe('CustomModal', () => {
     test('should call _onClose when closing the modal', () => {
         const mockOnClose = jest.fn();
         customModal.setOnClose(mockOnClose);
+        customModal.open();
         customModal.close();
         expect(mockOnClose).toHaveBeenCalled();
     });
@@ -101,7 +107,9 @@ describe('CustomModal', () => {
 
     test('should set title correctly', () => {
         customModal.setTitle('Test Title');
-        expect(customModal['_title'].innerText).toBe('Test Title');
+        customModal.setOnOpen(() => {});
+        customModal.open();
+        expect(customModal['_title'].textContent).toBe('Test Title');
     });
 
     test('should set content correctly', () => {
@@ -110,6 +118,8 @@ describe('CustomModal', () => {
         div.innerText = 'Test Content';
         content.appendChild(div);
         customModal.setContent(content);
+
+        customModal.open();
         expect(customModal.content.contains(div)).toBe(true);
     });
 
@@ -131,40 +141,49 @@ describe('CustomModal', () => {
         );
     });
 
+    test('should set modal pointer events correctly', () => {
+        customModal.open();
+
+        const modal = customModal['_modalContainer'].querySelector('.modal');
+        expect((modal as HTMLDivElement).style.pointerEvents).toBe('auto');
+    });
+
     test('should set background dimming correctly', () => {
         customModal.setBackgroundDimmed(false);
-        expect(customModal['_willDimBackground']).toBe(false);
+        expect(customModal['_settings']['willDimBackground']).toBe(false);
 
         customModal.setBackgroundDimmed(true);
-        expect(customModal['_willDimBackground']).toBe(true);
+        expect(customModal['_settings']['willDimBackground']).toBe(true);
     });
 
     test('should set background dimming styles correctly  when background is not dimmed', () => {
         customModal.setBackgroundDimmed(false);
-        expect(customModal['_willDimBackground']).toBe(false);
+        expect(customModal['_settings']['willDimBackground']).toBe(false);
 
-        const container = customModal['_container'];
+        customModal.open();
+
+        const container = customModal['_modalContainer'];
         expect(container.style.pointerEvents).toBe('none');
     });
 
     test('should set background dimming styles correctly when background is dimmed', () => {
         customModal.setBackgroundDimmed(true);
-        expect(customModal['_willDimBackground']).toBe(true);
+        expect(customModal['_settings']['willDimBackground']).toBe(true);
 
-        const container = customModal['_container'];
+        customModal.open();
+
+        const container = customModal['_modalContainer'];
         expect(container.style.pointerEvents).toBe('');
     });
 
     test('should set title to non-breaking space if given an empty string', () => {
         customModal.setTitle('');
-        expect(customModal['_title'].innerText).toBe('\u00A0');
+        customModal.open();
+        expect(customModal['_title'].textContent).toBe('\u00A0');
     });
 
     test('should log and throw CallbackError if _shouldOpen callback throws an error', () => {
         const error = new Error('Test Error');
-
-        const mockOnOpen = jest.fn();
-        customModal.setOnOpen(mockOnOpen);
 
         const mockShouldOpen = jest.fn().mockImplementation(() => {
             throw error;
@@ -200,6 +219,7 @@ describe('CustomModal', () => {
             throw error;
         });
         customModal.setOnClose(mockOnClose);
+        customModal.open();
         expect(() => customModal.close()).toThrow(CallbackError);
 
         expect(MockLogger.error).toHaveBeenCalledWith(

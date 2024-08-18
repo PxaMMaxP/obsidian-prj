@@ -1,7 +1,7 @@
-import { ICustomModal } from './ICustomModal';
+import { IModal } from './IModal';
 
 /**
- * General error class for {@link ICustomModal}
+ * General error class for {@link IModal}
  */
 export class CustomModalError extends Error {
     /**
@@ -14,8 +14,8 @@ export class CustomModalError extends Error {
     }
 }
 /**
- * Error class for missing callbacks in {@link ICustomModal}.
- * @see {@link ICustomModal.setOnOpen}
+ * Error class for missing callbacks in {@link IModal}.
+ * @see {@link IModal.setOnOpen}
  */
 export class MissingCallbackError extends CustomModalError {
     /**
@@ -29,8 +29,8 @@ export class MissingCallbackError extends CustomModalError {
 }
 
 /**
- * Error class for errors in the callback functions in {@link ICustomModal}.
- * @see {@link ICustomModal}
+ * Error class for errors in the callback functions in {@link IModal}.
+ * @see {@link IModal}
  */
 export class CallbackError extends CustomModalError {
     /**
