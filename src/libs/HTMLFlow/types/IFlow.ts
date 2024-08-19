@@ -79,4 +79,7 @@ export type StylesParameters<Tag extends keyof HTMLElementTagNameMap> =
 export type ClassesParameters<Tag extends keyof HTMLElementTagNameMap> =
     Parameters<IFlow<Tag>['addClass']>;
 
+export type GetElParameters<Tag extends keyof HTMLElementTagNameMap> =
+    Parameters<IFlow<Tag>['getEl']>;
+
 export type TupleToUnion<T extends unknown[]> = T[number];

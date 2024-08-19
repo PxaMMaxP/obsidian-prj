@@ -562,6 +562,9 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
                             this.addEventListener(events);
                         }
                         break;
+                    case 'El':
+                        this.getEl(value[key]);
+                        break;
                     case 'Styles':
                         this.setStyles(value[key]);
                         break;

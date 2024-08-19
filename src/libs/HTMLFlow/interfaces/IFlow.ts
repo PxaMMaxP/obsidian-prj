@@ -7,6 +7,7 @@ import {
     StylesParameters,
     ClassesParameters,
     AddEventsParameters,
+    GetElParameters,
 } from '../types/IFlow';
 import {
     IFlowConfig,
@@ -263,7 +264,9 @@ export interface IFlowApi<
     //# Set generic methods
 
     /**
-     * Sets the **Atrributes**, **Classes**, **Styles** and **Events** of the element.
+     * Sets the **Atrributes**, **Classes**, **Styles** and **Events** of the element
+     * an let you get the **El**ement.
+     * @see {@link ISetValueType}
      * @param value The values to set.
      * @returns The Flow instance.
      */
@@ -284,6 +287,11 @@ export interface ISetValueType<
      * Will be applied to the element directly as attributes.
      */
     [key: string]: string | unknown;
+
+    /**
+     * Element to get.
+     */
+    El?: TupleToUnion<GetElParameters<Tag>>;
 
     /**
      * Events to add to the element.
