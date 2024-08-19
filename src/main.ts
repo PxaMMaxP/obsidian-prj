@@ -1,4 +1,4 @@
-import { Component, Plugin, Setting } from 'obsidian';
+import { Component, Notice, Plugin, Setting } from 'obsidian';
 import { SettingTab } from 'src/classes/SettingsTab';
 import { IPrjSettings as IPrjSettings } from 'src/types/PrjSettings';
 import { Inject, TSinjex } from 'ts-injex';
@@ -41,6 +41,7 @@ export default class Prj extends Plugin {
         TSinjex.getInstance().register('IApp', this.app);
         TSinjex.getInstance().register('Obsidian.Component_', Component);
         TSinjex.getInstance().register('Obsidian.Setting_', Setting);
+        TSinjex.getInstance().register('Obsidian.Notice_', Notice);
 
         await this.loadSettings();
 
