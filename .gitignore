@@ -40,3 +40,6 @@ src/auto-imports.ts
 
 .locale
 isolate-*-v8.log
+
+ait.config.json
+ait.*.config.json
