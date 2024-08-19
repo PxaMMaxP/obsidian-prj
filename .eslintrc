@@ -109,7 +109,7 @@
         ],
         "leadingUnderscore": "forbid",
         "filter": {
-          "regex": "^(Events|Styles|Classes|Then|TextContent)$",
+          "regex": "^(Events|Styles|Classes|Then|TextContent|El)$",
           "match": false
         }
       },
@@ -137,7 +137,7 @@
           "camelCase"
         ],
         "filter": {
-          "regex": ".*-event$|^(Events|Styles|Classes|Then|TextContent)$",
+          "regex": ".*-event$|^(Events|Styles|Classes|Then|TextContent|El)$",
           "match": false
         }
       }
