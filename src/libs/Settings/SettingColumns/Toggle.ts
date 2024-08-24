@@ -1,9 +1,11 @@
 import { Component } from 'obsidian';
-import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Implements_ } from 'src/classes/decorators/Implements';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
+import { emitEvent, onEvent } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import { Flow } from 'src/libs/HTMLFlow/Flow';
 import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
@@ -16,6 +18,8 @@ import {
 import type {
     ISettingColumn_,
     SettingColumnConfigurator,
+    TransformerDelegate,
+    ValidatorDelegate,
 } from '../interfaces/ISettingColumn';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
@@ -23,43 +27,15 @@ import type { ISettingRowProtected } from '../interfaces/ISettingRow';
  * Represents a toggle field.
  */
 @Register('SettingFields.toggle')
-@ImplementsStatic<ISettingColumn_<typeof Toggle>>()
+@Implements_<ISettingColumn_<typeof Toggle>>()
 export class Toggle extends DIComponent implements IToggleProtected {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
 
-    private _isToggled = false;
     /**
      * @inheritdoc
      */
-    public get isToggled(): boolean {
-        return this._isToggled;
-    }
-
-    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
-        cfg: IFlowApi<keyof HTMLElementTagNameMap>,
-    ) => {
-        cfg.appendChildEl('div', (cfg) => {
-            cfg.getEl((el) => (this.elements._toggleContainerEl = el))
-                .setId('checkbox-containerEl')
-                .addClass(['checkbox-container'])
-                .addClass(this._isToggled ? 'is-enabled' : 'is-disabled')
-                .addEventListener(
-                    this._settings.isDisabled !== true ? 'click' : 'void',
-                    (_, __, flow) => {
-                        flow?.toggleClass(['is-enabled', 'is-disabled']);
-                        this._isToggled = !this._isToggled;
-                        this._settings.onChangeCallback?.(this._isToggled);
-                    },
-                )
-
-                .appendChildEl('input', (cfg) => {
-                    cfg.getEl((el) => (this.elements.toggleEl = el))
-                        .setId('toggleEl')
-                        .setAttribute('type', 'checkbox');
-                });
-        });
-    };
+    public readonly parentSettingItem: ISettingRowProtected & Component;
 
     /**
      * @inheritdoc
@@ -83,9 +59,59 @@ export class Toggle extends DIComponent implements IToggleProtected {
     /**
      * @inheritdoc
      */
-    public readonly parentSettingItem: ISettingRowProtected & Component;
+    public get isToggled(): boolean {
+        return this._isToggled;
+    }
+
+    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
+    ) => {
+        parent.appendChildEl('div', (checkboxContainer) => {
+            checkboxContainer
+                .set({
+                    El: (el) => (this.elements._toggleContainerEl = el),
+                    Classes: [
+                        'checkbox-container',
+                        this._isToggled ? 'is-enabled' : 'is-disabled',
+                    ],
+                    Events: ((): EventsParameters<'div'> => {
+                        if (this._settings.isDisabled === true)
+                            return [
+                                'click',
+                                (_, __, flow) => {
+                                    this._isToggled = !this._isToggled;
+
+                                    flow?.toggleClass([
+                                        'is-enabled',
+                                        'is-disabled',
+                                    ]);
+
+                                    this._settings.onChangeCallback?.(
+                                        this._isToggled,
+                                    );
+
+                                    this.emitResultEvent();
+                                },
+                            ];
+                        else return [];
+                    })(),
+                })
+                .appendChildEl('input', (checkbox) => {
+                    checkbox.set({
+                        El: (el) => (this.elements.toggleEl = el),
+                        type: 'checkbox',
+                    });
+                });
+        });
+    };
+
+    private _isToggled = false;
     private readonly _configurator?: SettingColumnConfigurator<IToggleFluentAPI>;
-    private readonly _settings: IToggleSettings = {};
+    private readonly _settings: IToggleSettings = {
+        key: '',
+        transformer: undefined,
+        isRequired: false,
+    };
 
     /**
      * Creates a new toggle field.
@@ -103,6 +129,21 @@ export class Toggle extends DIComponent implements IToggleProtected {
     }
 
     /**
+     * Emits the result event
+     * if the key is not empty.
+     */
+    private emitResultEvent(): void {
+        if (this._settings.key !== '') {
+            this[emitEvent](
+                'result',
+                this._settings.key,
+                this._settings.transformer?.(this._isToggled) ??
+                    this._isToggled,
+            );
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     public override onload(): void {
@@ -110,6 +151,20 @@ export class Toggle extends DIComponent implements IToggleProtected {
         this._isToggled = this._settings.isToggled ?? false;
         const flow = new Flow(this.parentSettingItem.inputEl, this._flowConfig);
         this.addChild(flow);
+
+        /**
+         * Register on the loaded event to emit the required results
+         * after all components are loaded.
+         */
+        this[onEvent]('loaded', () => {
+            if (this._settings.key !== '') {
+                this[emitEvent](
+                    'required-results',
+                    this._settings.key,
+                    this._settings.isRequired,
+                );
+            }
+        });
     }
 
     /**
@@ -135,6 +190,34 @@ export class Toggle extends DIComponent implements IToggleProtected {
      */
     onChange(callback: OnChangeCallback): IToggleFluentAPI {
         this._settings.onChangeCallback = callback;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setResultKey(
+        key: string,
+        transformer?: TransformerDelegate,
+    ): IToggleFluentAPI {
+        this._settings.key = key;
+        this._settings.transformer = transformer ?? this._settings.transformer;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setRequired(test: unknown, required?: unknown): IToggleFluentAPI {
+        const _test: ValidatorDelegate | undefined =
+            typeof test === 'function'
+                ? (test as ValidatorDelegate)
+                : undefined;
+        const _required: boolean = _test != null ? true : (test as boolean);
+
+        this._settings.isRequired = _test != undefined ? _test : _required;
 
         return this;
     }
@@ -178,6 +261,21 @@ interface IToggleSettings {
      * A callback that is called when the value of the toggle changes.
      */
     onChangeCallback?: OnChangeCallback;
-}
 
-const _value = Symbol('ListEntry');
+    /**
+     * The key of the input field
+     * for the result event.
+     */
+    key: string;
+
+    /**
+     * A transformer that transforms the value of the input field
+     * before it is emitted in the result event.
+     */
+    transformer: TransformerDelegate | undefined;
+
+    /**
+     * Tells whether the input field is required.
+     */
+    isRequired: boolean | ValidatorDelegate;
+}
