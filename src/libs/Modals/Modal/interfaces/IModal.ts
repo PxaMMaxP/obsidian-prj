@@ -60,6 +60,11 @@ export interface IModalFluentApi {
     close(): void;
 
     /**
+     * Gets whether the modal required fields are filled.
+     */
+    get isRequiredFullfilled(): boolean;
+
+    /**
      * Sets the before open callback.
      * You can use this to check if the modal can be opened.
      * If the callback returns false, the modal won't be opened.
