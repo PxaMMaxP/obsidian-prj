@@ -1,6 +1,7 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
     ISettingColumn,
+    ISettingColumnFluentApi,
     ISettingColumnProtected,
 } from '../../interfaces/ISettingColumn';
 
@@ -42,7 +43,8 @@ export interface IToggleProtected extends ISettingColumnProtected {
  * The fluent API for the toggle field.
  * @see {@link IToggle}
  */
-export interface IToggleFluentAPI {
+export interface IToggleFluentAPI
+    extends ISettingColumnFluentApi<IToggleFluentAPI> {
     /**
      * Sets the value of the toggle.
      * @param isToggled The value of the toggle.
