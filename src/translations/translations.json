@@ -2,6 +2,7 @@
     {
         "lang": "en",
         "translations": {
+            "Please fill in all required fields": "Please fill in all required fields!",
             "Save": "Save",
             "Cancel": "Cancel",
             "Copy MD Link": "Copy Markdown Link",
@@ -88,6 +89,7 @@
     {
         "lang": "de",
         "translations": {
+            "Please fill in all required fields": "Bitte füllen Sie alle Pflichtfelder aus!",
             "Save": "Speichern",
             "Cancel": "Abbrechen",
             "Copy MD Link": "Markdown Link kopieren",
