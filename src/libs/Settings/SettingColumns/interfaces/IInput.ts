@@ -4,6 +4,8 @@ import {
     ISettingColumn,
     ISettingColumnFluentApi,
     ISettingColumnProtected,
+    type TransformerDelegate,
+    type ValidatorDelegate,
 } from '../../interfaces/ISettingColumn';
 
 /**
@@ -107,3 +109,75 @@ export type InputElementType = 'HTMLInputElement' | 'HTMLTextAreaElement';
  * @returns The new value of the input field.
  */
 export type OnChangeCallback = (value: string) => void;
+
+/**
+ * Represents an interface for the settings of the input field.
+ */
+export interface IInputSettings {
+    /**
+     * Gets the element type of the input field.
+     * @returns The element type of the input field
+     * as either `input` or `textarea`.
+     * @default 'input'
+     */
+    get inputElType(): 'input' | 'textarea';
+
+    /**
+     * The type of the input field.
+     * @default 'text'
+     */
+    inputType: InputType;
+
+    /**
+     * The key of the input field
+     * for the result event.
+     */
+    key: string;
+
+    /**
+     * A transformer that transforms the value of the input field
+     * before it is emitted in the result event.
+     */
+    transformer: TransformerDelegate | undefined;
+
+    /**
+     * Tells whether the input field is required.
+     */
+    isRequired: boolean | ValidatorDelegate;
+
+    /**
+     * The value of the input field.
+     * @default ''
+     */
+    value: string;
+
+    /**
+     * The placeholder of the input field.
+     * @default ''
+     */
+    placeholder: string;
+
+    /**
+     * A callback that is called when the value of the input field changes.
+     * @default undefined
+     */
+    onChangeCallback?: OnChangeCallback;
+
+    /**
+     * A callback that is called to get suggestions for the input field.
+     * @default undefined
+     * @remarks The suggestions are only shown if the callback is set.
+     */
+    getSuggestionsCallback?: GetSuggestionsCallback<string>;
+
+    /**
+     * Whether the toggle is disabled.
+     * @default false
+     */
+    isDisabled: boolean;
+
+    /**
+     * Whether the input field should be spell checked.
+     */
+    shouldSpellCheck: boolean;
+}
