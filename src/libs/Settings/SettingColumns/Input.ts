@@ -1,6 +1,5 @@
 import createFuzzySearch from '@nozbe/microfuzz';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { emitEvent, onEvent } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
@@ -17,7 +16,6 @@ import {
     IInput,
     IInputFluentApi,
     IInputProtected,
-    IInputSettings,
     InputType,
     OnChangeCallback,
 } from './interfaces/IInput';
@@ -45,8 +43,6 @@ export class Input
 {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
-    @Inject('IApp')
-    protected readonly _IApp!: IApp;
     @Inject('IFlow_')
     protected readonly __IFlow!: IFlow_;
     @Inject('IGenericSuggest_')
@@ -97,17 +93,8 @@ export class Input
                                 : 'change',
                             () => {
                                 const value = this.elements.inputEl.value;
-
-                                if (opts.onChangeCallback != null) {
-                                    opts.onChangeCallback?.(value);
-                                }
-
-                                if (opts.key !== '')
-                                    this[emitEvent](
-                                        'result',
-                                        opts.key,
-                                        opts.transformer?.(value) ?? value,
-                                    );
+                                opts.onChangeCallback?.(value);
+                                this.emitResult(value);
                             },
                         ]);
 
@@ -154,19 +141,14 @@ export class Input
                 inputEl.value = value;
                 this._settings.onChangeCallback?.(inputEl.value);
 
-                if (this._settings.key !== '')
-                    this[emitEvent](
-                        'result',
-                        this._settings.key,
-                        this._settings.transformer?.(value) ?? value,
-                    );
+                this.emitResult(value);
             },
             (input: string) => {
                 const suggestions =
                     this._settings.getSuggestionsCallback?.(input);
 
                 if (suggestions == null) {
-                    this._logger?.warn('The suggestions are null.');
+                    this._logger?.debug('The suggestions are null.');
 
                     return [];
                 }
@@ -179,8 +161,21 @@ export class Input
         );
     }
 
+    /**
+     * Emits the result event if the key is not empty.
+     * @param value The value to emit.
+     */
+    private emitResult(value: string): void {
+        if (this._settings.key !== '')
+            this[emitEvent](
+                'result',
+                this._settings.key,
+                this._settings.transformer?.(value) ?? value,
+            );
+    }
+
     private readonly _configurator?: SettingColumnConfigurator<IInputFluentApi>;
-    private readonly _settings: IInputSettings = new InputSettings();
+    private readonly _settings = new InputSettings();
     private _suggester?: IGenericSuggest<unknown>;
 
     /**
@@ -231,9 +226,6 @@ export class Input
                 );
         });
     }
-
-    //#region Fluent API
-
     /**
      * @inheritdoc
      */
@@ -365,61 +357,76 @@ export class Input
 /**
  * Represents the settings for the input field.
  */
-class InputSettings implements IInputSettings {
+class InputSettings {
     /**
-     * @inheritdoc
+     * Gets the element type of the input field
+     * as either `input` or `textarea`.
      */
     public get inputElType(): 'input' | 'textarea' {
-        return this.inputType === 'textArea' ? 'textarea' : 'input';
+        return this.inputType === 'textarea' ? 'textarea' : 'input';
     }
 
     /**
-     * @inheritdoc
+     * The type of the input field.
+     * @default 'text'
      */
     public inputType: InputType = 'text';
 
     /**
-     * @inheritdoc
+     * The key of the input field
+     * for the result event.
+     * @default ''
      */
     public key: string = '';
 
     /**
+     * A transformer that transforms the value of the input field
+     * before it is emitted in the result event.
+     * @default
      * @inheritdoc
      */
     public transformer: TransformerDelegate | undefined = (value) => value;
 
     /**
-     * @inheritdoc
+     * Tells whether the input field is required.
+     * @default false
      */
     isRequired: boolean | ValidatorDelegate = false;
 
     /**
-     * @inheritdoc
+     * The value of the input field.
+     * @default ''
      */
     public value = '';
 
     /**
-     * @inheritdoc
+     * The placeholder of the input field.
+     * @default ''
      */
     public placeholder = '';
 
     /**
-     * @inheritdoc
+     * A callback that is called when the value of the input field changes.
+     * @default undefined
      */
     public onChangeCallback?: OnChangeCallback;
 
     /**
-     * @inheritdoc
+     * A callback that is called to get suggestions for the input field.
+     * @default undefined
+     * @remarks The suggestions are only shown if the callback is set.
      */
     public getSuggestionsCallback?: GetSuggestionsCallback<string>;
 
     /**
-     * @inheritdoc
+     * Whether the toggle is disabled.
+     * @default false
      */
     public isDisabled = false;
 
     /**
-     * @inheritdoc
+     * Whether the input field should be spell checked.
+     * @default false
      */
     shouldSpellCheck = false;
 }
