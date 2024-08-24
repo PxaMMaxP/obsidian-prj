@@ -9,6 +9,7 @@ import {
 /**
  * Options inspector factory.
  * @see {@link Opts.inspect}
+ * @deprecated This class is deprecated and will be removed in the next **MINOR** version.
  */
 @Register('Opts')
 export class Opts {
