@@ -34,7 +34,7 @@ export type SpecificEventMap = {
      * The event is broadcasted to all children
      * after the parent and children are loaded.
      */
-    'loaded': [];
+    loaded: [];
     /**
      * All indipendent Windows should have this classes.
      * The parent will emit this event to all children
