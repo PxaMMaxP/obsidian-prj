@@ -2,10 +2,10 @@ import createFuzzySearch from '@nozbe/microfuzz';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { onEvent } from 'src/libs/DIComponent';
+import { emitEvent, onEvent } from 'src/libs/DIComponent';
 import { DIComponent } from 'src/libs/DIComponent/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
-import { Opts } from 'src/libs/HTMLFlow/Opts';
+import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
 import {
     IFlowConfig,
     IFlowEventCallback,
@@ -17,6 +17,7 @@ import {
     IInput,
     IInputFluentApi,
     IInputProtected,
+    IInputSettings,
     InputType,
     OnChangeCallback,
 } from './interfaces/IInput';
@@ -28,6 +29,8 @@ import type {
 import type {
     ISettingColumn_,
     SettingColumnConfigurator,
+    TransformerDelegate,
+    ValidatorDelegate,
 } from '../interfaces/ISettingColumn';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
@@ -40,61 +43,19 @@ export class Input
     extends DIComponent
     implements IInput, IInputProtected, IInputFluentApi
 {
-    @Inject('IApp')
-    protected readonly _IApp!: IApp;
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     protected _logger?: ILogger;
+    @Inject('IApp')
+    protected readonly _IApp!: IApp;
     @Inject('IFlow_')
-    protected readonly _IFlow_!: IFlow_;
+    protected readonly __IFlow!: IFlow_;
     @Inject('IGenericSuggest_')
-    private readonly _IGenericSuggest_!: IGenericSuggest_<string>;
+    private readonly __IGenericSuggest!: IGenericSuggest_<string>;
 
-    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
-        cfg: IFlowApi<keyof HTMLElementTagNameMap>,
-    ) => {
-        const opts = Opts.inspect(this._settings);
-
-        cfg.appendChildEl(this._settings.inputElType, (inputEl) => {
-            inputEl
-                .getEl((el) => (this.elements.inputEl = el))
-                .setId('inputEl')
-                .set({
-                    placeholder: this._settings.placeholder,
-                    value: this._settings.value,
-                    disabled: opts.isDisabled ? 'true' : undefined,
-                    spellcheck: opts.shouldSpellCheck ? 'true' : 'false',
-                    // If the input element is as textarea, the type attribute is not set.
-                    type: opts.inputElType.is('textarea')
-                        ? undefined
-                        : this._settings.inputType,
-                    Events: opts.inputElType.is('textarea')
-                        ? [
-                              ['input', this.updateMinHeight],
-                              [
-                                  opts.onChangeCallback?.is()
-                                      ? 'change'
-                                      : 'void',
-                                  () =>
-                                      this._settings.onChangeCallback?.(
-                                          this.elements.inputEl.value,
-                                      ),
-                              ],
-                          ]
-                        : [
-                              opts.onChangeCallback?.is() ? 'change' : 'void',
-                              () =>
-                                  this._settings.onChangeCallback?.(
-                                      this.elements.inputEl.value,
-                                  ),
-                          ],
-                    Then: opts.getSuggestionsCallback?.is()
-                        ? // Add the suggestions.
-                          (ctx, el) =>
-                              this.buildSuggester(el as HTMLInputElement)
-                        : undefined,
-                });
-        });
-    };
+    /**
+     * @inheritdoc
+     */
+    public readonly parentSettingItem: ISettingRowProtected;
 
     /**
      * @inheritdoc
@@ -105,6 +66,61 @@ export class Input
          */
         inputEl: HTMLInputElement | HTMLTextAreaElement;
     } = { inputEl: null as never };
+
+    /**
+     * Configurations for the input field.
+     * @param parent The parent setting row.
+     */
+    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
+    ) => {
+        const opts = this._settings;
+
+        parent.appendChildEl(opts.inputElType, (inputEl) => {
+            inputEl.set({
+                El: (el) => (this.elements.inputEl = el),
+                placeholder: opts.placeholder,
+                value: opts.value,
+                disabled: opts.isDisabled ? 'true' : null,
+                spellcheck: opts.shouldSpellCheck ? 'true' : 'false',
+                type: opts.inputElType === 'input' ? opts.inputType : null,
+                Events: ((): EventsParameters<'input' | 'textarea'> => {
+                    const events: EventsParameters<'input' | 'textarea'> = [];
+
+                    if (opts.inputElType === 'textarea')
+                        events.push(['input', this.updateMinHeight]);
+
+                    if (opts.onChangeCallback != null || opts.key !== '')
+                        events.push([
+                            opts.inputElType === 'textarea'
+                                ? 'input'
+                                : 'change',
+                            () => {
+                                const value = this.elements.inputEl.value;
+
+                                if (opts.onChangeCallback != null) {
+                                    opts.onChangeCallback?.(value);
+                                }
+
+                                if (opts.key !== '')
+                                    this[emitEvent](
+                                        'result',
+                                        opts.key,
+                                        opts.transformer?.(value) ?? value,
+                                    );
+                            },
+                        ]);
+
+                    return events;
+                })(),
+                Then:
+                    opts.getSuggestionsCallback != null
+                        ? (_ctx, el) =>
+                              this.buildSuggester(el as HTMLInputElement)
+                        : undefined,
+            });
+        });
+    };
 
     /**
      * Updates the minimum height of the input field.
@@ -132,11 +148,18 @@ export class Input
         )
             return;
 
-        this._suggester = new this._IGenericSuggest_(
+        this._suggester = new this.__IGenericSuggest(
             inputEl,
             (value: string) => {
                 inputEl.value = value;
                 this._settings.onChangeCallback?.(inputEl.value);
+
+                if (this._settings.key !== '')
+                    this[emitEvent](
+                        'result',
+                        this._settings.key,
+                        this._settings.transformer?.(value) ?? value,
+                    );
             },
             (input: string) => {
                 const suggestions =
@@ -156,7 +179,6 @@ export class Input
         );
     }
 
-    public readonly parentSettingItem: ISettingRowProtected;
     private readonly _configurator?: SettingColumnConfigurator<IInputFluentApi>;
     private readonly _settings: IInputSettings = new InputSettings();
     private _suggester?: IGenericSuggest<unknown>;
@@ -183,7 +205,7 @@ export class Input
     public override onload(): void {
         this._configurator?.(this);
 
-        const flow = new this._IFlow_(
+        const flow = new this.__IFlow(
             this.parentSettingItem.inputEl,
             this._flowConfig,
         );
@@ -196,7 +218,21 @@ export class Input
         this[onEvent]('common-window-classes', (classes: string[]) => {
             this._suggester?.suggestContainerEl?.classList.add(...classes);
         });
+
+        /**
+         * Register on the modal-loaded event to emit the required results.
+         */
+        this[onEvent]('loaded', () => {
+            if (this._settings.key !== '')
+                this[emitEvent](
+                    'required-results',
+                    this._settings.key,
+                    this._settings.isRequired,
+                );
+        });
     }
+
+    //#region Fluent API
 
     /**
      * @inheritdoc
@@ -280,6 +316,34 @@ export class Input
     /**
      * @inheritdoc
      */
+    setResultKey(
+        key: string,
+        transformer?: TransformerDelegate,
+    ): IInputFluentApi {
+        this._settings.key = key;
+        this._settings.transformer = transformer ?? this._settings.transformer;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setRequired(test: unknown, required?: unknown): IInputFluentApi {
+        const _test: ValidatorDelegate | undefined =
+            typeof test === 'function'
+                ? (test as ValidatorDelegate)
+                : undefined;
+        const _required: boolean = _test != null ? true : (test as boolean);
+
+        this._settings.isRequired = _test != undefined ? _test : _required;
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     then(callback: (input: IInputProtected) => void): IInputFluentApi {
         try {
             callback?.(this);
@@ -317,6 +381,21 @@ class InputSettings implements IInputSettings {
     /**
      * @inheritdoc
      */
+    public key: string = '';
+
+    /**
+     * @inheritdoc
+     */
+    public transformer: TransformerDelegate | undefined = (value) => value;
+
+    /**
+     * @inheritdoc
+     */
+    isRequired: boolean | ValidatorDelegate = false;
+
+    /**
+     * @inheritdoc
+     */
     public value = '';
 
     /**
@@ -343,59 +422,4 @@ class InputSettings implements IInputSettings {
      * @inheritdoc
      */
     shouldSpellCheck = false;
-}
-
-/**
- * Represents an interface for the settings for the input field.
- */
-interface IInputSettings {
-    /**
-     * Gets the element type of the input field.
-     * @returns The element type of the input field
-     * as either `input` or `textarea`.
-     * @default 'input'
-     */
-    get inputElType(): 'input' | 'textarea';
-
-    /**
-     * The type of the input field.
-     * @default 'text'
-     */
-    inputType: InputType;
-
-    /**
-     * The value of the input field.
-     * @default ''
-     */
-    value: string;
-
-    /**
-     * The placeholder of the input field.
-     * @default ''
-     */
-    placeholder: string;
-
-    /**
-     * A callback that is called when the value of the input field changes.
-     * @default undefined
-     */
-    onChangeCallback?: OnChangeCallback;
-
-    /**
-     * A callback that is called to get suggestions for the input field.
-     * @default undefined
-     * @remarks The suggestions are only shown if the callback is set.
-     */
-    getSuggestionsCallback?: GetSuggestionsCallback<string>;
-
-    /**
-     * Whether the toggle is disabled.
-     * @default false
-     */
-    isDisabled: boolean;
-
-    /**
-     * Whether the input field should be spell checked.
-     */
-    shouldSpellCheck: boolean;
 }
