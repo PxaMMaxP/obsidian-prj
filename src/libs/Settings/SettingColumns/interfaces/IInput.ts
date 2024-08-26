@@ -1,9 +1,15 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
+import {
+    ISettingColumnElements,
+    ISettingColumnSettings,
+} from './ISettingColumn';
 import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
 import {
     ISettingColumn,
     ISettingColumnFluentApi,
     ISettingColumnProtected,
+    TransformerDelegate,
+    ValidatorDelegate,
 } from '../../interfaces/ISettingColumn';
 
 /**
@@ -24,6 +30,13 @@ export interface IInputProtected extends ISettingColumnProtected {
          */
         inputEl: HTMLInputElement | HTMLTextAreaElement;
     };
+}
+
+export interface IInputElements extends ISettingColumnProtected {
+    /**
+     * The input field element.
+     */
+    inputEl: HTMLInputElement | HTMLTextAreaElement;
 }
 
 /**
@@ -107,3 +120,68 @@ export type InputElementType = 'HTMLInputElement' | 'HTMLTextAreaElement';
  * @returns The new value of the input field.
  */
 export type OnChangeCallback = (value: string) => void;
+
+/**
+ * Represents an interface for the settings of the input field.
+ */
+export interface IInputSettings extends ISettingColumnSettings {
+    /**
+     * The type of the input field.
+     */
+    inputType: InputType;
+
+    /**
+     * The key of the input field
+     * for the result event.
+     */
+    key: string;
+
+    /**
+     * A transformer that transforms the value of the input field
+     * before it is emitted in the result event.
+     */
+    transformer: TransformerDelegate | undefined;
+
+    /**
+     * Tells whether the input field is required.
+     */
+    isRequired: boolean | ValidatorDelegate;
+
+    /**
+     * The value of the input field.
+     */
+    value: string;
+
+    /**
+     * The placeholder of the input field.
+     */
+    placeholder: string;
+
+    /**
+     * A callback that is called when the value of the input field changes.
+     */
+    onChangeCallback?: OnChangeCallback;
+
+    /**
+     * A callback that is called to get suggestions for the input field.
+     * @remarks The suggestions are only shown if the callback is set.
+     */
+    getSuggestionsCallback?: GetSuggestionsCallback<string>;
+
+    /**
+     * Whether the toggle is disabled.
+     */
+    isDisabled: boolean;
+
+    /**
+     * Whether the input field should be spell checked.
+     */
+    shouldSpellCheck: boolean;
+}
+
+export interface IInputElements extends ISettingColumnElements {
+    /**
+     * The input field element.
+     */
+    inputEl: HTMLInputElement | HTMLTextAreaElement;
+}
