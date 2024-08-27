@@ -1,9 +1,23 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
-import { ISettingColumn } from '../../interfaces/ISettingColumn';
+import {
+    ISettingColumn,
+    ISettingColumnElements,
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import {
+    NewListDelegate,
+    AddDelegate,
+    RemoveDelegate,
+    GetEntriesDelegate,
+    CreateEntryDelegate,
+} from '../types/DisplayField';
 
 /**
- * Interface for the display column.
- * @remarks The display column is between the info column and the input column.
+ * Instance interface for the display column.
+ * @see {@link IDisplayFieldSettings}
+ * @see {@link IDisplayFieldElements}
+ * @see {@link IDisplayFieldFluentApi}
+ * @see {@link IDisplayFieldProtected}
  */
 export interface IDisplay<EntryType, ListType>
     extends IDIComponent,
@@ -31,7 +45,7 @@ export interface IDisplay<EntryType, ListType>
 }
 
 /**
- * Interface for the fluent API of the display column.
+ * Fluent Api for the display column.
  */
 export interface IDisplayFluentApi<EntryType, ListType> {
     /**
@@ -87,39 +101,23 @@ export interface IDisplayFluentApi<EntryType, ListType> {
     ): IDisplayFluentApi<EntryType, ListType>;
 }
 
-export const entryObject = Symbol('ListEntry');
-
-export interface IDisplayEntry<EntryType> extends HTMLDivElement {
-    [entryObject]?: EntryType;
+/**
+ * Settings for the display column.
+ */
+export interface IDisplayFieldSettings<EntryType, ListType>
+    extends ISettingColumnSettings {
+    addDelegate?: AddDelegate<EntryType, ListType>;
+    removeDelegate?: RemoveDelegate<EntryType, ListType>;
+    list?: ListType;
+    newListDelegate?: NewListDelegate<ListType>;
+    classes?: string[];
+    defaultEntries?: GetEntriesDelegate<EntryType>;
+    createEntryDelegate?: CreateEntryDelegate<EntryType>;
 }
 
 /**
- * A delegate that adds an entry to a list.
- * @param list The list to add the entry to.
- * @param entryToAdd The entry to add to the list.
- * @returns Whether the entry was added to the list.
+ * Public elements of the display column.
  */
-export type AddDelegate<EntryType, ListType> = (
-    list: ListType,
-    entryToAdd: EntryType,
-) => boolean;
-
-/**
- * A delegate that removes an entry from a list.
- * @param list The list to remove the entry from.
- * @param entryToRemove The entry to remove from the list.
- * @returns Whether the entry was removed from the list.
- */
-export type RemoveDelegate<EntryType, ListType> = (
-    list: ListType,
-    entryToRemove: EntryType,
-) => boolean;
-
-/**
- * A delegate that creates a new list.
- */
-export type NewListDelegate<ListType> = () => ListType;
-
-export type CreateEntryDelegate<EntryType> = (entry: EntryType) => HTMLElement;
-
-export type GetEntriesDelegate<EntryType> = () => EntryType[];
+export interface IDisplayFieldElements extends ISettingColumnElements {
+    listContainerEl: HTMLDivElement;
+}

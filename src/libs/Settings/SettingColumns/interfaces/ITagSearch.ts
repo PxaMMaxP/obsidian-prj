@@ -1,54 +1,42 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { ITag } from 'src/libs/Tags/interfaces/ITag';
 import { ITags } from 'src/libs/Tags/interfaces/ITags';
-import { GetEntriesDelegate } from './IDisplayField';
-import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
 import {
     ISettingColumn,
+    ISettingColumnElements,
+    ISettingColumnFluentApi,
     ISettingColumnProtected,
-} from '../../interfaces/ISettingColumn';
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
+import { GetEntriesDelegate } from '../types/DisplayField';
 
 /**
- * Represents a tag search field.
+ * Instance interface for the tag search field.
  * @see {@link ITagSearchProtected}
  * @see {@link ITagSearchFluentAPI}
+ * @see {@link ITagSearchSettings}
+ * @see {@link ITagSearchElements}
  */
 export interface ITagSearch extends IDIComponent, ISettingColumn {
     /**
      * The list of tags which are displayed in the tag search.
      */
     get list(): ITags | undefined;
-    /**
-     * Loads the tag search.
-     */
-    onload(): void;
 }
 
 /**
- * The internal tag search interface.
- * @see {@link ITagSearch}
+ * Protected interface for the tag search field.
  */
-export interface ITagSearchProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The search container element.
-         */
-        searchContainerEl: HTMLInputElement;
-        /**
-         * The input field element.
-         */
-        inputEl: HTMLInputElement;
-    };
-}
+export type ITagSearchProtected<
+    ElementsType extends ISettingColumnElements = ITagSearchElements,
+> = ISettingColumnProtected<ElementsType>;
 
 /**
- * The fluent API for the tag search field.
- * @see {@link ITagSearch}
+ * Fluent Api for the tag search field.
  */
-export interface ITagSearchFluentAPI {
+export interface ITagSearchFluentAPI
+    extends ISettingColumnFluentApi<ITagSearchFluentAPI> {
     /**
      * Sets the placeholder of the tag search.
      * @param placeholder The placeholder of the tag search.
@@ -79,4 +67,24 @@ export interface ITagSearchFluentAPI {
     setDefaultEntries(
         defaultEntries: GetEntriesDelegate<ITag>,
     ): ITagSearchFluentAPI;
+}
+
+/**
+ * Settings for the tag search field.
+ */
+export interface ITagSearchSettings extends ISettingColumnSettings {
+    placeholder?: string;
+    getSuggestionsCallback?: GetSuggestionsCallback<string>;
+    list?: ITags;
+    defaultEntries?: GetEntriesDelegate<ITag>;
+}
+
+/**
+ * Public elements of the tag search field.
+ */
+export interface ITagSearchElements extends ISettingColumnElements {
+    searchContainerEl: HTMLDivElement;
+    inputEl: HTMLInputElement;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    _clearButtonEl: HTMLDivElement;
 }

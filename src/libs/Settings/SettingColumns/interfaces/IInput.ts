@@ -1,46 +1,32 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
+    ISettingColumn,
     ISettingColumnElements,
+    ISettingColumnFluentApi,
+    ISettingColumnProtected,
     ISettingColumnSettings,
 } from './ISettingColumn';
 import { GetSuggestionsCallback } from '../../components/interfaces/IGenericSuggest';
-import {
-    ISettingColumn,
-    ISettingColumnFluentApi,
-    ISettingColumnProtected,
-    TransformerDelegate,
-    ValidatorDelegate,
-} from '../../interfaces/ISettingColumn';
+import { InputType, OnChangeCallback } from '../types/Input';
 
 /**
- * Main interface for the input column.
+ * Instance interface for the input column.
+ * @see {@link IInputProtected}
+ * @see {@link IInputFluentApi}
+ * @see {@link IInputSettings}
+ * @see {@link IInputElements}
  */
 export interface IInput extends IDIComponent, ISettingColumn {}
 
 /**
  * Protected interface for the input column.
  */
-export interface IInputProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The input field element.
-         */
-        inputEl: HTMLInputElement | HTMLTextAreaElement;
-    };
-}
-
-export interface IInputElements extends ISettingColumnProtected {
-    /**
-     * The input field element.
-     */
-    inputEl: HTMLInputElement | HTMLTextAreaElement;
-}
+export type IInputProtected<
+    ElementsType extends ISettingColumnElements = IInputElements,
+> = ISettingColumnProtected<ElementsType>;
 
 /**
- * The fluent API for the input column.
+ * Fluent Api for the input column.
  */
 export interface IInputFluentApi
     extends ISettingColumnFluentApi<IInputFluentApi> {
@@ -50,13 +36,6 @@ export interface IInputFluentApi
      * @returns The input field.
      */
     setType(type: InputType): IInputFluentApi;
-
-    /**
-     * Disables or enables the input field.
-     * @param shouldDisabled Whether the input field should be disabled.
-     * @returns The input field.
-     */
-    setDisabled(shouldDisabled: boolean): IInputFluentApi;
 
     /**
      * Sets the value of the input field.
@@ -94,58 +73,16 @@ export interface IInputFluentApi
      * @returns The input field.
      */
     setSpellcheck(shouldSpellcheck: boolean): IInputFluentApi;
-
-    /**
-     * Method for modifying the input field.
-     * @param callback The callback function, which will be called
-     * when the input field is modified.
-     * @returns The input field.
-     */
-    then(callback: (input: IInputProtected) => void): IInputFluentApi;
 }
 
 /**
- * Input types of {@link IInput}.
- */
-export type InputType = 'textarea' | 'text' | 'password' | 'number' | 'date';
-
-/**
- * Element types of {@link IInput}.
- */
-export type InputElementType = 'HTMLInputElement' | 'HTMLTextAreaElement';
-
-/**
- * A callback that is called when the value of the input field changes.
- * @param value The value of the input field.
- * @returns The new value of the input field.
- */
-export type OnChangeCallback = (value: string) => void;
-
-/**
- * Represents an interface for the settings of the input field.
+ * Settings for the input column.
  */
 export interface IInputSettings extends ISettingColumnSettings {
     /**
      * The type of the input field.
      */
     inputType: InputType;
-
-    /**
-     * The key of the input field
-     * for the result event.
-     */
-    key: string;
-
-    /**
-     * A transformer that transforms the value of the input field
-     * before it is emitted in the result event.
-     */
-    transformer: TransformerDelegate | undefined;
-
-    /**
-     * Tells whether the input field is required.
-     */
-    isRequired: boolean | ValidatorDelegate;
 
     /**
      * The value of the input field.
@@ -169,16 +106,14 @@ export interface IInputSettings extends ISettingColumnSettings {
     getSuggestionsCallback?: GetSuggestionsCallback<string>;
 
     /**
-     * Whether the toggle is disabled.
-     */
-    isDisabled: boolean;
-
-    /**
      * Whether the input field should be spell checked.
      */
     shouldSpellCheck: boolean;
 }
 
+/**
+ * Public elements interface for the input column.
+ */
 export interface IInputElements extends ISettingColumnElements {
     /**
      * The input field element.

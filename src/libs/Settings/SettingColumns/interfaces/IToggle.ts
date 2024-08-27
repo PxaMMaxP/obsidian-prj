@@ -1,18 +1,19 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
-    ISettingColumnElements,
-    ISettingColumnSettings,
-} from './ISettingColumn';
-import {
     ISettingColumn,
+    ISettingColumnElements,
     ISettingColumnFluentApi,
     ISettingColumnProtected,
-} from '../../interfaces/ISettingColumn';
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import { OnChangeCallback } from '../types/Toggle';
 
 /**
- * Represents a toggle field.
- * @see {@link IToggleProtected}
+ * Instance interface for the toggle field.
+ * @see {@link IToggleSettings}
+ * @see {@link IToggleElements}
  * @see {@link IToggleFluentApi}
+ * @see {@link IToggleProtected}
  */
 export interface IToggle extends IDIComponent, ISettingColumn {
     /**
@@ -28,24 +29,14 @@ export interface IToggle extends IDIComponent, ISettingColumn {
 }
 
 /**
- * The internal toggle field.
- * @see {@link IToggle}
+ * Protected interface for the toggle field.
  */
-export interface IToggleProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The toggle element.
-         */
-        toggleEl: HTMLInputElement;
-    };
-}
+export type IToggleProtected<
+    ElementsType extends ISettingColumnElements = IToggleElements,
+> = ISettingColumnProtected<ElementsType>;
 
 /**
- * The fluent API for the toggle field.
- * @see {@link IToggle}
+ * Fluent Api for the toggle field.
  */
 export interface IToggleFluentApi
     extends ISettingColumnFluentApi<IToggleFluentApi> {
@@ -71,12 +62,7 @@ export interface IToggleFluentApi
 }
 
 /**
- * A callback that is called when the value of the toggle changes.
- */
-export type OnChangeCallback = (isToggled: boolean) => void;
-
-/**
- * Represents the settings for the toggle field.
+ * Settings interface for the toggle field.
  */
 export interface IToggleSettings extends ISettingColumnSettings {
     /**
@@ -91,7 +77,7 @@ export interface IToggleSettings extends ISettingColumnSettings {
 }
 
 /**
- * Represents the elements of the toggle field.
+ * Public elements interface for the toggle field.
  */
 export interface IToggleElements extends ISettingColumnElements {
     /**
