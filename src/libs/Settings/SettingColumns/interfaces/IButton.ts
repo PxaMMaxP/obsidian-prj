@@ -2,33 +2,34 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
     ISettingColumn,
+    ISettingColumnElements,
+    ISettingColumnFluentApi,
     ISettingColumnProtected,
-} from '../../interfaces/ISettingColumn';
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import { OnClickCallback } from '../types/Button';
 
 /**
- * Represents a button field.
+ * Instance interface for the button field.
+ * @see {@link IButtonProtected}
+ * @see {@link IButtonFluentAPI}
+ * @see {@link IButtonSettings}
+ * @see {@link IButtonElements}
  */
 export interface IButton extends IDIComponent, ISettingColumn {}
 
 /**
- * The internal button field.
+ * Protected interface for the button field.
  */
-export interface IButtonProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The button element.
-         */
-        buttonEl: HTMLButtonElement;
-    };
-}
+export type IButtonProtected<
+    ElementsType extends ISettingColumnElements = IButtonElements,
+> = ISettingColumnProtected<ElementsType>;
 
 /**
- * The fluent API for the button field.
+ * Fluent Api for the button field.
  */
-export interface IButtonFluentAPI {
+export interface IButtonFluentAPI
+    extends ISettingColumnFluentApi<IButtonFluentAPI> {
     /**
      * Enables or disables **Call to Action**.
      * @param isCtaEnabled Whether **Call to Action** is enabled.
@@ -49,24 +50,12 @@ export interface IButtonFluentAPI {
      * @returns The button fluent API.
      */
     setButtonText(text: string): IButtonFluentAPI;
-
-    /**
-     * Disables or enables the button.
-     * @param shouldDisabled Whether the button should be disabled.
-     * @returns The button fluent API.
-     */
-    setDisabled(shouldDisabled: boolean): IButtonFluentAPI;
 }
 
 /**
- * A callback that is called when the button is clicked.
+ * Settings for the button field.
  */
-export type OnClickCallback = (evt: MouseEvent) => unknown;
-
-/**
- * Represents the settings of a button field.
- */
-export interface IButtonSettings {
+export interface IButtonSettings extends ISettingColumnSettings {
     /**
      * The text of the button.
      */
@@ -79,8 +68,14 @@ export interface IButtonSettings {
      * The callback that is called when the button is clicked.
      */
     onClick?: OnClickCallback;
+}
+
+/**
+ * Elements interface for the button field.
+ */
+export interface IButtonElements extends ISettingColumnElements {
     /**
-     * Whether the button is disabled.
+     * The button element.
      */
-    isDisabled: boolean;
+    buttonEl: HTMLButtonElement;
 }

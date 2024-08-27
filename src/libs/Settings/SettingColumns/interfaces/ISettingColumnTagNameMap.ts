@@ -3,7 +3,7 @@ import { IDisplayFluentApi } from './IDisplayField';
 import { IDropdownFluentApi } from './IDropdown';
 import { IInputFluentApi } from './IInput';
 import { ITagSearchFluentAPI } from './ITagSearch';
-import { IToggleFluentAPI } from './IToggle';
+import { IToggleFluentApi } from './IToggle';
 
 export interface ISettingColumnTagNameMap {
     button: IButtonFluentAPI;
@@ -11,5 +11,5 @@ export interface ISettingColumnTagNameMap {
     dropdown: IDropdownFluentApi;
     tagsearch: ITagSearchFluentAPI;
     display: IDisplayFluentApi<unknown, unknown>;
-    toggle: IToggleFluentAPI;
+    toggle: IToggleFluentApi;
 }

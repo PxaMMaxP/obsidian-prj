@@ -3,19 +3,17 @@ import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
+import { ISettingColumn_ } from './interfaces/ISettingColumn';
 import {
     IToggle,
     IToggleElements,
     IToggleFluentApi,
     IToggleProtected,
     IToggleSettings,
-    OnChangeCallback,
 } from './interfaces/IToggle';
 import { SettingColumn } from './SettingColumn';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
+import type { SettingColumnConfigurator } from './types/General';
+import { OnChangeCallback } from './types/Toggle';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**

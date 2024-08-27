@@ -1,23 +1,24 @@
-import { Component } from 'obsidian';
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
-import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
-import { DIComponent } from 'src/libs/DIComponent/DIComponent';
+import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
+import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
-import { Inject } from 'ts-injex';
 import {
     IDropdown,
+    IDropdownElements,
     IDropdownFluentApi,
     IDropdownProtected,
+    IDropdownSettings,
+} from './interfaces/IDropdown';
+import { ISettingColumn_ } from './interfaces/ISettingColumn';
+import { SettingColumn } from './SettingColumn';
+import {
     OnChangeCallback,
     SelectItem,
     SelectOptions,
     SelectOptionsCallback,
-} from './interfaces/IDropdown';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
+} from './types/Dropdown';
+import type { SettingColumnConfigurator } from './types/General';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
@@ -26,39 +27,59 @@ import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 @Register('SettingFields.dropdown')
 @ImplementsStatic<ISettingColumn_<typeof Dropdown>>()
 export class Dropdown
-    extends DIComponent
+    extends SettingColumn<
+        IDropdownFluentApi,
+        IDropdownElements,
+        IDropdownSettings,
+        IDropdownProtected
+    >
     implements IDropdown, IDropdownProtected, IDropdownFluentApi
 {
-    @Inject('ILogger_', (x: ILogger_) => x.getLogger('Dropdown'), false)
-    protected _logger?: ILogger;
+    protected readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
+    ) => {
+        parent.appendChildEl('select', (selectEl) => {
+            selectEl.set({
+                El: (el) => (this.elements.selectEl = el),
+                Classes: ['dropdown'],
+                Events: ((): EventsParameters<'select'> => {
+                    const events: EventsParameters<'select'> = [];
 
-    public readonly parentSettingItem: ISettingRowProtected & Component;
+                    if (this._settings.onChangeCallback != null)
+                        events.push([
+                            'change',
+                            (_, __, ___) => {
+                                this._settings.onChangeCallback?.(
+                                    this.getSelectedValue(),
+                                );
+                            },
+                        ]);
 
-    /**
-     * @inheritdoc
-     */
-    public get elements(): {
-        selectEl: HTMLSelectElement;
-    } {
-        return { selectEl: this._selectEl };
-    }
+                    return events;
+                })(),
+            });
 
-    /**
-     * @inheritdoc
-     */
-    @LazzyLoading((ctx: Dropdown) => {
-        const selectEl = document.createElement('select');
-        selectEl.addClass('dropdown');
-        ctx.parentSettingItem.inputEl.appendChild(selectEl);
+            this._settings.options?.().forEach((option) => {
+                selectEl.appendChildEl('option', (optionEl) => {
+                    optionEl.set({
+                        value: option.key,
+                        TextContent: option.value,
+                    });
+                });
+            });
 
-        return selectEl;
-    }, 'Readonly')
-    private readonly _selectEl: HTMLSelectElement;
-
-    private _value?: SelectItem;
-
-    private _onChangeCallback?: OnChangeCallback;
-    private _options?: SelectOptionsCallback;
+            selectEl.then((_ctx, el) => {
+                if (
+                    this._settings.value != null &&
+                    this.elements.selectEl.querySelector(
+                        `option[value="${this._settings.value.key}"]`,
+                    ) != null
+                )
+                    el.value = this._settings.value.key;
+                else el.value = el.options[0].value;
+            });
+        });
+    };
 
     /**
      * Creates a new dropdown field.
@@ -69,21 +90,11 @@ export class Dropdown
         parentSettingItem: ISettingRowProtected,
         configurator?: SettingColumnConfigurator<IDropdownFluentApi>,
     ) {
-        super();
-
-        this.parentSettingItem = parentSettingItem;
-
-        this._configurator = configurator;
-    }
-
-    private readonly _configurator?: SettingColumnConfigurator<IDropdownFluentApi>;
-
-    /**
-     * @inheritdoc
-     */
-    public override onload(): void {
-        this._configurator?.(this);
-        this.build();
+        super(parentSettingItem, configurator, {
+            value: undefined,
+            onChangeCallback: undefined,
+            options: undefined,
+        });
     }
 
     /**
@@ -91,57 +102,16 @@ export class Dropdown
      */
     getSelectedValue(): SelectItem {
         return {
-            key: this._selectEl.value,
-            value: this._selectEl.selectedOptions[0].text,
+            key: this.elements.selectEl.value,
+            value: this.elements.selectEl.selectedOptions[0].text,
         };
     }
 
     /**
      * @inheritdoc
      */
-    build(): void {
-        this.registerDomEvent(this._selectEl, 'change', () => {
-            if (this._onChangeCallback) {
-                this._onChangeCallback(this.getSelectedValue());
-            }
-        });
-
-        if (this._options) {
-            const options = this._options();
-
-            options.forEach((option) => {
-                const optionEl = document.createElement('option');
-                optionEl.value = option.key;
-                optionEl.text = option.value;
-
-                this._selectEl.appendChild(optionEl);
-            });
-        }
-
-        if (
-            this._value != null &&
-            this._selectEl.querySelector(
-                `option[value="${this._value.key}"]`,
-            ) != null
-        ) {
-            this._selectEl.value = this._value.key;
-        } else {
-            this._selectEl.value = this._selectEl.options[0].value;
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    setDisabled(shouldDisabled: boolean): IDropdownFluentApi {
-        throw new Error('Method not implemented.');
-    }
-
-    /**
-     * @inheritdoc
-     */
     setValue(key: string, value: string): IDropdownFluentApi {
-        this._value = {
+        this._settings.value = {
             key,
             value,
         };
@@ -153,7 +123,7 @@ export class Dropdown
      * @inheritdoc
      */
     onChange(callback: OnChangeCallback): IDropdownFluentApi {
-        this._onChangeCallback = callback;
+        this._settings.onChangeCallback = callback;
 
         return this;
     }
@@ -165,18 +135,11 @@ export class Dropdown
         options: SelectOptions | SelectOptionsCallback,
     ): IDropdownFluentApi {
         if (typeof options === 'function') {
-            this._options = options;
+            this._settings.options = options;
         } else {
-            this._options = (): SelectOptions => options;
+            this._settings.options = (): SelectOptions => options;
         }
 
         return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    then(callback: (dropdown: IDropdownProtected) => void): IDropdownFluentApi {
-        throw new Error('Method not implemented.');
     }
 }

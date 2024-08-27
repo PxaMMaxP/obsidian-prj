@@ -57,7 +57,7 @@ describe('Input', () => {
 
     it('should set input element type correctly', () => {
         const input = new Input(SettingItemMock);
-        input.setType('textArea');
+        input.setType('textarea');
         input.load();
         expect(input.elements.inputEl.tagName.toLowerCase()).toBe('textarea');
     });

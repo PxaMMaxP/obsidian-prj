@@ -1,5 +1,5 @@
 import createFuzzySearch from '@nozbe/microfuzz';
-import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
+import { Implements_ } from 'src/classes/decorators/Implements';
 import { onEvent } from 'src/libs/DIComponent';
 import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
@@ -8,31 +8,31 @@ import {
     IFlowEventCallback,
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
-import {
+import type {
     IInput,
     IInputElements,
     IInputFluentApi,
     IInputProtected,
     IInputSettings,
-    InputType,
-    OnChangeCallback,
 } from './interfaces/IInput';
+import type {
+    InputType,
+    OnChangeCallback
+} from './types/Input';
+import type { ISettingColumn_ } from './interfaces/ISettingColumn';
 import { SettingColumn } from './SettingColumn';
+import type { SettingColumnConfigurator } from './types/General';
 import {
     GetSuggestionsCallback,
     IGenericSuggest,
 } from '../components/interfaces/IGenericSuggest';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents an input field.
  */
 @Register('SettingFields.input')
-@ImplementsStatic<ISettingColumn_<typeof Input>>()
+@Implements_<ISettingColumn_<typeof Input>>()
 export class Input
     extends SettingColumn<
         IInputFluentApi,
@@ -42,8 +42,6 @@ export class Input
     >
     implements IInput, IInputProtected, IInputFluentApi
 {
-    private _suggester?: IGenericSuggest<unknown>;
-
     protected _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
         parent: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
@@ -87,6 +85,8 @@ export class Input
             });
         });
     };
+
+    private _suggester?: IGenericSuggest<unknown>;
 
     /**
      * Creates a new input field.
@@ -190,15 +190,6 @@ export class Input
      */
     public setType(type: InputType): IInputFluentApi {
         this._settings.inputType = type;
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public setDisabled(shouldDisabled: boolean): IInputFluentApi {
-        this._settings.isDisabled = shouldDisabled;
 
         return this;
     }

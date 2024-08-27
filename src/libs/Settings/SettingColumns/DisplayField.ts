@@ -1,34 +1,38 @@
 import { Component } from 'obsidian';
-import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
+import { Implements_ } from 'src/classes/decorators/Implements';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { DIComponent } from 'src/libs/DIComponent/DIComponent';
-import { Register } from 'ts-injex';
-import { Inject } from 'ts-injex';
+import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
+import { Inject, Register } from 'ts-injex';
+import {
+    IDisplay,
+    IDisplayFieldElements,
+    IDisplayFieldSettings,
+    IDisplayFluentApi,
+} from './interfaces/IDisplayField';
+import { ISettingColumn_ } from './interfaces/ISettingColumn';
+import { SettingColumn } from './SettingColumn';
 import {
     AddDelegate,
     CreateEntryDelegate,
-    IDisplayEntry,
-    IDisplayFluentApi,
-    entryObject,
+    GetEntriesDelegate,
     NewListDelegate,
     RemoveDelegate,
-    GetEntriesDelegate,
-    IDisplay,
-} from './interfaces/IDisplayField';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
+} from './types/DisplayField';
+import type { SettingColumnConfigurator } from './types/General';
 import { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a display field.
  */
 @Register('SettingFields.display')
-@ImplementsStatic<ISettingColumn_<typeof DisplayField>>()
+@Implements_<ISettingColumn_<typeof DisplayField>>()
 export class DisplayField<EntryType, ListType>
-    extends DIComponent
+    extends SettingColumn<
+        IDisplayFluentApi<EntryType, ListType>,
+        IDisplayFieldElements,
+        IDisplayFieldSettings<EntryType, ListType>
+    >
     implements
         IDisplay<EntryType, ListType>,
         IDisplayFluentApi<EntryType, ListType>
@@ -36,36 +40,23 @@ export class DisplayField<EntryType, ListType>
     @Inject('ILogger_', (x: ILogger_) => x.getLogger('Display'), false)
     protected _logger?: ILogger;
 
-    private readonly _parentSettingItem: ISettingRowProtected & Component;
-    private readonly _configurator?: SettingColumnConfigurator<
-        IDisplayFluentApi<EntryType, ListType>
-    >;
-
-    @LazzyLoading((context: DisplayField<EntryType, ListType>) => {
-        const listContainerEl = document.createElement('div');
-        listContainerEl.addClass(...context._classes);
-
-        context._parentSettingItem.displayEl.appendChild(listContainerEl);
-
-        return listContainerEl;
-    }, 'Readonly')
-    private readonly _listContainerEl?: HTMLElement;
-
-    private _list?: ListType;
+    protected _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
+    ) => {
+        parent.appendChildEl('div', (listContainer) => {
+            listContainer.set({
+                El: (el) => (this.elements.listContainerEl = el),
+                Classes: this._settings.classes,
+            });
+        });
+    };
 
     /**
      * @inheritdoc
      */
     public get entries(): ListType | undefined {
-        return this._list;
+        return this._settings.list;
     }
-
-    private _newListDelegate?: NewListDelegate<ListType>;
-    private _addDelegate?: AddDelegate<EntryType, ListType>;
-    private _removeDelegate?: RemoveDelegate<EntryType, ListType>;
-    private _createEntryDelegate?: CreateEntryDelegate<EntryType>;
-    private _classes: string[] = [];
-    private _defaultEntries?: GetEntriesDelegate<EntryType>;
 
     /**
      * Creates a new display field.
@@ -78,40 +69,46 @@ export class DisplayField<EntryType, ListType>
             IDisplayFluentApi<EntryType, ListType>
         >,
     ) {
-        super();
-        this._parentSettingItem = parentSettingItem;
-        this._configurator = configurator;
+        super(
+            parentSettingItem,
+            configurator,
+            {
+                addDelegate: undefined,
+                createEntryDelegate: undefined,
+                defaultEntries: undefined,
+                newListDelegate: undefined,
+                removeDelegate: undefined,
+                classes: [],
+            },
+            // Replace the default parent element (input) with the display element.
+            { parentEl: parentSettingItem.displayEl },
+        );
     }
 
     /**
      * @inheritdoc
      */
     public override onload(): void {
-        this._configurator?.(this);
-        this.build();
-    }
+        super.onload();
 
-    /**
-     * Build the display.
-     */
-    private build(): void {
-        this._list = this._newListDelegate?.();
-        this._listContainerEl;
+        this._settings.list = this._settings.newListDelegate?.();
 
-        if (this._list != null) {
-            this._defaultEntries?.().forEach((entry) => {
+        if (this._settings.list != null)
+            this._settings.defaultEntries?.().forEach((entry) => {
                 this.addEntry(entry);
             });
-        }
     }
 
     /**
      * @inheritdoc
      */
     public addEntry(entryToAdd: EntryType): boolean {
-        if (this._list != null && this._addDelegate != null) {
+        if (this._settings.list != null && this._settings.addDelegate != null) {
             try {
-                const isAdded = this._addDelegate(this._list, entryToAdd);
+                const isAdded = this._settings.addDelegate(
+                    this._settings.list,
+                    entryToAdd,
+                );
 
                 if (isAdded) {
                     this.addListEntryEl(entryToAdd);
@@ -134,35 +131,47 @@ export class DisplayField<EntryType, ListType>
      * @param entryToAdd The entry to add to the list.
      */
     private addListEntryEl(entryToAdd: EntryType): void {
-        const el = this._createEntryDelegate?.(
-            entryToAdd,
-        ) as IDisplayEntry<EntryType>;
+        const el = this._settings.createEntryDelegate?.(entryToAdd);
 
-        el[entryObject] = entryToAdd;
+        if (el == null) return;
 
-        this.registerDomEvent(el, 'click', (event) => {
+        this.registerDomEvent(el, 'click', this.onClickRemote(entryToAdd));
+
+        this.elements.listContainerEl?.appendChild(el);
+    }
+
+    /**
+     * Returns a click event handler that removes the entry from
+     * the display container and the list.
+     * @param entryToAdd The entry to remove from the list.
+     * @returns The click event handler.
+     */
+    private onClickRemote(
+        entryToAdd: EntryType,
+    ): (this: HTMLElement, event: MouseEvent) => void {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const _ctx = this;
+
+        return function (this: HTMLElement, event: MouseEvent) {
             event.preventDefault();
-            el.remove();
-            this.removeEntry(entryToAdd);
-        });
-
-        this._listContainerEl?.appendChild(el);
+            this.remove();
+            _ctx.removeEntry(entryToAdd);
+        };
     }
 
     /**
      * @inheritdoc
      */
     public removeEntry(entryToRemove: EntryType): boolean {
-        if (this._list != null && this._removeDelegate != null) {
+        if (
+            this._settings.list != null &&
+            this._settings.removeDelegate != null
+        ) {
             try {
-                const isRemoved = this._removeDelegate(
-                    this._list,
+                const isRemoved = this._settings.removeDelegate(
+                    this._settings.list,
                     entryToRemove,
                 );
-
-                if (isRemoved) {
-                    this.removeListEntryEl(entryToRemove);
-                }
 
                 return isRemoved;
             } catch (error) {
@@ -176,31 +185,6 @@ export class DisplayField<EntryType, ListType>
         return false;
     }
 
-    /**
-     * Remove a list entry element from the display.
-     * @param entryToRemove The entry to remove from the list.
-     */
-    private removeListEntryEl(entryToRemove: EntryType): void {
-        const childs = this._listContainerEl?.children;
-
-        if (childs != null) {
-            for (let i = 0; i < childs.length; i++) {
-                const child = childs[i];
-
-                if (child instanceof HTMLElement) {
-                    const listEntry = (child as IDisplayEntry<EntryType>)[
-                        entryObject
-                    ];
-
-                    if (listEntry === entryToRemove) {
-                        this._listContainerEl?.removeChild(child);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     //#region Fluent API
 
     /**
@@ -209,7 +193,7 @@ export class DisplayField<EntryType, ListType>
     public setList(
         newListDelegate: NewListDelegate<ListType>,
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._newListDelegate = newListDelegate;
+        this._settings.newListDelegate = newListDelegate;
 
         return this;
     }
@@ -220,7 +204,7 @@ export class DisplayField<EntryType, ListType>
     public setListClasses(
         classes: string[],
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._classes = classes;
+        this._settings.classes = classes;
 
         return this;
     }
@@ -231,7 +215,7 @@ export class DisplayField<EntryType, ListType>
     public setAddDelegate(
         addDelegate: AddDelegate<EntryType, ListType>,
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._addDelegate = addDelegate;
+        this._settings.addDelegate = addDelegate;
 
         return this;
     }
@@ -242,7 +226,7 @@ export class DisplayField<EntryType, ListType>
     public setCreateEntryDelegate(
         createEntryDelegate: CreateEntryDelegate<EntryType>,
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._createEntryDelegate = createEntryDelegate;
+        this._settings.createEntryDelegate = createEntryDelegate;
 
         return this;
     }
@@ -253,7 +237,7 @@ export class DisplayField<EntryType, ListType>
     public setRemoveDelegate(
         removeDelegate: RemoveDelegate<EntryType, ListType>,
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._removeDelegate = removeDelegate;
+        this._settings.removeDelegate = removeDelegate;
 
         return this;
     }
@@ -264,7 +248,7 @@ export class DisplayField<EntryType, ListType>
     public setDefaultEntries(
         entriesDelegate: GetEntriesDelegate<EntryType>,
     ): IDisplayFluentApi<EntryType, ListType> {
-        this._defaultEntries = entriesDelegate;
+        this._settings.defaultEntries = entriesDelegate;
 
         return this;
     }
