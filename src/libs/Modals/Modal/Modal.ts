@@ -5,11 +5,11 @@ import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import type { ILifecycleManager_ } from 'src/libs/LifecycleManager/interfaces/ILifecycleManager';
-import { ValidatorDelegate } from 'src/libs/Settings/interfaces/ISettingColumn';
 import type {
     ISettingRow_,
     SettingConfigurator,
 } from 'src/libs/Settings/interfaces/ISettingRow';
+import { ValidatorDelegate } from 'src/libs/Settings/SettingColumns/types/General';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';

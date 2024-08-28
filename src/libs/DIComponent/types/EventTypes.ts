@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { ValidatorDelegate } from 'src/libs/Settings/interfaces/ISettingColumn';
+import { ValidatorDelegate } from 'src/libs/Settings/SettingColumns/types/General';
 import { IDIComponent } from '../interfaces/IDIComponent';
 
 /**
