@@ -1,9 +1,25 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
     ISettingColumn,
+    ISettingColumnElements,
+    ISettingColumnFluentApi,
     ISettingColumnProtected,
-} from '../../interfaces/ISettingColumn';
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import {
+    SelectItem,
+    OnChangeCallback,
+    SelectOptions,
+    SelectOptionsCallback,
+} from '../types/Dropdown';
 
+/**
+ * Instance interface for the dropdown field.
+ * @see {@link IDropdownProtected}
+ * @see {@link IDropdownFluentApi}
+ * @see {@link IDropdownSettings}
+ * @see {@link IDropdownElements}
+ */
 export interface IDropdown extends IDIComponent, ISettingColumn {
     /**
      * Gets the selected value of the dropdown field.
@@ -15,26 +31,15 @@ export interface IDropdown extends IDIComponent, ISettingColumn {
 /**
  * Protected interface for the dropdown field.
  */
-export interface IDropdownProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The select field element.
-         */
-        selectEl: HTMLSelectElement;
-    };
-}
+export type IDropdownProtected<
+    ElementsType extends ISettingColumnElements = IDropdownElements,
+> = ISettingColumnProtected<ElementsType>;
 
-export interface IDropdownFluentApi {
-    /**
-     * Disables or enables the dropdown field.
-     * @param shouldDisabled Whether the dropdown field should be disabled.
-     * @returns The dropdown field.
-     */
-    setDisabled(shouldDisabled: boolean): IDropdownFluentApi;
-
+/**
+ * Fluent Api for the dropdown field.
+ */
+export interface IDropdownFluentApi
+    extends ISettingColumnFluentApi<IDropdownFluentApi> {
     /**
      * Sets the value of the dropdown field.
      * @param key The key of the dropdown field value.
@@ -73,38 +78,23 @@ export interface IDropdownFluentApi {
     setOptions(
         options: SelectOptions | SelectOptionsCallback,
     ): IDropdownFluentApi;
-
-    /**
-     * Method for modifying the dropdown field.
-     * @param callback The callback function, which will be called
-     * when the dropdown field is created.
-     * @returns The dropdown field.
-     */
-    then(callback: (dropdown: IDropdownProtected) => void): IDropdownFluentApi;
 }
 
 /**
- * Represents a dropdown field entry.
- * @param key The key of the dropdown field value.
- * @param value The value of the dropdown field.
+ * Settings for the dropdown field.
  */
-export type SelectItem = {
-    key: string;
-    value: string;
-};
+export interface IDropdownSettings extends ISettingColumnSettings {
+    value?: SelectItem;
+    onChangeCallback?: OnChangeCallback;
+    options?: SelectOptionsCallback;
+}
+
 /**
- * A callback that is called when the value of the dropdown field changes.
- * @param item The key & value of the dropdown field: {@link SelectItem}.
- * @returns The new value of the dropdown field.
+ * Public elements of the dropdown field.
  */
-export type OnChangeCallback = (item: SelectItem) => void;
-/**
- * Represents the options of the dropdown field.
- * @see {@link SelectItem}
- */
-export type SelectOptions = SelectItem[];
-/**
- * A callback that returns the options of the dropdown field.
- * @returns The options of the dropdown field: {@link SelectOptions}.
- */
-export type SelectOptionsCallback = () => SelectItem[];
+export interface IDropdownElements extends ISettingColumnElements {
+    /**
+     * The select field element.
+     */
+    selectEl: HTMLSelectElement;
+}

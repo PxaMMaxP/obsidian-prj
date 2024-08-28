@@ -49,16 +49,16 @@ const mockSettingInstance = {
     setDesc: jest.fn().mockReturnThis(),
     setClass: jest.fn().mockReturnThis(),
     addTextArea: jest.fn().mockImplementation((callback) => {
-        const textAreaMock = {
+        const textareaMock = {
             setPlaceholder: jest.fn().mockReturnThis(),
             setValue: jest.fn().mockReturnThis(),
             onChange: jest.fn().mockImplementation((cb) => {
                 cb('');
 
-                return textAreaMock;
+                return textareaMock;
             }),
         };
-        callback(textAreaMock);
+        callback(textareaMock);
 
         return mockSettingInstance;
     }),

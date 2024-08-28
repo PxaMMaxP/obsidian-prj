@@ -2,8 +2,13 @@ import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
-import type { IFlow, IFlowApiType, ISetValueType } from './interfaces/IFlow';
-import { IFlow_, IFlowApi } from './interfaces/IFlow';
+import {
+    IFlow_,
+    IFlow,
+    IFlowApiType,
+    IFlowApi,
+    ISetValueType,
+} from './interfaces/IFlow';
 import type { IFlowTag } from './interfaces/IFlowTag';
 import { IFlowSymbol, isIFlowTagged } from './interfaces/IFlowTag';
 import {
@@ -18,8 +23,7 @@ import type {
     IFlowEventCallback,
     IFlowThenCallback,
 } from './types/IFlowDelegates';
-import { DIComponent } from '../DIComponent/DIComponent';
-import { shouldRemoveOnUnload, isLoaded } from '../DIComponent/types/IDIComponentSymbols';
+import { DIComponent, isLoaded, shouldRemoveOnUnload } from '../DIComponent';
 
 /**
  * A HTML Fluent API class.
@@ -557,6 +561,9 @@ export class Flow<Tag extends keyof HTMLElementTagNameMap>
                         } else if (isArrayOfAddEventsParameters(events)) {
                             this.addEventListener(events);
                         }
+                        break;
+                    case 'El':
+                        this.getEl(value[key]);
                         break;
                     case 'Styles':
                         this.setStyles(value[key]);

@@ -1,33 +1,30 @@
 import createFuzzySearch from '@nozbe/microfuzz';
-import { LazzyLoading } from 'src/classes/decorators/LazzyLoading';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
 import { onEvent } from 'src/libs/DIComponent';
-import { DIComponent } from 'src/libs/DIComponent/DIComponent';
+import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import type { ITag, ITag_ } from 'src/libs/Tags/interfaces/ITag';
 import type { ITags, ITags_ } from 'src/libs/Tags/interfaces/ITags';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
 import { DisplayField } from './DisplayField';
-import type {
-    GetEntriesDelegate,
-    IDisplay,
-    IDisplayFluentApi,
-} from './interfaces/IDisplayField';
+import type { IDisplay, IDisplayFluentApi } from './interfaces/IDisplayField';
+import type { ISettingColumn_ } from './interfaces/ISettingColumn';
 import {
     ITagSearch,
+    ITagSearchElements,
     ITagSearchFluentAPI,
     ITagSearchProtected,
+    ITagSearchSettings,
 } from './interfaces/ITagSearch';
+import { SettingColumn } from './SettingColumn';
+import type { GetEntriesDelegate } from './types/DisplayField';
+import type { SettingColumnConfigurator } from './types/General';
 import type {
-    IGenericSuggest_,
     IGenericSuggest,
     GetSuggestionsCallback,
 } from '../components/interfaces/IGenericSuggest';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
@@ -35,15 +32,18 @@ import type { ISettingRowProtected } from '../interfaces/ISettingRow';
  */
 @Register('SettingFields.tagsearch')
 export class TagSearch
-    extends DIComponent
+    extends SettingColumn<
+        ITagSearchFluentAPI,
+        ITagSearchElements,
+        ITagSearchSettings,
+        ITagSearchProtected
+    >
     implements ITagSearch, ITagSearchProtected, ITagSearchFluentAPI
 {
     @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
     private readonly _logger?: ILogger;
     @Inject('SettingFields.display')
-    private readonly _IDisplayField_!: ISettingColumn_<typeof DisplayField>;
-    @Inject('IGenericSuggest_')
-    private readonly _IGenericSuggest_!: IGenericSuggest_<string>;
+    private readonly __IDisplayField!: ISettingColumn_<typeof DisplayField>;
     @Inject('IApp')
     protected readonly _IApp!: IApp;
     @Inject('ITags_')
@@ -51,82 +51,54 @@ export class TagSearch
     @Inject('ITag_')
     protected readonly _ITag_!: ITag_;
 
-    public readonly parentSettingItem: ISettingRowProtected;
+    protected _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
+    ) => {
+        parent.appendChildEl('div', (searchContainer) => {
+            searchContainer
+                .set({
+                    El: (el) => (this.elements.searchContainerEl = el),
+                    Classes: ['search-input-container'],
+                })
+                .appendChildEl('input', (inputEl) => {
+                    inputEl
+                        .set({
+                            El: (el) => (this.elements.inputEl = el),
+                            type: 'search',
+                            enterKeyHint: 'search',
+                            spellcheck: false,
+                            placeholder: this._settings.placeholder,
+                        })
+                        .then((_ctx, el) => {
+                            this.buildDisplayField();
+                            this.buildSuggester(el);
+                        })
+                        .appendChildEl('div', (clearButton) => {
+                            clearButton.set({
+                                El: (el) => (this.elements._clearButtonEl = el),
+                                Classes: ['search-input-clear-button'],
+                                Events: [
+                                    [
+                                        'click',
+                                        () => {
+                                            this.elements.inputEl.value = '';
+                                            this.elements.inputEl.focus();
+                                        },
+                                    ],
+                                ],
+                            });
+                        });
+                });
+        });
+    };
+
+    get list(): ITags | undefined {
+        throw new Error('Method not implemented.');
+    }
+
     private _displayField?: IDisplay<ITag, ITags> &
         IDisplayFluentApi<ITag, ITags>;
     private _suggester?: IGenericSuggest<unknown>;
-    private readonly _configurator?: SettingColumnConfigurator<ITagSearchFluentAPI>;
-
-    /**
-     * @inheritdoc
-     */
-    public get elements(): {
-        searchContainerEl: HTMLInputElement;
-        inputEl: HTMLInputElement;
-    } {
-        return {
-            searchContainerEl: this._searchContainerEl,
-            inputEl: this._inputEl,
-        };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    @LazzyLoading((ctx: TagSearch) => {
-        const searchContainerEl = document.createElement('div');
-        searchContainerEl.addClass('search-input-container');
-        ctx.parentSettingItem.inputEl.appendChild(searchContainerEl);
-
-        return searchContainerEl;
-    }, 'Readonly')
-    private readonly _searchContainerEl: HTMLInputElement;
-
-    /**
-     * @inheritdoc
-     */
-    @LazzyLoading((ctx: TagSearch) => {
-        const inputEl = document.createElement('input');
-        inputEl.type = 'search';
-        inputEl.enterKeyHint = 'search';
-        inputEl.spellcheck = false;
-        inputEl.placeholder = ctx._placeholder;
-        ctx._searchContainerEl.prepend(inputEl);
-
-        return inputEl;
-    }, 'Readonly')
-    private readonly _inputEl: HTMLInputElement;
-
-    /**
-     * @inheritdoc
-     */
-    @LazzyLoading((ctx: TagSearch) => {
-        const clearButtonEl = document.createElement('div');
-        clearButtonEl.addClass('search-input-clear-button');
-        ctx._searchContainerEl.appendChild(clearButtonEl);
-
-        ctx.registerDomEvent(clearButtonEl, 'click', () => {
-            ctx._inputEl.value = '';
-            ctx._inputEl.focus();
-        });
-
-        return clearButtonEl;
-    }, 'Readonly')
-    private readonly _clearButtonEl: HTMLDivElement;
-
-    private _placeholder = '';
-    private _list?: ITags;
-
-    /**
-     * @inheritdoc
-     */
-    public get list(): ITags | undefined {
-        return this._list;
-    }
-
-    private _defaultEntries: GetEntriesDelegate<ITag> = () => [];
-
-    private _getSuggestionsCallback?: GetSuggestionsCallback<string>;
 
     /**
      * Creates a new input field.
@@ -137,19 +109,19 @@ export class TagSearch
         parentSettingItem: ISettingRowProtected,
         configurator?: SettingColumnConfigurator<ITagSearchFluentAPI>,
     ) {
-        super();
-
-        this.parentSettingItem = parentSettingItem;
-
-        this._configurator = configurator;
+        super(parentSettingItem, configurator, {
+            placeholder: '',
+            getSuggestionsCallback: undefined,
+            list: undefined,
+            defaultEntries: undefined,
+        });
     }
 
     /**
      * @inheritdoc
      */
     public override onload(): void {
-        this._configurator?.(this);
-        this.build();
+        super.onload();
 
         /**
          * Adds the common window classes to the suggester container.
@@ -162,20 +134,24 @@ export class TagSearch
     /**
      * Build the display.
      */
-    private build(): void {
-        this._displayField = new this._IDisplayField_(
+    private buildDisplayField(): void {
+        this._displayField = new this.__IDisplayField(
             this.parentSettingItem,
             (field) => {
                 field
                     .setList(() => {
-                        if (this._list == null) {
-                            return new this._ITags_(undefined);
+                        if (this._settings.list == null) {
+                            this._settings.list = new this._ITags_(undefined);
+
+                            return this._settings.list;
                         } else {
-                            return this._list;
+                            return this._settings.list;
                         }
                     })
                     .setListClasses(['custom-form', 'tag-list'])
-                    .setDefaultEntries(this._defaultEntries)
+                    .setDefaultEntries(
+                        this._settings.defaultEntries ?? (() => []),
+                    )
                     .setAddDelegate((list: ITags, tag: ITag) => {
                         return list.add(tag);
                     })
@@ -189,59 +165,46 @@ export class TagSearch
         ) as IDisplay<ITag, ITags> & IDisplayFluentApi<ITag, ITags>;
 
         this.addChild(this._displayField);
-
-        this._searchContainerEl;
-        this._inputEl;
-        this._clearButtonEl;
-
-        this.buildSuggester();
     }
 
     /**
      * Builds the suggester for the input field.
+     * @param inputEl The input element.
      */
-    private buildSuggester(): void {
-        if (this._getSuggestionsCallback != null) {
-            this._suggester = new this._IGenericSuggest_(
-                this._inputEl,
-                (value: string) => {
-                    const tag = new this._ITag_(value);
-                    this._displayField?.addEntry(tag);
-                },
-                (input: string) => {
-                    const suggestions = this._getSuggestionsCallback?.(input);
-
-                    if (suggestions == null) {
-                        this._logger?.warn('The suggestions are null.');
-
-                        return [];
-                    }
-
-                    const items = suggestions.map((suggestion) => ({
-                        value: suggestion,
-                    }));
-
-                    const fuzzySearch = createFuzzySearch(items, {
-                        getText: (item) => [item.value],
-                    });
-
-                    const results = fuzzySearch(input);
-
-                    const filteredItems = results.map(
-                        (result) => result.item.value,
-                    );
-
-                    return filteredItems;
-                },
-            );
+    private buildSuggester(inputEl: HTMLInputElement): void {
+        if (this._settings.getSuggestionsCallback == null) {
+            return;
         }
+
+        this._suggester = new this.__IGenericSuggest(
+            inputEl,
+            (value: string) => {
+                const tag = new this._ITag_(value);
+                this._displayField?.addEntry(tag);
+            },
+            (input: string) => {
+                const suggestions =
+                    this._settings.getSuggestionsCallback?.(input);
+
+                if (suggestions == null) {
+                    this.__logger?.debug('The suggestions are null.');
+
+                    return [];
+                }
+
+                return createFuzzySearch(
+                    suggestions.map((value) => ({ value })),
+                    { getText: (item) => [item.value] },
+                )(input).map((result) => result.item.value);
+            },
+        );
     }
 
     /**
      * @inheritdoc
      */
     public setPlaceholder(placeholder: string): ITagSearchFluentAPI {
-        this._placeholder = placeholder;
+        this._settings.placeholder = placeholder;
 
         return this;
     }
@@ -252,7 +215,7 @@ export class TagSearch
     public addSuggestion(
         getSuggestionsCb: GetSuggestionsCallback<string>,
     ): ITagSearchFluentAPI {
-        this._getSuggestionsCallback = getSuggestionsCb;
+        this._settings.getSuggestionsCallback = getSuggestionsCb;
 
         return this;
     }
@@ -261,7 +224,7 @@ export class TagSearch
      * @inheritdoc
      */
     public setList(list: ITags): ITagSearchFluentAPI {
-        this._list = list;
+        this._settings.list = list;
 
         return this;
     }
@@ -272,7 +235,7 @@ export class TagSearch
     public setDefaultEntries(
         defaultEntries: GetEntriesDelegate<ITag>,
     ): ITagSearchFluentAPI {
-        this._defaultEntries = defaultEntries;
+        this._settings.defaultEntries = defaultEntries;
 
         return this;
     }

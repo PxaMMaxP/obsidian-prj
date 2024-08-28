@@ -37,6 +37,11 @@ export interface IModal extends IDIComponent, IModalFluentApi {
      * Gets the unique class name of the draggable element.
      */
     get draggableClassName(): string | undefined;
+
+    /**
+     * The results of the modal.
+     */
+    get result(): Record<string, unknown>;
 }
 
 export interface IModalFluentApi {
@@ -53,6 +58,11 @@ export interface IModalFluentApi {
      * @throws {CallbackError} If an error occurs in the `onClose` callback.
      */
     close(): void;
+
+    /**
+     * Gets whether the modal required fields are filled.
+     */
+    get isRequiredFullfilled(): boolean;
 
     /**
      * Sets the before open callback.

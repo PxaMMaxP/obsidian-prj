@@ -1,13 +1,19 @@
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import {
     ISettingColumn,
+    ISettingColumnElements,
+    ISettingColumnFluentApi,
     ISettingColumnProtected,
-} from '../../interfaces/ISettingColumn';
+    ISettingColumnSettings,
+} from './ISettingColumn';
+import { OnChangeCallback } from '../types/Toggle';
 
 /**
- * Represents a toggle field.
+ * Instance interface for the toggle field.
+ * @see {@link IToggleSettings}
+ * @see {@link IToggleElements}
+ * @see {@link IToggleFluentApi}
  * @see {@link IToggleProtected}
- * @see {@link IToggleFluentAPI}
  */
 export interface IToggle extends IDIComponent, ISettingColumn {
     /**
@@ -23,55 +29,64 @@ export interface IToggle extends IDIComponent, ISettingColumn {
 }
 
 /**
- * The internal toggle field.
- * @see {@link IToggle}
+ * Protected interface for the toggle field.
  */
-export interface IToggleProtected extends ISettingColumnProtected {
-    /**
-     * @inheritdoc
-     */
-    get elements(): {
-        /**
-         * The toggle element.
-         */
-        toggleEl: HTMLInputElement;
-    };
-}
+export type IToggleProtected<
+    ElementsType extends ISettingColumnElements = IToggleElements,
+> = ISettingColumnProtected<ElementsType>;
 
 /**
- * The fluent API for the toggle field.
- * @see {@link IToggle}
+ * Fluent Api for the toggle field.
  */
-export interface IToggleFluentAPI {
+export interface IToggleFluentApi
+    extends ISettingColumnFluentApi<IToggleFluentApi> {
     /**
      * Sets the value of the toggle.
      * @param isToggled The value of the toggle.
      * @returns The toggle fluent API.
      */
-    setToggled(isToggled: boolean): IToggleFluentAPI;
+    setToggled(isToggled: boolean): IToggleFluentApi;
 
     /**
      * Disables or enables the toggle.
      * @param isDisabled Whether the toggle should be disabled.
      * @returns The toggle fluent API.
      */
-    setDisabled(isDisabled: boolean): IToggleFluentAPI;
+    setDisabled(isDisabled: boolean): IToggleFluentApi;
 
     /**
      * Sets a callback that is called when the value of the toggle changes.
      * @param callback The callback that is called when the value of the toggle changes.
      */
-    onChange(callback: OnChangeCallback): IToggleFluentAPI;
-
-    /**
-     * Method for modifying the toggle field.
-     * @param callback The callback that modifies the toggle field.
-     * @returns The toggle fluent API.
-     */
-    then(callback: (toggle: IToggleProtected) => void): IToggleFluentAPI;
+    onChange(callback: OnChangeCallback): IToggleFluentApi;
 }
 
 /**
- * A callback that is called when the value of the toggle changes.
+ * Settings interface for the toggle field.
  */
-export type OnChangeCallback = (isToggled: boolean) => void;
+export interface IToggleSettings extends ISettingColumnSettings {
+    /**
+     * The value of the toggle.
+     */
+    isToggled?: boolean;
+
+    /**
+     * A callback that is called when the value of the toggle changes.
+     */
+    onChangeCallback?: OnChangeCallback;
+}
+
+/**
+ * Public elements interface for the toggle field.
+ */
+export interface IToggleElements extends ISettingColumnElements {
+    /**
+     * The toggle element.
+     */
+    toggleEl: HTMLInputElement;
+    /**
+     * The container element of the toggle.
+     */
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    _toggleContainerEl: HTMLDivElement;
+}

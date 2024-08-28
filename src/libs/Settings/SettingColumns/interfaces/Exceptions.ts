@@ -1,5 +1,3 @@
-import { ISettingColumn } from '../../interfaces/ISettingColumn';
-
 /**
  * General error class for {@link ISettingColumn}
  */

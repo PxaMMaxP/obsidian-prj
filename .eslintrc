@@ -70,6 +70,18 @@
       {
         "selector": "classProperty",
         "modifiers": [
+          "private",
+          "readonly"
+        ],
+        "format": [],
+        "custom": {
+          "regex": "^(_{1,2}I[A-Z][a-zA-Z0-9]*_?|_{1,2}[a-z][a-zA-Z0-9]*|_{2}[a-zA-Z][a-zA-Z0-9]*)$",
+          "match": true
+        }
+      },
+      {
+        "selector": "classProperty",
+        "modifiers": [
           "protected"
         ],
         "format": [],
@@ -109,7 +121,7 @@
         ],
         "leadingUnderscore": "forbid",
         "filter": {
-          "regex": "^(Events|Styles|Classes|Then|TextContent)$",
+          "regex": "^(Events|Styles|Classes|Then|TextContent|El)$",
           "match": false
         }
       },
@@ -137,7 +149,7 @@
           "camelCase"
         ],
         "filter": {
-          "regex": ".*-event$|^(Events|Styles|Classes|Then|TextContent)$",
+          "regex": ".*-event$|^(Events|Styles|Classes|Then|TextContent|El)$",
           "match": false
         }
       }

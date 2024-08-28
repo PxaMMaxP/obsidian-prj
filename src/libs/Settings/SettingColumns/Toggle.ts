@@ -1,34 +1,37 @@
-import { Component } from 'obsidian';
-import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
-import { DIComponent } from 'src/libs/DIComponent/DIComponent';
-import { Flow } from 'src/libs/HTMLFlow/Flow';
+import { Implements_ } from 'src/classes/decorators/Implements';
 import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
-import { Inject } from 'ts-injex';
-import { ConfigurationError } from './interfaces/Exceptions';
+import { ISettingColumn_ } from './interfaces/ISettingColumn';
 import {
-    IToggleFluentAPI,
+    IToggle,
+    IToggleElements,
+    IToggleFluentApi,
     IToggleProtected,
-    OnChangeCallback,
+    IToggleSettings,
 } from './interfaces/IToggle';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
+import { SettingColumn } from './SettingColumn';
+import type { SettingColumnConfigurator } from './types/General';
+import { OnChangeCallback } from './types/Toggle';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents a toggle field.
  */
 @Register('SettingFields.toggle')
-@ImplementsStatic<ISettingColumn_<typeof Toggle>>()
-export class Toggle extends DIComponent implements IToggleProtected {
-    @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
-    protected _logger?: ILogger;
-
+@Implements_<ISettingColumn_<typeof Toggle>>()
+export class Toggle
+    extends SettingColumn<
+        IToggleFluentApi,
+        IToggleElements,
+        IToggleSettings,
+        IToggleProtected
+    >
+    implements IToggle, IToggleProtected, IToggleFluentApi
+{
     private _isToggled = false;
+
     /**
      * @inheritdoc
      */
@@ -36,56 +39,47 @@ export class Toggle extends DIComponent implements IToggleProtected {
         return this._isToggled;
     }
 
-    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
-        cfg: IFlowApi<keyof HTMLElementTagNameMap>,
+    protected readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
-        cfg.appendChildEl('div', (cfg) => {
-            cfg.getEl((el) => (this.elements._toggleContainerEl = el))
-                .setId('checkbox-containerEl')
-                .addClass(['checkbox-container'])
-                .addClass(this._isToggled ? 'is-enabled' : 'is-disabled')
-                .addEventListener(
-                    this._settings.isDisabled !== true ? 'click' : 'void',
-                    (_, __, flow) => {
-                        flow?.toggleClass(['is-enabled', 'is-disabled']);
-                        this._isToggled = !this._isToggled;
-                        this._settings.onChangeCallback?.(this._isToggled);
-                    },
-                )
+        parent.appendChildEl('div', (checkboxContainer) => {
+            checkboxContainer
+                .set({
+                    El: (el) => (this.elements._toggleContainerEl = el),
+                    Classes: [
+                        'checkbox-container',
+                        this._isToggled ? 'is-enabled' : 'is-disabled',
+                    ],
+                    Events: ((): EventsParameters<'div'> => {
+                        if (this._settings.isDisabled !== true)
+                            return [
+                                'click',
+                                (_, __, flow) => {
+                                    this._isToggled = !this._isToggled;
 
-                .appendChildEl('input', (cfg) => {
-                    cfg.getEl((el) => (this.elements.toggleEl = el))
-                        .setId('toggleEl')
-                        .setAttribute('type', 'checkbox');
+                                    flow?.toggleClass([
+                                        'is-enabled',
+                                        'is-disabled',
+                                    ]);
+
+                                    this._settings.onChangeCallback?.(
+                                        this._isToggled,
+                                    );
+
+                                    this.emitResult(this._isToggled);
+                                },
+                            ];
+                        else return [];
+                    })(),
+                })
+                .appendChildEl('input', (checkbox) => {
+                    checkbox.set({
+                        El: (el) => (this.elements.toggleEl = el),
+                        type: 'checkbox',
+                    });
                 });
         });
     };
-
-    /**
-     * @inheritdoc
-     */
-    public readonly elements: {
-        /**
-         * @inheritdoc
-         */
-        toggleEl: HTMLInputElement;
-        /**
-         * The container of the toggle.
-         */
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        _toggleContainerEl: HTMLDivElement;
-    } = {
-        toggleEl: null as never,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        _toggleContainerEl: null as never,
-    };
-
-    /**
-     * @inheritdoc
-     */
-    public readonly parentSettingItem: ISettingRowProtected & Component;
-    private readonly _configurator?: SettingColumnConfigurator<IToggleFluentAPI>;
-    private readonly _settings: IToggleSettings = {};
 
     /**
      * Creates a new toggle field.
@@ -94,28 +88,18 @@ export class Toggle extends DIComponent implements IToggleProtected {
      */
     constructor(
         parentSettingItem: ISettingRowProtected,
-        configurator?: SettingColumnConfigurator<IToggleFluentAPI>,
+        configurator?: SettingColumnConfigurator<IToggleFluentApi>,
     ) {
-        super();
-
-        this.parentSettingItem = parentSettingItem;
-        this._configurator = configurator;
+        super(parentSettingItem, configurator, {
+            isToggled: false,
+            onChangeCallback: undefined,
+        });
     }
 
     /**
      * @inheritdoc
      */
-    public override onload(): void {
-        this._configurator?.(this);
-        this._isToggled = this._settings.isToggled ?? false;
-        const flow = new Flow(this.parentSettingItem.inputEl, this._flowConfig);
-        this.addChild(flow);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    setToggled(isToggled: boolean): IToggleFluentAPI {
+    setToggled(isToggled: boolean): IToggleFluentApi {
         this._settings.isToggled = isToggled;
 
         return this;
@@ -124,60 +108,9 @@ export class Toggle extends DIComponent implements IToggleProtected {
     /**
      * @inheritdoc
      */
-    setDisabled(isDisabled: boolean): IToggleFluentAPI {
-        this._settings.isDisabled = isDisabled;
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    onChange(callback: OnChangeCallback): IToggleFluentAPI {
+    onChange(callback: OnChangeCallback): IToggleFluentApi {
         this._settings.onChangeCallback = callback;
 
         return this;
     }
-
-    /**
-     * @inheritdoc
-     */
-    then(callback: (toggle: IToggleProtected) => void): IToggleFluentAPI {
-        try {
-            callback?.(this);
-        } catch (error) {
-            this._logger?.error(
-                'An error occurred while executing the `then` callback.',
-                'The Component will be unloaded.',
-                'Error:',
-                error,
-            );
-            this.unload();
-            throw new ConfigurationError(`then-Callback`, error);
-        }
-
-        return this;
-    }
 }
-
-/**
- * Represents the settings for the toggle field.
- */
-interface IToggleSettings {
-    /**
-     * The value of the toggle.
-     */
-    isToggled?: boolean;
-
-    /**
-     * Whether the toggle is disabled.
-     */
-    isDisabled?: boolean;
-
-    /**
-     * A callback that is called when the value of the toggle changes.
-     */
-    onChangeCallback?: OnChangeCallback;
-}
-
-const _value = Symbol('ListEntry');

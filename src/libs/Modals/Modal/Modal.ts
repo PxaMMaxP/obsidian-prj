@@ -1,6 +1,6 @@
 import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
 import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
-import { broadcastEvent, DIComponent } from 'src/libs/DIComponent';
+import { broadcastEvent, DIComponent, onEvent } from 'src/libs/DIComponent';
 import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
 import { Opts } from 'src/libs/HTMLFlow/Opts';
 import { IFlowConfig } from 'src/libs/HTMLFlow/types/IFlowDelegates';
@@ -9,6 +9,7 @@ import type {
     ISettingRow_,
     SettingConfigurator,
 } from 'src/libs/Settings/interfaces/ISettingRow';
+import { ValidatorDelegate } from 'src/libs/Settings/SettingColumns/types/General';
 import { Register } from 'ts-injex';
 import { Inject } from 'ts-injex';
 import { CallbackError, MissingCallbackError } from './interfaces/Exceptions';
@@ -119,6 +120,39 @@ export class Modal extends DIComponent implements IModal, IModalFluentApi {
      */
     public get draggableClassName(): string | undefined {
         return this._draggableElement?.className;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public readonly result: Record<string, unknown> = {};
+    public readonly requiredResultKeys: Record<
+        string,
+        undefined | boolean | ValidatorDelegate
+    > = {};
+
+    /**
+     * @inheritdoc
+     */
+    public get isRequiredFullfilled(): boolean {
+        return Object.keys(this.requiredResultKeys).every((key) => {
+            const value = this.result[key];
+            const required = this.requiredResultKeys[key];
+
+            if (required == null || required === false) {
+                return true;
+            } else if (typeof required === 'function') {
+                const validator = required;
+
+                return validator(value);
+            } else {
+                if (typeof value === 'string') {
+                    return value.trim().length > 0;
+                } else {
+                    return value != null;
+                }
+            }
+        });
     }
 
     private _modalContainer: HTMLDivElement;
@@ -242,6 +276,28 @@ export class Modal extends DIComponent implements IModal, IModalFluentApi {
                 this._draggableElement.className,
             ]);
         }
+
+        /**
+         * Register on `result` event to get the result of the modal.
+         */
+        this[onEvent]('result', (key: string, value: string) => {
+            this.result[key] = value;
+        });
+
+        /**
+         * Register on `required-results` event to get the required results of the modal.
+         */
+        this[onEvent](
+            'required-results',
+            (key: string, required: boolean | ValidatorDelegate) => {
+                this.requiredResultKeys[key] = required;
+            },
+        );
+
+        /**
+         * Broadcast the modal loaded event to the plugin.
+         */
+        this[broadcastEvent]('loaded');
     }
 
     /**

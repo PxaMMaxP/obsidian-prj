@@ -1,111 +1,109 @@
 import createFuzzySearch from '@nozbe/microfuzz';
-import { ImplementsStatic } from 'src/classes/decorators/ImplementsStatic';
-import type { IApp } from 'src/interfaces/IApp';
-import type { ILogger, ILogger_ } from 'src/interfaces/ILogger';
+import { Implements_ } from 'src/classes/decorators/Implements';
 import { onEvent } from 'src/libs/DIComponent';
-import { DIComponent } from 'src/libs/DIComponent/DIComponent';
-import type { IFlow_, IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
-import { Opts } from 'src/libs/HTMLFlow/Opts';
+import { IFlowApi } from 'src/libs/HTMLFlow/interfaces/IFlow';
+import { EventsParameters } from 'src/libs/HTMLFlow/types/IFlow';
 import {
     IFlowConfig,
     IFlowEventCallback,
 } from 'src/libs/HTMLFlow/types/IFlowDelegates';
 import { Register } from 'ts-injex';
-import { Inject } from 'ts-injex';
-import { ConfigurationError } from './interfaces/Exceptions';
-import {
+import type {
     IInput,
+    IInputElements,
     IInputFluentApi,
     IInputProtected,
-    InputElementType,
-    InputType,
-    OnChangeCallback,
+    IInputSettings,
 } from './interfaces/IInput';
 import type {
-    IGenericSuggest_,
-    IGenericSuggest,
+    InputType,
+    OnChangeCallback
+} from './types/Input';
+import type { ISettingColumn_ } from './interfaces/ISettingColumn';
+import { SettingColumn } from './SettingColumn';
+import type { SettingColumnConfigurator } from './types/General';
+import {
     GetSuggestionsCallback,
+    IGenericSuggest,
 } from '../components/interfaces/IGenericSuggest';
-import type {
-    ISettingColumn_,
-    SettingColumnConfigurator,
-} from '../interfaces/ISettingColumn';
 import type { ISettingRowProtected } from '../interfaces/ISettingRow';
 
 /**
  * Represents an input field.
  */
 @Register('SettingFields.input')
-@ImplementsStatic<ISettingColumn_<typeof Input>>()
+@Implements_<ISettingColumn_<typeof Input>>()
 export class Input
-    extends DIComponent
+    extends SettingColumn<
+        IInputFluentApi,
+        IInputElements,
+        IInputSettings,
+        IInputProtected
+    >
     implements IInput, IInputProtected, IInputFluentApi
 {
-    @Inject('IApp')
-    protected readonly _IApp!: IApp;
-    @Inject('ILogger_', (x: ILogger_) => x.getLogger(''), false)
-    protected _logger?: ILogger;
-    @Inject('IFlow_')
-    protected readonly _IFlow_!: IFlow_;
-    @Inject('IGenericSuggest_')
-    private readonly _IGenericSuggest_!: IGenericSuggest_<string>;
-
-    private readonly _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
-        cfg: IFlowApi<keyof HTMLElementTagNameMap>,
+    protected _flowConfig: IFlowConfig<keyof HTMLElementTagNameMap> = (
+        parent: IFlowApi<keyof HTMLElementTagNameMap>,
     ) => {
-        const opts = Opts.inspect(this._settings);
+        const inputTypeEl =
+            this._settings.inputType === 'textarea' ? 'textarea' : 'input';
 
-        cfg.appendChildEl(this._settings.inputElType, (inputEl) => {
-            inputEl
-                .getEl((el) => (this.elements.inputEl = el))
-                .setId('inputEl')
-                .set({
-                    placeholder: this._settings.placeholder,
-                    value: this._settings.value,
-                    disabled: opts.isDisabled ? 'true' : undefined,
-                    spellcheck: opts.shouldSpellCheck ? 'true' : 'false',
-                    // If the input element is as textarea, the type attribute is not set.
-                    type: opts.inputElType.is('textarea')
-                        ? undefined
-                        : this._settings.inputType,
-                    Events: opts.inputElType.is('textarea')
-                        ? [
-                              ['input', this.updateMinHeight],
-                              [
-                                  opts.onChangeCallback?.is()
-                                      ? 'change'
-                                      : 'void',
-                                  () =>
-                                      this._settings.onChangeCallback?.(
-                                          this.elements.inputEl.value,
-                                      ),
-                              ],
-                          ]
-                        : [
-                              opts.onChangeCallback?.is() ? 'change' : 'void',
-                              () =>
-                                  this._settings.onChangeCallback?.(
-                                      this.elements.inputEl.value,
-                                  ),
-                          ],
-                    Then: opts.getSuggestionsCallback?.is()
-                        ? // Add the suggestions.
-                          (ctx, el) =>
+        parent.appendChildEl(inputTypeEl, (inputEl) => {
+            inputEl.set({
+                El: (el) => (this.elements.inputEl = el),
+                placeholder: this._settings.placeholder,
+                value: this._settings.value,
+                disabled: this._settings.isDisabled ? 'true' : null,
+                spellcheck: this._settings.shouldSpellCheck ? 'true' : 'false',
+                type: inputTypeEl === 'input' ? this._settings.inputType : null,
+                Events: ((): EventsParameters<'input' | 'textarea'> => {
+                    const events: EventsParameters<'input' | 'textarea'> = [];
+
+                    if (inputTypeEl === 'textarea')
+                        events.push(['input', this.updateMinHeight]);
+
+                    if (
+                        this._settings.onChangeCallback != null ||
+                        this._settings.key !== ''
+                    )
+                        events.push([
+                            inputTypeEl === 'textarea' ? 'input' : 'change',
+                            () => {
+                                const value = this.elements.inputEl.value;
+                                this._settings.onChangeCallback?.(value);
+                                this.emitResult(value);
+                            },
+                        ]);
+
+                    return events;
+                })(),
+                Then:
+                    this._settings.getSuggestionsCallback != null
+                        ? (_ctx, el) =>
                               this.buildSuggester(el as HTMLInputElement)
                         : undefined,
-                });
+            });
         });
     };
 
+    private _suggester?: IGenericSuggest<unknown>;
+
     /**
-     * @inheritdoc
+     * Creates a new input field.
+     * @param parentSettingItem The setting item that the input field belongs to.
+     * @param configurator The function that configures the input field.
      */
-    public readonly elements: {
-        /**
-         * @inheritdoc
-         */
-        inputEl: HTMLInputElement | HTMLTextAreaElement;
-    } = { inputEl: null as never };
+    constructor(
+        parentSettingItem: ISettingRowProtected,
+        configurator?: SettingColumnConfigurator<IInputFluentApi>,
+    ) {
+        super(parentSettingItem, configurator, {
+            inputType: 'text',
+            value: '',
+            placeholder: '',
+            shouldSpellCheck: false,
+        });
+    }
 
     /**
      * Updates the minimum height of the input field.
@@ -133,18 +131,20 @@ export class Input
         )
             return;
 
-        this._suggester = new this._IGenericSuggest_(
+        this._suggester = new this.__IGenericSuggest(
             inputEl,
             (value: string) => {
                 inputEl.value = value;
                 this._settings.onChangeCallback?.(inputEl.value);
+
+                this.emitResult(value);
             },
             (input: string) => {
                 const suggestions =
                     this._settings.getSuggestionsCallback?.(input);
 
                 if (suggestions == null) {
-                    this._logger?.warn('The suggestions are null.');
+                    this.__logger?.debug('The suggestions are null.');
 
                     return [];
                 }
@@ -157,39 +157,11 @@ export class Input
         );
     }
 
-    public readonly parentSettingItem: ISettingRowProtected;
-    private readonly _configurator?: SettingColumnConfigurator<IInputFluentApi>;
-    private readonly _settings: IInputSettings = new InputSettings();
-    private _suggester?: IGenericSuggest<unknown>;
-
-    /**
-     * Creates a new input field.
-     * @param parentSettingItem The setting item that the input field belongs to.
-     * @param configurator The function that configures the input field.
-     */
-    constructor(
-        parentSettingItem: ISettingRowProtected,
-        configurator?: SettingColumnConfigurator<IInputFluentApi>,
-    ) {
-        super();
-
-        this.parentSettingItem = parentSettingItem;
-
-        this._configurator = configurator;
-    }
-
     /**
      * @inheritdoc
      */
     public override onload(): void {
-        this._configurator?.(this);
-
-        const flow = new this._IFlow_(
-            this.parentSettingItem.inputEl,
-            this._flowConfig,
-        );
-
-        this.addChild(flow);
+        super.onload();
 
         /**
          * Adds the common window classes to the suggester container.
@@ -209,10 +181,8 @@ export class Input
     /**
      * @inheritdoc
      */
-    public setInputElType(inputType: InputElementType): IInputFluentApi {
-        this._settings.inputElType = inputType;
-
-        return this;
+    public get value(): string {
+        return this.elements.inputEl.value;
     }
 
     /**
@@ -220,15 +190,6 @@ export class Input
      */
     public setType(type: InputType): IInputFluentApi {
         this._settings.inputType = type;
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public setDisabled(shouldDisabled: boolean): IInputFluentApi {
-        this._settings.isDisabled = shouldDisabled;
 
         return this;
     }
@@ -279,142 +240,4 @@ export class Input
 
         return this;
     }
-
-    /**
-     * @inheritdoc
-     */
-    then(callback: (input: IInputProtected) => void): IInputFluentApi {
-        try {
-            callback?.(this);
-        } catch (error) {
-            this._logger?.error(
-                'An error occurred while executing the `then` callback.',
-                'The Component will be unloaded.',
-                'Error:',
-                error,
-            );
-            this.unload();
-            throw new ConfigurationError(`then-Callback`, error);
-        }
-
-        return this;
-    }
-}
-
-/**
- * Represents the settings for the input field.
- */
-class InputSettings implements IInputSettings {
-    private _inputElType: InputElementType = 'HTMLInputElement';
-
-    /**
-     * @inheritdoc
-     */
-    public set inputElType(value: InputElementType) {
-        this._inputElType = value;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public get inputElType(): 'input' | 'textarea' {
-        return this._inputElType === 'HTMLInputElement' ? 'input' : 'textarea';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public inputType: InputType = 'text';
-
-    /**
-     * @inheritdoc
-     */
-    public value = '';
-
-    /**
-     * @inheritdoc
-     */
-    public placeholder = '';
-
-    /**
-     * @inheritdoc
-     */
-    public onChangeCallback?: OnChangeCallback;
-
-    /**
-     * @inheritdoc
-     */
-    public getSuggestionsCallback?: GetSuggestionsCallback<string>;
-
-    /**
-     * @inheritdoc
-     */
-    public isDisabled = false;
-
-    /**
-     * @inheritdoc
-     */
-    shouldSpellCheck = false;
-}
-
-/**
- * Represents an interface for the settings for the input field.
- */
-interface IInputSettings {
-    /**
-     * Sets the element type of the input field.
-     * @param value The element type of the input field
-     * as either `HTMLInputElement` or `HTMLTextAreaElement`.
-     */
-    set inputElType(value: InputElementType);
-
-    /**
-     * Gets the element type of the input field.
-     * @returns The element type of the input field
-     * as either `input` or `textarea`.
-     * @default 'input'
-     */
-    get inputElType(): 'input' | 'textarea';
-
-    /**
-     * The type of the input field.
-     * @default 'text'
-     */
-    inputType: InputType;
-
-    /**
-     * The value of the input field.
-     * @default ''
-     */
-    value: string;
-
-    /**
-     * The placeholder of the input field.
-     * @default ''
-     */
-    placeholder: string;
-
-    /**
-     * A callback that is called when the value of the input field changes.
-     * @default undefined
-     */
-    onChangeCallback?: OnChangeCallback;
-
-    /**
-     * A callback that is called to get suggestions for the input field.
-     * @default undefined
-     * @remarks The suggestions are only shown if the callback is set.
-     */
-    getSuggestionsCallback?: GetSuggestionsCallback<string>;
-
-    /**
-     * Whether the toggle is disabled.
-     * @default false
-     */
-    isDisabled: boolean;
-
-    /**
-     * Whether the input field should be spell checked.
-     */
-    shouldSpellCheck: boolean;
 }

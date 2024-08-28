@@ -2,8 +2,8 @@
 import { Component } from 'obsidian';
 import { IDIComponent } from 'src/libs/DIComponent/interfaces/IDIComponent';
 import { IModal } from 'src/libs/Modals/Modal/interfaces/IModal';
-import { SettingColumnConfigurator } from './ISettingColumn';
 import { ISettingColumnTagNameMap } from '../SettingColumns/interfaces/ISettingColumnTagNameMap';
+import { SettingColumnConfigurator } from '../SettingColumns/types/General';
 
 export type SettingConfigurator = (setting: ISettingRowFluentApi) => void;
 

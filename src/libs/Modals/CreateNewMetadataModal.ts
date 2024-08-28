@@ -1,4 +1,4 @@
-import { TFile } from 'obsidian';
+import { Notice, TFile } from 'obsidian';
 import API from 'src/classes/API';
 import type { IApp } from 'src/interfaces/IApp';
 import type { ILogger_, ILogger } from 'src/interfaces/ILogger';
@@ -16,10 +16,7 @@ import type {
     IModalFluentApi,
 } from './Modal/interfaces/IModal';
 import { IOpenCallback } from './Modal/types/IModalCallbacks';
-import type { IHelperGeneral_ } from '../Helper/General';
 import type { IHelperObsidian } from '../Helper/interfaces/IHelperObsidian';
-import { GenericSuggest } from '../Settings/components/GenericSuggest';
-import type { ISettingRow_ } from '../Settings/interfaces/ISettingRow';
 import type { ITags, ITags_ } from '../Tags/interfaces/ITags';
 import type ITranslationService from '../TranslationService/interfaces/ITranslationService';
 
@@ -34,39 +31,38 @@ export class CreateNewMetadataModal {
     )
     protected readonly _logger?: ILogger;
     @Inject('IApp')
-    protected readonly _IApp!: IApp;
+    protected readonly __IApp!: IApp;
     @Inject('IMetadataCache')
-    private readonly _IMetadataCache!: IMetadataCache;
-    @Inject('IHelperGeneral_')
-    private readonly _IHelperGeneral!: IHelperGeneral_;
+    private readonly __IMetadataCache!: IMetadataCache;
     @Inject('IHelperObsidian')
-    private readonly _IHelperObsidian!: IHelperObsidian;
+    private readonly __IHelperObsidian!: IHelperObsidian;
     @Inject('IModal_')
-    private readonly _ICustomModal_!: IModal_;
+    private readonly __ICustomModal!: IModal_;
     @Inject('ITranslationService')
-    private readonly _ITranslationService!: ITranslationService;
+    private readonly __ITranslationService!: ITranslationService;
     @Inject('DocumentModel_')
-    private readonly _IDocumentModel_!: IPrjModel_<DocumentModel>;
+    private readonly __IDocumentModel!: IPrjModel_<DocumentModel>;
     @Inject('IPrjSettings')
-    private readonly _IPrjSettings!: IPrjSettings;
+    private readonly __PrjSettings!: IPrjSettings;
     @Inject('ITags_')
-    private readonly _ITags_: ITags_;
-    @Inject('ISettingRow_')
-    private readonly _ISetting_: ISettingRow_;
+    private readonly __ITags: ITags_;
+    @Inject('Obsidian.Notice_')
+    private readonly __Notice: Notice & {
+        new (message: string | DocumentFragment, duration?: number): Notice;
+    };
 
-    private readonly _customModal: IModal = new this._ICustomModal_();
+    private readonly _modal: IModal = new this.__ICustomModal();
 
     private readonly _result: Partial<Record<keyof IPrjDocument, unknown>> = {};
-    temp: GenericSuggest<string>;
 
     /**
      * Creates an instance of the CreateNewMetadataModal class
      */
     constructor() {
-        this._customModal
+        this._modal
             .setBackgroundDimmed(false)
             .setDraggableEnabled(true)
-            .setTitle(this._ITranslationService.get('Create new metadata'))
+            .setTitle(this.__ITranslationService.get('Create new metadata'))
             .setOnOpen(this.onOpen)
             .open();
     }
@@ -76,35 +72,37 @@ export class CreateNewMetadataModal {
      * to a new metadata file
      */
     private async save(): Promise<void> {
-        const document = new this._IDocumentModel_(undefined);
+        const result = this._modal.result;
 
-        const folder = this._IPrjSettings.documentSettings.defaultFolder;
+        const document = new this.__IDocumentModel(undefined);
 
-        (this._result.subType as FileSubType | undefined) =
-            PrjTypes.isValidFileSubType(this._result.subType);
+        const folder = this.__PrjSettings.documentSettings.defaultFolder;
 
-        const linkedFile = this._IMetadataCache.getFileByLink(
-            this._result.file as string,
+        (result.subType as FileSubType | undefined) =
+            PrjTypes.isValidFileSubType(result.subType);
+
+        const linkedFile = this.__IMetadataCache.getFileByLink(
+            result.file as string,
             '',
         );
 
-        (this._result.file as string | undefined) = this._result.file
+        (result.file as string | undefined) = result.file
             ? document.setLinkedFile(linkedFile, folder)
             : undefined;
 
-        document.data = this._result as Partial<IPrjDocument>;
+        document.data = result as Partial<IPrjDocument>;
 
         // No existing file, create a new one
         let template = '';
 
         // If a template is set, use it
-        const templateFile = this._IApp.vault.getAbstractFileByPath(
-            this._IPrjSettings.documentSettings.template,
+        const templateFile = this.__IApp.vault.getAbstractFileByPath(
+            this.__PrjSettings.documentSettings.template,
         );
 
         if (templateFile && templateFile instanceof TFile) {
             try {
-                template = await this._IApp.vault.read(templateFile);
+                template = await this.__IApp.vault.read(templateFile);
             } catch (error) {
                 this._logger?.error(
                     `Error reading template file '${templateFile.path}'`,
@@ -118,7 +116,7 @@ export class CreateNewMetadataModal {
 
         await document.createFile(folder, newFileName, template);
 
-        if (document) await this._IHelperObsidian.openFile(document.file);
+        if (document) await this.__IHelperObsidian.openFile(document.file);
     }
 
     /**
@@ -130,235 +128,230 @@ export class CreateNewMetadataModal {
     ) => {
         modal
             .then((modal) => modal.content.addClass('custom-form'))
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Metadata sub type'))
+
+            .addSettingRow((subtypeRow) => {
+                subtypeRow
+                    .setName(
+                        this.__ITranslationService.get('Metadata sub type'),
+                    )
                     .setDescription(
-                        this._ITranslationService.get(
+                        this.__ITranslationService.get(
                             'Metadata sub type description',
                         ),
                     )
-                    .add('dropdown', (dropdown) => {
-                        dropdown
+                    .add('dropdown', (subtype) => {
+                        subtype
                             .onChange((item) => {
                                 this._result.subType = item.key;
                             })
                             .setOptions([
                                 {
                                     key: 'none',
-                                    value: this._ITranslationService.get(
+                                    value: this.__ITranslationService.get(
                                         'None',
                                     ),
                                 },
                                 {
                                     key: 'Cluster',
-                                    value: this._ITranslationService.get(
+                                    value: this.__ITranslationService.get(
                                         'Metadata Cluster',
                                     ),
                                 },
                             ]);
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Document date'))
+
+            .addSettingRow((dateRow) => {
+                dateRow
+                    .setName(this.__ITranslationService.get('Document date'))
                     .setDescription(
-                        this._ITranslationService.get(
+                        this.__ITranslationService.get(
                             'Document date description',
                         ),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (date) => {
+                        date.setResultKey('date')
                             .setPlaceholder('YYYY.MM.DD')
-                            .onChange((value) => {
-                                this._result.date = value;
-                            })
                             .setType('date');
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Date of delivery'))
+
+            .addSettingRow((dateOfDeliveryRow) => {
+                dateOfDeliveryRow
+                    .setName(this.__ITranslationService.get('Date of delivery'))
                     .setDescription(
-                        this._ITranslationService.get(
+                        this.__ITranslationService.get(
                             'Date of delivery description',
                         ),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (dateOfDelivery) => {
+                        dateOfDelivery
+                            .setResultKey('dateOfDelivery')
                             .setPlaceholder('YYYY.MM.DD')
-                            .onChange((value) => {
-                                this._result.dateOfDelivery = value;
-                            })
                             .setType('date');
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Title'))
+
+            .addSettingRow((titleRow) => {
+                titleRow
+                    .setName(this.__ITranslationService.get('Title'))
                     .setDescription(
-                        this._ITranslationService.get('Title description'),
+                        this.__ITranslationService.get('Title description'),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (title) => {
+                        title
+                            .setResultKey('title')
+                            .setRequired(true)
                             .setSpellcheck(true)
                             .setPlaceholder(
-                                this._ITranslationService.get('Title'),
-                            )
-                            .onChange((value) => {
-                                this._result.title = value;
-                            });
+                                this.__ITranslationService.get('Title'),
+                            );
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Description'))
+
+            .addSettingRow((descriptionRow) => {
+                descriptionRow
+                    .setName(this.__ITranslationService.get('Description'))
                     .setDescription(
-                        this._ITranslationService.get(
+                        this.__ITranslationService.get(
                             'Description description',
                         ),
                     )
                     .setClass('custom-form-textarea')
-                    .add('input', (input) => {
-                        input
+                    .add('input', (description) => {
+                        description
+                            .setResultKey('description')
                             .setSpellcheck(true)
-                            .setInputElType('HTMLTextAreaElement')
+                            .setType('textarea')
                             .setPlaceholder(
-                                this._ITranslationService.get('Description'),
-                            )
-                            .onChange((value) => {
-                                this._result.description = value;
-                            });
+                                this.__ITranslationService.get('Description'),
+                            );
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Sender'))
+
+            .addSettingRow((senderRow) => {
+                senderRow
+                    .setName(this.__ITranslationService.get('Sender'))
                     .setDescription(
-                        this._ITranslationService.get('Sender description'),
+                        this.__ITranslationService.get('Sender description'),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (sender) => {
+                        sender
+                            .setResultKey('sender')
                             .setPlaceholder(
-                                this._ITranslationService.get('Sender'),
+                                this.__ITranslationService.get('Sender'),
                             )
-                            .onChange((value) => {
-                                this._result.sender = value;
-                            })
                             .addSuggestion((_input) =>
                                 (
-                                    this._IDocumentModel_ as unknown as {
+                                    this.__IDocumentModel as unknown as {
                                         getAllSenderRecipients(): string[];
                                     }
                                 ).getAllSenderRecipients(),
                             );
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Recipient'))
+
+            .addSettingRow((recipientRow) => {
+                recipientRow
+                    .setName(this.__ITranslationService.get('Recipient'))
                     .setDescription(
-                        this._ITranslationService.get('Recipient description'),
+                        this.__ITranslationService.get('Recipient description'),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (recipient) => {
+                        recipient
+                            .setResultKey('recipient')
                             .setPlaceholder(
-                                this._ITranslationService.get('Recipient'),
+                                this.__ITranslationService.get('Recipient'),
                             )
-                            .onChange((value) => {
-                                this._result.recipient = value;
-                            })
                             .addSuggestion((_input) =>
                                 (
-                                    this._IDocumentModel_ as unknown as {
+                                    this.__IDocumentModel as unknown as {
                                         getAllSenderRecipients(): string[];
                                     }
                                 ).getAllSenderRecipients(),
                             );
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('Hide'))
+
+            .addSettingRow((hideRow) => {
+                hideRow
+                    .setName(this.__ITranslationService.get('Hide'))
                     .setDescription(
-                        this._ITranslationService.get('Hide description'),
+                        this.__ITranslationService.get('Hide description'),
                     )
-                    .add('toggle', (input) => {
-                        input.onChange((value) => {
-                            this._result.hide = value;
-                        });
+                    .add('toggle', (hide) => {
+                        hide.setResultKey('hide');
                     });
             })
-            .addSettingRow((setting) => {
-                setting
+
+            .addSettingRow((dontChangePdfPathRow) => {
+                dontChangePdfPathRow
                     .setName(
-                        this._ITranslationService.get('Dont change PDF path'),
+                        this.__ITranslationService.get('Dont change PDF path'),
                     )
                     .setDescription(
-                        this._ITranslationService.get(
+                        this.__ITranslationService.get(
                             'Dont change PDF path description',
                         ),
                     )
-                    .add('toggle', (input) => {
-                        input.onChange((value) => {
-                            this._result.dontChangePdfPath = value;
-                        });
+                    .add('toggle', (dontChangePdfPath) => {
+                        dontChangePdfPath.setResultKey('dontChangePdfPath');
                     });
             })
-            .addSettingRow((setting) => {
-                this._result.tags = new this._ITags_(undefined);
 
-                const tags = this._IMetadataCache.cache
+            .addSettingRow((tagSearchRow) => {
+                this._modal.result.tags = new this.__ITags(undefined);
+
+                const tags = this.__IMetadataCache.cache
                     .map((tag) => tag?.metadata?.frontmatter?.tags)
                     .filter((tag) => tag !== undefined) as string[][];
 
                 const tagsFlat = tags.flat();
                 const tagsSet = new Set(tagsFlat);
 
-                setting
-                    .setName(this._ITranslationService.get('Tags'))
+                tagSearchRow
+                    .setName(this.__ITranslationService.get('Tags'))
                     .setDescription(
-                        this._ITranslationService.get('Tags description'),
+                        this.__ITranslationService.get('Tags description'),
                     )
                     .add('tagsearch', (tagSearch) => {
                         tagSearch
                             .setDefaultEntries(() => {
                                 const activeFile =
-                                    this._IHelperObsidian.getActiveFile();
+                                    this.__IHelperObsidian.getActiveFile();
 
-                                const activeFileTags = new this._ITags_(
+                                const activeFileTags = new this.__ITags(
                                     undefined,
                                 );
                                 activeFileTags.loadTagsFromFile(activeFile);
 
                                 return activeFileTags.value || [];
                             })
-                            .setList(this._result.tags as ITags)
+                            .setList(this._modal.result.tags as ITags)
                             .setPlaceholder(
-                                this._ITranslationService.get('Tags'),
+                                this.__ITranslationService.get('Tags'),
                             )
                             .addSuggestion(() => {
                                 return Array.from(tagsSet);
                             });
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .setName(this._ITranslationService.get('File'))
+
+            .addSettingRow((fileRow) => {
+                fileRow
+                    .setName(this.__ITranslationService.get('File'))
                     .setDescription(
-                        this._ITranslationService.get('File description'),
+                        this.__ITranslationService.get('File description'),
                     )
-                    .add('input', (input) => {
-                        input
+                    .add('input', (file) => {
+                        file.setResultKey('file')
+                            .setRequired(true)
                             .setPlaceholder(
-                                this._ITranslationService.get('File'),
+                                this.__ITranslationService.get('File'),
                             )
-                            .onChange((value) => {
-                                this._result.file = value;
-                            })
-                            .addSuggestion((_input) =>
+                            .addSuggestion((input) =>
                                 (
-                                    this._IDocumentModel_ as unknown as {
+                                    this.__IDocumentModel as unknown as {
                                         getAllPDFsWithoutMetadata(): TFile[];
                                     }
                                 )
@@ -367,27 +360,37 @@ export class CreateNewMetadataModal {
                             );
                     });
             })
-            .addSettingRow((setting) => {
-                setting
-                    .add('button', (btn) =>
-                        btn
+
+            .addSettingRow((buttonsRow) => {
+                buttonsRow
+                    .add('button', (save) =>
+                        save
                             .setButtonText(
-                                this._ITranslationService.get('Save'),
+                                this.__ITranslationService.get('Save'),
                             )
                             .setCta(true)
                             .onClick(() => {
-                                this.save();
-                                this._customModal.close();
+                                if (this._modal.isRequiredFullfilled) {
+                                    this.save();
+                                    this._modal.close();
+                                } else {
+                                    new this.__Notice(
+                                        this.__ITranslationService.get(
+                                            'Please fill in all required fields',
+                                        ),
+                                        2500,
+                                    );
+                                }
                             }),
                     )
-                    .add('button', (btn) =>
-                        btn
+                    .add('button', (close) =>
+                        close
                             .setButtonText(
-                                this._ITranslationService.get('Cancel'),
+                                this.__ITranslationService.get('Cancel'),
                             )
                             .setCta(true)
                             .onClick(() => {
-                                this._customModal.close();
+                                this._modal.close();
                             }),
                     );
             });
