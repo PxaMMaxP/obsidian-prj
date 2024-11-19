@@ -123,7 +123,7 @@ export class Input
     /**
      * Reacts to the arrow keys being pressed.
      * This method will move the cursor to the left or right when the arrow keys are pressed.
-     * Obsidian prevents the default behavior of the arrow keys, so this method is necessary to move the cursor.
+     * Obsidian prevents the default behavior of the arrow keys if a PDF is open in background, so this method is necessary to move the cursor.
      * @param el The textarea element.
      * @param event The event.
      */
@@ -134,11 +134,13 @@ export class Input
         let cursorAdjustment = 0;
 
         if (
+            (event.key === 'ArrowLeft' || event.key === 'ArrowRight') &&
             !(event.ctrlKey || event.metaKey || event.altKey || event.shiftKey)
         ) {
             if (event.key === 'ArrowLeft') cursorAdjustment = -1;
             else if (event.key === 'ArrowRight') cursorAdjustment = 1;
 
+            event.preventDefault();
             const cursorPos = el.selectionStart ?? 0;
 
             el.setSelectionRange(
