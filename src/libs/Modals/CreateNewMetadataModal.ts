@@ -36,8 +36,6 @@ export class CreateNewMetadataModal {
     private readonly __IMetadataCache!: IMetadataCache;
     @Inject('IHelperObsidian')
     private readonly __IHelperObsidian!: IHelperObsidian;
-    @Inject('IModal_')
-    private readonly __ICustomModal!: IModal_;
     @Inject('ITranslationService')
     private readonly __ITranslationService!: ITranslationService;
     @Inject('DocumentModel_')
@@ -51,7 +49,8 @@ export class CreateNewMetadataModal {
         new (message: string | DocumentFragment, duration?: number): Notice;
     };
 
-    private readonly _modal: IModal = new this.__ICustomModal();
+    @Inject('IModal_', (modal: IModal_) => new modal())
+    private readonly _modal!: IModal;
 
     private readonly _result: Partial<Record<keyof IPrjDocument, unknown>> = {};
 
@@ -363,11 +362,10 @@ export class CreateNewMetadataModal {
 
             .addSettingRow((buttonsRow) => {
                 buttonsRow
-                    .add('button', (save) =>
-                        save
-                            .setButtonText(
-                                this.__ITranslationService.get('Save'),
-                            )
+                    .add('button', (save) => {
+                        save.setButtonText(
+                            this.__ITranslationService.get('Save'),
+                        )
                             .setCta(true)
                             .onClick(() => {
                                 if (this._modal.isRequiredFullfilled) {
@@ -381,9 +379,9 @@ export class CreateNewMetadataModal {
                                         2500,
                                     );
                                 }
-                            }),
-                    )
-                    .add('button', (close) =>
+                            });
+                    })
+                    .add('button', (close) => {
                         close
                             .setButtonText(
                                 this.__ITranslationService.get('Cancel'),
@@ -391,8 +389,8 @@ export class CreateNewMetadataModal {
                             .setCta(true)
                             .onClick(() => {
                                 this._modal.close();
-                            }),
-                    );
+                            });
+                    });
             });
     };
 
