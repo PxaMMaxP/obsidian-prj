@@ -15,13 +15,10 @@ import type {
     IInputProtected,
     IInputSettings,
 } from './interfaces/IInput';
-import type {
-    InputType,
-    OnChangeCallback
-} from './types/Input';
 import type { ISettingColumn_ } from './interfaces/ISettingColumn';
 import { SettingColumn } from './SettingColumn';
 import type { SettingColumnConfigurator } from './types/General';
+import type { InputType, OnChangeCallback } from './types/Input';
 import {
     GetSuggestionsCallback,
     IGenericSuggest,
@@ -60,7 +57,10 @@ export class Input
                     const events: EventsParameters<'input' | 'textarea'> = [];
 
                     if (inputTypeEl === 'textarea')
-                        events.push(['input', this.updateMinHeight]);
+                        events.push(
+                            ['input', this.updateMinHeight],
+                            ['keydown', this.reactToArrowKeys],
+                        );
 
                     if (
                         this._settings.onChangeCallback != null ||
@@ -118,6 +118,34 @@ export class Input
     > = (el, ev, flow): void => {
         const lineCount = el.value?.split('\n').length ?? 1;
         el.style.minHeight = `${Math.max(lineCount + 1, 4)}lh`;
+    };
+
+    /**
+     * Reacts to the arrow keys being pressed.
+     * This method will move the cursor to the left or right when the arrow keys are pressed.
+     * Obsidian prevents the default behavior of the arrow keys, so this method is necessary to move the cursor.
+     * @param el The textarea element.
+     * @param event The event.
+     */
+    private readonly reactToArrowKeys: IFlowEventCallback<
+        'textarea',
+        'keydown'
+    > = (el, event) => {
+        let cursorAdjustment = 0;
+
+        if (
+            !(event.ctrlKey || event.metaKey || event.altKey || event.shiftKey)
+        ) {
+            if (event.key === 'ArrowLeft') cursorAdjustment = -1;
+            else if (event.key === 'ArrowRight') cursorAdjustment = 1;
+
+            const cursorPos = el.selectionStart ?? 0;
+
+            el.setSelectionRange(
+                cursorPos + cursorAdjustment,
+                cursorPos + cursorAdjustment,
+            );
+        }
     };
 
     /**
