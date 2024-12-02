@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@nozbe/microfuzz": "^1.0.0",
-    "axios": "^1.7.2",
+    "axios": "^1.7.8",
     "crypto-js": "^4.2.0",
     "eslint-plugin-prettier": "^5.2.1",
     "jest-environment-jsdom": "^29.7.0",
